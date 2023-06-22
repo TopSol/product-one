@@ -1,5 +1,6 @@
 import React from "react";
-
+import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function sideBar() {
   return (
     <div className="w-[300px] h-[100vh] lg:hidden bg-white absolute top-0">
@@ -17,7 +18,10 @@ export default function sideBar() {
         <hr />
         <li className="pl-6">Help</li>
         <hr />
-        <button className="  text-white bg-[#DEB666] hover:bg-[#DEB999] py-3 mx-6 w-[250px]   rounded-md">Sign In</button>
+        <button className=" ml-10  text-white bg-[#DEB666] hover:bg-[#DEB999] py-3 px-6 font-roboto rounded-md">
+          <FontAwesomeIcon icon={faCalendarDays} className="mr-2" />
+          Booking Now
+        </button>
       </ul>
     </div>
   );
