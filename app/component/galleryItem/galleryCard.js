@@ -1,5 +1,8 @@
+"use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 export default function GalleryCard(props) {
+  const router = useRouter();
   return (
     <div className="group  relative cursor-pointer items-center justify-center overflow-hidden transition-shadow hover:shadow-xl hover:shadow-black/30">
       <div className=" h-[380px] md:h-[30rem] w-full">
@@ -15,7 +18,10 @@ export default function GalleryCard(props) {
         <p className="mb-3 text-lg italic font-roboto text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           {props.desc}
         </p>
-        <button className="rounded-full bg-neutral-900 px-3.5 py-2 font-com text-sm capitalize text-white shadow shadow-black/60">
+        <button
+          onClick={() => router.push("/pages/hoteldetail")}
+          className="rounded-full bg-neutral-900 px-3.5 py-2 font-com text-sm capitalize text-white shadow shadow-black/60"
+        >
           See More
         </button>
       </div>

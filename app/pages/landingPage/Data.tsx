@@ -144,3 +144,23 @@ export const Data = [
     src: "https://www.enlishclub.com/images/vocabulary/food/italian/italian-food-1024.jpg",
   },
 ];
+export const ReviewData = [
+  {
+    id: "1",
+    name: "Project Title",
+    review:
+      "Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.",
+  },
+  {
+    id: "2",
+    name: "Project Title",
+    review:
+      "Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups. ",
+  },
+  {
+    id: "3",
+    name: "Project Title",
+    review:
+      "Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups. ",
+  },
+];

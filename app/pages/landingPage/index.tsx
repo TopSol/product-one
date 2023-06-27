@@ -1,12 +1,18 @@
+"use client";
 import React from "react";
 import Herro from "@/app/component/Herro";
 import GalleryCard from "../../component/galleryItem/galleryCard";
-import { Data } from "./Data";
+import { Data, ReviewData } from "./Data";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Review from "../../component/review";
 import Footer from "@/app/component/footer";
+import { useRouter } from "next/navigation";
+
 export default function landingPage() {
   const currentPost = Data.slice(0, 8);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const router = useRouter();
   return (
     <div>
       {/* <Navbar /> */}
@@ -89,7 +95,7 @@ export default function landingPage() {
 
           <div className=" grid grid-cols-1 mt-8  md:grid-cols-2 gap-8 lg:grid-cols-4 lg: lg:container lg:mx-auto ">
             {currentPost.map((item) => (
-              <div key={item.id}>
+              <div key={item.id} onClick={() => router.push("/pages/hoteldetail")}>
                 <GalleryCard src={item.src} name={item.name} desc={item.desc} />
               </div>
             ))}
@@ -108,72 +114,11 @@ export default function landingPage() {
           </div>
 
           <div className="flex flex-col lg:flex-row  justify-around  ">
-            <div className=" w-auto mx-5  lg:w-[30rem] text-center mt-28 bg-white rounded-lg first-letter:  ">
-              <div className="flex justify-center">
-                <img
-                  src="https://demo.himaratheme.com/wp-content/uploads/2022/05/user7.jpg"
-                  className="w-[70px] rounded-full -mt-8"
-                  alt=""
-                />
+            {ReviewData.map((item) => (
+              <div key={item.id} onClick={() => router.push("/pages/reviewPage")}>
+                <Review name={item.name} review={item.review} />
               </div>
-              <h1 className="mt-6 font-vollkorn  ">John Doe</h1>
-              <p className="mt-1 font-vollkorn ">Web Developer</p>
-              <div className="my-5">
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-              </div>
-              <p className="text-center px-9 pb-9 text-textColor font-roboto">
-                Ut pretium ultricies dignissim. Sed sit amet mi eget urna placerat vulputate. Ut vulputate est non quam dignissim
-                elementum. Donec a ullamcorper diam.
-              </p>
-            </div>
-            <div className="w-auto mx-5 lg:w-[30rem] text-center mt-28 bg-white rounded-lg first-letter:  ">
-              <div className="flex justify-center">
-                <img
-                  src="https://demo.himaratheme.com/wp-content/uploads/2022/05/user2.jpg"
-                  className="w-[70px] rounded-full -mt-8"
-                  alt=""
-                />
-              </div>
-              <h1 className="mt-6 font-vollkorn  ">John Doe</h1>
-              <p className="mt-1 font-vollkorn ">Web Developer</p>
-              <div className="my-5">
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-              </div>
-              <p className="text-center px-9 pb-9 text-textColor font-roboto">
-                Ut pretium ultricies dignissim. Sed sit amet mi eget urna placerat vulputate. Ut vulputate est non quam dignissim
-                elementum. Donec a ullamcorper diam.
-              </p>
-            </div>
-            <div className="w-auto mx-5 lg:w-[30rem] text-center mt-28 bg-white rounded-lg first-letter:  ">
-              <div className="flex justify-center">
-                <img
-                  src="https://demo.himaratheme.com/wp-content/uploads/2022/05/user9.jpg"
-                  className="w-[70px] rounded-full -mt-8"
-                  alt=""
-                />
-              </div>
-              <h1 className="mt-6 font-vollkorn  ">John Doe</h1>
-              <p className="mt-1 font-vollkorn ">Web Developer</p>
-              <div className="my-5">
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-                <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
-              </div>
-              <p className="text-center px-9 pb-9 text-textColor font-roboto">
-                Ut pretium ultricies dignissim. Sed sit amet mi eget urna placerat vulputate. Ut vulputate est non quam dignissim
-                elementum. Donec a ullamcorper diam.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
 import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
 import SideBar from "../model/sideBar";
+import Link from "next/link";
 export default function Navbar() {
   const [show, setShow] = useState(false);
   const ShowSideBar = () => {
@@ -21,12 +22,16 @@ export default function Navbar() {
           <FontAwesomeIcon icon={faBarsStaggered} size="xs" className=" h-7 text-[#DEB666] lg:hidden  " onClick={ShowSideBar} />
           <div className=" hidden lg:flex items-center ">
             <ul className=" flex space-x-10 font-roboto font-bold ">
-              <li>Home</li>
-              <li>About</li>
-              <li>Booking</li>
-              <li>Services</li>
-              <li>Blog</li>
-              <li>Help</li>
+              <li className="cursor-pointer">
+                <Link href="/">Home</Link>
+              </li>
+              <li className="cursor-pointer">
+                <Link href="/pages/hotel">Marquee</Link>
+              </li>
+              <li className="cursor-pointer">Booking</li>
+              <li className="cursor-pointer">Services</li>
+              <li className="cursor-pointer">Blog</li>
+              <li className="cursor-pointer">Help</li>
             </ul>
             <button className=" ml-10  text-white bg-[#DEB666] hover:bg-[#DEB999] py-3 px-6 font-roboto rounded-md">
               <FontAwesomeIcon icon={faCalendarDays} className="mr-2" />
