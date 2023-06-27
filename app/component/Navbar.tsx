@@ -26,7 +26,7 @@ export default function Navbar() {
                 <Link href="/">Home</Link>
               </li>
               <li className="cursor-pointer">
-                <Link href="/pages/hotel">Marquee</Link>
+                <Link href="/pages/marquee">Marquee</Link>
               </li>
               <li className="cursor-pointer">Booking</li>
               <li className="cursor-pointer">Services</li>

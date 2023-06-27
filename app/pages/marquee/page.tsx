@@ -1,10 +1,13 @@
+"use client";
 import React from "react";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Data } from "./data";
+import { useRouter } from "next/navigation";
 function Marquee() {
+  const router = useRouter();
   return (
     <div>
       <Navbar />
@@ -27,7 +30,7 @@ function Marquee() {
         </div>
         <div className="w-[75%]">
           {Data.map((item) => (
-            <div key={item.id} className="mb-10 mx-5 ">
+            <div key={item.id} className="mb-10 mx-5 " onClick={() => router.push("/pages/marqueedetail")}>
               <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
                 <div className="md:w-[40%]  ">
                   <img src={item.src} className="md:rounded-r-none rounded-lg " alt="" />

@@ -13,7 +13,7 @@ export default function sideBar() {
         <hr />
 
         <li className="cursor-pointer ml-6 ">
-          <Link href="/pages/hotel">Marquee </Link>
+          <Link href="/pages/marquee">Marquee </Link>
         </li>
         <hr />
         <li className="pl-6 cursor-pointer">About</li>

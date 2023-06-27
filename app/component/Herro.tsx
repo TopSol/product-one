@@ -41,7 +41,7 @@ export default function Herro() {
                   <Link href="/">Home</Link>
                 </li>
                 <li className="cursor-pointer">
-                  <Link href="/pages/hotel">Marquee</Link>
+                  <Link href="/pages/marquee">Marquee</Link>
                 </li>
                 <li className="cursor-pointer">Booking</li>
                 <li className="cursor-pointer">Services</li>
@@ -62,7 +62,6 @@ export default function Herro() {
           <div className=" lg:flex  items-center justify-center mt-[8%] mx-6 ">
             <div className="md:flex bg-WhiteColor py-5 lg:py-7 rounded-t-xl lg:rounded-tr-none lg:rounded-l-xl  ">
               <div className="border-r-2">
-                {/* <p className="">Cities</p> */}
                 <input
                   type="text"
                   placeholder="City"
