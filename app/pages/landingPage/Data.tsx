@@ -164,3 +164,31 @@ export const ReviewData = [
       "Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups. ",
   },
 ];
+
+export const Images = [
+  {
+    id:"1",
+    name:"Swimming Pool",
+    text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sollicitudin elementum porta.",
+    src:"https://demo.himaratheme.com/wp-content/uploads/2022/07/pexels-dayvison-de-oliveira-silva-5733818-1.jpg",
+    src2:"https://demo.himaratheme.com/wp-content/uploads/2022/07/pool.png"
+  },
+  {
+    id:"2",
+    name:"Restaurant",
+    src:"https://demo.himaratheme.com/wp-content/uploads/2022/07/pexels-pixabay-262047-1.jpg",
+    src2:"https://demo.himaratheme.com/wp-content/uploads/2022/07/restaurant.png"
+  },
+  {
+    id:"3",
+    name:"Meeting Room",
+    src:"https://demo.himaratheme.com/wp-content/uploads/2022/07/bright-g6f2896c31_1920-1.jpg",
+    src2:"https://demo.himaratheme.com/wp-content/uploads/2022/07/teamwork.png"
+  },
+  {
+    id:"4",
+    name:"Sauna",
+    src:"https://demo.himaratheme.com/wp-content/uploads/2022/07/pexels-max-vakhtbovych-7174404.png",
+    src2:"https://demo.himaratheme.com/wp-content/uploads/2022/07/sauna.png"
+  }
+]

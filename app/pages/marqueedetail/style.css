@@ -1,20 +1,21 @@
-.react-calendar__month-view__weekdays__weekday {
-    color: #878D8D;
-    text-decoration: none;
-    padding-left: 10px;
-}
-.react-calendar{
-    background-color: #f5f5f5;
+
+.rdp-months{
     font-family: "Roboto";
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    padding-left: 20px;
+    margin-top: -20px;
+    
 }
-.react-calendar__navigation{
-
-display: flex;
-justify-content: center;
-
+.rdp-caption{
+    width: 100%;
 }
-.react-calendar__navigation__arrow {
-
-    margin-left: 20px;
-    margin-right: 20px;
+.rdp-head_cell{
+width: 100%;
+padding: 40px !important;
 }
+.rdp-button_reset {
+    margin: 5px;
+}
+.rdp-month {
+width: 100%;}

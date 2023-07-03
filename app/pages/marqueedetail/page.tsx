@@ -10,13 +10,11 @@ import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import ImageLightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
-import Calendar from "react-calendar";
-import "./style.css"
+import Datepicker from "@/app/component/Calender";
 function Marqueedetail() {
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [value, onChange] = useState(new Date());
   const images = [
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg",
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6480202-scaled.jpg",
@@ -232,33 +230,8 @@ function Marqueedetail() {
           </div>
         </div>
         <div className="lg:w-[30%] ml-5">
-          {/* <div className="border-gray-200 p-6 border-[1px]  ">
-            <p className="font-vollkorn text-xl">Booking Hotel</p>
-            <div className="mt-8">
-              <label htmlFor="" className=" ">
-                ChexkIn/out
-              </label>
-              <input
-                type="text"
-                placeholder="Check In "
-                className="border-gray-200 py-3 px-2 mt-2 rounded-md  w-full border-[1px]"
-              />
-            </div>
-            <div className="mt-8">
-              <label htmlFor="">Services</label>
-              <input
-                type="text"
-                placeholder=" Services "
-                className="border-gray-200 py-3 px-2  w-full rounded-md border-[1px]"
-              />
-            </div>
-            <button className="px-4  py-3 bg-primaryColor text-white mt-10 rounded-md w-full ">
-              Check Availability
-            </button>
-          </div> */}
-
-          <div>
-          <Calendar onChange={onChange} value={value} />
+          <div className="-ml-6 lg:ml-0">
+          <Datepicker/>
           </div>
           <img src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg" alt="" className="w-full mt-8" />
         </div>
