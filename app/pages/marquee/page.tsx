@@ -4,6 +4,7 @@ import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Data } from "./data";
 import { useRouter } from "next/navigation";
 function Marquee() {
@@ -23,8 +24,8 @@ function Marquee() {
       </div>
       {/* hotel list */}
 
-      <div className=" mt-32  flex md:container mx-auto ">
-        <div className="w-[25%] ">
+      <div className="md:container mx-auto mt-32 flex flex-col lg:flex-row  ">
+        <div className="w-full mx-auto px-3 lg:w-[25%]  ">
           <div>
             <h1 className="font-vollkorn text-xl ">Booking Details</h1>
             <input
@@ -94,7 +95,7 @@ function Marquee() {
 
           </div>
         </div>
-        <div className="w-[75%]">
+        <div className="w-full  lg:w-[75%]">
           {Data.map((item) => (
             <div
               key={item.id}
@@ -121,16 +122,27 @@ function Marquee() {
                     {item.price}
                   </p>
                   <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
-                    Per Night
+                    PER NIGHT
                   </p>
-                  <div className="flex justify-center ">
+                  {/* <div className="flex justify-center ">
                     <button className="text-primaryColor border-[1px] hover:text-white  hover:bg-primaryColor border-gray-200  text-center items-center justify-around flex mb-6 md:mb-0  py-2 px-4 rounded-full">
                       <p className="font-roboto">More detail</p>
                       <div className="bg-primaryColor hover:bg-white ml-6 hover:text-primaryColor h-7 w-7 text-center flex items-center justify-center rounded-full  text-white">
                         <FontAwesomeIcon icon={faArrowRight} />
                       </div>
                     </button>
-                  </div>
+                  </div> */}
+                 <div className="flex items-center justify-center font-roboto font-semibold">
+                  <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded mb-8">
+                  Select Booking Detials
+                  </p>
+                 </div>
+                 <div className="mt-10  items-center ">
+                  <hr/>
+                  <p className="pt-2 text-sm  text-textColor  flex justify-center items-center font-roboto">
+                    Avalibility & Details  <FontAwesomeIcon icon={faAngleDown} />
+                  </p>
+                 </div>
                 </div>
               </div>
             </div>

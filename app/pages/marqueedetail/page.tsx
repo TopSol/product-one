@@ -10,15 +10,13 @@ import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import ImageLightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
-
+import Calendar from "react-calendar";
+import "./style.css"
 function Marqueedetail() {
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [value, onChange] = useState(new Date());
   const images = [
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg",
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6480202-scaled.jpg",
@@ -36,7 +34,6 @@ function Marqueedetail() {
     setIsOpen(false);
   };
 
-  const localizer = momentLocalizer(moment);
 
   const events = [
     {
@@ -71,7 +68,7 @@ function Marqueedetail() {
                   ? `${selectImage}`
                   : "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg"
               }
-              className="rounded  h-[508px] w-full object-contain"
+              className="rounded  h-[508px] w-full object-cover"
             />
           </div>
 
@@ -79,7 +76,7 @@ function Marqueedetail() {
             {images.map((src, index) => (
               <div key={index}>
                 <div onClick={() => handleClick(index)}>
-                  <img src={src} alt="" className="w-[170px] h-[100px] rounded-lg cursor-pointer " />
+                  <img src={src} alt="" className="w-[170px] h-[100px] rounded-lg cursor-pointer object-cover" />
                 </div>
               </div>
             ))}
@@ -261,15 +258,7 @@ function Marqueedetail() {
           </div> */}
 
           <div>
-            <Calendar
-              className="rounded flex flex-row"
-              localizer={localizer}
-              events={events}
-              component={Component}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: 350, outerWidth: 350 }}
-            />
+          <Calendar onChange={onChange} value={value} />
           </div>
           <img src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg" alt="" className="w-full mt-8" />
         </div>
