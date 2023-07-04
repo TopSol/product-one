@@ -231,7 +231,7 @@ function Marqueedetail() {
         </div>
         <div className="lg:w-[30%] ml-5">
           <div className="-ml-6 lg:ml-0">
-          <Datepicker/>
+          <Datepicker styles={{width:"100%"}} />
           </div>
           <img src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg" alt="" className="w-full mt-8" />
         </div>

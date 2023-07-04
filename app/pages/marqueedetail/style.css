@@ -1,21 +1,17 @@
-
-.rdp-months{
-    font-family: "Roboto";
+.rdp-months {
     background-color: #f5f5f5;
-    border-radius: 10px;
-    padding-left: 20px;
-    margin-top: -20px;
-    
+    margin-left: -20px;
+    margin-top: -15px;
+    padding-left: 30px;
+    border-radius: 8px;
 }
-.rdp-caption{
-    width: 100%;
-}
-.rdp-head_cell{
-width: 100%;
-padding: 40px !important;
+.rdp{
+    width: 90%;
+
 }
 .rdp-button_reset {
-    margin: 5px;
+    padding: 20px;
 }
-.rdp-month {
-width: 100%;}
+.rdp-cell {
+    /* padding: 10px 20px !important; */
+}

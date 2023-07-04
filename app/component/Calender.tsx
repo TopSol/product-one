@@ -5,7 +5,7 @@ import "../pages/marqueedetail/style.css"
 import { format } from 'date-fns';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-const Datepicker = () => {
+const Datepicker = ({styles}) => {
   const [selectedDates, setSelectedDates] = useState([]);
 
   const handleDateClick = (date, { selected }) => {
@@ -29,6 +29,7 @@ const Datepicker = () => {
     <div>
       
       <DayPicker
+      style={styles}
         selected={selectedDates}
         onDayClick={handleDateClick}
         mode="multiple"

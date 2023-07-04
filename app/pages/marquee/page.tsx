@@ -181,8 +181,8 @@ function Marquee() {
                   </div>
                 </div>
               </div>
-              <div className="w-full">
-                {open[item.id] && <Datepicker />}
+              <div className="w-[98%]  ">
+                {open[item.id] && <  Datepicker styles={{width:"100%", padding:"40px"}} />}
               </div>
             </div>
           ))}
