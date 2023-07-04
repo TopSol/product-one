@@ -1,17 +1,22 @@
 .rdp-months {
     background-color: #f5f5f5;
-    margin-left: -20px;
+    margin-left: -18px;
     margin-top: -15px;
-    padding-left: 30px;
+    padding-left: 05px;
     border-radius: 8px;
 }
-.rdp{
-    width: 90%;
 
-}
 .rdp-button_reset {
     padding: 20px;
-}
+} 
 .rdp-cell {
     /* padding: 10px 20px !important; */
+}
+.rdp-day_selected{
+    background-color: blue !important;
+    border-radius: none;
+}
+.rdp-day{
+    border-radius: 0px !important;
+    margin: 2px 5px !important;
 }

@@ -11,10 +11,12 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import ImageLightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
 import Datepicker from "@/app/component/Calender";
+import { BookedLunch, BookedDinner } from "./data";
 function Marqueedetail() {
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState('');
   const images = [
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg",
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6480202-scaled.jpg",
@@ -31,15 +33,18 @@ function Marqueedetail() {
   const closeLightbox = () => {
     setIsOpen(false);
   };
+  const handleDate = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedOption(selectedValue);
+
+    if (selectedValue == 'Lunch') {
+      // <Datepicker />
+    } else if (selectedValue == 'Dinner') {
+      alert('Dinner');
+    } 
+  };
 
 
-  const events = [
-    {
-      title: "Event 1",
-      start: new Date(),
-      end: new Date(),
-    },
-  ];
 
   return (
     <div>
@@ -231,7 +236,24 @@ function Marqueedetail() {
         </div>
         <div className="lg:w-[30%] ml-5">
           <div className="-ml-6 lg:ml-0">
-          <Datepicker styles={{width:"100%"}} />
+            <div className="w-full">
+              <select onClick={handleDate} id="options" name="options" className="w-[95%] p-2 rounded-md">
+                <option>Choose Here</option>
+                <option>Lunch</option>
+                <option>Dinner</option>
+              </select>
+            </div>
+            <div>
+              <Datepicker />
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="bg-[orange] p-1 w-1 rounded-full">
+              </div>
+              <p>Lunch</p>
+              <div className="bg-blue-600 p-1 w-1 rounded-full">
+              </div>
+              <p>Dinner</p>
+            </div>
           </div>
           <img src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg" alt="" className="w-full mt-8" />
         </div>
@@ -243,3 +265,4 @@ function Marqueedetail() {
   );
 }
 export default Marqueedetail;
+
