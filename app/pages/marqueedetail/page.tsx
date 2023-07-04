@@ -9,6 +9,7 @@ import { faBed } from "@fortawesome/free-solid-svg-icons";
 import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import ImageLightbox from "react-image-lightbox";
+import Link from 'next/link';
 import "react-image-lightbox/style.css";
 import Datepicker from "@/app/component/Calender";
 function Marqueedetail() {
@@ -22,7 +23,7 @@ function Marqueedetail() {
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271614-scaled.jpg",
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6538894-scaled.jpg",
   ];
-
+   
   const handleClick = (index: any) => {
     setSelectImage(images[index]);
     setPhotoIndex(index);
@@ -232,6 +233,10 @@ function Marqueedetail() {
         <div className="lg:w-[30%] ml-5">
           <div className="-ml-6 lg:ml-0">
           <Datepicker styles={{width:"100%"}} />
+          </div>
+          <div className="flex bg-gray-50 rounded-lg justify-center p-3">
+          <Link href="/pages/details">Book Now</Link>
+            
           </div>
           <img src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg" alt="" className="w-full mt-8" />
         </div>
