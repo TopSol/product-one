@@ -70,7 +70,6 @@ function Marqueedetail() {
               className="rounded  h-[508px] w-full object-cover"
             />
           </div>
-
           <div className="  flex justify-between space-x-3 my-3 ">
             {images.map((src, index) => (
               <div key={index}>
