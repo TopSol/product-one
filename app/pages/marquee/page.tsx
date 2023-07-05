@@ -7,10 +7,14 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Data } from "./data";
 import { useRouter } from "next/navigation";
-import Datepicker from "@/app/component/Calender";
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import './style.css'
 function Marquee() {
   const [sliderValue, setSliderValue] = useState("");
   const [open, setOpen] = useState({})
+  const initialDays: Date[] = [];
+  const [days, setDays] = React.useState<Date[] | undefined>(initialDays);
   const router = useRouter();
   const handleSliderChange = (event) => {
     setSliderValue(event.target.value);
@@ -182,7 +186,14 @@ function Marquee() {
                 </div>
               </div>
               <div className="w-[98%]  ">
-                {open[item.id] && <  Datepicker />}
+                {open[item.id] && <DayPicker 
+                 className={"customClasses"}
+                  style={{  width:"100%" , }}
+                  mode="multiple"
+                  min={1}
+                  selected={days}
+                  onSelect={setDays}
+                />}
               </div>
             </div>
           ))}

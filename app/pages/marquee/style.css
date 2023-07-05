@@ -1,0 +1,24 @@
+.customClasses .rdp-month {
+    background-color: #f5f5f5;
+    width: 100%;
+    margin-top: -15px;
+}
+
+.customClasses .rdp-day_selected{
+    background-color: orange !important;
+    padding: 15px;
+    border-radius: 0 !important;
+}
+
+.customClasses .rdp-button_reset {
+    margin: 5px  40px !important;
+}
+.customClasses  .rdp-months{
+    display: flex;
+    justify-content: center;
+}
+.customClasses .rdp-caption{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+}
