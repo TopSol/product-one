@@ -37,7 +37,7 @@ function Marquee() {
             <h1 className="font-vollkorn text-xl ">Booking Details</h1>
             <input
               type="text"
-              placeholder="Check In  Check Out"
+              placeholder="Check In -> Check Out"
               className="py-3 border-r-gray-200 mt-6 border-[1px] outline-none rounded-md px-3 w-full "
             />
             <input

@@ -48,6 +48,7 @@ function Slider() {
         <div className="flex justify-center mb-6">
           {steps.map((item, index) => (
             <div key={item.title} className="flex items-center">
+              
               <div
                 className={`flex justify-center items-center w-12 h-12 rounded-full ${
                   slider >= index ? "bg-blue-500" : "bg-slate-300"
@@ -56,7 +57,7 @@ function Slider() {
                 {index + 1}
               </div>
               {index !== steps.length - 1 && (
-                <div className="w-28 border-b-8 border-bg-slate-300"></div>
+                <div className="w-28 border-b-8 border-slate-300"></div>
               )}
             </div>
           ))}

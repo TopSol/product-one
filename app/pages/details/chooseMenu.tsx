@@ -5,25 +5,25 @@ const menu = [
   {
     menu: "Menu 1",
     dish: ["Chicken", "Biryani", "Kabab"],
-    price: "RS 20000",
+    price: "$2000",
   },
   {
     menu: "Menu 2",
     dish: ["Chicken", "Biryani", "Kabab"],
-    price: 40000,
+    price: '$4000',
   },
   {
     menu: "Menu 3",
     dish: ["Chicken", "Biryani", "Kabab"],
-    price: 5000,
+    price: "$5000",
   },
   {
     menu: "Menu 4",
     dish: ["Chicken", "Biryani", "Kabab"],
-    price: 8000,
+    price: "$8000",
   },
 ];
-const data = ["baryani", "chicken", "kima"];
+const data = ["baryani", "chicken", "mutton"];
 function ChooseMenu({ setSlider, setSelectedMenu, sendData }) {
   const nextPage = () => {
     sendData();
@@ -47,17 +47,17 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData }) {
               ))}
             </div>
             <div className=" flex justify-center items-center w-full">
-              <p className="text-xl"> Rs{item.price}</p>
+              <p className="text-xl"> {item.price}</p>
             </div>
           </div>
         ))}
       </div>
-      <div className="flex items-center border cursor-pointer">
+      <div className=" flex-wrap lg:flex items-center border rounded-md cursor-pointer">
         {data.map((item, index) => (
-          <div key={index} className=" flex justify-center items-center pl-3">
+          <div key={index} className=" flex justify-center items-center p-3   ">
             <FontAwesomeIcon icon={faCirclePlus} />
-            <p className="pr-3">Add</p>
-            <p className="border bg-blue-100 rounded-sm">{item}</p>
+            <p className="pl-1 pr-3">Add</p>
+            <p className="border p-2  rounded-md font-semibold text-textColor font-roboto">{item}</p>
           </div>
         ))}
       </div>

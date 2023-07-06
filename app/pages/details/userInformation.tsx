@@ -77,26 +77,26 @@ function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformati
   return (
     <div className="md:container mx-auto">
       <div className="border p-5 rounded-md mb-2 flex justify-center items-center  flex-col w-full">
-        <div className="border p-5 rounded-md mb-2 md:w-2/4">
+        <div className="border p-5 rounded-md mb-2 md:w-[60%]">
           <div className="md:flex md:justify-between">
             <div className="mb-6 flex flex-col md:flex-row md:w-80 md:justify-between">
-              <label className="text-xl">FirstName:</label>
+              <label className="text-xl">F/Name:</label>
               <input
                 type="firstName"
                 name="firstName"
                 value={user.firstName}
                 onChange={handleChange}
-                className="border  rounded-lg outline-none"
+                className="border  rounded-md outline-none"
               />
             </div>
             <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              <label className="text-xl">LastName:</label>
+              <label className="text-xl">L/Name:</label>
               <input
                 type="lastName"
                 name="lastName"
                 value={user.lastName}
                 onChange={handleChange}
-                className="border  rounded-lg outline-none"
+                className="border  rounded-md outline-none"
               />
             </div>
           </div>
@@ -108,7 +108,7 @@ function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformati
                 name="email"
                 value={user.email}
                 onChange={handleChange}
-                className="border  rounded-lg outline-none"
+                className="border  rounded-md outline-none"
               />
             </div>
 
@@ -119,7 +119,7 @@ function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformati
                 name="address"
                 value={user.address}
                 onChange={handleChange}
-                className="border  rounded-lg outline-none"
+                className="border  rounded-md outline-none"
               />
             </div>
           </div>
@@ -131,18 +131,18 @@ function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformati
                 name="notes"
                 value={user.notes}
                 onChange={handleChange}
-                className="border  rounded-lg outline-none"
+                className="border  rounded-md outline-none"
               />
             </div>
 
             <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              <label className="text-xl">Phon:</label>
+              <label className="text-xl">Phone:</label>
               <input
                 type="PhoneNumber"
                 name="PhoneNumber"
                 value={user.PhoneNumber}
                 onChange={handleChange}
-                className="border  rounded-lg outline-none"
+                className="border rounded-md outline-none"
               />
             </div>
           </div>
