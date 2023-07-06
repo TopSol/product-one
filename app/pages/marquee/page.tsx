@@ -7,14 +7,17 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Data } from "./data";
 import { useRouter } from "next/navigation";
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
-import './style.css'
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import { BookedDinner,BookedLunch } from "../marqueedetail/data";
+import "./style.css";
 function Marquee() {
   const [sliderValue, setSliderValue] = useState("");
-  const [open, setOpen] = useState({})
+  const [open, setOpen] = useState({});
   const initialDays: Date[] = [];
-  const [days, setDays] = React.useState<Date[] | undefined>(initialDays);
+  const [days, setDays] = useState<any>([]);
+  const [isLunch, setIsLunch] = useState<any>();
+  const [selectedOption, setSelectedOption] = useState("");
   const router = useRouter();
   const handleSliderChange = (event) => {
     setSliderValue(event.target.value);
@@ -25,6 +28,19 @@ function Marquee() {
       [id]: !prevState[id],
     }));
   };
+  const handleCheck = (event)=>{
+    console.log(event, "event");
+    
+    const selectedValue = event?.target?.value || event
+    setSelectedOption(selectedValue);
+    if (selectedValue == "Lunch") {
+      setDays(BookedLunch);
+      setIsLunch('Lunch')
+    } else if (selectedValue == "Dinner") {
+      setDays(BookedDinner);
+      setIsLunch('Dinner')
+    }
+  }
   return (
     <div>
       <Navbar />
@@ -147,7 +163,7 @@ function Marquee() {
             <div
               key={item.id}
               className="mb-10 mx-5 "
-            // onClick={() => router.push("/pages/marqueedetail")}
+              // onClick={() => router.push("/pages/marqueedetail")}
             >
               <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
                 <div className="md:w-[40%]  ">
@@ -176,8 +192,10 @@ function Marquee() {
                     </p>
                   </div>
 
-                  <div className="cursor-pointer" onClick={() => handleClick(item.id)} >
-
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => handleClick(item.id)}
+                  >
                     <p className=" text-sm  text-textColor  flex justify-center items-center pt-3  font-roboto border-t-[1px]">
                       Avalibility & Details
                       <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
@@ -185,15 +203,60 @@ function Marquee() {
                   </div>
                 </div>
               </div>
-              <div className="w-[98%]  ">
-                {open[item.id] && <DayPicker 
-                 className={"customClasses"}
-                  style={{  width:"100%" , }}
-                  mode="multiple"
-                  min={1}
-                  selected={days}
-                  onSelect={setDays}
-                />}
+              <div className="w-[100%] rounded-md mt-3  flex bg-[#f5f5f5]">
+                {open[item.id] && (
+                  <DayPicker
+                    className={`${isLunch == `Lunch` ?`customClasses` :`customClasses2`}`}
+                    style={{ width: "100%" }}
+                    mode="multiple"
+                    min={1}
+                    selected={days}
+                    onSelect={setDays}
+                  />
+                )}
+
+                { open[item.id] &&(
+                <div className="pr-10 pt-8">
+                  
+              
+                  <div className="flex items-center">
+                    <input onClick={()=>handleCheck('Lunch')}
+                      checked
+                      id="default-radio-2"
+                      type="radio"
+                      value=""
+                      name="default-radio"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label  
+                      htmlFor="default-radio-2"
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      Lunch
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input onClick={()=>handleCheck('Dinner')}
+                      id="default-radio-3"
+                      type="radio"
+                      value=""
+                      name="default-radio"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label  
+                      htmlFor="default-radio-3"
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      Dinner
+                    </label>
+                  </div>
+                </div>
+              //   <select onClick={handleCheck}>
+              //   <option >Choose Here</option>
+              //   <option >Lunch</option>
+              //   <option >Dinner</option>
+              // </select>
+                )}
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
-.combinedClasses-custom  .rdp-months {
+.combinedClasses  .rdp-months {
     background-color: #f5f5f5;
-    margin-top: 2px;
+    margin-top: -5px;
     padding-left: 10px;
     padding-right: 05px;
     border-radius: 8px;
@@ -9,17 +9,39 @@
     justify-content: center;
 }
 
-.combinedClasses-custom .rdp-day_selected{
-    background-color: gray;
+.combinedClasses .rdp-day_selected{
+    background-color: orange;
     border-radius: 0 ;
 }
 
 
-.combinedClasses-custom .rdp-button_reset {
+.combinedClasses .rdp-button_reset {
     margin: 2px  6px ;
+}
+.combinedClasses  .rdp-caption{
+    padding-top: 10px;
 }
 
 
-.orange .rdp-day_selected{
-    background-color: orange;
+
+.combinedClasses2 .rdp-months {
+    background-color: #f5f5f5;
+    margin-top: -5px;
+    padding-left: 10px;
+    padding-right: 05px;
+    border-radius: 8px;
+    margin-left: -18px;
+    display: flex;
+    justify-content: center;
+}
+.combinedClasses2 .rdp-day_selected{
+    background-color: blue;
+    border-radius: 0 ;
+}
+
+.combinedClasses2 .rdp-button_reset {
+    margin: 2px  6px ;
+}
+.combinedClasses-custom2  .rdp-caption{
+    padding-top: 10px;
 }

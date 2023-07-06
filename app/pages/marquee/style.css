@@ -1,6 +1,6 @@
 .customClasses .rdp-month {
-    background-color: #f5f5f5;
-    width: 100%;
+    /* background-color: #f5f5f5; */
+    /* width: 100%; */
     margin-top: -15px;
 }
 
@@ -11,14 +11,54 @@
 }
 
 .customClasses .rdp-button_reset {
-    margin: 5px  40px !important;
+    margin: 3px  8px;
 }
 .customClasses  .rdp-months{
+    /* background-color: #f5f5f5; */
+    margin-top: -5px;
+    padding-left: 10px;
+    padding-right: 05px;
+    border-radius: 8px;
+    margin-left: -18px;
     display: flex;
-    justify-content: center;
+    justify-content: start;
 }
 .customClasses .rdp-caption{
     padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 10px;
+    /* padding-right: 10px; */
+    padding-top: 20px;
+}
+
+
+
+
+.customClasses2 .rdp-month {
+    /* background-color: #f5f5f5; */
+    /* width: 100%; */
+    margin-top: -15px;
+}
+
+.customClasses2 .rdp-day_selected{
+    background-color: blue ;
+    padding: 15px;
+    border-radius: 0 !important;
+}
+
+.customClasses2 .rdp-button_reset {
+    margin: 3px  8px;
+}
+.customClasses2  .rdp-months{
+    /* background-color: #f5f5f5; */
+    margin-top: -5px;
+    padding-left: 10px;
+    padding-right: 05px;
+    border-radius: 8px;
+    margin-left: -18px;
+    display: flex;
+    justify-content: start;
+}
+.customClasses2 .rdp-caption{
+    padding-left: 10px;
+    /* padding-right: 10px; */
+    padding-top: 20px;
 }

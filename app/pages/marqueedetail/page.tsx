@@ -13,13 +13,13 @@ import "react-image-lightbox/style.css";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { BookedLunch, BookedDinner } from "./data";
-import classNames from "classnames";
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import "./style.css";
 function Marqueedetail() {
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [booked, setBooked] = useState<any>(null);
+  const [isLunch, setIsLunch] = useState<any>();
   const [days, setDays] = useState<any>([]);
   const [selectedOption, setSelectedOption] = useState("");
 
@@ -43,21 +43,17 @@ function Marqueedetail() {
     const selectedValue = event.target.value;
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
-      setDays(BookedLunch)
-      console.log(booked, "abc");
+      setDays(BookedLunch);
+      setIsLunch('Lunch');
     } else if (selectedValue == "Dinner") {
-      setDays(BookedDinner)
-      console.log(booked, "abcd");
+      setDays(BookedDinner);
+      setIsLunch('Dinner');
     }
   };
 
-//   useEffect(()=>{
-//     const asd = new Date()
-//     console.log("asd------", asd)
-// setDays(BookedLunch)
-//   }, [])
-  console.log(days,"days");
   
+
+
   return (
     <div>
       <Navbar />
@@ -294,19 +290,19 @@ function Marqueedetail() {
         </div>
         <div className="lg:w-[30%] ml-5">
           <div className="-ml-6 lg:ml-0">
-            <div className="w-full outline-none">
-              <select onClick={handleCheck} className="w-[95%] p-2 rounded-md">
-                <option>Choose Here</option>
-                <option>Lunch</option>
-                <option>Dinner</option>
+            <div className="w-full  relative">
+              <select onClick={handleCheck} className="w-[96%] outline-none p-2 rounded-md pl-2 appearance-none">
+                <option >Choose Here</option>
+                <option >Lunch</option>
+                <option >Dinner</option>
               </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center  text-gray-700">
+              <FontAwesomeIcon icon={faAngleDown} className="pr-8"/>
+              </div>
             </div>
             <div>
               <DayPicker
-                className={`combinedClasses-custom`}
-                // style={{
-                //   backgroundColor: isLunch ? "red" : 'yellow'
-                // }}
+                className={`${isLunch == `Lunch`? `combinedClasses` : `combinedClasses2`}`}
                 mode="multiple"
                 min={1}
                 selected={days}
