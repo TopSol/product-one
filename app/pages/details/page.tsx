@@ -38,7 +38,7 @@ function Slider() {
     try {
       await addDoc(collection(db, "ContactUs"), users);
     } catch {
-      console.log("error");
+      console.log(" error");
     }
   };
   return (
@@ -46,21 +46,20 @@ function Slider() {
       <Navbar />
       <div className="mt-28">
         <div className="flex justify-center mb-6">
-          {steps.map((item, index) => (
-            <div key={item.title} className="flex items-center">
-              
-              <div
-                className={`flex justify-center items-center w-12 h-12 rounded-full ${
+          {
+            steps.map((item, index)=>(
+              <div key={item.title} className="flex items-center">
+                <div onClick={()=>setSlider(index)} className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
                   slider >= index ? "bg-blue-500" : "bg-slate-300"
-                } text-white`}
-              >
+                } text-white`}>
                 {index + 1}
-              </div>
-              {index !== steps.length - 1 && (
-                <div className="w-28 border-b-8 border-slate-300"></div>
+                </div>
+                {index !== steps.length - 1 && (
+                <div className="w-12 md:w-28 border-b-8 border-slate-300"></div>
               )}
-            </div>
-          ))}
+              </div>
+            ))
+          }
         </div>
 
         {slider === 0 ? (

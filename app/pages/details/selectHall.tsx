@@ -26,7 +26,7 @@ function MarqueeAvailability({ setSlider,setSelectedHall }) {
     <div className="md:container mx-auto ">
       <div className="flex justify-center">
         <div className="border p-5 rounded-md mb-2 w-3/4 ">
-          <div className="flex justify-around items-center bg-primaryColor py-2.5 rounded-md mb-4  ">
+          <div className="hidden md:flex justify-around items-center bg-primaryColor py-2.5 rounded-md mb-4">
             <p className="w-56 text-center text-xl ">Images</p>
             <p className="w-29 text-center text-xl ">Venue Details</p>
             <p className="w-28 text-center text-xl ">Availability</p>
@@ -35,14 +35,14 @@ function MarqueeAvailability({ setSlider,setSelectedHall }) {
             {data.map((item, index) => ( 
               <div
                 key={index}
-                className="flex justify-around  items-center pb-2 "
-              >
-                <div className=" border rounded-md  ">
+                className="flex flex-col justify-center  md:flex md:flex-row md:justify-around md:items-center pb-2 border  rounded-md mb-3 md:border-none "
+               >
+                <div className=" md:border md:rounded-md  ">
                   <div onClick={() => handleImageModal(index)}>
                     <img
                       src={item.image}
                       alt=""
-                      className=" w-[200px] h-[175px] rounded-t-md  cursor-pointer object-cover "
+                      className=" md:w-[200px] md:h-[175px] rounded-t-md  cursor-pointer object-cover "
                     />
                   </div>
                   <div className="px-2 items-center text-center py-3">
@@ -50,19 +50,17 @@ function MarqueeAvailability({ setSlider,setSelectedHall }) {
                     <p> $ {item.price}</p>
                   </div>
                 </div>
-                <div className="-mt-5">
-                  <p>Siting Capacity</p>
+                <div className=" flex flex-col justify-center mx-auto md:-mt-5 md:flex md:flex-col md:justify-center ">
+                  <p className="">Siting Capacity</p>
                   <p className="text-center border p-3 w-28 bg-slate-300 rounded-md">{item.capacity}</p>
                 </div>
-                <div
-                  className={`border p-3 rounded-md w-28 ${
+                <div className={` border p-3 rounded-md w-28 text-center mt-3  md:mt-0 flex justify-center mx-auto md:block  ${
                     clickedIndex === index ? "bg-red-500" : "bg-primaryColor"
                   }`}
-                  onClick={() => handleClick(item,index)}
-                >
-                  <p className="text-center cursor-pointer">
-                    {item.availability}
-                  </p>
+                  onClick={() => handleClick(item,index)}>
+                 <p>
+                 {item.availability}
+                  </p> 
                 </div>
               </div>
             ))}
