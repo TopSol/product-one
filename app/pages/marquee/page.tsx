@@ -9,7 +9,7 @@ import { Data } from "./data";
 import { useRouter } from "next/navigation";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { BookedDinner,BookedLunch } from "../marqueedetail/data";
+import { BookedDinner, BookedLunch } from "../marqueedetail/data";
 import "./style.css";
 function Marquee() {
   const [sliderValue, setSliderValue] = useState("");
@@ -28,19 +28,19 @@ function Marquee() {
       [id]: !prevState[id],
     }));
   };
-  const handleCheck = (event)=>{
+  const handleCheck = (event) => {
     console.log(event, "event");
-    
-    const selectedValue = event?.target?.value || event
+
+    const selectedValue = event?.target?.value || event;
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
       setDays(BookedLunch);
-      setIsLunch('Lunch')
+      setIsLunch("Lunch");
     } else if (selectedValue == "Dinner") {
       setDays(BookedDinner);
-      setIsLunch('Dinner')
+      setIsLunch("Dinner");
     }
-  }
+  };
   return (
     <div>
       <Navbar />
@@ -203,10 +203,12 @@ function Marquee() {
                   </div>
                 </div>
               </div>
-              <div className="w-[100%] rounded-md mt-3  flex bg-[#f5f5f5]">
+              <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
                 {open[item.id] && (
                   <DayPicker
-                    className={`${isLunch == `Lunch` ?`customClasses` :`customClasses2`}`}
+                    className={`${
+                      isLunch == `Lunch` ? `customClasses` : `customClasses2`
+                    }`}
                     style={{ width: "100%" }}
                     mode="multiple"
                     min={1}
@@ -215,47 +217,57 @@ function Marquee() {
                   />
                 )}
 
-                { open[item.id] &&(
-                <div className="pr-10 pt-8">
-                  
-              
-                  <div className="flex items-center">
-                    <input onClick={()=>handleCheck('Lunch')}
-                      checked
-                      id="default-radio-2"
-                      type="radio"
-                      value=""
-                      name="default-radio"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label  
-                      htmlFor="default-radio-2"
-                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      Lunch
-                    </label>
+                {open[item.id] && (
+                  <div className="w-full  pt-8">
+                    <div className="w-full mb-3">
+                      <h1 className="text-xl flex items-center w-full font-vollkorn ">
+                        Meal Selection
+                      </h1>
+                      <p className="my-3">
+                      Choose your preferred mealtime option.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center mb-4">
+                      <input
+                        onClick={() => handleCheck("Lunch")}
+                        checked
+                        id="default-radio-2"
+                        type="radio"
+                        value=""
+                        name="default-radio"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="default-radio-2"
+                        className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                      >
+                        Lunch
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        onClick={() => handleCheck("Dinner")}
+                        id="default-radio-3"
+                        type="radio"
+                        value=""
+                        name="default-radio"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="default-radio-3"
+                        className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                      >
+                        Dinner
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-3 font-roboto mt-5">
+                        <div className="bg-[orange] h-3 w-3 rounded-full"></div>
+                        <p>Lunch</p>
+                        <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
+                        <p>Dinner</p>
+                      </div>
                   </div>
-                  <div className="flex items-center">
-                    <input onClick={()=>handleCheck('Dinner')}
-                      id="default-radio-3"
-                      type="radio"
-                      value=""
-                      name="default-radio"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label  
-                      htmlFor="default-radio-3"
-                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      Dinner
-                    </label>
-                  </div>
-                </div>
-              //   <select onClick={handleCheck}>
-              //   <option >Choose Here</option>
-              //   <option >Lunch</option>
-              //   <option >Dinner</option>
-              // </select>
                 )}
               </div>
             </div>
