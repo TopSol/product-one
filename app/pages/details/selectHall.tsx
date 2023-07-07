@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import data from "./data";
 import ImageLightbox from "react-image-lightbox";
-function MarqueeAvailability({ setSlider,setSelectedHall }) {
+function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
   const [clickedIndex, setClickedIndex] = useState(null);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [selectImage, setSelectImage] = useState("");
@@ -20,7 +20,7 @@ function MarqueeAvailability({ setSlider,setSelectedHall }) {
     setIsOpen(false);
   };
   const nextPage = () => {
-    setSlider(1);
+  setSlider(1);
   };
   return (
     <div className="md:container mx-auto ">

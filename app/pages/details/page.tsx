@@ -41,6 +41,7 @@ function Slider() {
       console.log(" error");
     }
   };
+  console.log(selectedMenu ,"dddselectedMendddu",selectedHall)
   return (
     <div>
       <Navbar />
@@ -66,6 +67,7 @@ function Slider() {
           <MarqueeAvailability
             setSlider={setSlider}
             setSelectedHall={setSelectedHall}
+            selectedHall={selectedHall}
           />
         ) : slider === 1 ? (
           <UserInformation
@@ -79,6 +81,7 @@ function Slider() {
             setSlider={setSlider}
             setSelectedMenu={setSelectedMenu}
             sendData={sendData}
+            selectedMenu={selectedMenu}
           />
         ) : slider == 3 ? (
           <Preview hallInformation={hallInformation}/>

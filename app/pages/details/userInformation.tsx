@@ -9,7 +9,12 @@ const initialFormState = {
   notes: "",
   PhoneNumber: "",
 };
-function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformation }) {
+function UserInformation({
+  setSlider,
+  selectedHall,
+  selectedMenu,
+  setUserInformation,
+}) {
   const [user, setUser] = useState(initialFormState);
   const [inputs, setInputs] = useState({
     Heating: false,
@@ -60,7 +65,7 @@ function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformati
   //   }
   // };
   const nextPage = () => {
-      const users = {
+    const users = {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -111,30 +116,6 @@ function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformati
                 className="border  rounded-md outline-none"
               />
             </div>
-
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              <label className="text-xl">Address:</label>
-              <input
-                type="address"
-                name="address"
-                value={user.address}
-                onChange={handleChange}
-                className="border  rounded-md outline-none"
-              />
-            </div>
-          </div>
-          <div className="md:flex md:justify-between  ">
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              <label className="text-xl">Notes:</label>
-              <input
-                type="notes"
-                name="notes"
-                value={user.notes}
-                onChange={handleChange}
-                className="border  rounded-md outline-none"
-              />
-            </div>
-
             <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
               <label className="text-xl">Phone:</label>
               <input
@@ -143,6 +124,28 @@ function UserInformation({ setSlider, selectedHall,selectedMenu,setUserInformati
                 value={user.PhoneNumber}
                 onChange={handleChange}
                 className="border rounded-md outline-none"
+              />
+            </div>
+          </div>
+          <div className="md:flex md:justify-between  ">
+            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+              <label className="text-xl">Notes:</label>
+              <textarea
+                name="notes"
+                value={user.notes}
+                onChange={handleChange}
+                className="border rounded-md outline-none"
+              />
+            </div>
+
+            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+              <label className="text-xl">Address:</label>
+              <textarea
+                // type="address"
+                name="address"
+                value={user.address}
+                onChange={handleChange}
+                className="border  rounded-md outline-none"
               />
             </div>
           </div>
