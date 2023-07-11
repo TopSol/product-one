@@ -1,13 +1,16 @@
 "use client";
 import React, { use, useState } from "react";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import Link from "next/link";
 import { auth } from "@/app/firebase";
+import { useRouter } from 'next/navigation'
 const initialFormState = {
   email: "",
   password: "",
 };
 function Login() {
   const [user, setUser] = useState(initialFormState);
+  const router = useRouter()
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -15,19 +18,20 @@ function Login() {
       [name]: value,
     }));
   };
-  // const auth = getAuth();
-  const handleLogin = () =>{
-   const users= createUserWithEmailAndPassword(auth, user.email, user.password)
+  const handleLogin = (e) =>{
+    e.preventDefault()
+   const users=  signInWithEmailAndPassword(auth, user.email, user.password)
     .then((userCredential) => {
-      // Signed in
       const user = userCredential.user;
-      console.log(user, "userdd44222",users);
-      // ...
+       if(user){
+        e.preventDefault()
+    router.push("/pages/admainMarqueeDetails")
+        }
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // ..
+      alert("Email or password is incorrect")
     });
   }
   
@@ -56,7 +60,9 @@ function Login() {
             className="border rounded-md outline-none pl-3 py-2"
           />
         </div>
-        <button className="border rounded-md py-2 cursor-pointer" onClick={()=>handleLogin()}> Login</button>
+        
+      {/* <Link href="/pages/admainMarqueeDetails"><button className="border rounded-md py-2 cursor-pointer" onClick={()=>handleLogin()}> Login</button></Link> */}
+      <button className="border rounded-md py-2 cursor-pointer" onClick={(e)=>handleLogin(e)}> Login</button>
       </div>
     </div>
   );
