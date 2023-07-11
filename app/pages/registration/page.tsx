@@ -8,7 +8,12 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; 
+import Modal from "@/app/component/Modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { divIcon } from "leaflet";
+import { renderToStaticMarkup } from "react-dom/server";
 const initialValue = {
   name: "",
   email: "",
@@ -25,6 +30,16 @@ function details() {
     lat: 55.702868,
     lng: 37.530865,
   });
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const handleChange = (e) => {
@@ -67,6 +82,7 @@ function details() {
   );
   console.log(markerPos, "umar");
   const handleRegistration = async (e) => {
+    openModal();
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -90,7 +106,7 @@ function details() {
 
       await addDoc(collection(db, "users"), userInfo);
       if (userInfo) {
-        console.log("user created")
+        console.log("user created");
         e.preventDefault();
         router.push("/pages/auth");
       }
@@ -101,7 +117,16 @@ function details() {
       // console.log(errorCode, errorMessage);
     }
   };
+  const iconMarkup = renderToStaticMarkup(
+    <FontAwesomeIcon icon={faLocationDot} className="text-3xl text-red-600"/>
+  );
+  const customMarkerIcon = divIcon({
+    html: iconMarkup,
+    className: 'custom-marker-icon',
+    iconSize: [40, 40],
+  });
 
+  
   return (
     <div>
       <Navbar />
@@ -203,33 +228,36 @@ function details() {
           </div>
         </div>
       </div>
-
-      {isOpen ? (
-        <div>
-          <MapContainer
-            center={position}
-            zoom={20}
-            scrollWheelZoom={false}
-            style={{ height: "400px", width: "100%" }}
-            whenCreated={setMap}
+      <Modal isOpen={modalOpen} onClose={closeModal}>
+        {/* <div> */}
+        <MapContainer
+          center={position}
+          zoom={20}
+          scrollWheelZoom={false}
+          style={{ height: "750px", width: "100%" }}
+          whenCreated={setMap}
+        >
+          <TileLayer
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <Marker
+            position={position}
+            draggable={true}
+            eventHandlers={updatePosition}
+            ref={markerRef}
+            icon={customMarkerIcon}
           >
-            <TileLayer
-              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker
-              position={position}
-              draggable={true}
-              eventHandlers={updatePosition}
-              ref={markerRef}
-            >
-              <Popup>
-                A pretty CSS3 popup. <br /> Easily customizable.
-              </Popup>
-            </Marker>
-          </MapContainer>
-        </div>
-      ) : null}
+            <Popup>
+              A pretty CSS3 popup. <br /> Easily customizable.
+            </Popup>
+          </Marker>
+        </MapContainer>
+        {/* </div> */}
+      </Modal>
+      {/* {isOpen ? ( */}
+
+      {/* ) : null} */}
     </div>
   );
 }
