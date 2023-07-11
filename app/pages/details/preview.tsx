@@ -4,18 +4,20 @@ import { db } from "@/app/firebase";
 function Preview({ hallInformation }) {
   console.log(JSON.stringify(hallInformation), "ddr");
   const [blogs, setBlogs] = useState([]);
-  // const fetchBlogs = async () => {
-  //   try {
-  //     const response = await getDocs(collection(db, "ContactUs"));
-  //     const tempArray = response.docs.map((doc) => doc.data());
-  //     setBlogs(tempArray);
-  //   } catch (error) {
-  //     console.error("Error fetching blogs:", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchBlogs();
-  // }, []);
+  const fetchBlogs = async () => {
+    try {
+      const response = await getDocs(collection(db, "Book Marquee"));
+      const tempArray = response.docs.map((doc) => doc.data());
+      setBlogs(tempArray);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+  };
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+  console.log( JSON.stringify(blogs) , "blogsddddds222ddd444");  
+  // console.log(blogs[0].selectHall?.capacity , "wwwblogsssqqqsddddds222ddd");  
   const nextPage = () => {
     // sendData();
   };

@@ -107,7 +107,8 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu }) {
               <ul>
                 {item?.dish?.map((dish, index) => {
                   if (index < 3) {
-                    return <li key={index}>{dish}</li>;
+                    return <li>{dish}</li>;
+                    // return <li key={index}>{dish}</li>;
                   }
                   return null;
                 })}
@@ -141,7 +142,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu }) {
             className="border py-2 w-48  rounded-md relative"
             onClick={() => setSelectedDish(!selectedDish)}
           >
-            <div className="justify-between flex mx-2 ">
+            <div className="justify-between flex mx-2 "> 
               Select More Dish
               <FontAwesomeIcon icon={faCaretDown} />
             </div>
