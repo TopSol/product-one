@@ -21,6 +21,7 @@ const initialValue = {
   phoneNumber: "",
   password: "",
   capacity: "",
+  address: "",
 };
 const position = [51.505, -0.09];
 
@@ -129,103 +130,105 @@ function details() {
   
   return (
     <div>
-      <Navbar />
-      <div className="mt-28 container  lg:w-[75%] mx-auto px-5 lg:px-0">
-        <h1 className=" my-5 text-3xl font-vollkorn text-textColor flex justify-center items-center mx-auto">
+      <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
+        <h1 className=" lg:hidden ml-10 mb-3 text-2xl font-vollkorn text-textColor items-center">
           Marquee Registration
         </h1>
-        <div className="container  border rounded-md py-10">
-          <form className=" flex flex-col text-start  md:flex md:flex-row justify-evenly items-center md:text-center ">
-            <div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl w-[30%] flex justify-start">
-                  Name:
-                </label>
-                <input
-                  type="name"
-                  name="name"
-                  value={details.name}
-                  onChange={handleChange}
-                  className="border w-[70%] rounded-md outline-none"
-                />
-              </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl w-[30%] flex justify-start">
-                  Email:
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={details.email}
-                  onChange={handleChange}
-                  className="border w-[70%] rounded-md outline-none"
-                />
-              </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label
-                  onClick={() => handlelick()}
-                  className="text-xl w-[30%] flex justify-start cursor-pointer"
-                >
-                  Location:
-                </label>
-                <input
-                  type="loaction"
-                  name="location"
-                  placeholder="Pick your location"
-                  value={details.location}
-                  onChange={handleChange}
-                  className="border w-[70%] rounded-md outline-none"
-                />
-              </div>
+        <div className="relative w-full lg:w-[65%] px-10">
+          <img
+            src="https://images.pexels.com/photos/3887985/pexels-photo-3887985.jpeg?auto=compress&cs=tinysrgb&w=600"
+            className=" lg:absolute inset-0 object-cover w-full h-full "
+          />
+          <div className="absolute  w-full inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-60"></div>
+        </div>
+
+        <div className="w-full lg:w-[35%] px-10  py-3 rounded-md shadow-xl ">
+          <form className="">
+            <h1 className="hidden lg:block mb-5 text-3xl font-vollkorn text-textColor items-center">
+              Marquee Registration
+            </h1>
+            <div className="flex flex-col items-start">
+              <label className="font-roboto">Full Name</label>
+              <input
+                type="name"
+                placeholder="Enter name here..."
+                name="name"
+                value={details.name}
+                onChange={handleChange}
+                className="border-b w-[65%] outline-none  py-2 mb-3"
+              />
             </div>
-            <div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl w-[30%] flex justify-start">
-                  Number:
-                </label>
-                <input
-                  type="phoneNumber"
-                  name="phoneNumber"
-                  value={details.phoneNumber}
-                  onChange={handleChange}
-                  className="border w-[70%] rounded-md outline-none"
-                />
+            <div className="flex flex-col items-start">
+              <label className="font-roboto">Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter email here..."
+                value={details.email}
+                onChange={handleChange}
+                className="border-b w-[65%] outline-none  py-2 mb-3"
+              />
+            </div>
+            <div className="flex flex-col items-start">
+              <label className="font-roboto">Password</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="************"
+                value={details.password}
+                onChange={handleChange}
+                className="border-b w-[65%] outline-none  py-2 mb-3"
+              />
+            </div>
+            <div className="flex flex-col items-start">
+              <label className="font-roboto">PhoneNumber</label>
+              <input
+                type="number"
+                name="phoneNumber"
+                placeholder="Enter phonenumber here..."
+                value={details.phoneNumber}
+                onChange={handleChange}
+                className="border-b w-[65%] outline-none  py-2 mb-3"
+              />
+            </div>
+            <div className="flex flex-col items-start">
+              <label className="font-roboto">Capacity:</label>
+              <input
+                type="number"
+                name="capacity"
+                placeholder="Capacity of sitting..."
+                value={details.capacity}
+                onChange={handleChange}
+                className="border-b w-[65%] outline-none  py-2 mb-3 "
+              />
+            </div>
+            <div className="flex flex-col items-start">
+              <label className="font-roboto">Address:</label>
+              <input
+                type="text"
+                name="address"
+                placeholder="Enter address here..."
+                value={details.address}
+                onChange={handleChange}
+                className="border-b w-[65%] outline-none  py-2 mb-3 "
+              />
+            </div>
+            <div className="flex justify-start w-full ">
+              <div className=" text-center">
+                <button className="flex justify-center border py-2 px-4 lg:px-7 rounded-md bg-primaryColor">
+                  Location
+                </button>
               </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl w-[30%] flex justify-start">
-                  Password:
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={details.password}
-                  onChange={handleChange}
-                  className="border w-[70%] rounded-md outline-none"
-                />
-              </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl w-[30%] flex justify-start">
-                  Capacity:
-                </label>
-                <input
-                  type="phoneNumber"
-                  name="capacity"
-                  value={details.capacity}
-                  onChange={handleChange}
-                  className="border w-[70%] rounded-md outline-none"
-                />
+              <div className=" text-center mx-2">
+                <button
+                  className="flex justify-center border py-2 px-2 lg:px-5 rounded-md bg-primaryColor"
+                  onClick={(e) => handleRegistration(e)}
+                >
+                  Register Now
+                </button>
               </div>
             </div>
           </form>
-
-          <div className="w-full mx-auto flex justify-center items-center">
-            <button
-              className="flex justify-center border py-2 px-7 rounded-md bg-primaryColor"
-              onClick={(e) => handleRegistration(e)}
-            >
-              Register Now
-            </button>
-          </div>
         </div>
       </div>
       <Modal isOpen={modalOpen} onClose={closeModal}>
