@@ -7,12 +7,12 @@ const initialFormState = {
   image: "",
   minCapacity: "",
   maxCapacity: "",
-  availability: "",
+  // availability: "",
   price: "",
 };
 function Venues({modalOpen, setModalOpen}) {
   const [user, setUser] = useState(initialFormState);
-  const [AddVenues,setAddVenues] = useState([])
+  const [addVenues,setAddVenues] = useState([])
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -24,35 +24,56 @@ function Venues({modalOpen, setModalOpen}) {
     setModalOpen(false);
   };
   const HandleAddVenues = () => {
-    setAddVenues([...AddVenues, user]);
+    console.log(user, "user44444");
+    if (
+      !user.name ||
+      !user.image ||
+      !user.minCapacity ||
+      !user.maxCapacity ||
+      // !user.availability ||
+      !user.price
+    ) {
+      return;
+    }
+    setAddVenues([...addVenues, user]);
+    setModalOpen(false);
+    setUser(initialFormState);
   };
-  console.log( "userdfdfdfwwwwss4ss4" ,AddVenues );
+  // console.log( "userdfdfdfwwwwss4ss4" ,addVenues );
   // console.log(user, "userdfdfdfwwww" ,AddVenues);
   return (
     <>
       <div className="md:container mx-auto">
-        <div>
-          <p>{user.name}</p>
-          <p>{user.maxCapacity}</p>
-          <p>{user.minCapacity}</p>
-          <p>{user.minCapacity}</p>
-
-        </div>
-        <div className="flex flex-wrap">
-              {user.image &&
-                Object.values(user.image).map((img, index) => {
-                  return (
-                    <img
-                      src={URL.createObjectURL(img)}
-                      alt=""
-                      key={index}
-                      className="w-[25%]"
-                    />
-                  );
-                })}
-            </div>
+        {
+          addVenues.map((item, index) => {
+            console.log(item, "item333");
+            return (
+              <div key={index} className="border p-5 rounded-md mb-2">
+                <div className="flex justify-between">
+                  <p>{item.name}</p>
+                  <p>{item.minCapacity}</p>
+                  <p>{item.maxCapacity}</p>
+                  <p>{item.availability}</p>
+                  <p>{item.price}</p>
+                </div>
+                <div className="flex flex-wrap">
+                  {item.image &&
+                    Object.values(item.image).map((img, index) => {
+                      return (
+                        <img
+                          src={URL.createObjectURL(img)}
+                          alt=""
+                          key={index}
+                          className="w-[25%]"
+                        />
+                      );
+                    })}
+                </div>
+              </div>
+            );
+          }
+        )}
       </div>
-
       <Modal isOpen={modalOpen} onClose={closeModal}>
       <div className="flex justify-center">
           <div className="border p-5 rounded-md mb-2 w-[100%]  lg:w-[70%] ">

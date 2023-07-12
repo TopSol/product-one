@@ -17,7 +17,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 const initialValue = {
   name: "",
   email: "",
-  location: "",
+  // location: "",
   phoneNumber: "",
   password: "",
   capacity: "",
@@ -33,7 +33,8 @@ function details() {
   });
   const [modalOpen, setModalOpen] = useState(false);
 
-  const openModal = () => {
+  const openModal = (e) => {
+    e.preventDefault();
     setModalOpen(true);
   };
 
@@ -64,9 +65,10 @@ function details() {
   useEffect(() => {
     console.log(`lat diff: ${markerPos.lat}, lng diff: ${markerPos.lng}`);
   }, [markerPos]);
-  const handlelick = () => {
-    setIsOpen(!isOpen);
-  };
+  // const handlelick = () => {
+  //   setIsOpen(!isOpen);
+  // };
+  console.log(details, "umardddd");
   const markerRef = useRef();
   const updatePosition = React.useMemo(
     () => ({
@@ -81,9 +83,10 @@ function details() {
     }),
     []
   );
-  console.log(markerPos, "umar");
+ 
   const handleRegistration = async (e) => {
-    openModal();
+    console.log(details, "umarww");
+    e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -97,7 +100,7 @@ function details() {
         id: user.uid,
         name: details.name,
         email: details.email,
-        // location: details.location,
+        address: details.address,
         phoneNumber: details.phoneNumber,
         // password: details.password,
         capacity: details.capacity,
@@ -215,14 +218,14 @@ function details() {
             </div>
             <div className="flex justify-start w-full ">
               <div className=" text-center">
-                <button className="flex justify-center border py-2 px-4 lg:px-7 rounded-md bg-primaryColor">
+                <button className="flex justify-center border py-2 px-4 lg:px-7 rounded-md bg-primaryColor"  onClick={(e)=>openModal(e)}>
                   Location
                 </button>
               </div>
               <div className=" text-center mx-2">
                 <button
                   className="flex justify-center border py-2 px-2 lg:px-5 rounded-md bg-primaryColor"
-                  onClick={(e) => handleRegistration(e)}
+                 onClick={(e) => handleRegistration(e)}
                 >
                   Register Now
                 </button>

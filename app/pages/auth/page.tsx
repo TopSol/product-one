@@ -58,7 +58,7 @@ function Login() {
             <input
               type="email"
               placeholder="Enter email here..."
-              name="name"
+              name="email"
               value={user.email}
               onChange={handleChange}
               className="border-b w-[65%] outline-none  py-2 mb-3"
