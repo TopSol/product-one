@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import Modal from "@/app/component/Modal";
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import { db } from "@/app/firebase";
+import {useStore} from "../../../store"
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { add } from "date-fns/esm";
 import { set } from "date-fns";
 const initialFormState = {
@@ -13,6 +17,9 @@ const initialFormState = {
 function Venues({modalOpen, setModalOpen}) {
   const [user, setUser] = useState(initialFormState);
   const [addVenues,setAddVenues] = useState([])
+  const[addVenuesImage,setAddVenuesImage] = useState([])
+  const {userInformation,addUser} = useStore()
+  const storage = getStorage();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -23,21 +30,50 @@ function Venues({modalOpen, setModalOpen}) {
   const closeModal = () => {
     setModalOpen(false);
   };
-  const HandleAddVenues = () => {
+  const handleUpload = async (img) => {
+    const storageRef = ref(storage, "images/" + img.name);
+    await uploadBytes(storageRef, img);
+    
+    // Get the download URL for the uploaded image
+    const downloadURL = await getDownloadURL(storageRef);
+    
+    // Use the downloadURL for further processing or storing in Firebase Firestore
+    console.log(downloadURL,"downloadURL");
+  };
+  
+  const HandleAddVenues = async () => {
+    
     console.log(user, "user44444");
     if (
       !user.name ||
       !user.image ||
       !user.minCapacity ||
       !user.maxCapacity ||
+      // !user.availability ||
       !user.price
     ) {
       return;
     }
+    const users = {
+      name: user.name,
+      // image: user.image,
+      minCapacity: user.minCapacity,
+      maxCapacity: user.maxCapacity,
+      userId:userInformation.userId,
+      // availability: user.availability,
+      price: user.price,
+    };
+    try {
+      await addDoc(collection(db, "Venues"), users);
+    } catch {
+      console.log(" error");
+    }
     setAddVenues([...addVenues, user]);
-    setModalOpen(false);
-    setUser(initialFormState);
+    // setModalOpen(false);
+    // setUser(initialFormState);
   };
+  // console.log( "userdfdfdfwwwwss4ss4" ,addVenues );
+  // console.log(user, "userdfdfdfwwww" ,AddVenues);
   return (
     <>
       <div className="md:container mx-auto">
@@ -56,6 +92,16 @@ function Venues({modalOpen, setModalOpen}) {
                 <div className="flex flex-wrap">
                   {item.image &&
                     Object.values(item.image).map((img, index) => {
+                      const imageUrl = URL.createObjectURL(img);
+                      console.log(imageUrl, "img1a22211");
+                
+                      // Call the handleUpload function to upload the image
+                      handleUpload(img);
+                      // const imageUrl = URL.createObjectURL(img);
+                      // console.log(imageUrl, "img1a22211");
+                      // setAddVenuesImage((prevImages) => [...prevImages, imageUrl]);
+                      
+                      // console.log(URL.createObjectURL(img), "img1a22211");
                       return (
                         <img
                           src={URL.createObjectURL(img)}

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Modal from "@/app/component/Modal";
+// import {useStore} from "";
+// import {useStore} from "../../../store"
 import { add } from "date-fns";
 const initialFormState = {
   name: "",
@@ -12,6 +14,7 @@ const initialFormState = {
   // category: "",
 };
 function Menus({ modalOpen, setModalOpen }) {
+  // const {userInformation,addUser} = useStore()
   const [user, setUser] = useState(initialFormState);
   const [addVenues,setAddVenues] = useState([])
   const handleChange = (e) => {
@@ -21,10 +24,13 @@ function Menus({ modalOpen, setModalOpen }) {
       [name]: value,
     }));
   };
+  
   const closeModal = () => {
     setModalOpen(false);
   };
   const HandleAddVenues = () => {
+    // addUser(user)
+    console.log(userInformation,"userInformationass")
     console.log(user, "user44444666");
     if (
       !user.name ||

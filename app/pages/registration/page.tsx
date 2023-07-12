@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { divIcon } from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
+import {useStore} from "../../../store"
 const initialValue = {
   name: "",
   email: "",
@@ -26,6 +27,7 @@ const position = [51.505, -0.09];
 
 function details() {
   const [details, setDetails] = useState(initialValue);
+  const {userInformation,addUser} = useStore()
   const [markerPos, setMarkerPos] = useState({
     lat: 55.702868,
     lng: 37.530865,
@@ -89,7 +91,7 @@ function details() {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        details.email,
+        details.email, 
         details.password
       );
       const user = userCredential.user;
@@ -106,11 +108,13 @@ function details() {
         lat: markerPos.lat,
         lng: markerPos.lng,
       };
-
+      
       await addDoc(collection(db, "users"), userInfo);
       if (userInfo) {
         console.log("user created");
         e.preventDefault();
+        addUser(user.uid)
+        
         router.push("/pages/auth");
       }
     } catch (error) {
@@ -128,7 +132,8 @@ function details() {
     className: 'custom-marker-icon',
     iconSize: [40, 40],
   });
-
+  console.log(userInformation,"wwwsss")
+// console.log(userInformation,"www")
   
   return (
     <div>
