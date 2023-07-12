@@ -30,7 +30,6 @@ function Venues({modalOpen, setModalOpen}) {
       !user.image ||
       !user.minCapacity ||
       !user.maxCapacity ||
-      // !user.availability ||
       !user.price
     ) {
       return;
@@ -39,8 +38,6 @@ function Venues({modalOpen, setModalOpen}) {
     setModalOpen(false);
     setUser(initialFormState);
   };
-  // console.log( "userdfdfdfwwwwss4ss4" ,addVenues );
-  // console.log(user, "userdfdfdfwwww" ,AddVenues);
   return (
     <>
       <div className="md:container mx-auto">

@@ -17,7 +17,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 const initialValue = {
   name: "",
   email: "",
-  // location: "",
   phoneNumber: "",
   password: "",
   capacity: "",
@@ -145,11 +144,14 @@ function details() {
           <div className="absolute  w-full inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-60"></div>
         </div>
 
-        <div className="w-full lg:w-[35%] px-10  py-3 rounded-md shadow-xl ">
-          <form className="">
+        <div className="w-full lg:w-[35%] px-10  py-3 2xl:justify-around rounded-md shadow-xl h-[100vh]  flex-col flex justify-between">
+         
             <h1 className="hidden lg:block mb-5 text-3xl font-vollkorn text-textColor items-center">
               Marquee Registration
             </h1>
+            <div className="flex flex-col justify-between h-[80vh] 2xl:h-[50vh]">
+
+           
             <div className="flex flex-col items-start">
               <label className="font-roboto">Full Name</label>
               <input
@@ -216,6 +218,8 @@ function details() {
                 className="border-b w-[65%] outline-none  py-2 mb-3 "
               />
             </div>
+           
+            </div>
             <div className="flex justify-start w-full ">
               <div className=" text-center">
                 <button className="flex justify-center border py-2 px-4 lg:px-7 rounded-md bg-primaryColor"  onClick={(e)=>openModal(e)}>
@@ -224,14 +228,13 @@ function details() {
               </div>
               <div className=" text-center mx-2">
                 <button
-                  className="flex justify-center border py-2 px-2 lg:px-5 rounded-md bg-primaryColor"
+                  className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
                  onClick={(e) => handleRegistration(e)}
                 >
                   Register Now
                 </button>
               </div>
             </div>
-          </form>
         </div>
       </div>
       <Modal isOpen={modalOpen} onClose={closeModal}>

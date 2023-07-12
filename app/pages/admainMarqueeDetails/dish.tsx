@@ -5,15 +5,17 @@ import {
   faCirclePlus,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import Modal from "@/app/component/Modal";
 const initialFormState = {
   name: "",
   price: "",
   dishes: [],
 };
-function Dish() {
+function Dish({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
   const [selectedDish, setSelectedDish] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [addVenues,setAddVenues] = useState([])
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
     "Chicken",
@@ -21,7 +23,7 @@ function Dish() {
   ]);
   const handleItemClick = (item) => {
     const lowercaseItem = item.toLowerCase();
-
+ 
     if (
       selectedItems.some(
         (selectedItem) => selectedItem.toLowerCase() === lowercaseItem
@@ -54,8 +56,48 @@ function Dish() {
       [name]: value,
     }));
   };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+  const HandleAddVenues = () => {
+    console.log(user, "user44444666");
+    if (
+      !user.name ||
+      !user.price ||
+      !user.dishes 
+      ) {
+      return;
+    }
+    setAddVenues([...addVenues, user]);
+    setModalOpen(false);
+    setUser(initialFormState);
+  };
   return (
     <div className="md:container mx-auto">
+      {
+  addVenues.map((item, index) => {
+    console.log(item, "item333");
+    return (
+      <div key={index} className="border p-5 rounded-md mb-2">
+        <div className="flex justify-between flex-wrap">
+          <p>{item.name}</p>
+          <p>{item.price}</p>
+          <div className="flex flex-col">
+
+          {
+            item.dishes.map((dish, dishIndex) => {
+              return (
+                <p key={dishIndex}>{dish}</p>
+                );
+              })
+            }
+            </div>
+        </div>
+      </div>
+    );
+  })
+}
+      <Modal isOpen={modalOpen} onClose={closeModal}>
       <div className="flex justify-center">
         <div className="border p-5 rounded-md mb-2 w-[100%]  lg:w-[70%] ">
           <div className="md:flex md:justify-between">
@@ -109,8 +151,12 @@ function Dish() {
               </div>
             )}
           </div>
+          <div>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={()=>HandleAddVenues()}>Add Venues</button>
+            </div>
         </div>
       </div>
+      </Modal>
     </div>
   );
 }

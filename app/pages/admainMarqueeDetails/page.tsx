@@ -43,11 +43,11 @@ function AdminMarqueeDetails() {
                   Add venues
                 </button>
               ) : component === "menu" ? (
-                <button className="border rounded-md px-3 py-3 m-2">
+                <button className="border rounded-md px-3 py-3 m-2"  onClick={()=>openModal()}>
                   Add Menu
                 </button>
               ) : component === "dish" ? (
-                <button className="border rounded-md px-3 py-3 m-2">
+                <button className="border rounded-md px-3 py-3 m-2" onClick={()=>openModal()}>
                   Add Dish
                 </button>
               ) : null}
@@ -56,9 +56,9 @@ function AdminMarqueeDetails() {
               {component === "Venues" ? (
                 <Venues modalOpen={modalOpen} setModalOpen={setModalOpen}/>
               ) : component === "menu" ? (
-                <Menus />
+                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen}/>
               ) : component === "dish" ? (
-                <Dish />
+                <Dish modalOpen={modalOpen} setModalOpen={setModalOpen}/>
               ) : null}
             </div>
           </div>
