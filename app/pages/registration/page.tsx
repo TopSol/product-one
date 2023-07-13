@@ -51,7 +51,7 @@ function details() {
       ...prevState,
       [name]: value,
     }));
-    console.log(details, "details");
+   
   };
   const [map, setMap] = useState(null);
 
@@ -86,7 +86,8 @@ function details() {
   );
  
   const handleRegistration = async (e) => {
-    console.log(details, "umarww");
+    // console.log(details, "umarww");
+    console.log(details, "details222");
     e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -95,7 +96,7 @@ function details() {
         details.password
       );
       const user = userCredential.user;
-      console.log(user, "userdd44222", user);
+      console.log(user, "userdd44222", user.uid);
 
       const userInfo = {
         id: user.uid,
@@ -114,7 +115,7 @@ function details() {
         console.log("user created");
         e.preventDefault();
         addUser(user.uid)
-        
+
         router.push("/pages/auth");
       }
     } catch (error) {

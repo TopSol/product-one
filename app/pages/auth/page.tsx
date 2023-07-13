@@ -4,6 +4,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 import { auth } from "@/app/firebase";
 import { useRouter } from "next/navigation";
+import {useStore} from "../../../store"
 const initialFormState = {
   email: "",
   password: "",
@@ -11,6 +12,7 @@ const initialFormState = {
 function Login() {
   const [user, setUser] = useState(initialFormState);
   const router = useRouter();
+  const {userInformation,addUser} = useStore()
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -23,8 +25,11 @@ function Login() {
     const users = signInWithEmailAndPassword(auth, user.email, user.password)
       .then((userCredential) => {
         const user = userCredential.user;
+        console.log(user, "signin",user.uid);
         if (user) {
           e.preventDefault();
+          addUser(user.uid)
+          console.log(userInformation,"userInformation")
           router.push("/pages/admainMarqueeDetails");
         }
       })

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Modal from "@/app/component/Modal";
-// import {useStore} from "";
-// import {useStore} from "../../../store"
+import { db } from "@/app/firebase";
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import {useStore} from "../../../store"
 import { add } from "date-fns";
 const initialFormState = {
   name: "",
@@ -14,7 +15,7 @@ const initialFormState = {
   // category: "",
 };
 function Menus({ modalOpen, setModalOpen }) {
-  // const {userInformation,addUser} = useStore()
+  const {userInformation,addUser} = useStore()
   const [user, setUser] = useState(initialFormState);
   const [addVenues,setAddVenues] = useState([])
   const handleChange = (e) => {
@@ -28,10 +29,10 @@ function Menus({ modalOpen, setModalOpen }) {
   const closeModal = () => {
     setModalOpen(false);
   };
-  const HandleAddVenues = () => {
+  const HandleAddVenues =async () => {
     // addUser(user)
-    console.log(userInformation,"userInformationass")
-    console.log(user, "user44444666");
+    console.log(userInformation,"userInformationasrrs")
+    // console.log(user, "user44444666");
     if (
       !user.name ||
       !user.image ||
@@ -44,6 +45,25 @@ function Menus({ modalOpen, setModalOpen }) {
     ) {
       return;
     }
+    const users = {
+      name: user.name,
+      // image: user.image,
+      type: user.type,
+      marqueeId: user.marqueeId,
+      availability: user.availability,
+      description: user.description,
+      // category: user.category,
+      userId:userInformation.userId,
+      price: user.price,
+    };
+    try {
+      await addDoc(collection(db, "Menus"), users);
+    } catch(error) {
+      console.log(error,"error");
+      // const errorCode = error.code;
+      // const errorMessage = error.message;
+      // console.log(errorCode, errorMessage,"erererr");
+    }
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
     setUser(initialFormState);
@@ -52,7 +72,7 @@ function Menus({ modalOpen, setModalOpen }) {
     <div className="md:container mx-auto">
       {
         addVenues.map((item, index) => {
-          console.log(item, "item333");
+          // console.log(item, "item333");
           return (
             <div key={index} className="border p-5 rounded-md mb-2">
               <div className="flex justify-between flex-wrap">

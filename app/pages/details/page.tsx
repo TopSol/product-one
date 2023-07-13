@@ -22,7 +22,7 @@ const steps = [
   },
 ];
 
-function Slider() {
+function Slider() { 
   const [slider, setSlider] = useState(0);
   const [selectedHall, setSelectedHall] = useState("");
   const [selectedMenu, setSelectedMenu] = useState("");

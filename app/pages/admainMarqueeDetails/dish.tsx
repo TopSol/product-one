@@ -6,6 +6,9 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Modal from "@/app/component/Modal";
+import { db } from "@/app/firebase";
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import {useStore} from "../../../store"
 const initialFormState = {
   name: "",
   price: "",
@@ -16,6 +19,7 @@ function Dish({ modalOpen, setModalOpen }) {
   const [selectedDish, setSelectedDish] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [addVenues,setAddVenues] = useState([])
+  const {userInformation,addUser} = useStore()
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
     "Chicken",
@@ -59,7 +63,7 @@ function Dish({ modalOpen, setModalOpen }) {
   const closeModal = () => {
     setModalOpen(false);
   };
-  const HandleAddVenues = () => {
+  const HandleAddVenues =async () => {
     console.log(user, "user44444666");
     if (
       !user.name ||
@@ -67,6 +71,21 @@ function Dish({ modalOpen, setModalOpen }) {
       !user.dishes 
       ) {
       return;
+    }
+    const users = {
+      name: user.name,
+      userId:userInformation.userId,
+      price: user.price,
+      dishes: user.dishes,
+
+    };
+    try {
+      await addDoc(collection(db, "Dish"), users);
+    } catch(error) {
+      console.log(error,"error");
+      // const errorCode = error.code;
+      // const errorMessage = error.message;
+      // console.log(errorCode, errorMessage,"erererr");
     }
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
