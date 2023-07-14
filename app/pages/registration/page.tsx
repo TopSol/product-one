@@ -1,20 +1,24 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import * as React from "react";
-import Navbar from "@/app/component/Navbar";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet-geosearch/dist/geosearch.css";
+import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Modal from "@/app/component/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { divIcon } from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
-import {useStore} from "../../../store"
+import { useStore } from "../../../store";
+import "./style.css";
+import icon from "./consonant";
+import L from "leaflet";
 const initialValue = {
   name: "",
   email: "",
@@ -27,33 +31,31 @@ const position = [51.505, -0.09];
 
 function details() {
   const [details, setDetails] = useState(initialValue);
-  const {userInformation,addUser} = useStore()
+  const { userInformation, addUser } = useStore();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [map, setMap] = useState(null);
   const [markerPos, setMarkerPos] = useState({
     lat: 55.702868,
     lng: 37.530865,
   });
-  const [modalOpen, setModalOpen] = useState(false);
 
-  const openModal = (e) => {
-    e.preventDefault();
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
-  const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setDetails((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-   
   };
-  const [map, setMap] = useState(null);
+
+  const openModal = (e) => {
+    e.preventDefault();
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+ 
 
   useEffect(() => {
     if (map) {
@@ -63,13 +65,10 @@ function details() {
     }
   }, [map]);
 
-  useEffect(() => {
-    console.log(`lat diff: ${markerPos.lat}, lng diff: ${markerPos.lng}`);
-  }, [markerPos]);
-  // const handlelick = () => {
-  //   setIsOpen(!isOpen);
-  // };
-  console.log(details, "umardddd");
+  // useEffect(() => {
+  //   console.log(`lat diff: ${markerPos.lat}, lng diff: ${markerPos.lng}`);
+  // }, [markerPos]);
+
   const markerRef = useRef();
   const updatePosition = React.useMemo(
     () => ({
@@ -84,15 +83,14 @@ function details() {
     }),
     []
   );
- 
+
+  const router = useRouter();
   const handleRegistration = async (e) => {
-    // console.log(details, "umarww");
-    console.log(details, "details222");
     e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        details.email, 
+        details.email,
         details.password
       );
       const user = userCredential.user;
@@ -104,38 +102,60 @@ function details() {
         email: details.email,
         address: details.address,
         phoneNumber: details.phoneNumber,
-        // password: details.password,
         capacity: details.capacity,
         lat: markerPos.lat,
         lng: markerPos.lng,
       };
-      
+
       await addDoc(collection(db, "users"), userInfo);
       if (userInfo) {
         console.log("user created");
         e.preventDefault();
-        addUser(user.uid)
+        addUser(user.uid);
 
         router.push("/pages/auth");
       }
     } catch (error) {
       console.log(error, "error");
-      // const errorCode = error.code;
-      // const errorMessage = error.message;
-      // console.log(errorCode, errorMessage);
     }
   };
   const iconMarkup = renderToStaticMarkup(
-    <FontAwesomeIcon icon={faLocationDot} className="text-3xl text-red-600"/>
+    <FontAwesomeIcon icon={faLocationDot} className="text-4xl text-blue-600" />
   );
   const customMarkerIcon = divIcon({
     html: iconMarkup,
-    className: 'custom-marker-icon',
+    className: "custom-marker-icon",
     iconSize: [40, 40],
   });
-  console.log(userInformation,"wwwsss")
-// console.log(userInformation,"www")
+
+  function LeafletgeoSearch() {
+    const map = useMap();
+    useEffect(() => {
+      const abc = "faisalabad pakistan";
+      const provider = new OpenStreetMapProvider();
+      const searchControl = GeoSearchControl({
+        notFoundMessage: "Sorry, that address could not be found.",
+        provider,
+        style: "bar",
+        marker: {
+          icon,
+          draggable: true,
+        },
+      });
+
+    const searchInput = searchControl.getContainer()?.querySelector('.leaflet-control-geosearch-form input');
+    if (searchInput) {
+      searchInput.value = abc;
+      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+      console.log(searchInput, "provider");
+      map.addControl(searchControl);
+      return () => map.removeControl(searchControl);
+    }, []);
+    return null;
+  }
   
+
   return (
     <div>
       <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
@@ -151,13 +171,10 @@ function details() {
         </div>
 
         <div className="w-full lg:w-[35%] px-10  py-3 2xl:justify-around rounded-md shadow-xl h-[100vh]  flex-col flex justify-between">
-         
-            <h1 className="hidden lg:block mb-5 text-3xl font-vollkorn text-textColor items-center">
-              Marquee Registration
-            </h1>
-            <div className="flex flex-col justify-between h-[80vh] 2xl:h-[50vh]">
-
-           
+          <h1 className="hidden lg:block mb-5 text-3xl font-vollkorn text-textColor items-center">
+            Marquee Registration
+          </h1>
+          <div className="flex flex-col justify-between h-[80vh] 2xl:h-[50vh]">
             <div className="flex flex-col items-start">
               <label className="font-roboto">Full Name</label>
               <input
@@ -224,33 +241,35 @@ function details() {
                 className="border-b w-[65%] outline-none  py-2 mb-3 "
               />
             </div>
-           
+          </div>
+          <div className="flex justify-start w-full ">
+            <div className=" text-center">
+              <button
+                className="flex justify-center border py-2 px-4 lg:px-7 rounded-md bg-primaryColor"
+                onClick={(e) => openModal(e)}
+              >
+                Location
+              </button>
             </div>
-            <div className="flex justify-start w-full ">
-              <div className=" text-center">
-                <button className="flex justify-center border py-2 px-4 lg:px-7 rounded-md bg-primaryColor"  onClick={(e)=>openModal(e)}>
-                  Location
-                </button>
-              </div>
-              <div className=" text-center mx-2">
-                <button
-                  className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
-                 onClick={(e) => handleRegistration(e)}
-                >
-                  Register Now
-                </button>
-              </div>
+            <div className=" text-center mx-2">
+              <button
+                className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
+                onClick={(e) => handleRegistration(e)}
+              >
+                Register Now
+              </button>
             </div>
+          </div>
         </div>
       </div>
       <Modal isOpen={modalOpen} onClose={closeModal}>
-        {/* <div> */}
         <MapContainer
           center={position}
           zoom={20}
           scrollWheelZoom={false}
           style={{ height: "750px", width: "100%" }}
           whenCreated={setMap}
+          className="customGeoSearch pt-14 2xl:pt-0"
         >
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -263,16 +282,15 @@ function details() {
             ref={markerRef}
             icon={customMarkerIcon}
           >
+            <div>
+              <LeafletgeoSearch />
+            </div>
             <Popup>
               A pretty CSS3 popup. <br /> Easily customizable.
             </Popup>
           </Marker>
         </MapContainer>
-        {/* </div> */}
       </Modal>
-      {/* {isOpen ? ( */}
-
-      {/* ) : null} */}
     </div>
   );
 }

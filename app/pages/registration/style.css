@@ -1,0 +1,13 @@
+.customGeoSearch .leaflet-control-zoom {
+    margin-top: 60px;
+}
+.customGeoSearch  .leaflet-marker-shadow  {
+    display: none;
+}
+
+@media (min-width: 1536px) { 
+    .customGeoSearch .leaflet-control-zoom {
+        margin-top: 15px;
+    }
+ }
+
