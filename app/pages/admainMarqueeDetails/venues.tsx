@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 // import Modal from "@/app/component/Modal";
 import { Input } from "antd";
 import { collection, getDocs, addDoc } from "firebase/firestore";
@@ -66,6 +66,14 @@ function Venues({ modalOpen, setModalOpen }) {
   };
 
   const HandleAddVenues = async () => {
+    const ImageRef = ref(storage, "images/");
+    await uploadBytes(ImageRef, user.image).then((snapshot) => {
+      console.log("Uploaded a blob or file!", snapshot);
+      alert("Uploaded a blob or file!");
+    });
+
+    // Get the download URL for the uploaded image
+    const downloadURL = await getDownloadURL(storageRef);
     if (
       !user.name ||
       !user.image ||
@@ -92,14 +100,6 @@ function Venues({ modalOpen, setModalOpen }) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
-    // try {
-    //   const response = await getDocs(collection(db, "Venues"));
-    //   const tempArray = response.docs.map((doc) => doc.data());
-    //   console.log(tempArray, "tempArray");
-    //   setBlogs(tempArray);
-    // } catch (error) {
-    //   console.error("Error fetching blogs:", error);
-    // }
     setModalOpen(false);
     setUser(initialFormState);
   };
@@ -122,45 +122,6 @@ function Venues({ modalOpen, setModalOpen }) {
             </div>
           );
         })}
-        {/* {
-          addVenues.map((item, index) => {
-            // console.log(item, "item333");
-            return (
-              <div key={index} className="border p-5 rounded-md mb-2">
-                <div className="flex justify-between">
-                  <p>{item.name}</p>
-                  <p>{item.minCapacity}</p>
-                  <p>{item.maxCapacity}</p>
-                  <p>{item.availability}</p>
-                  <p>{item.price}</p>
-                </div>
-                <div className="flex flex-wrap">
-                  {item.image &&
-                    Object.values(item.image).map((img, index) => {
-                      // const imageUrl = URL.createObjectURL(img);
-                      // console.log(imageUrl, "img1a22211");
-                
-                      // Call the handleUpload function to upload the image
-                      // handleUpload(img);
-                      // const imageUrl = URL.createObjectURL(img);
-                      // console.log(imageUrl, "img1a22211");
-                      // setAddVenuesImage((prevImages) => [...prevImages, imageUrl]);
-                      
-                      // console.log(URL.createObjectURL(img), "img1a22211");
-                      return (
-                        <img
-                          src={URL.createObjectURL(img)}
-                          alt=""
-                          key={index}
-                          className="w-[25%]"
-                        />
-                      );
-                    })}
-                </div>
-              </div>
-            );
-          }
-        )} */}
       </div>
       <Modal
        

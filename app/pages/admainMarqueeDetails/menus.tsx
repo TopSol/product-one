@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-// import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
 import { Input } from "antd";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { useStore } from "../../../store";
-import { Button, Modal } from "antd";
-import { add } from "date-fns";
+import { Modal } from "antd";
 const initialFormState = {
   name: "",
   image: "",
@@ -51,8 +49,6 @@ function Menus({ modalOpen, setModalOpen }) {
     setModalOpen(false);
   };
   const HandleAddVenues = async () => {
-    console.log("wwwwudddser44444666")
-    console.log(user, "user44444666e");
     if (
       !user.name ||
       !user.image ||
