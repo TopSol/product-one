@@ -55,8 +55,6 @@ function details() {
     setModalOpen(false);
   };
 
- 
-
   useEffect(() => {
     if (map) {
       setInterval(function () {
@@ -74,7 +72,6 @@ function details() {
     () => ({
       dragend() {
         const marker = markerRef.current;
-        console.log("marker", marker);
         if (marker != null) {
           const newPos = { ...marker.getLatLng() };
           setMarkerPos(newPos);
@@ -128,34 +125,73 @@ function details() {
     iconSize: [40, 40],
   });
 
+  // function LeafletgeoSearch() {
+  //   const map = useMap();
+  //   useEffect(() => {
+  //     const provider = new OpenStreetMapProvider();
+  //     const searchControl = GeoSearchControl({
+  //       notFoundMessage: "Sorry, that address could not be found.",
+  //       provider,
+  //       showMarker: true,
+  //       style: "bar",
+  //       marker: {
+  //         icon,
+  //         draggable: true,
+  //       },
+  //     });
+      
+  //     map.addControl(searchControl);
+  //     return () => map.removeControl(searchControl);
+  //   }, []);
+  //   return null;
+  // }
   function LeafletgeoSearch() {
     const map = useMap();
     useEffect(() => {
-      const abc = "faisalabad pakistan";
       const provider = new OpenStreetMapProvider();
       const searchControl = GeoSearchControl({
         notFoundMessage: "Sorry, that address could not be found.",
         provider,
+        showMarker: false,
         style: "bar",
         marker: {
           icon,
           draggable: true,
         },
       });
-
-    const searchInput = searchControl.getContainer()?.querySelector('.leaflet-control-geosearch-form input');
-    if (searchInput) {
-      searchInput.value = abc;
-      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-      console.log(searchInput, "provider");
+  
+      let marker;
+  
+      // Event handler for geosearch/showlocation event
+      map.on('geosearch/showlocation', function (result) {
+        const { y: lat, x: lng } = result.location;
+        if (marker) {
+          marker.setLatLng([lat, lng]);
+          marker
+          console.log("Updated Marker Position:", lat, lng);
+        } else {
+          marker = L.marker([lat, lng],{icon:customMarkerIcon, draggable: true } ).addTo(map);
+          marker.on('dragend', function (event) {
+            const { lat, lng } = event.target.getLatLng();
+            console.log("Updated Marker Position:", lat, lng);
+          });
+        }
+      });
+  
       map.addControl(searchControl);
-      return () => map.removeControl(searchControl);
+      return () => {
+        map.removeControl(searchControl);
+        if (marker) {
+          marker.off('dragend');
+          map.removeLayer(marker);
+        }
+      };
     }, []);
+  
     return null;
   }
   
-
+  
   return (
     <div>
       <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
@@ -278,6 +314,7 @@ function details() {
           <Marker
             position={position}
             draggable={true}
+          showMarker ={false}
             eventHandlers={updatePosition}
             ref={markerRef}
             icon={customMarkerIcon}

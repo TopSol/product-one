@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 // import { collection, getDocs, addDoc } from "firebase/firestore";
 // import { db } from "@/app/firebase";
+import { Input } from "antd";
+import { Radio } from "antd";
+import { Checkbox } from "antd";
 const initialFormState = {
   firstName: "",
   lastName: "",
@@ -21,6 +24,7 @@ function UserInformation({
     Cooling: false,
     MusicSystem: false,
   });
+
   const [selectedOption, setSelectedOption] = useState("");
   console.log(selectedHall, "selectedHallselectedHall");
   const handleOptionChange = (event) => {
@@ -41,6 +45,10 @@ function UserInformation({
       [name]: value,
     }));
   };
+  const onChange = (e) => {
+    console.log(`checked = ${e.target.checked}`);
+  };
+  const { TextArea } = Input;
   // const sendData = async (e) => {
   //   e.preventDefault();
   //   const users = {
@@ -82,21 +90,22 @@ function UserInformation({
   return (
     <div className="md:container mx-auto">
       <div className="border p-5 rounded-md mb-2 flex justify-center items-center  flex-col w-full">
-        <div className="border p-5 rounded-md mb-2 md:w-[60%]">
+        <div className="border p-5 rounded-md mb-2 md:w-[74%]">
           <div className="md:flex md:justify-between">
-            <div className="mb-6 flex flex-col md:flex-row md:w-80 md:justify-between">
               <label className="text-xl">F/Name:</label>
-              <input
+            <div className="mb-6 flex flex-col md:flex-row md:w-80 md:justify-between">
+              <Input
                 type="firstName"
                 name="firstName"
                 value={user.firstName}
                 onChange={handleChange}
-                className="border  rounded-md outline-none"
+                className="border lg:-ml-3 rounded-md outline-none"
               />
             </div>
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+
               <label className="text-xl">L/Name:</label>
-              <input
+            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+              <Input
                 type="lastName"
                 name="lastName"
                 value={user.lastName}
@@ -106,9 +115,9 @@ function UserInformation({
             </div>
           </div>
           <div className="md:flex md:justify-between  ">
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
               <label className="text-xl">Email:</label>
-              <input
+            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+              <Input
                 type="email"
                 name="email"
                 value={user.email}
@@ -116,9 +125,9 @@ function UserInformation({
                 className="border  rounded-md outline-none"
               />
             </div>
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
               <label className="text-xl">Phone:</label>
-              <input
+            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+              <Input
                 type="PhoneNumber"
                 name="PhoneNumber"
                 value={user.PhoneNumber}
@@ -128,9 +137,9 @@ function UserInformation({
             </div>
           </div>
           <div className="md:flex md:justify-between  ">
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
               <label className="text-xl">Notes:</label>
-              <textarea
+            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+               <TextArea rows={4} 
                 name="notes"
                 value={user.notes}
                 onChange={handleChange}
@@ -138,10 +147,9 @@ function UserInformation({
               />
             </div>
 
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
               <label className="text-xl">Address:</label>
-              <textarea
-                // type="address"
+            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
+              < TextArea rows={4} 
                 name="address"
                 value={user.address}
                 onChange={handleChange}
@@ -149,73 +157,66 @@ function UserInformation({
               />
             </div>
           </div>
-
-          {/* <button type="submit" onClick={(e) => sendData(e)}>
-            Login
-          </button> */}
         </div>
         <div className="border p-5 rounded-md mb-2 md:w-2/4">
           <p>All available services</p>
           <div className="flex flex-col">
-            <label>
-              <input
-                type="checkbox"
-                name="Heating"
-                checked={inputs.Heating}
-                onChange={handleInputChange}
-              />
-              <span className="ml-2">Heating</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="Cooling"
-                checked={inputs.Cooling}
-                onChange={handleInputChange}
-              />
-              <span className="ml-2">Cooling</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="MusicSystem"
-                checked={inputs.MusicSystem}
-                onChange={handleInputChange}
-              />
-              <span className="ml-2">Music System</span>
-            </label>
+            <Checkbox
+              onChange={onChange}
+              type="checkbox"
+              name="Heating"
+              checked={inputs.Heating}
+              onChange={handleInputChange}
+            >
+              Heating
+            </Checkbox>
+            <Checkbox
+              onChange={onChange}
+              type="checkbox"
+              name="Cooling"
+              checked={inputs.Cooling}
+              onChange={handleInputChange}
+            >
+              Cooling
+            </Checkbox>
+            <Checkbox
+              onChange={onChange}
+              type="checkbox"
+              name="MusicSystem"
+              checked={inputs.MusicSystem}
+              onChange={handleInputChange}
+            >
+              Music System
+            </Checkbox>
           </div>
         </div>
         <div className="border p-5 rounded-md mb-2 md:w-2/4">
           <p>Setting Arrangement</p>
           <div className="flex flex-col">
-            <label>
-              <input
-                type="radio"
-                value="roundTable"
-                checked={selectedOption === "roundTable"}
-                onChange={handleOptionChange}
-              />
-              <span className="ml-2">Round Table</span>
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="straitTable"
-                checked={selectedOption === "straitTable"}
-                onChange={handleOptionChange}
-              />
-              <span className="ml-2">Strait Table</span>
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="squareTable"
-                checked={selectedOption === "squareTable"}
-                onChange={handleOptionChange}
-              />
-              <span className="ml-2">Square Table</span>
-            </label>
+            <Radio
+              type="radio"
+              value="roundTable"
+              checked={selectedOption === "roundTable"}
+              onChange={handleOptionChange}
+            >
+              Round Table
+            </Radio>
+            <Radio
+              type="radio"
+              value="straitTable"
+              checked={selectedOption === "straitTable"}
+              onChange={handleOptionChange}
+            >
+              Strait Table
+            </Radio>
+            <Radio
+              type="radio"
+              value="squareTable"
+              checked={selectedOption === "squareTable"}
+              onChange={handleOptionChange}
+            >
+              Square Table
+            </Radio>
           </div>
         </div>
       </div>

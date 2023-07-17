@@ -13,7 +13,6 @@ function AdminMarqueeDetails() {
   };
   return (
     <div>
-      <Navbar />
       <div className="mt-28 md:container mx-auto">
         <div className="flex h-[85vh] ">
           <div className="w-[30%] border flex flex-col">
@@ -36,29 +35,38 @@ function AdminMarqueeDetails() {
               Dish
             </button>
           </div>
-          <div className="w-[70%] bg-slate-300 h-[85vh] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200 " >
+          <div className="w-[70%] bg-slate-300 h-[85vh] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200 ">
             <div className="flex justify-end">
               {component === "Venues" ? (
-                <button className="border rounded-md px-3 py-3 m-2" onClick={()=>openModal()}>
+                <button
+                  className="border rounded-md px-3 py-3 m-2"
+                  onClick={() => openModal()}
+                >
                   Add venues
                 </button>
               ) : component === "menu" ? (
-                <button className="border rounded-md px-3 py-3 m-2"  onClick={()=>openModal()}>
+                <button
+                  className="border rounded-md px-3 py-3 m-2"
+                  onClick={() => openModal()}
+                >
                   Add Menu
                 </button>
               ) : component === "dish" ? (
-                <button className="border rounded-md px-3 py-3 m-2" onClick={()=>openModal()}>
+                <button
+                  className="border rounded-md px-3 py-3 m-2"
+                  onClick={() => openModal()}
+                >
                   Add Dish
                 </button>
               ) : null}
             </div>
             <div>
               {component === "Venues" ? (
-                <Venues modalOpen={modalOpen} setModalOpen={setModalOpen}/>
+                <Venues modalOpen={modalOpen} setModalOpen={setModalOpen} />
               ) : component === "menu" ? (
-                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen}/>
+                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen} />
               ) : component === "dish" ? (
-                <Dish modalOpen={modalOpen} setModalOpen={setModalOpen}/>
+                <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} />
               ) : null}
             </div>
           </div>
