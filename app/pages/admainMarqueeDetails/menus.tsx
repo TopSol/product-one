@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from "react";
-// import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
 import { Input } from "antd";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  listAll,
+} from "firebase/storage";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { useStore } from "../../../store";
-import { Button, Modal } from "antd";
-import { add } from "date-fns";
+import { Modal } from "antd";
 const initialFormState = {
   name: "",
   image: "",
   price: "",
   type: "",
-  marqueeId: "",
+  // marqueeId: "",
   availability: "",
   description: "",
   // category: "",
@@ -20,6 +25,10 @@ function Menus({ modalOpen, setModalOpen }) {
   const { userInformation, addUser } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
+  const [imageUrls, setImageUrls] = useState([]);
+  const [addVenuesImage, setAddVenuesImage] = useState([]);
+  const storage = getStorage();
+  const ImageRef = ref(storage, "images/");
   const [blogs, setBlogs] = useState([]);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +37,17 @@ function Menus({ modalOpen, setModalOpen }) {
       [name]: value,
     }));
   };
+  console.log("imageUrls", imageUrls);
   useEffect(() => {
+    listAll(ImageRef)
+      .then((res) => {
+        res.items.forEach((itemRef) => {
+          getDownloadURL(itemRef).then((url) => {
+            setAddVenuesImage((prevState) => [...prevState, url]);
+          });
+        });
+      })
+      .catch((error) => {});
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Menus"));
@@ -50,9 +69,22 @@ function Menus({ modalOpen, setModalOpen }) {
   const closeModal = () => {
     setModalOpen(false);
   };
+
   const HandleAddVenues = async () => {
-    console.log("wwwwudddser44444666")
-    console.log(user, "user44444666e");
+    const images = Object.values(user.image);
+    const folderName = `images`;
+    let imagesUrls = [];
+    const urls = await Promise.all(images.map(async (image) => {
+        const fileName = `${folderName}/${image.name}`;
+        const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, image);
+        const utls = await getDownloadURL(storageRef);
+        console.log("imageUrls123", utls)
+        return utls
+      }));
+      
+    console.log("imageUr22ls", urls);
+    setImageUrls(imageUrls);
     if (
       !user.name ||
       !user.image ||
@@ -61,38 +93,39 @@ function Menus({ modalOpen, setModalOpen }) {
       !user.marqueeId ||
       !user.availability ||
       !user.description
-      // !user.category
     ) {
       return;
     }
-    console.log("close1")
     const users = {
       name: user.name,
-      // image: user.image,
+      image: urls,
       type: user.type,
-      marqueeId: user.marqueeId,
+      // marqueeId: user.marqueeId,
       availability: user.availability,
       description: user.description,
       // category: user.category,
       userId: userInformation.userId,
       price: user.price,
     };
+
     try {
+      console.log(imageUrls, "images1112");
       await addDoc(collection(db, "Menus"), users);
-      console.log("close2")
+      console.log("close2");
     } catch (error) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
-    console.log("close3")
+
     setModalOpen(false);
-    console.log("close4")
+    console.log("close4");
     setUser(initialFormState);
   };
   const { TextArea } = Input;
   return (
     <div className="md:container mx-auto">
       {blogs.map((item, index) => {
+        console.log(item, "item22");
         return (
           <div key={index} className="border p-5 rounded-md mb-2">
             <div className="flex justify-between flex-wrap">
@@ -102,20 +135,26 @@ function Menus({ modalOpen, setModalOpen }) {
               <p>{item.marqueeId}</p>
               <p>{item.availability}</p>
               <p>{item.description}</p>
-              {/* <p>{item.category}</p> */}
+
+              {item?.image &&
+                item?.image.map((img, index) => (
+                  <div key={index} className="w-[20%] h-[20%] bg-slate-500">
+                    <img src={img} alt="img" className="w-full h-full" />
+                  </div>
+                ))}
             </div>
           </div>
         );
       })}
-      <Modal 
-       className="text-center"
-       centered
-       open={modalOpen}
-       onOk={() => HandleAddVenues()}
-       onCancel={() => setModalOpen(false)}
-       width={900}
-       bodyStyle={{ height: 600 }}
-       okButtonProps={{ className: "custom-ok-button" }}
+      <Modal
+        className="text-center"
+        centered
+        open={modalOpen}
+        onOk={() => HandleAddVenues()}
+        onCancel={() => setModalOpen(false)}
+        width={900}
+        bodyStyle={{ height: 600 }}
+        okButtonProps={{ className: "custom-ok-button" }}
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div>
@@ -123,7 +162,7 @@ function Menus({ modalOpen, setModalOpen }) {
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
             <div className="md:justify-between flex flex-col">
-              <div className=" mb-3 md:md:mb-6 flex flex-col md:flex-row  md:justify-between" >
+              <div className=" mb-3 md:md:mb-6 flex flex-col md:flex-row  md:justify-between">
                 <label className="text-xl">Name:</label>
                 <Input
                   placeholder="Name"
@@ -173,7 +212,7 @@ function Menus({ modalOpen, setModalOpen }) {
               </div>
             </div>
             <div className="md:flex md:justify-between flex flex-col ">
-              <div className="mb-3 md:mb-6 flex flex-col  md:flex-row md:justify-between">
+              {/* <div className="mb-3 md:mb-6 flex flex-col  md:flex-row md:justify-between">
                 <label className="text-xl">marqueeId:</label>
                 <Input
                   placeholder="marqueeId"
@@ -183,7 +222,7 @@ function Menus({ modalOpen, setModalOpen }) {
                   onChange={handleChange}
                   className="md:w-[50%]"
                 />
-              </div>
+              </div> */}
               <div className="mb-3 md:mb-6 flex flex-col  md:flex-row  md:justify-between ">
                 <label className="text-xl">availability:</label>
                 <Input
@@ -200,10 +239,9 @@ function Menus({ modalOpen, setModalOpen }) {
               <div className="flex flex-col  md:flex-row  md:justify-between">
                 <label className="text-xl">description:</label>
                 <TextArea
-                rows={4} 
-                maxLength={6}
+                  rows={4}
+                  maxLength={6}
                   placeholder="Number"
-                 
                   name="description"
                   value={user.description}
                   onChange={handleChange}

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCaretDown,
-  faCirclePlus,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import Modal from "@/app/component/Modal";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import { Space, Table, Tag } from "antd";
+// import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { useStore } from "../../../store";
+import { Input, Modal } from "antd";
 const initialFormState = {
   name: "",
   price: "",
@@ -21,6 +19,7 @@ function Dish({ modalOpen, setModalOpen }) {
   const [addVenues, setAddVenues] = useState([]);
   const { userInformation, addUser } = useStore();
   const [blogs, setBlogs] = useState([]);
+  const { Column, ColumnGroup } = Table;
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
     "Chicken",
@@ -98,20 +97,26 @@ function Dish({ modalOpen, setModalOpen }) {
       await addDoc(collection(db, "Dish"), users);
     } catch (error) {
       console.log(error, "error");
-      // const errorCode = error.code;
-      // const errorMessage = error.message;
-      // console.log(errorCode, errorMessage,"erererr");
     }
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
     setUser(initialFormState);
   };
-  // console.log(addVenues, "addVenues33")
   console.log(blogs, "blogs111");
   return (
     <div className="md:container mx-auto">
-     
-        {blogs.map((blog, index) => {
+      <Table dataSource={blogs}>
+        <Column title="Name" dataIndex="name" key="name"  />
+        <Column title="Price" dataIndex="price" key="price" />
+        <Column title="Dish" dataIndex="dishes" key="dishes" render={(dishes) => (
+        <ul>
+          {dishes?.map((dish, index) => (
+            <li key={index}>{dish}</li>
+          ))}
+        </ul>
+      )} />
+      </Table>
+      {/* {blogs.map((blog, index) => {
           console.log(blog, "blog43344");
            return (
             <div key={index} className="border p-5 rounded-md mb-2">
@@ -126,70 +131,77 @@ function Dish({ modalOpen, setModalOpen }) {
             </div>
             </div>
           );
-        })}
-     
-
-      <Modal isOpen={modalOpen} onClose={closeModal}>
-        <div className="flex justify-center">
-          <div className="border p-5 rounded-md mb-2 w-[100%]  lg:w-[70%] ">
-            <div className="md:flex md:justify-between">
-              <div className="mb-6 flex flex-col md:flex-row w-70 md:w-[40%] md:justify-between">
+        })} */}
+      <Modal
+        className="text-center"
+        centered
+        open={modalOpen}
+        onOk={() => HandleAddVenues()}
+        onCancel={() => setModalOpen(false)}
+        width={900}
+        bodyStyle={{ height: 600 }}
+        okButtonProps={{ className: "custom-ok-button" }}
+      >
+        <div className=" w-full h-full flex justify-center items-center flex-col">
+          <div>
+            <p className="text-2xl mb-2">Menus</p>
+          </div>
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
+            <div className="md:justify-between flex flex-col">
+              <div className=" mb-3 md:md:mb-6 flex flex-col md:flex-row  md:justify-between">
                 <label className="text-xl">Name:</label>
-                <input
-                  type="name"
+                <Input
+                  placeholder="Name"
+                  type="text"
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="border  rounded-md outline-none"
+                  className="md:w-[50%]"
                 />
               </div>
-              <div className="mb-6 flex flex-col  md:flex-row w-70 md:w-[40%] md:justify-between">
-                <label className="text-xl">price:</label>
-                <input
+              <div className="md:mb-6 flex flex-col  md:flex-row md:justify-between">
+                <label className="text-xl">Price:</label>
+                <Input
+                  placeholder="Price"
                   type="number"
                   name="price"
                   value={user.price}
                   onChange={handleChange}
-                  className="border rounded-md outline-none"
+                  className="md:w-[50%]"
                 />
               </div>
             </div>
-            <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
-              <div
-                className="border py-2 w-48  rounded-md relative"
-                onClick={() => setSelectedDish(!selectedDish)}
-              >
-                <div className="justify-between flex mx-2 ">
-                  Select Dish
-                  <FontAwesomeIcon icon={faCaretDown} />
-                </div>
-              </div>
 
-              {selectedDish && (
-                <div className="border  cursor-pointer w-48  absolute mt-10  ">
-                  {selectedOptions.map((item, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleItemClick(item)}
-                      style={{
-                        backgroundColor: selectedItems.includes(item)
-                          ? "gray"
-                          : "white",
-                      }}
-                    >
-                      <p>{item}</p>
-                    </div>
-                  ))}
+            <div className="mb-3 md:flex md:justify-between flex flex-col ">
+              <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
+                <div
+                  className="border py-2 w-48  rounded-md relative"
+                  onClick={() => setSelectedDish(!selectedDish)}
+                >
+                  <div className="justify-between flex mx-2 ">
+                    Select Dish
+                    <FontAwesomeIcon icon={faCaretDown} />
+                  </div>
                 </div>
-              )}
-            </div>
-            <div>
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                onClick={() => HandleAddVenues()}
-              >
-                Add Venues
-              </button>
+
+                {selectedDish && (
+                  <div className="border  cursor-pointer w-48  absolute mt-10  ">
+                    {selectedOptions.map((item, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleItemClick(item)}
+                        style={{
+                          backgroundColor: selectedItems.includes(item)
+                            ? "gray"
+                            : "white",
+                        }}
+                      >
+                        <p>{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

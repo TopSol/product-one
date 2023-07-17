@@ -3,9 +3,15 @@ import React, { useState, useEffect } from "react";
 import { Input } from "antd";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
-import './style.css'
+import "./style.css";
 import { useStore } from "../../../store";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  listAll,
+} from "firebase/storage";
 import { Button, Modal } from "antd";
 const initialFormState = {
   name: "",
@@ -18,10 +24,13 @@ function Venues({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  // const [imageUrls, setImageUrls] = useState([]);
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const { userInformation, addUser } = useStore();
   const storage = getStorage();
-  // const [modal2Open, setModal2Open] = useState(false);
+
+  console.log(user, "user33");
+  const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -34,6 +43,16 @@ function Venues({ modalOpen, setModalOpen }) {
   };
 
   useEffect(() => {
+    listAll(ImageRef)
+      .then((res) => {
+        res.items.forEach((itemRef) => {
+          getDownloadURL(itemRef).then((url) => {
+            setAddVenuesImage((prevState) => [...prevState, url]);
+          });
+        });
+      })
+      .catch((error) => {});
+
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Venues"));
@@ -52,19 +71,25 @@ function Venues({ modalOpen, setModalOpen }) {
 
     fetchBlogs();
   }, [addVenues]);
-
+  console.log(addVenuesImage, "addVenudddesImage");
   const handleUpload = async (img) => {
     const storageRef = ref(storage, "images/" + img.name);
     await uploadBytes(storageRef, img);
-
-    // Get the download URL for the uploaded image
     const downloadURL = await getDownloadURL(storageRef);
-
-    // Use the downloadURL for further processing or storing in Firebase Firestore
-    // console.log(downloadURL,"downloadURL");
   };
 
   const HandleAddVenues = async () => {
+    const images = Object.values(user.image);
+    const folderName = `images`;
+    // let imagesUrls = [];
+    const imageUrls = await Promise.all(images.map(async (image) => {
+        const fileName = `${folderName}/${image.name}`;
+        const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, image);
+        const urls = await getDownloadURL(storageRef);
+        console.log("imageUrls123", urls)
+        return urls
+      }));
     if (
       !user.name ||
       !user.image ||
@@ -77,6 +102,10 @@ function Venues({ modalOpen, setModalOpen }) {
 
     const venue = {
       name: user.name,
+<<<<<<< HEAD
+=======
+      image: imageUrls,
+>>>>>>> 59d57d2b24a1a46b3f919bc3014bdd0f8fd79718
       minCapacity: user.minCapacity,
       maxCapacity: user.maxCapacity,
       userId: userInformation.userId,
@@ -88,11 +117,22 @@ function Venues({ modalOpen, setModalOpen }) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
+<<<<<<< HEAD
+=======
+    // const folderName = `images`;
+    // images.forEach(async (img) => {
+    //   const imageRef = ref(storage, `${folderName}/${img.name + Date.now()}`);
+    //   await uploadBytes(imageRef, img).then((snapshot) => {
+    //     getDownloadURL(snapshot.ref).then((url) => {
+    //       setImageUrls((prev) => [...prev, url]);
+    //     });
+    //   });
+    // });
+
+>>>>>>> 59d57d2b24a1a46b3f919bc3014bdd0f8fd79718
     setModalOpen(false);
     setUser(initialFormState);
   };
-  console.log(blogs, "blogsddd1ww3311", userInformation.userId);
-
   return (
     <>
       <div className="md:container mx-auto">
@@ -106,52 +146,18 @@ function Venues({ modalOpen, setModalOpen }) {
                 <p>{item.maxCapacity}</p>
                 {/* <p>{item.availability}</p> */}
                 <p>{item.price}</p>
+                {item?.image &&
+                item?.image.map((img, index) => (
+                  <div key={index} className="w-[20%] h-[20%] bg-slate-500">
+                     <img src={img} alt="img" className="w-full h-full" />
+                  </div>
+                ))}
               </div>
             </div>
           );
         })}
-        {/* {
-          addVenues.map((item, index) => {
-            // console.log(item, "item333");
-            return (
-              <div key={index} className="border p-5 rounded-md mb-2">
-                <div className="flex justify-between">
-                  <p>{item.name}</p>
-                  <p>{item.minCapacity}</p>
-                  <p>{item.maxCapacity}</p>
-                  <p>{item.availability}</p>
-                  <p>{item.price}</p>
-                </div>
-                <div className="flex flex-wrap">
-                  {item.image &&
-                    Object.values(item.image).map((img, index) => {
-                      // const imageUrl = URL.createObjectURL(img);
-                      // console.log(imageUrl, "img1a22211");
-                
-                      // Call the handleUpload function to upload the image
-                      // handleUpload(img);
-                      // const imageUrl = URL.createObjectURL(img);
-                      // console.log(imageUrl, "img1a22211");
-                      // setAddVenuesImage((prevImages) => [...prevImages, imageUrl]);
-                      
-                      // console.log(URL.createObjectURL(img), "img1a22211");
-                      return (
-                        <img
-                          src={URL.createObjectURL(img)}
-                          alt=""
-                          key={index}
-                          className="w-[25%]"
-                        />
-                      );
-                    })}
-                </div>
-              </div>
-            );
-          }
-        )} */}
       </div>
       <Modal
-       
         className="text-center"
         centered
         open={modalOpen}
@@ -160,7 +166,6 @@ function Venues({ modalOpen, setModalOpen }) {
         width={900}
         bodyStyle={{ height: 500 }}
         okButtonProps={{ className: "custom-ok-button" }}
-      
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div>
@@ -168,7 +173,7 @@ function Venues({ modalOpen, setModalOpen }) {
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
             <div className="md:justify-between flex flex-col">
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between" >
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
                 <label className="text-xl">Name:</label>
                 <Input
                   placeholder="Name"
@@ -243,6 +248,7 @@ function Venues({ modalOpen, setModalOpen }) {
                   );
                 })}
             </div>
+<<<<<<< HEAD
             <div className="flex justify-center">
               {/* <Button
                 type="primary"
@@ -260,6 +266,8 @@ function Venues({ modalOpen, setModalOpen }) {
               </button> */}
             </div>
             
+=======
+>>>>>>> 59d57d2b24a1a46b3f919bc3014bdd0f8fd79718
           </div>
         </div>
       </Modal>

@@ -17,25 +17,25 @@ function AdminMarqueeDetails() {
         <div className="flex h-[85vh] ">
           <div className="w-[30%] border flex flex-col">
             <button
-              className="w-full border-b text-left py-2 pl-1"
+              className=" side w-full    text-left py-2 pl-1 "
               onClick={() => setComponent("Venues")}
             >
               Venu
             </button>
             <button
-              className="w-full border-b text-left py-2 pl-1"
+              className=" side w-full   text-left py-2 pl-1"
               onClick={() => setComponent("menu")}
             >
               Menu
             </button>
             <button
-              className="w-full border-b text-left py-2 pl-1"
+              className=" side w-full   text-left py-2 pl-1"
               onClick={() => setComponent("dish")}
             >
               Dish
             </button>
           </div>
-          <div className="w-[70%] bg-slate-300 h-[85vh] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200 ">
+          <div className="w-[70%] bg-slate-300 h-[100vh] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200 " >
             <div className="flex justify-end">
               {component === "Venues" ? (
                 <button
