@@ -4,6 +4,7 @@ import { Input } from "antd";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import "./style.css";
+import { Table } from "antd";
 import { useStore } from "../../../store";
 import {
   getStorage,
@@ -24,6 +25,7 @@ function Venues({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const { Column } = Table;
   // const [imageUrls, setImageUrls] = useState([]);
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const { userInformation, addUser } = useStore();
@@ -82,8 +84,7 @@ function Venues({ modalOpen, setModalOpen }) {
     const images = Object.values(user.image);
     const folderName = `images`;
     // let imagesUrls = [];
-    const imageUrls = await Promise.all(
-      images.map(async (image) => {
+    const imageUrls = await Promise.all(images.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
@@ -131,8 +132,42 @@ function Venues({ modalOpen, setModalOpen }) {
   };
   return (
     <>
-      <div className="md:container mx-auto ">
-        {blogs.map((item, index) => {
+      <div className="">
+        <Table dataSource={blogs} className="myTable">
+          <Column title="Name" dataIndex="name" key="name" />
+          <Column
+            title="Minimum Capacity"
+            dataIndex="minCapacity"
+            key="minCapacity"
+          />
+          <Column
+            title="Maximum Capacity"
+            dataIndex="maxCapacity"
+            key="maxCapacity"
+          />
+          <Column title="Price" dataIndex="price" key="price" />
+          <Column
+            title="Images"
+            dataIndex="image"
+            key="image"
+            render={(image) => (
+              <div className="flex">
+                {image?.map((dish, index) => {
+                  return (
+                    <img
+                      key={index}
+                      src={dish}
+                      alt="img"
+                      width={30}
+                      height={30}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          />
+        </Table>
+        {/* {blogs.map((item, index) => {
           // console.log(item, "item333");
           return (
             <div key={index} className="border p-5 rounded-md mb-2">
@@ -140,8 +175,8 @@ function Venues({ modalOpen, setModalOpen }) {
                 <p>{item.name}</p>
                 <p>{item.minCapacity}</p>
                 <p>{item.maxCapacity}</p>
-                {/* <p>{item.availability}</p> */}
-                <p>{item.price}</p>
+                <p>{item.availability}</p> 
+               <p>{item.price}</p>
                 {item?.image &&
                   item?.image.map((img, index) => (
                     <div key={index} className="w-[20%] h-[20%] bg-slate-500">
@@ -151,7 +186,7 @@ function Venues({ modalOpen, setModalOpen }) {
               </div>
             </div>
           );
-        })}
+        })}  */}
       </div>
       <Modal
         className="text-center w-full"

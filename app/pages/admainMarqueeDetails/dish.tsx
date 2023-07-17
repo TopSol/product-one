@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import { Space, Table, Tag } from "antd";
+import { Table, Tag } from "antd";
 // import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
@@ -19,7 +19,7 @@ function Dish({ modalOpen, setModalOpen }) {
   const [addVenues, setAddVenues] = useState([]);
   const { userInformation, addUser } = useStore();
   const [blogs, setBlogs] = useState([]);
-  const { Column, ColumnGroup } = Table;
+  const { Column } = Table;
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
     "Chicken",
@@ -104,8 +104,8 @@ function Dish({ modalOpen, setModalOpen }) {
   };
   console.log(blogs, "blogs111");
   return (
-    <div className="md:container mx-auto">
-      <Table dataSource={blogs}>
+    <div className="">
+      <Table dataSource={blogs} className="myTable">
         <Column title="Name" dataIndex="name" key="name"  />
         <Column title="Price" dataIndex="price" key="price" />
         <Column title="Dish" dataIndex="dishes" key="dishes" render={(dishes) => (

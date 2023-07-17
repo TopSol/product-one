@@ -4,9 +4,26 @@
     color: #fff;
 }
 
-.side{
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+
+
+.myTable .ant-table-thead > tr > th{
+    background-color: #4D5AAA;
+    color: #fff;
 }
-.sidebar{
-/* background-color:  rgb(22, 21, 21) */
+.myTable .ant-table-tbody > tr > td{
+    
+    background-color: #F8F8F8;
+    color: #000;
 }
+
+.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:first-child{
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+}
+
+.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:last-child{
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+

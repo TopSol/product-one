@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Input } from "antd";
+import { Input, Table } from "antd";
 import {
   getStorage,
   ref,
@@ -26,6 +26,7 @@ function Menus({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
+  const { Column } = Table;
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
@@ -124,9 +125,38 @@ function Menus({ modalOpen, setModalOpen }) {
     setUser(initialFormState);
   };
   const { TextArea } = Input;
+  console.log(blogs, "blogs");
   return (
-    <div className="md:container mx-auto">
-      {blogs.map((item, index) => {
+    <div className="">
+      <Table dataSource={blogs} className="myTable">
+        <Column title="Name" dataIndex="name" key="name" />
+        <Column title="Type" dataIndex="type" key="type" />
+        <Column title="Description" dataIndex="description" key="description" />
+        <Column title="Price" dataIndex="price" key="price" />
+        <Column
+          title="Images"
+          dataIndex="image"
+          key="image"
+          render={(image) => (
+            <div className="flex">
+              {image?.map((dish, index) => {
+                console.log(dish, "dishee");
+                return (
+                  <img
+                    key={index}
+                    src={dish}
+                    alt="img"
+                    width={30}
+                    height={30}
+                  />
+                );
+              })}
+            </div>
+          )}
+        />
+      </Table>
+
+      {/* {blogs.map((item, index) => {
         console.log(item, "item22");
         return (
           <div key={index} className="border p-5 rounded-md mb-2">
@@ -147,7 +177,7 @@ function Menus({ modalOpen, setModalOpen }) {
             </div>
           </div>
         );
-      })}
+      })} */}
       <Modal
         className="text-center"
         centered
