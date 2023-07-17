@@ -1,11 +1,17 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 // import Modal from "@/app/component/Modal";
 import { Input } from "antd";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
-import './style.css'
+import "./style.css";
 import { useStore } from "../../../store";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  listAll,
+} from "firebase/storage";
 import { Button, Modal } from "antd";
 const initialFormState = {
   name: "",
@@ -19,10 +25,13 @@ function Venues({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  // const [imageUrls, setImageUrls] = useState([]);
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const { userInformation, addUser } = useStore();
   const storage = getStorage();
-  // const [modal2Open, setModal2Open] = useState(false);
+
+  console.log(user, "user33");
+  const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -35,6 +44,16 @@ function Venues({ modalOpen, setModalOpen }) {
   };
 
   useEffect(() => {
+    listAll(ImageRef)
+      .then((res) => {
+        res.items.forEach((itemRef) => {
+          getDownloadURL(itemRef).then((url) => {
+            setAddVenuesImage((prevState) => [...prevState, url]);
+          });
+        });
+      })
+      .catch((error) => {});
+
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Venues"));
@@ -53,27 +72,25 @@ function Venues({ modalOpen, setModalOpen }) {
 
     fetchBlogs();
   }, [addVenues]);
-
+  console.log(addVenuesImage, "addVenudddesImage");
   const handleUpload = async (img) => {
     const storageRef = ref(storage, "images/" + img.name);
     await uploadBytes(storageRef, img);
-
-    // Get the download URL for the uploaded image
     const downloadURL = await getDownloadURL(storageRef);
-
-    // Use the downloadURL for further processing or storing in Firebase Firestore
-    // console.log(downloadURL,"downloadURL");
   };
 
   const HandleAddVenues = async () => {
-    const ImageRef = ref(storage, "images/");
-    await uploadBytes(ImageRef, user.image).then((snapshot) => {
-      console.log("Uploaded a blob or file!", snapshot);
-      alert("Uploaded a blob or file!");
-    });
-
-    // Get the download URL for the uploaded image
-    const downloadURL = await getDownloadURL(storageRef);
+    const images = Object.values(user.image);
+    const folderName = `images`;
+    // let imagesUrls = [];
+    const imageUrls = await Promise.all(images.map(async (image) => {
+        const fileName = `${folderName}/${image.name}`;
+        const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, image);
+        const urls = await getDownloadURL(storageRef);
+        console.log("imageUrls123", urls)
+        return urls
+      }));
     if (
       !user.name ||
       !user.image ||
@@ -87,7 +104,7 @@ function Venues({ modalOpen, setModalOpen }) {
 
     const venue = {
       name: user.name,
-      // image: user.image,
+      image: imageUrls,
       minCapacity: user.minCapacity,
       maxCapacity: user.maxCapacity,
       userId: userInformation.userId,
@@ -100,11 +117,19 @@ function Venues({ modalOpen, setModalOpen }) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
+    // const folderName = `images`;
+    // images.forEach(async (img) => {
+    //   const imageRef = ref(storage, `${folderName}/${img.name + Date.now()}`);
+    //   await uploadBytes(imageRef, img).then((snapshot) => {
+    //     getDownloadURL(snapshot.ref).then((url) => {
+    //       setImageUrls((prev) => [...prev, url]);
+    //     });
+    //   });
+    // });
+
     setModalOpen(false);
     setUser(initialFormState);
   };
-  console.log(blogs, "blogsddd1ww3311", userInformation.userId);
-
   return (
     <>
       <div className="md:container mx-auto">
@@ -118,13 +143,18 @@ function Venues({ modalOpen, setModalOpen }) {
                 <p>{item.maxCapacity}</p>
                 {/* <p>{item.availability}</p> */}
                 <p>{item.price}</p>
+                {item?.image &&
+                item?.image.map((img, index) => (
+                  <div key={index} className="w-[20%] h-[20%] bg-slate-500">
+                     <img src={img} alt="img" className="w-full h-full" />
+                  </div>
+                ))}
               </div>
             </div>
           );
         })}
       </div>
       <Modal
-       
         className="text-center"
         centered
         open={modalOpen}
@@ -133,7 +163,6 @@ function Venues({ modalOpen, setModalOpen }) {
         width={900}
         bodyStyle={{ height: 500 }}
         okButtonProps={{ className: "custom-ok-button" }}
-      
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div>
@@ -141,7 +170,7 @@ function Venues({ modalOpen, setModalOpen }) {
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
             <div className="md:justify-between flex flex-col">
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between" >
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
                 <label className="text-xl">Name:</label>
                 <Input
                   placeholder="Name"
@@ -216,35 +245,6 @@ function Venues({ modalOpen, setModalOpen }) {
                   );
                 })}
             </div>
-            <div className="flex justify-center">
-              {/* <Button
-                type="primary"
-                size={"large"}
-                className="bg-blue-500"
-                onClick={() => HandleAddVenues()}
-              >
-                Add Venues
-              </Button> */}
-              {/* <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                onClick={() => HandleAddVenues()}
-              >
-                Add Venues
-              </button> */}
-            </div>
-            {/* <div className="flex flex-wrap">
-              {user.image &&()
-                Object.values(user.image).map((img, index) => {
-                  return (
-                    <img
-                      src={URL.createObjectURL(img)}
-                      alt=""
-                      key={index}
-                      className="w-[25%]"
-                    />
-                  );
-                })}
-            </div> */}
           </div>
         </div>
       </Modal>

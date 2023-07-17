@@ -15,22 +15,22 @@ function AdminMarqueeDetails() {
     <div>
       {/* <Navbar /> */}
       <div className="">
-        <div className="flex h-[100vh] ">
-          <div className="w-[30%] border flex flex-col">
+        <div className=" sidebar flex h-[100vh]  ">
+          <div className="w-[30%] border flex flex-col ">
             <button
-              className="w-full border-b text-left py-2 pl-1"
+              className=" side w-full    text-left py-2 pl-1 "
               onClick={() => setComponent("Venues")}
             >
               Venu
             </button>
             <button
-              className="w-full border-b text-left py-2 pl-1"
+              className=" side w-full   text-left py-2 pl-1"
               onClick={() => setComponent("menu")}
             >
               Menu
             </button>
             <button
-              className="w-full border-b text-left py-2 pl-1"
+              className=" side w-full   text-left py-2 pl-1"
               onClick={() => setComponent("dish")}
             >
               Dish

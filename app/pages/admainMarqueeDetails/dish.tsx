@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faCaretDown,} from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import { Space, Table, Tag } from "antd";
 // import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
@@ -9,7 +10,7 @@ import { Input, Modal } from "antd";
 const initialFormState = {
   name: "",
   price: "",
-  dishes: [], 
+  dishes: [],
 };
 function Dish({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
@@ -18,6 +19,7 @@ function Dish({ modalOpen, setModalOpen }) {
   const [addVenues, setAddVenues] = useState([]);
   const { userInformation, addUser } = useStore();
   const [blogs, setBlogs] = useState([]);
+  const { Column, ColumnGroup } = Table;
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
     "Chicken",
@@ -103,8 +105,18 @@ function Dish({ modalOpen, setModalOpen }) {
   console.log(blogs, "blogs111");
   return (
     <div className="md:container mx-auto">
-     
-        {blogs.map((blog, index) => {
+      <Table dataSource={blogs}>
+        <Column title="Name" dataIndex="name" key="name"  />
+        <Column title="Price" dataIndex="price" key="price" />
+        <Column title="Dish" dataIndex="dishes" key="dishes" render={(dishes) => (
+        <ul>
+          {dishes?.map((dish, index) => (
+            <li key={index}>{dish}</li>
+          ))}
+        </ul>
+      )} />
+      </Table>
+      {/* {blogs.map((blog, index) => {
           console.log(blog, "blog43344");
            return (
             <div key={index} className="border p-5 rounded-md mb-2">
@@ -119,16 +131,16 @@ function Dish({ modalOpen, setModalOpen }) {
             </div>
             </div>
           );
-        })}
-      <Modal 
-       className="text-center"
-       centered
-       open={modalOpen}
-       onOk={() => HandleAddVenues()}
-       onCancel={() => setModalOpen(false)}
-       width={900}
-       bodyStyle={{ height: 600 }}
-       okButtonProps={{ className: "custom-ok-button" }}
+        })} */}
+      <Modal
+        className="text-center"
+        centered
+        open={modalOpen}
+        onOk={() => HandleAddVenues()}
+        onCancel={() => setModalOpen(false)}
+        width={900}
+        bodyStyle={{ height: 600 }}
+        okButtonProps={{ className: "custom-ok-button" }}
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div>
@@ -136,7 +148,7 @@ function Dish({ modalOpen, setModalOpen }) {
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
             <div className="md:justify-between flex flex-col">
-              <div className=" mb-3 md:md:mb-6 flex flex-col md:flex-row  md:justify-between" >
+              <div className=" mb-3 md:md:mb-6 flex flex-col md:flex-row  md:justify-between">
                 <label className="text-xl">Name:</label>
                 <Input
                   placeholder="Name"
@@ -159,37 +171,37 @@ function Dish({ modalOpen, setModalOpen }) {
                 />
               </div>
             </div>
-            
-            <div className="mb-3 md:flex md:justify-between flex flex-col ">
-            <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
-              <div
-                className="border py-2 w-48  rounded-md relative"
-                onClick={() => setSelectedDish(!selectedDish)}
-              >
-                <div className="justify-between flex mx-2 ">
-                  Select Dish
-                  <FontAwesomeIcon icon={faCaretDown} />
-                </div>
-              </div>
 
-              {selectedDish && (
-                <div className="border  cursor-pointer w-48  absolute mt-10  ">
-                  {selectedOptions.map((item, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleItemClick(item)}
-                      style={{
-                        backgroundColor: selectedItems.includes(item)
-                          ? "gray"
-                          : "white",
-                      }}
-                    >
-                      <p>{item}</p>
-                    </div>
-                  ))}
+            <div className="mb-3 md:flex md:justify-between flex flex-col ">
+              <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
+                <div
+                  className="border py-2 w-48  rounded-md relative"
+                  onClick={() => setSelectedDish(!selectedDish)}
+                >
+                  <div className="justify-between flex mx-2 ">
+                    Select Dish
+                    <FontAwesomeIcon icon={faCaretDown} />
+                  </div>
                 </div>
-              )}
-            </div>
+
+                {selectedDish && (
+                  <div className="border  cursor-pointer w-48  absolute mt-10  ">
+                    {selectedOptions.map((item, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleItemClick(item)}
+                        style={{
+                          backgroundColor: selectedItems.includes(item)
+                            ? "gray"
+                            : "white",
+                        }}
+                      >
+                        <p>{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
