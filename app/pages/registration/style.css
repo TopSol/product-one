@@ -11,3 +11,23 @@
     }
  }
 
+.PhoneInput{
+ outline: none;
+ border-radius: 3px;
+ padding-top: 12px;
+ padding-bottom: 12px;
+ padding-left: 12px;
+ margin-bottom: 12px;
+ width: 100%;
+ display: flex;
+ align-items: center;
+ border: 1px solid #878D8D;
+}
+.PhoneInputInput{
+outline: none;
+}
+.PhoneInput:hover {
+    /* CSS styles for hover state */
+    /* e.g., change background color */
+    border-color: #4096FF;
+}

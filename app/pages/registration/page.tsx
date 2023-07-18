@@ -19,6 +19,9 @@ import { useStore } from "../../../store";
 import "./style.css";
 import icon from "./consonant";
 import L from "leaflet";
+import { Input } from "antd";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 const initialValue = {
   name: "",
   email: "",
@@ -28,12 +31,14 @@ const initialValue = {
   address: "",
 };
 const position = [51.505, -0.09];
-
 function details() {
   const [details, setDetails] = useState(initialValue);
   const { userInformation, addUser } = useStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [map, setMap] = useState(null);
+  const [modalOpen2, setModalOpen2] = useState(false);
+  const [location, setLocation] = useState({  lat: 55.702868,lng: 37.530865});
+  const [value, setValue] = useState();
   const [markerPos, setMarkerPos] = useState({
     lat: 55.702868,
     lng: 37.530865,
@@ -62,10 +67,6 @@ function details() {
       }, 100);
     }
   }, [map]);
-
-  // useEffect(() => {
-  //   console.log(`lat diff: ${markerPos.lat}, lng diff: ${markerPos.lng}`);
-  // }, [markerPos]);
 
   const markerRef = useRef();
   const updatePosition = React.useMemo(
@@ -98,10 +99,10 @@ function details() {
         name: details.name,
         email: details.email,
         address: details.address,
-        phoneNumber: details.phoneNumber,
+        phoneNumber: value,
         capacity: details.capacity,
-        lat: markerPos.lat,
-        lng: markerPos.lng,
+        lattitude: markerPos.lat,
+        longitude: markerPos.lng,
       };
 
       await addDoc(collection(db, "users"), userInfo);
@@ -125,26 +126,6 @@ function details() {
     iconSize: [40, 40],
   });
 
-  // function LeafletgeoSearch() {
-  //   const map = useMap();
-  //   useEffect(() => {
-  //     const provider = new OpenStreetMapProvider();
-  //     const searchControl = GeoSearchControl({
-  //       notFoundMessage: "Sorry, that address could not be found.",
-  //       provider,
-  //       showMarker: true,
-  //       style: "bar",
-  //       marker: {
-  //         icon,
-  //         draggable: true,
-  //       },
-  //     });
-      
-  //     map.addControl(searchControl);
-  //     return () => map.removeControl(searchControl);
-  //   }, []);
-  //   return null;
-  // }
   function LeafletgeoSearch() {
     const map = useMap();
     useEffect(() => {
@@ -159,122 +140,251 @@ function details() {
           draggable: true,
         },
       });
-  
+
       let marker;
-  
-      // Event handler for geosearch/showlocation event
-      map.on('geosearch/showlocation', function (result) {
+       map.on("geosearch/showlocation", function (result) {
         const { y: lat, x: lng } = result.location;
         if (marker) {
           marker.setLatLng([lat, lng]);
-          marker
+          marker;
           console.log("Updated Marker Position:", lat, lng);
         } else {
-          marker = L.marker([lat, lng],{icon:customMarkerIcon, draggable: true } ).addTo(map);
-          marker.on('dragend', function (event) {
+          marker = L.marker([lat, lng], {
+            icon: customMarkerIcon,
+            draggable: true,
+          }).addTo(map);
+          marker.on("dragend", function (event) {
             const { lat, lng } = event.target.getLatLng();
             console.log("Updated Marker Position:", lat, lng);
           });
         }
       });
-  
+
       map.addControl(searchControl);
       return () => {
         map.removeControl(searchControl);
         if (marker) {
-          marker.off('dragend');
+          marker.off("dragend");
           map.removeLayer(marker);
         }
       };
     }, []);
-  
+
     return null;
   }
+
+  // function LeafletgeoSearch() {
+  //   const map = useMap();
+  //   useEffect(() => {
+  //     const provider = new OpenStreetMapProvider();
+  //     const searchControl = GeoSearchControl({
+  //       notFoundMessage: "Sorry, that address could not be found.",
+  //       provider,
+  //       showMarker: false,
+  //       style: "bar",
+  //       marker: {
+  //         icon,
+  //         draggable: true,
+  //       },
+  //     });
+
+  //     let marker;
+  //     const handleShowLocation = (result) => {
+  //       const { y: lat, x: lng } = result.location;
+  //       if (marker) {
+  //         marker.setLatLng([lat, lng]);
+  //         console.log("Updated Marker Position:", lat, lng);
+  //       } else {
+  //         marker = L.marker([lat, lng], {
+  //           icon: customMarkerIcon,
+  //           draggable: true,
+  //         }).addTo(map);
+  //         marker.on("dragend", function (event) {
+  //           const { lat, lng } = event.target.getLatLng();
+  //           setLocation({ lat, lng });
+  //           console.log("Updated Marker Position:", lat, lng);
+  //         });
+  //       }
+  //     };
+  //     map.on("geosearch/showlocation", handleShowLocation);
+
+  //     map.addControl(searchControl);
+  //     return () => {
+  //       map.removeControl(searchControl);
+  //       if (marker) {
+  //         marker.off("dragend");
+  //         map.removeLayer(marker);
+  //       }
+  //       map.off("geosearch/showlocation", handleShowLocation);
+  //     };
+  //   }, [map]);
+
+  //   return null;
+  // }
+
+
+//   function LeafletgeoSearch() {
+//     const map = useMap();
+//      useEffect(() => {
+//       const provider = new OpenStreetMapProvider();
+//       const searchControl = GeoSearchControl({
+//         notFoundMessage: "Sorry, that address could not be found.",
+//         provider,
+//         showMarker: false,
+//         style: "bar",
+//         marker: {
+//           icon,
+//           draggable: true,
+//         },
+//       });
   
+//       let marker;
   
+//       const handleShowLocation = (result) => {
+//         const { y: lat, x: lng } = result.location;
+//         if (marker) {
+//           marker.setLatLng([lat, lng]);
+//           console.log("Updated Marker Position:", lat, lng);
+//         } else {
+//           marker = L.marker([lat, lng], {
+//             icon: customMarkerIcon,
+//             draggable: true,
+//           }).addTo(map);
+//           marker.on("dragend", function (event) {
+//             const { lat, lng } = event.target.getLatLng();
+//             console.log("Updated Marker Position 2:13213123", lat, lng);
+//             setLocation({ lat, lng });
+//           });
+//         }
+//       };
+  
+//       map.on("geosearch/showlocation", handleShowLocation);
+  
+//       map.addControl(searchControl);
+//       return () => {
+//         map.removeControl(searchControl);
+//         if (marker) {
+//           marker.off("dragend");
+//           map.removeLayer(marker);
+//         }
+//         map.off("geosearch/showlocation", handleShowLocation);
+//       };
+//     }, [map]);
+  
+//     return null;
+//   }
+//   console.log(location, "locatissonlocatissonlocatisson", location);
+
+//   useEffect(() => {
+//     const handleResize = () => {
+//       const windowWidth = window.innerWidth;
+//       console.log(windowWidth, "windowWidth");
+//       if (windowWidth >= 768) {
+//         setModalOpen2(true);
+//       } else {
+//         setModalOpen2(false);
+//       }
+//     };
+
+//     window.addEventListener("resize", handleResize);
+//     handleResize();
+//     return () => {
+//       window.removeEventListener("resize", handleResize);
+//     };
+//   }, []);
+// console.log(location, "location");
+
   return (
     <div>
-      <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
-        <h1 className=" lg:hidden ml-10 mb-3 text-2xl font-vollkorn text-textColor items-center">
-          Marquee Registration
-        </h1>
-        <div className="relative w-full lg:w-[65%] px-10">
-          <img
-            src="https://images.pexels.com/photos/3887985/pexels-photo-3887985.jpeg?auto=compress&cs=tinysrgb&w=600"
-            className=" lg:absolute inset-0 object-cover w-full h-full "
-          />
-          <div className="absolute  w-full inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-60"></div>
+      <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row">
+        <div className="relative w-full lg:w-[60%] px-10 md:block">
+          {modalOpen2 ? (
+            <img
+              src="https://images.pexels.com/photos/3887985/pexels-photo-3887985.jpeg?auto=compress&cs=tinysrgb&w=600"
+              className=" lg:absolute inset-0 object-cover w-full h-full"
+            />
+          ) : null}
+
+          {/* <div className="absolute  lg:w-full lg:mx-0 mx-10 inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-60"></div> */}
         </div>
 
-        <div className="w-full lg:w-[35%] px-10  py-3 2xl:justify-around rounded-md shadow-xl h-[100vh]  flex-col flex justify-between">
-          <h1 className="hidden lg:block mb-5 text-3xl font-vollkorn text-textColor items-center">
+        <div className="w-full lg:w-[40%] px-8 md:px-14  py-3 2xl:justify-around rounded-md shadow-xl overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200  flex-col flex justify-between">
+          <h1 className=" mb-5 text-3xl font-vollkorn text-textColor items-center">
             Marquee Registration
           </h1>
-          <div className="flex flex-col justify-between h-[80vh] 2xl:h-[50vh]">
+          <div className="flex flex-col justify-between  2xl:h-[50vh]">
+            <label className="font-roboto font-bold">Full Name</label>
             <div className="flex flex-col items-start">
-              <label className="font-roboto">Full Name</label>
-              <input
+              <Input
                 type="name"
                 placeholder="Enter name here..."
                 name="name"
                 value={details.name}
                 onChange={handleChange}
-                className="border-b w-[65%] outline-none  py-2 mb-3"
+                className=" outline-none rounded  py-3 mb-3"
               />
             </div>
+            <label className="font-roboto font-bold">Email</label>
             <div className="flex flex-col items-start">
-              <label className="font-roboto">Email</label>
-              <input
+              <Input
                 type="email"
                 name="email"
                 placeholder="Enter email here..."
                 value={details.email}
                 onChange={handleChange}
-                className="border-b w-[65%] outline-none  py-2 mb-3"
+                className=" outline-none rounded  py-3 mb-3"
               />
             </div>
+            <label className="font-roboto font-bold">Password</label>
             <div className="flex flex-col items-start">
-              <label className="font-roboto">Password</label>
-              <input
+              <Input
                 type="password"
                 name="password"
-                placeholder="************"
+                placeholder="Enter Password Here "
                 value={details.password}
                 onChange={handleChange}
-                className="border-b w-[65%] outline-none  py-2 mb-3"
+                className=" outline-none rounded  py-3 mb-3"
               />
             </div>
+            <label className="font-roboto font-bold">PhoneNumber</label>
             <div className="flex flex-col items-start">
-              <label className="font-roboto">PhoneNumber</label>
-              <input
+              {/* <Input
                 type="number"
                 name="phoneNumber"
                 placeholder="Enter phonenumber here..."
                 value={details.phoneNumber}
                 onChange={handleChange}
-                className="border-b w-[65%] outline-none  py-2 mb-3"
+                className=" outline-none rounded  py-3 mb-3"
+              /> */}
+              <PhoneInput
+                international
+                countryCallingCodeEditable={false}
+                defaultCountry="PK"
+                // value={`${value} ${details.phoneNumber}`}
+                value={value}
+                onChange={setValue}
               />
             </div>
+            <label className="font-roboto font-bold">Capacity:</label>
             <div className="flex flex-col items-start">
-              <label className="font-roboto">Capacity:</label>
-              <input
+              <Input
                 type="number"
                 name="capacity"
                 placeholder="Capacity of sitting..."
                 value={details.capacity}
                 onChange={handleChange}
-                className="border-b w-[65%] outline-none  py-2 mb-3 "
+                className=" outline-none rounded  py-3 mb-3 "
               />
             </div>
+            <label className="font-roboto font-bold">Address:</label>
             <div className="flex flex-col items-start">
-              <label className="font-roboto">Address:</label>
-              <input
+              <Input
                 type="text"
                 name="address"
                 placeholder="Enter address here..."
                 value={details.address}
                 onChange={handleChange}
-                className="border-b w-[65%] outline-none  py-2 mb-3 "
+                className=" outline-none rounded  py-3 mb-3 "
               />
             </div>
           </div>
@@ -305,7 +415,7 @@ function details() {
           scrollWheelZoom={false}
           style={{ height: "750px", width: "100%" }}
           whenCreated={setMap}
-          className="customGeoSearch pt-14 2xl:pt-0"
+          className="customGeoSearch pt-20 2xl:pt-0"
         >
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -314,7 +424,7 @@ function details() {
           <Marker
             position={position}
             draggable={true}
-          showMarker ={false}
+            showMarker={false}
             eventHandlers={updatePosition}
             ref={markerRef}
             icon={customMarkerIcon}

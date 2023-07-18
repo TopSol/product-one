@@ -19,7 +19,7 @@ module.exports = {
         headingColor: "#474747",
         blackColor: "#000",
         WhiteColor: "#ffff",
-        thirdColor: "fcb900",
+        thirdColor: "#fcb900",
       },
     },
   },

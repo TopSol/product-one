@@ -138,36 +138,36 @@ function Dish({ modalOpen, setModalOpen }) {
         open={modalOpen}
         onOk={() => HandleAddVenues()}
         onCancel={() => setModalOpen(false)}
-        width={900}
-        bodyStyle={{ height: 600 }}
+        width={600}
+        bodyStyle={{ height: 400 }}
         okButtonProps={{ className: "custom-ok-button" }}
       >
-        <div className=" w-full h-full flex justify-center items-center flex-col">
+        <div className=" w-full h-full flex justify-start mt-12 md:mt-0 md:justify-center items-center flex-col">
           <div>
             <p className="text-2xl mb-2">Menus</p>
           </div>
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
-            <div className="md:justify-between flex flex-col">
-              <div className=" mb-3 md:md:mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl">Name:</label>
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col w-[100%]  justify-center ">
+          <div className="md:flex md:justify-between flex flex-col ">
+              <label className="text-xl my-1">Name</label>
+              <div className="mb-6 flex flex-col  md:flex-row md:justify-between">
                 <Input
-                  placeholder="Name"
-                  type="text"
+                  placeholder="Enter Name Here"
+                  type="name"
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="md:w-[50%]"
+                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
-              <div className="md:mb-6 flex flex-col  md:flex-row md:justify-between">
-                <label className="text-xl">Price:</label>
+              <label className="text-xl my-1">Price</label>
+              <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
                 <Input
-                  placeholder="Price"
-                  type="number"
+                  placeholder="Enter Price Here"
+                  type="price"
                   name="price"
                   value={user.price}
                   onChange={handleChange}
-                  className="md:w-[50%]"
+                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
             </div>
@@ -175,10 +175,10 @@ function Dish({ modalOpen, setModalOpen }) {
             <div className="mb-3 md:flex md:justify-between flex flex-col ">
               <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
                 <div
-                  className="border py-2 w-48  rounded-md relative"
+                  className="border py-2 w-full  rounded-md relative"
                   onClick={() => setSelectedDish(!selectedDish)}
                 >
-                  <div className="justify-between flex mx-2 ">
+                  <div className="justify-between flex mx-2">
                     Select Dish
                     <FontAwesomeIcon icon={faCaretDown} />
                   </div>

@@ -13,9 +13,10 @@ function AdminMarqueeDetails() {
   };
   return (
     <div>
-      <div className="mt-28 md:container mx-auto">
-        <div className="flex h-[85vh] ">
-          <div className="w-[30%] border flex flex-col">
+      {/* <Navbar /> */}
+      <div className="">
+        <div className=" sidebar flex h-[100vh]  ">
+          <div className="w-[30%] border flex flex-col ">
             <button
               className=" side w-full    text-left py-2 pl-1 "
               onClick={() => setComponent("Venues")}
@@ -35,7 +36,7 @@ function AdminMarqueeDetails() {
               Dish
             </button>
           </div>
-          <div className="w-[70%] bg-slate-300 h-[100vh] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200 " >
+          <div className="w-[70%] bg-slate-300 h-[100vh]  overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200 ">
             <div className="flex justify-end">
               {component === "Venues" ? (
                 <button

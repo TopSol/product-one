@@ -82,14 +82,16 @@ function Venues({ modalOpen, setModalOpen }) {
     const images = Object.values(user.image);
     const folderName = `images`;
     // let imagesUrls = [];
-    const imageUrls = await Promise.all(images.map(async (image) => {
+    const imageUrls = await Promise.all(
+      images.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
-        console.log("imageUrls123", urls)
-        return urls
-      }));
+        console.log("imageUrls123", urls);
+        return urls;
+      })
+    );
     if (
       !user.name ||
       !user.image ||
@@ -102,10 +104,7 @@ function Venues({ modalOpen, setModalOpen }) {
 
     const venue = {
       name: user.name,
-<<<<<<< HEAD
-=======
       image: imageUrls,
->>>>>>> 59d57d2b24a1a46b3f919bc3014bdd0f8fd79718
       minCapacity: user.minCapacity,
       maxCapacity: user.maxCapacity,
       userId: userInformation.userId,
@@ -117,8 +116,6 @@ function Venues({ modalOpen, setModalOpen }) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
-<<<<<<< HEAD
-=======
     // const folderName = `images`;
     // images.forEach(async (img) => {
     //   const imageRef = ref(storage, `${folderName}/${img.name + Date.now()}`);
@@ -129,13 +126,12 @@ function Venues({ modalOpen, setModalOpen }) {
     //   });
     // });
 
->>>>>>> 59d57d2b24a1a46b3f919bc3014bdd0f8fd79718
     setModalOpen(false);
     setUser(initialFormState);
   };
   return (
     <>
-      <div className="md:container mx-auto">
+      <div className="md:container mx-auto ">
         {blogs.map((item, index) => {
           // console.log(item, "item333");
           return (
@@ -147,45 +143,52 @@ function Venues({ modalOpen, setModalOpen }) {
                 {/* <p>{item.availability}</p> */}
                 <p>{item.price}</p>
                 {item?.image &&
-                item?.image.map((img, index) => (
-                  <div key={index} className="w-[20%] h-[20%] bg-slate-500">
-                     <img src={img} alt="img" className="w-full h-full" />
-                  </div>
-                ))}
+                  item?.image.map((img, index) => (
+                    <div key={index} className="w-[20%] h-[20%] bg-slate-500">
+                      <img src={img} alt="img" className="w-full h-full" />
+                    </div>
+                  ))}
               </div>
             </div>
           );
         })}
       </div>
       <Modal
-        className="text-center"
+        className="text-center w-full"
         centered
         open={modalOpen}
         onOk={() => HandleAddVenues()}
         onCancel={() => setModalOpen(false)}
-        width={900}
-        bodyStyle={{ height: 500 }}
+        width={700}
+        bodyStyle={{ height: 630 }}
         okButtonProps={{ className: "custom-ok-button" }}
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
-          <div>
-            <p className="text-2xl mb-2">Venus</p>
+          <div className="mr-auto">
+            <p className="text-2xl mt-5  ">Venues</p>
           </div>
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
+          <hr className="w-full bg-black my-3" />
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[100%]  justify-center ">
             <div className="md:justify-between flex flex-col">
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl">Name:</label>
+              <label className="text-xl my-1">
+                {" "}
+                <span className="text-red-600">*</span> Name
+              </label>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Name"
                   type="text"
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="md:w-[50%]"
+                  className="rounded-none flex w-full py-2 lg:py-3"
                 />
               </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl">Images</label>
+              <label className="text-xl my-1">
+                {" "}
+                <span className="text-red-600">*</span> Image
+              </label>
+                <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
                 <Input
                   placeholder="Basic usage"
                   type="file"
@@ -194,47 +197,48 @@ function Venues({ modalOpen, setModalOpen }) {
                   onChange={(e) => {
                     setUser({ ...user, image: e.target.files });
                   }}
-                  className="md:w-[50%]"
+                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
             </div>
             <div className="md:flex md:justify-between flex flex-col ">
+              <label className="text-xl my-1">Minimum Capacity:</label>
               <div className="mb-6 flex flex-col  md:flex-row md:justify-between">
-                <label className="text-xl">Minimum Capacity:</label>
                 <Input
                   placeholder="Minimum Capacity"
                   type="number"
                   name="minCapacity"
                   value={user.minCapacity}
                   onChange={handleChange}
-                  className="md:w-[50%]"
+                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
+              <label className="text-xl my-1">Maximum Capacity:</label>
               <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <label className="text-xl">Maximum Capacity:</label>
                 <Input
                   placeholder="Maximum Capacity"
                   type="number"
                   name="maxCapacity"
                   value={user.maxCapacity}
                   onChange={handleChange}
-                  className="md:w-[50%]"
+                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
             </div>
             <div className="md:flex md:justify-between flex flex-col ">
+              <label className="text-xl my-1">price:</label>
               <div className="flex flex-col  md:flex-row  md:justify-between">
-                <label className="text-xl">price:</label>
                 <Input
                   placeholder="Number"
                   type="number"
                   name="price"
                   value={user.price}
                   onChange={handleChange}
-                  className="md:w-[50%]"
+                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
             </div>
+
             <div className="flex flex-wrap">
               {user.image &&
                 Object.values(user.image).map((img, index) => {
@@ -248,26 +252,6 @@ function Venues({ modalOpen, setModalOpen }) {
                   );
                 })}
             </div>
-<<<<<<< HEAD
-            <div className="flex justify-center">
-              {/* <Button
-                type="primary"
-                size={"large"}
-                className="bg-blue-500"
-                onClick={() => HandleAddVenues()}
-              >
-                Add Venues
-              </Button> */}
-              {/* <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                onClick={() => HandleAddVenues()}
-              >
-                Add Venues
-              </button> */}
-            </div>
-            
-=======
->>>>>>> 59d57d2b24a1a46b3f919bc3014bdd0f8fd79718
           </div>
         </div>
       </Modal>
