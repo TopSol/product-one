@@ -107,7 +107,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu }) {
               <ul>
                 {item?.dish?.map((dish, index) => {
                   if (index < 3) {
-                    return <li>{dish}</li>;
+                    return <li key={index}>{dish}</li>;
                     // return <li key={index}>{dish}</li>;
                   }
                   return null;

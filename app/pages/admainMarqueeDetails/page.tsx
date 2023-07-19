@@ -30,18 +30,17 @@ function AdminMarqueeDetails() {
       icon: faBellConcierge,
     },
     {
-      name: "Menu",
+      name: "Dish",
       icon: faUtensils,
     },
     {
-      name: "Dish",
+      name: "Menu",
       icon: faUtensils,
     },
   ];
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
-      console.log(windowWidth, "windowWidth");
       if (windowWidth >= 768) {
         setModalOpen2(true);
       } else {
@@ -64,8 +63,6 @@ function AdminMarqueeDetails() {
     setPhotoIndex(index);
     setIsOpen(true);
   };
-  console.log(image, "image");
-
   return (
     <div>
       {/* <Navbar /> */}
@@ -81,6 +78,8 @@ function AdminMarqueeDetails() {
             <div className="w-[130%] md:w-[15%] border flex flex-col">
               <p className=" text-xl pl-2 py-5">Marquee</p>
               {sideBar.map((item, index) => (
+                <div key={index}>
+
                 <button
                   className={`side w-full text-left py-2 ${
                     component === item.name ? "bg-sidebarColor" : ""
@@ -93,21 +92,22 @@ function AdminMarqueeDetails() {
                       setModalOpen2(!modalOpen2);
                     }
                   }}
-                >
+                  >
                   {component === item.name ? (
                     <span className="bg-sidebarItemColor px-[2px] pt-[11px] pb-[9px]" />
-                  ) : null}
+                    ) : null}
                   <span
                     className={`pl-${
                       component === item.name ? "8" : ""
                     } pl-[29px] text-${
                       component !== item.name ? "sidebarColorText" : ""
                     }`}
-                  >
+                    >
                     <FontAwesomeIcon icon={item.icon} className="pr-3" />
                     {item.name}
                   </span>
                 </button>
+                    </div>
               ))}
             </div>
           ) : null}
@@ -157,9 +157,9 @@ function AdminMarqueeDetails() {
                   setModalOpen={setModalOpen}
                   handleClick={handleClick}
                 />
-              ) : component === "Menu" ? (
-                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen} handleClick={handleClick}/>
               ) : component === "Dish" ? (
+                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen} handleClick={handleClick}/>
+              ) : component === "Menu" ? (
                 <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} />
               ) : null}
             </div>

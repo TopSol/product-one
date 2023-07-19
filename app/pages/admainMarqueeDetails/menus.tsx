@@ -11,6 +11,7 @@ import {
 import {
   collection,
   getDocs,
+  getDoc,
   setDoc,
   doc,
   deleteDoc,
@@ -28,12 +29,13 @@ const initialFormState = {
   description: "",
   // category: "",
 };
-function Menus({ modalOpen, setModalOpen,handleClick}) {
-  const { userInformation, addUser } = useStore();
+function Menus({ modalOpen, setModalOpen, handleClick }) {
+  const { userInformation, addUser,addMenus,Menus } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const { Column } = Table;
+  const [openEditVenue, setOpenEditVenue] = useState(false);
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
@@ -66,7 +68,7 @@ function Menus({ modalOpen, setModalOpen,handleClick}) {
             id: doc.id,
           }));
 
-        setBlogs(tempArray);
+          addMenus(tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
@@ -133,16 +135,42 @@ function Menus({ modalOpen, setModalOpen,handleClick}) {
   const deleteMenu = async (menuId) => {
     try {
       await deleteDoc(doc(db, "Menus", menuId));
-      const newBlogs = blogs.filter((blog) => blog.id !== menuId);
-      setBlogs(newBlogs);
+      const newBlogs = Menus.filter((blog) => blog.id !== menuId);
+      addMenus(newBlogs);
     } catch (error) {
       console.log(error, "error");
     }
   };
-  console.log(blogs, "blogs");
+   const EditVenue = async (dishId) => {
+    setOpenEditVenue(true);
+    setModalOpen((prevState) => !prevState);
+    const docRef = doc(db, "Menus", dishId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setUser(docSnap.data());
+      // setSelectedItems(docSnap.data().dishes);
+      console.log("Document data:", docSnap.data());
+    } else {
+      console.log("No such document!");
+    }
+  };
+  const updateVenue = async (venueId) => {
+   
+    try {
+      await setDoc(doc(db, "Menus", venueId), user);
+      const newBlogs = Menus.filter((blog) => blog.id !== venueId);
+      console.log(newBlogs,"newBlogs33",user)
+      addMenus([...newBlogs,{...user,id:venueId}])
+    } catch (error) {
+      console.log(error, "error");
+    }
+    setModalOpen(false);
+    setUser(initialFormState);
+    setOpenEditVenue(false)
+  };
   return (
     <div className="">
-      <Table dataSource={blogs} className="myTable">
+      <Table dataSource={Menus} className="myTable">
         <Column title="Name" dataIndex="name" key="name" />
         <Column title="Type" dataIndex="type" key="type" />
         <Column title="Description" dataIndex="description" key="description" />
@@ -161,9 +189,9 @@ function Menus({ modalOpen, setModalOpen,handleClick}) {
                     src={dish}
                     alt="img"
                     width={60}
-                      height={60}
-                      className="mr-2"
-                      onClick={() => handleClick(image,index)}
+                    height={60}
+                    className="mr-2"
+                    onClick={() => handleClick(image, index)}
                   />
                 );
               })}
@@ -188,6 +216,7 @@ function Menus({ modalOpen, setModalOpen,handleClick}) {
                 className="ml-3 text-green-500 text-xl"
                 width={40}
                 height={40}
+                onClick={() => EditVenue(menuId)}
               />
             </div>
           )}
@@ -197,110 +226,13 @@ function Menus({ modalOpen, setModalOpen,handleClick}) {
         className="text-center"
         centered
         open={modalOpen}
-        onOk={() => HandleAddVenues()}
+        // onOk={() => HandleAddVenues()}
+        onOk={() => openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()}
         onCancel={() => setModalOpen(false)}
         width={700}
         bodyStyle={{ height: 800 }}
         okButtonProps={{ className: "custom-ok-button" }}
       >
-        {/* <div className=" w-full h-full flex justify-center items-center flex-col">
-          <div>
-            <p className="text-2xl mb-2">Menus</p>
-          </div>
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col md:border-2 w-[100%] md:w-[70%]  justify-center ">
-            <div className="md:justify-between flex flex-col">
-              <div className=" mb-3 md:md:mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl">Name:</label>
-                <Input
-                  placeholder="Name"
-                  type="text"
-                  name="name"
-                  value={user.name}
-                  onChange={handleChange}
-                  className="md:w-[50%]"
-                />
-              </div>
-              <div className="mb-3 md:mb-6 flex flex-col md:flex-row  md:justify-between">
-                <label className="text-xl">Images:</label>
-                <Input
-                  placeholder="Basic usage"
-                  type="file"
-                  name="image"
-                  multiple
-                  onChange={(e) => {
-                    setUser({ ...user, image: e.target.files });
-                  }}
-                  className="md:w-[50%]"
-                />
-              </div>
-            </div>
-            <div className="mb-3 md:flex md:justify-between flex flex-col ">
-              <div className="md:mb-6 flex flex-col  md:flex-row md:justify-between">
-                <label className="text-xl">Price:</label>
-                <Input
-                  placeholder="Price"
-                  type="number"
-                  name="price"
-                  value={user.price}
-                  onChange={handleChange}
-                  className="md:w-[50%]"
-                />
-              </div>
-              <div className="mb-3 md:mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <label className="text-xl">Type:</label>
-                <Input
-                  placeholder="Type"
-                  type="text"
-                  name="type"
-                  value={user.type}
-                  onChange={handleChange}
-                  className="md:w-[50%]"
-                />
-              </div>
-            </div>
-            <div className="md:flex md:justify-between flex flex-col ">
-              <div className="mb-3 md:mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <label className="text-xl">availability:</label>
-                <Input
-                  placeholder="availability"
-                  type="text"
-                  name="availability"
-                  value={user.availability}
-                  onChange={handleChange}
-                  className="md:w-[50%]"
-                />
-              </div>
-            </div>
-            <div className="mb-3 md:flex md:justify-between flex flex-col ">
-              <div className="flex flex-col  md:flex-row  md:justify-between">
-                <label className="text-xl">description:</label>
-                <TextArea
-                  rows={4}
-                  maxLength={6}
-                  placeholder="Number"
-                  name="description"
-                  value={user.description}
-                  onChange={handleChange}
-                  className="md:w-[50%]"
-                />
-              </div>
-            </div>
-            <div className="flex flex-wrap">
-              {user.image &&
-                Object.values(user.image).map((img, index) => {
-                  return (
-                    <img
-                      src={URL.createObjectURL(img)}
-                      alt=""
-                      key={index}
-                      className="w-[25%]"
-                    />
-                  );
-                })}
-            </div>
-          </div>
-        </div> */}
-
         <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
           <div className="mr-auto">
             <p className="text-2xl    ">Menus</p>
@@ -392,7 +324,7 @@ function Menus({ modalOpen, setModalOpen,handleClick}) {
               </div>
             </div>
 
-            <div className="flex flex-wrap">
+            {/* <div className="flex flex-wrap">
               {user.image &&
                 Object.values(user.image).map((img, index) => {
                   return (
@@ -404,7 +336,7 @@ function Menus({ modalOpen, setModalOpen,handleClick}) {
                     />
                   );
                 })}
-            </div>
+            </div> */}
           </div>
         </div>
       </Modal>

@@ -275,28 +275,27 @@ function details() {
 //   }
 //   console.log(location, "locatissonlocatissonlocatisson", location);
 
-//   useEffect(() => {
-//     const handleResize = () => {
-//       const windowWidth = window.innerWidth;
-//       console.log(windowWidth, "windowWidth");
-//       if (windowWidth >= 768) {
-//         setModalOpen2(true);
-//       } else {
-//         setModalOpen2(false);
-//       }
-//     };
+  useEffect(() => {
+    const handleResize = () => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth >= 768) {
+        setModalOpen2(true);
+      } else {
+        setModalOpen2(false);
+      }
+    };
 
-//     window.addEventListener("resize", handleResize);
-//     handleResize();
-//     return () => {
-//       window.removeEventListener("resize", handleResize);
-//     };
-//   }, []);
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 // console.log(location, "location");
 
   return (
     <div>
-      <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row">
+      <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row h-[100vh]">
         <div className="relative w-full lg:w-[60%] px-10 md:block">
           {modalOpen2 ? (
             <img
@@ -304,17 +303,15 @@ function details() {
               className=" lg:absolute inset-0 object-cover w-full h-full"
             />
           ) : null}
-
-          {/* <div className="absolute  lg:w-full lg:mx-0 mx-10 inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-60"></div> */}
         </div>
 
         <div className="w-full lg:w-[40%] px-8 md:px-14  py-3 2xl:justify-around rounded-md shadow-xl overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200  flex-col flex justify-between">
           <h1 className=" mb-5 text-3xl font-vollkorn text-textColor items-center">
             Marquee Registration
           </h1>
-          <div className="flex flex-col justify-between  2xl:h-[50vh]">
-            <label className="font-roboto font-bold">Full Name</label>
+          <div className="flex flex-col justify-between  h-[80vh] 2xl:h-[70vh]">
             <div className="flex flex-col items-start">
+            <label className="font-roboto font-bold">Full Name</label>
               <Input
                 type="name"
                 placeholder="Enter name here..."
@@ -324,8 +321,8 @@ function details() {
                 className=" outline-none rounded  py-3 mb-3"
               />
             </div>
-            <label className="font-roboto font-bold">Email</label>
             <div className="flex flex-col items-start">
+            <label className="font-roboto font-bold">Email</label>
               <Input
                 type="email"
                 name="email"
@@ -335,8 +332,8 @@ function details() {
                 className=" outline-none rounded  py-3 mb-3"
               />
             </div>
-            <label className="font-roboto font-bold">Password</label>
             <div className="flex flex-col items-start">
+            <label className="font-roboto font-bold">Password</label>
               <Input
                 type="password"
                 name="password"
@@ -346,16 +343,8 @@ function details() {
                 className=" outline-none rounded  py-3 mb-3"
               />
             </div>
-            <label className="font-roboto font-bold">PhoneNumber</label>
             <div className="flex flex-col items-start">
-              {/* <Input
-                type="number"
-                name="phoneNumber"
-                placeholder="Enter phonenumber here..."
-                value={details.phoneNumber}
-                onChange={handleChange}
-                className=" outline-none rounded  py-3 mb-3"
-              /> */}
+            <label className="font-roboto font-bold">PhoneNumber</label>
               <PhoneInput
                 international
                 countryCallingCodeEditable={false}
@@ -365,8 +354,8 @@ function details() {
                 onChange={setValue}
               />
             </div>
-            <label className="font-roboto font-bold">Capacity:</label>
             <div className="flex flex-col items-start">
+            <label className="font-roboto font-bold">Capacity:</label>
               <Input
                 type="number"
                 name="capacity"
@@ -376,8 +365,8 @@ function details() {
                 className=" outline-none rounded  py-3 mb-3 "
               />
             </div>
-            <label className="font-roboto font-bold">Address:</label>
             <div className="flex flex-col items-start">
+            <label className="font-roboto font-bold">Address:</label>
               <Input
                 type="text"
                 name="address"

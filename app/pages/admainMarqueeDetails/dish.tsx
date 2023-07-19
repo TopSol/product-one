@@ -11,6 +11,7 @@ import { db } from "@/app/firebase";
 import {
   collection,
   getDocs,
+  getDoc,
   addDoc,
   setDoc,
   doc,
@@ -25,10 +26,11 @@ const initialFormState = {
 };
 function Dish({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
-  const [selectedDish, setSelectedDish] = useState(false);
+  const [openDishMenus, setOpenDishMenus] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [addVenues, setAddVenues] = useState([]);
-  const { userInformation, addUser } = useStore();
+  const [updateDish, setUpdateDish] = useState(false);
+  const { userInformation, addUser,Dishes,addDishes } = useStore();
   const [blogs, setBlogs] = useState([]);
   const { Column } = Table;
   const [selectedOptions, setSelectedOptions] = useState([
@@ -63,7 +65,6 @@ function Dish({ modalOpen, setModalOpen }) {
       }));
     }
   };
-  console.log(user, "userddd");
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -81,8 +82,8 @@ function Dish({ modalOpen, setModalOpen }) {
             ...doc.data(),
             id: doc.id,
           }));
-
-        setBlogs(tempArray);
+          addDishes(tempArray)
+        // setBlogs(tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
@@ -90,7 +91,7 @@ function Dish({ modalOpen, setModalOpen }) {
 
     fetchBlogs();
   }, [addVenues]);
-  const HandleAddVenues = async () => {
+  const AddDish = async () => {
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
@@ -115,16 +116,44 @@ function Dish({ modalOpen, setModalOpen }) {
   const deleteDish = async (dishId) => {
     try {
       await deleteDoc(doc(db, "Dish", dishId));
-      const newBlogs = blogs.filter((blog) => blog.id !== dishId);
-      setBlogs(newBlogs);
+      const newBlogs = Dishes.filter((blog) => blog.id !== dishId);
+      addDishes(newBlogs)
+      // Dishes(newBlogs);
     } catch (error) {
       console.log(error, "error");
     }
   };
-  console.log(blogs, "blogs111");
+  const EditDish = async (dishId) => {
+    setUpdateDish(true);
+    setModalOpen((prevState) => !prevState);
+    const docRef = doc(db, "Dish", dishId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setUser(docSnap.data());
+      setSelectedItems(docSnap.data().dishes);
+      console.log("Document data:", docSnap.data());
+    } else {
+      console.log("No such document!");
+    }
+  };
+  const update = async (venueId) => {
+    try {
+      await setDoc(doc(db, "Dish", venueId), user);
+      const newBlogs = Dishes.filter((blog) => blog.id !== venueId);
+      console.log(newBlogs,"newBlogs33",user)
+      addDishes([...newBlogs,{...user,id:venueId}])
+    } catch (error) {
+      console.log(error, "error");
+    }
+    setModalOpen(false);
+    setUser(initialFormState);
+    setSelectedItems([]);
+    setUpdateDish(false);
+  };
+  console.log(user, "user")
   return (
     <div className="">
-      <Table dataSource={blogs} className="myTable">
+      <Table dataSource={Dishes} className="myTable">
         <Column title="Name" dataIndex="name" key="name" />
         <Column title="Price" dataIndex="price" key="price" />
         <Column
@@ -147,12 +176,17 @@ function Dish({ modalOpen, setModalOpen }) {
             <div>
               <FontAwesomeIcon
                 icon={faTrashCan}
-                className="text-red-500 cursor-pointer"
+                width={40}
+                height={40}
+                className="text-red-500 cursor-pointer text-xl"
                 onClick={() => deleteDish(dishId)}
               />
               <FontAwesomeIcon
                 icon={faPenToSquare}
-                className="ml-2 text-green-500 "
+                width={40}
+                height={40}
+                className="ml-3 text-green-500 text-xl"
+                onClick={() => EditDish(dishId)}
               />
             </div>
           )}
@@ -162,7 +196,8 @@ function Dish({ modalOpen, setModalOpen }) {
         className="text-center"
         centered
         open={modalOpen}
-        onOk={() => HandleAddVenues()}
+        // onOk={() => AddDish()}
+        onOk={() => (updateDish ?  update(user?.dishId)  : AddDish())} 
         onCancel={() => setModalOpen(false)}
         width={600}
         bodyStyle={{ height: 400 }}
@@ -173,7 +208,7 @@ function Dish({ modalOpen, setModalOpen }) {
             <p className="text-2xl mb-2">Menus</p>
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col w-[100%]  justify-center ">
-          <div className="md:flex md:justify-between flex flex-col ">
+            <div className="md:flex md:justify-between flex flex-col ">
               <label className="text-xl my-1">Name</label>
               <div className="mb-6 flex flex-col  md:flex-row md:justify-between">
                 <Input
@@ -199,10 +234,10 @@ function Dish({ modalOpen, setModalOpen }) {
             </div>
 
             <div className="mb-3 md:flex md:justify-between flex flex-col ">
-              <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
+              <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative  ">
                 <div
-                  className="border py-2 w-full  rounded-md relative"
-                  onClick={() => setSelectedDish(!selectedDish)}
+                  className="border py-3 w-[100%]relative"
+                  onClick={() => setOpenDishMenus(!openDishMenus)}
                 >
                   <div className="justify-between flex mx-2">
                     Select Dish
@@ -210,8 +245,8 @@ function Dish({ modalOpen, setModalOpen }) {
                   </div>
                 </div>
 
-                {selectedDish && (
-                  <div className="border  cursor-pointer w-48  absolute mt-10  ">
+                {openDishMenus && (
+                  <div className="border  cursor-pointer w-[100%] absolute mt-10  ">
                     {selectedOptions.map((item, index) => (
                       <div
                         key={index}
@@ -222,7 +257,7 @@ function Dish({ modalOpen, setModalOpen }) {
                             : "white",
                         }}
                       >
-                        <p>{item}</p>
+                        <p className="pl-2">{item}</p>
                       </div>
                     ))}
                   </div>
