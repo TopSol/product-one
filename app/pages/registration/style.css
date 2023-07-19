@@ -1,6 +1,3 @@
-.customGeoSearch .leaflet-control-zoom {
-    margin-top: 60px;
-}
 .customGeoSearch  .leaflet-marker-shadow  {
     display: none;
 }
@@ -31,3 +28,4 @@ outline: none;
     /* e.g., change background color */
     border-color: #4096FF;
 }
+
