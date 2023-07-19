@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 // import Modal from "@/app/component/Modal";
+import ImageLightbox from "react-image-lightbox";
 import { Input } from "antd";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "@/app/firebase";
 import "./style.css";
+import { Table } from "antd";
 import { useStore } from "../../../store";
 import {
   getStorage,
@@ -12,7 +20,9 @@ import {
   getDownloadURL,
   listAll,
 } from "firebase/storage";
-import { Button, Modal } from "antd";
+import { Modal } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 const initialFormState = {
   name: "",
   image: "",
@@ -20,15 +30,14 @@ const initialFormState = {
   maxCapacity: "",
   price: "",
 };
-function Venues({ modalOpen, setModalOpen }) {
+function Venues({ modalOpen, setModalOpen,handleClick }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const [blogs, setBlogs] = useState([]);
-  // const [imageUrls, setImageUrls] = useState([]);
+  const { Column } = Table;
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const { userInformation, addUser } = useStore();
   const storage = getStorage();
-
   console.log(user, "user33");
   const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
@@ -38,10 +47,6 @@ function Venues({ modalOpen, setModalOpen }) {
       [name]: value,
     }));
   };
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
   useEffect(() => {
     listAll(ImageRef)
       .then((res) => {
@@ -71,17 +76,9 @@ function Venues({ modalOpen, setModalOpen }) {
 
     fetchBlogs();
   }, [addVenues]);
-  console.log(addVenuesImage, "addVenudddesImage");
-  const handleUpload = async (img) => {
-    const storageRef = ref(storage, "images/" + img.name);
-    await uploadBytes(storageRef, img);
-    const downloadURL = await getDownloadURL(storageRef);
-  };
-
   const HandleAddVenues = async () => {
     const images = Object.values(user.image);
     const folderName = `images`;
-    // let imagesUrls = [];
     const imageUrls = await Promise.all(
       images.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
@@ -101,58 +98,94 @@ function Venues({ modalOpen, setModalOpen }) {
     ) {
       return;
     }
-
+    const VenueId = Math.random().toString(36).substring(2);
     const venue = {
       name: user.name,
       image: imageUrls,
       minCapacity: user.minCapacity,
       maxCapacity: user.maxCapacity,
       userId: userInformation.userId,
+      venueId: VenueId,
+      // availability: user.availability,
       price: user.price,
     };
     try {
-      await addDoc(collection(db, "Venues"), venue);
+      await setDoc(doc(db, "Venues", VenueId), venue);
     } catch (error) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
-    // const folderName = `images`;
-    // images.forEach(async (img) => {
-    //   const imageRef = ref(storage, `${folderName}/${img.name + Date.now()}`);
-    //   await uploadBytes(imageRef, img).then((snapshot) => {
-    //     getDownloadURL(snapshot.ref).then((url) => {
-    //       setImageUrls((prev) => [...prev, url]);
-    //     });
-    //   });
-    // });
-
     setModalOpen(false);
     setUser(initialFormState);
   };
+  const deleteVenue = async (VenueId) => {
+    try {
+      await deleteDoc(doc(db, "Venues", VenueId));
+      const newBlogs = blogs.filter((blog) => blog.id !== VenueId);
+      setBlogs(newBlogs);
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
+  };
+  console.log(blogs, "blogs");
   return (
     <>
-      <div className="md:container mx-auto ">
-        {blogs.map((item, index) => {
-          // console.log(item, "item333");
-          return (
-            <div key={index} className="border p-5 rounded-md mb-2">
-              <div className="flex justify-between">
-                <p>{item.name}</p>
-                <p>{item.minCapacity}</p>
-                <p>{item.maxCapacity}</p>
-                {/* <p>{item.availability}</p> */}
-                <p>{item.price}</p>
-                {item?.image &&
-                  item?.image.map((img, index) => (
-                    <div key={index} className="w-[20%] h-[20%] bg-slate-500">
-                      <img src={img} alt="img" className="w-full h-full" />
-                    </div>
-                  ))}
+      <div className="">
+        <Table dataSource={blogs} className="myTable">
+          <Column title="Name" dataIndex="name" key="name" />
+          <Column
+            title="Minimum Capacity"
+            dataIndex="minCapacity"
+            key="minCapacity"
+          />
+          <Column
+            title="Maximum Capacity"
+            dataIndex="maxCapacity"
+            key="maxCapacity"
+          />
+          <Column title="Price" dataIndex="price" key="price" />
+          <Column
+            title="Images"
+            dataIndex="image"
+            key="image"
+            render={(image) => (
+              <div className="flex">
+                {image?.map((dish, index) => {
+                  return (
+                    <img
+                      key={index}
+                      src={dish}
+                      alt="img"
+                      width={50}
+                      height={50}
+                      className="mr-2"
+                      onClick={() => handleClick(image,index)}
+                    />
+                  );
+                })}
               </div>
-            </div>
-          );
-        })}
-      </div>
+            )}
+          />
+          <Column
+            title="Action"
+            dataIndex="venueId"
+            key="venueId"
+            render={(venueId) => (
+              <div>
+                <FontAwesomeIcon
+                  icon={faTrashCan}
+                  className="text-red-500 cursor-pointer text-xl"
+                  onClick={() => deleteVenue(venueId)}
+                />
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  className="ml-3 text-green-500 text-xl"
+                />
+              </div>
+            )}
+          />
+        </Table>
+        </div>
       <Modal
         className="text-center w-full"
         centered
