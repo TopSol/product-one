@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faPenToSquare,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 import { Table, Tag } from "antd";
 // import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  setDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Input, Modal } from "antd";
 const initialFormState = {
@@ -60,9 +71,6 @@ function Dish({ modalOpen, setModalOpen }) {
       [name]: value,
     }));
   };
-  const closeModal = () => {
-    setModalOpen(false);
-  };
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -83,55 +91,73 @@ function Dish({ modalOpen, setModalOpen }) {
     fetchBlogs();
   }, [addVenues]);
   const HandleAddVenues = async () => {
-    console.log(user, "user44444666");
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
+    const DishId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
       userId: userInformation.userId,
       price: user.price,
+      dishId: DishId,
       dishes: user.dishes,
     };
     try {
-      await addDoc(collection(db, "Dish"), users);
+      await setDoc(doc(db, "Dish", DishId), users);
     } catch (error) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
     setUser(initialFormState);
+    setSelectedItems([]);
+  };
+  const deleteDish = async (dishId) => {
+    try {
+      await deleteDoc(doc(db, "Dish", dishId));
+      const newBlogs = blogs.filter((blog) => blog.id !== dishId);
+      setBlogs(newBlogs);
+    } catch (error) {
+      console.log(error, "error");
+    }
   };
   console.log(blogs, "blogs111");
   return (
     <div className="">
       <Table dataSource={blogs} className="myTable">
-        <Column title="Name" dataIndex="name" key="name"  />
+        <Column title="Name" dataIndex="name" key="name" />
         <Column title="Price" dataIndex="price" key="price" />
-        <Column title="Dish" dataIndex="dishes" key="dishes" render={(dishes) => (
-        <ul>
-          {dishes?.map((dish, index) => (
-            <li key={index}>{dish}</li>
-          ))}
-        </ul>
-      )} />
+        <Column
+          title="Dish"
+          dataIndex="dishes"
+          key="dishes"
+          render={(dishes) => (
+            <ul>
+              {dishes?.map((dish, index) => (
+                <li key={index}>{dish}</li>
+              ))}
+            </ul>
+          )}
+        />
+        <Column
+          title="Action"
+          dataIndex="dishId"
+          key="dishId"
+          render={(dishId) => (
+            <div>
+              <FontAwesomeIcon
+                icon={faTrashCan}
+                className="text-red-500 cursor-pointer"
+                onClick={() => deleteDish(dishId)}
+              />
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                className="ml-2 text-green-500 "
+              />
+            </div>
+          )}
+        />
       </Table>
-      {/* {blogs.map((blog, index) => {
-          console.log(blog, "blog43344");
-           return (
-            <div key={index} className="border p-5 rounded-md mb-2">
-            <div className="flex justify-between " key={index}>
-              <p>{blog.name}</p>
-              <p>{blog.price}</p>
-              <div className="flex flex-col">
-                {blog.dishes?.map((item, subIndex) => (
-                  <p key={subIndex}>{item}</p>
-                ))}
-              </div>
-            </div>
-            </div>
-          );
-        })} */}
       <Modal
         className="text-center"
         centered

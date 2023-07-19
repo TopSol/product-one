@@ -1,9 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Navbar from "@/app/component/Navbar";
+import "react-image-lightbox/style.css";
 import Venues from "./venues";
 import Menus from "./menus";
 import Dish from "./dish";
+import Lightbox from "react-image-lightbox";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -16,6 +18,12 @@ function AdminMarqueeDetails() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen1, setModalOpen1] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [selectImage, setSelectImage] = useState("");
+  const [image, setImage] = useState([]);
+
   const sideBar = [
     {
       name: "Venues",
@@ -41,15 +49,23 @@ function AdminMarqueeDetails() {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
   const openModal = () => {
     setModalOpen(true);
   };
+  const handleClick = (img, index) => {
+    setImage(img);
+    setSelectImage(img[index]);
+    setPhotoIndex(index);
+    setIsOpen(true);
+  };
+  console.log(image, "image");
+
   return (
     <div>
       {/* <Navbar /> */}
@@ -57,7 +73,7 @@ function AdminMarqueeDetails() {
         <div className="  sidebar flex h-[100vh]  ">
           <div className="  md:hidden flex p-2  absolute">
             <FontAwesomeIcon
-              icon={faBars} 
+              icon={faBars}
               onClick={() => setModalOpen2(!modalOpen2)}
             />
           </div>
@@ -136,9 +152,13 @@ function AdminMarqueeDetails() {
 
             <div>
               {component === "Venues" ? (
-                <Venues modalOpen={modalOpen} setModalOpen={setModalOpen} />
+                <Venues
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  handleClick={handleClick}
+                />
               ) : component === "Menu" ? (
-                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen} />
+                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen} handleClick={handleClick}/>
               ) : component === "Dish" ? (
                 <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} />
               ) : null}
@@ -146,6 +166,20 @@ function AdminMarqueeDetails() {
           </div>
         </div>
       </div>
+      {isOpen && (
+        <Lightbox
+          mainSrc={selectImage}
+          nextSrc={image[(photoIndex + 1) % image.length]}
+          prevSrc={image[(photoIndex + image.length - 1) % image.length]}
+          onCloseRequest={() => setIsOpen(false)}
+          onMovePrevRequest={() =>
+            setPhotoIndex((photoIndex + image.length - 1) % image.length)
+          }
+          onMoveNextRequest={() =>
+            setPhotoIndex((photoIndex + 1) % image.length)
+          }
+        />
+      )}
     </div>
   );
 }

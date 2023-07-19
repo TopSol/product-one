@@ -8,20 +8,27 @@ import {
   getDownloadURL,
   listAll,
 } from "firebase/storage";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Modal } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 const initialFormState = {
   name: "",
   image: "",
   price: "",
   type: "",
-  // marqueeId: "",
   availability: "",
   description: "",
   // category: "",
 };
-function Menus({ modalOpen, setModalOpen }) {
+function Menus({ modalOpen, setModalOpen,handleClick}) {
   const { userInformation, addUser } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
@@ -67,14 +74,11 @@ function Menus({ modalOpen, setModalOpen }) {
 
     fetchBlogs();
   }, [addVenues]);
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
   const HandleAddVenues = async () => {
+    console.log("imageUrlseeee");
     const images = Object.values(user.image);
     const folderName = `images`;
-    let imagesUrls = [];
+
     const urls = await Promise.all(
       images.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
@@ -99,13 +103,14 @@ function Menus({ modalOpen, setModalOpen }) {
     ) {
       return;
     }
+    const MenuId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
       image: urls,
       type: user.type,
-      // marqueeId: user.marqueeId,
       availability: user.availability,
       description: user.description,
+      menuId: MenuId,
       // category: user.category,
       userId: userInformation.userId,
       price: user.price,
@@ -113,7 +118,7 @@ function Menus({ modalOpen, setModalOpen }) {
 
     try {
       console.log(imageUrls, "images1112");
-      await addDoc(collection(db, "Menus"), users);
+      await setDoc(doc(db, "Menus", MenuId), users);
       console.log("close2");
     } catch (error) {
       console.log(error, "error");
@@ -125,6 +130,15 @@ function Menus({ modalOpen, setModalOpen }) {
     setUser(initialFormState);
   };
   const { TextArea } = Input;
+  const deleteMenu = async (menuId) => {
+    try {
+      await deleteDoc(doc(db, "Menus", menuId));
+      const newBlogs = blogs.filter((blog) => blog.id !== menuId);
+      setBlogs(newBlogs);
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
   console.log(blogs, "blogs");
   return (
     <div className="">
@@ -146,38 +160,39 @@ function Menus({ modalOpen, setModalOpen }) {
                     key={index}
                     src={dish}
                     alt="img"
-                    width={30}
-                    height={30}
+                    width={60}
+                      height={60}
+                      className="mr-2"
+                      onClick={() => handleClick(image,index)}
                   />
                 );
               })}
             </div>
           )}
         />
-      </Table>
-
-      {/* {blogs.map((item, index) => {
-        console.log(item, "item22");
-        return (
-          <div key={index} className="border p-5 rounded-md mb-2">
-            <div className="flex justify-between flex-wrap">
-              <p>{item.name}</p>
-              <p>{item.price}</p>
-              <p>{item.type}</p>
-              <p>{item.marqueeId}</p>
-              <p>{item.availability}</p>
-              <p>{item.description}</p>
-
-              {item?.image &&
-                item?.image.map((img, index) => (
-                  <div key={index} className="w-[20%] h-[20%] bg-slate-500">
-                    <img src={img} alt="img" className="w-full h-full" />
-                  </div>
-                ))}
+        <Column
+          title="Action"
+          dataIndex="menuId"
+          key="menuId"
+          render={(menuId) => (
+            <div>
+              <FontAwesomeIcon
+                icon={faTrashCan}
+                className="text-red-500 cursor-pointer text-xl"
+                width={40}
+                height={40}
+                onClick={() => deleteMenu(menuId)}
+              />
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                className="ml-3 text-green-500 text-xl"
+                width={40}
+                height={40}
+              />
             </div>
-          </div>
-        );
-      })} */}
+          )}
+        />
+      </Table>
       <Modal
         className="text-center"
         centered
@@ -244,7 +259,6 @@ function Menus({ modalOpen, setModalOpen }) {
               </div>
             </div>
             <div className="md:flex md:justify-between flex flex-col ">
-             
               <div className="mb-3 md:mb-6 flex flex-col  md:flex-row  md:justify-between ">
                 <label className="text-xl">availability:</label>
                 <Input
