@@ -347,20 +347,11 @@ function details() {
               />
             </div>
             <label className="font-roboto font-bold">PhoneNumber</label>
-            <div className="flex flex-col items-start">
-              {/* <Input
-                type="number"
-                name="phoneNumber"
-                placeholder="Enter phonenumber here..."
-                value={details.phoneNumber}
-                onChange={handleChange}
-                className=" outline-none rounded  py-3 mb-3"
-              /> */}
+            <div className="flex flex-col items-start">           
               <PhoneInput
                 international
                 countryCallingCodeEditable={false}
                 defaultCountry="PK"
-                // value={`${value} ${details.phoneNumber}`}
                 value={value}
                 onChange={setValue}
               />
