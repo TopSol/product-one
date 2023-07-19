@@ -7,6 +7,7 @@ import {
   getDocs,
   setDoc,
   doc,
+  getDoc,
   deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/app/firebase";
@@ -32,13 +33,13 @@ const initialFormState = {
 };
 function Venues({ modalOpen, setModalOpen,handleClick }) {
   const [user, setUser] = useState(initialFormState);
-  const [addVenues, setAddVenues] = useState([]);
+  const [addVenue, setaddVenue] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const { Column } = Table;
-  const [addVenuesImage, setAddVenuesImage] = useState([]);
-  const { userInformation, addUser } = useStore();
+  const [openEditVenue, setOpenEditVenue] = useState(false);
+  const [addVenueImage, setaddVenueImage] = useState([]);
+  const { userInformation, addUser,Venues,addVenues } = useStore();
   const storage = getStorage();
-  console.log(user, "user33");
   const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,15 +49,15 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
     }));
   };
   useEffect(() => {
-    listAll(ImageRef)
-      .then((res) => {
-        res.items.forEach((itemRef) => {
-          getDownloadURL(itemRef).then((url) => {
-            setAddVenuesImage((prevState) => [...prevState, url]);
-          });
-        });
-      })
-      .catch((error) => {});
+    // listAll(ImageRef)
+    //   .then((res) => {
+    //     res.items.forEach((itemRef) => {
+    //       getDownloadURL(itemRef).then((url) => {
+    //         setaddVenueImage((prevState) => [...prevState, url]);
+    //       });
+    //     });
+    //   })
+    //   .catch((error) => {});
 
     const fetchBlogs = async () => {
       try {
@@ -68,15 +69,16 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
             id: doc.id,
           }));
 
-        setBlogs(tempArray);
+          addVenues(tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
     };
 
     fetchBlogs();
-  }, [addVenues]);
-  const HandleAddVenues = async () => {
+  }, [addVenue]);
+  const HandleaddVenue = async () => {
+    console.log( "dddduser");
     const images = Object.values(user.image);
     const folderName = `images`;
     const imageUrls = await Promise.all(
@@ -114,24 +116,51 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
     } catch (error) {
       console.log(error, "error");
     }
-    setAddVenues([...addVenues, user]);
+    setaddVenue([...addVenue, user]);
     setModalOpen(false);
     setUser(initialFormState);
   };
   const deleteVenue = async (VenueId) => {
     try {
       await deleteDoc(doc(db, "Venues", VenueId));
-      const newBlogs = blogs.filter((blog) => blog.id !== VenueId);
-      setBlogs(newBlogs);
+      const newBlogs = Venues.filter((blog) => blog.id !== VenueId);
+      addVenues(newBlogs);
     } catch (error) {
       console.error("Error removing document: ", error);
     }
   };
-  console.log(blogs, "blogs");
+  const EditVenue = async (dishId) => {
+    setOpenEditVenue(true);
+    setModalOpen((prevState) => !prevState);
+    const docRef = doc(db, "Venues", dishId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setUser(docSnap.data());
+      // setSelectedItems(docSnap.data().dishes);
+      console.log("Document data:", docSnap.data());
+    } else {
+      console.log("No such document!");
+    }
+  };
+  const updateVenue = async (venueId) => {
+   
+    try {
+      await setDoc(doc(db, "Venues", venueId), user);
+      const newBlogs = Venues.filter((blog) => blog.id !== venueId);
+      console.log(newBlogs,"newBlogs33",user)
+      addVenues([...newBlogs,{...user,id:venueId}])
+    } catch (error) {
+      console.log(error, "error");
+    }
+    setModalOpen(false);
+    setUser(initialFormState);
+    setOpenEditVenue(false)
+    // setSelectedItems([]);
+  };
   return (
     <>
       <div className="">
-        <Table dataSource={blogs} className="myTable">
+        <Table dataSource={Venues} className="myTable">
           <Column title="Name" dataIndex="name" key="name" />
           <Column
             title="Minimum Capacity"
@@ -174,12 +203,17 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
               <div>
                 <FontAwesomeIcon
                   icon={faTrashCan}
+                  width={40}
+                  height={40}
                   className="text-red-500 cursor-pointer text-xl"
                   onClick={() => deleteVenue(venueId)}
                 />
                 <FontAwesomeIcon
                   icon={faPenToSquare}
+                  width={40}
+                  height={40}
                   className="ml-3 text-green-500 text-xl"
+                  onClick={() => EditVenue(venueId)}
                 />
               </div>
             )}
@@ -190,7 +224,8 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
         className="text-center w-full"
         centered
         open={modalOpen}
-        onOk={() => HandleAddVenues()}
+        // onOk={() => HandleaddVenue()}
+        onOk={() => (openEditVenue ?  updateVenue(user?.venueId)  : HandleaddVenue())} 
         onCancel={() => setModalOpen(false)}
         width={700}
         bodyStyle={{ height: 630 }}
@@ -273,7 +308,7 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
             </div>
 
             <div className="flex flex-wrap">
-              {user.image &&
+              {/* {user.image &&
                 Object.values(user.image).map((img, index) => {
                   return (
                     <img
@@ -283,7 +318,7 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
                       className="w-[25%]"
                     />
                   );
-                })}
+                })} */}
             </div>
           </div>
         </div>
