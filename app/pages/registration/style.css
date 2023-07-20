@@ -15,12 +15,13 @@
  padding-bottom: 12px;
  padding-left: 12px;
  margin-bottom: 12px;
- width: 100%;
+ width: 80vw;
  display: flex;
  align-items: center;
  border: 1px solid #878D8D;
 }
 .PhoneInputInput{
+    width: 50vw;
 outline: none;
 }
 .PhoneInput:hover {
@@ -29,3 +30,8 @@ outline: none;
     border-color: #4096FF;
 }
 
+@media (min-width: 768px) { 
+    .PhoneInput {
+        width: 25vw;
+    }
+ }

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Navbar from "@/app/component/Navbar";
+import AdminNavbar from "./adminNavbar";
 import "react-image-lightbox/style.css";
 import Venues from "./venues";
 import Menus from "./menus";
@@ -65,8 +65,8 @@ function AdminMarqueeDetails() {
   };
   return (
     <div>
-      {/* <Navbar /> */}
-      <div className="">
+      <AdminNavbar />
+      <div className="mt-16">
         <div className="  sidebar flex h-[100vh]  ">
           <div className="  md:hidden flex p-2  absolute">
             <FontAwesomeIcon
