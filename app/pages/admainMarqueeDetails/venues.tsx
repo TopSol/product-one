@@ -143,19 +143,50 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
     }
   };
   const updateVenue = async (venueId) => {
-   
+
+    const images = Object.values(user.image);
+    const folderName = `images`;
+    const imageUrls = await Promise.all(
+      images.map(async (image) => {
+        const fileName = `${folderName}/${image.name}`;
+        const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, image);
+        const urls = await getDownloadURL(storageRef);
+        console.log("imageUrls123", urls);
+        return urls;
+      })
+    );
+    console.log("imageUrls", imageUrls);
+    
     try {
-      await setDoc(doc(db, "Venues", venueId), user);
-      const newBlogs = Venues.filter((blog) => blog.id !== venueId);
-      console.log(newBlogs,"newBlogs33",user)
-      addVenues([...newBlogs,{...user,id:venueId}])
+      const updatedUser = JSON.parse(JSON.stringify(user));
+      updatedUser.image = imageUrls;
+    
+      await setDoc(doc(db, "Venues", venueId), updatedUser);
+    
+      const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
+      if (updatedIndex !== -1) {
+        const updatedVenues = [...Venues];
+        updatedVenues[updatedIndex] = { ...updatedUser, id: venueId };
+        console.log(updatedVenues, "updatedVenues");
+        addVenues(updatedVenues);
+      } else {
+        addVenues([...Venues, { ...updatedUser, id: venueId }]);
+      }
     } catch (error) {
       console.log(error, "error");
     }
+      // try {
+      //   await setDoc(doc(db, "Venues", venueId), user);
+      //   const newBlogs = Venues.filter((blog) => blog.id !== venueId);
+      //   console.log(newBlogs,"newBlogs33",user)
+      //   addVenues([...newBlogs,{...user,id:venueId}])
+      // } catch (error) {
+      //   console.log(error, "error");
+      // }
     setModalOpen(false);
     setUser(initialFormState);
-    setOpenEditVenue(false)
-    // setSelectedItems([]);
+    setOpenEditVenue(false);
   };
   return (
     <>
@@ -203,15 +234,15 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
               <div>
                 <FontAwesomeIcon
                   icon={faTrashCan}
-                  width={40}
-                  height={40}
+                  width={15}
+                  // height={15}
                   className="text-red-500 cursor-pointer text-xl"
                   onClick={() => deleteVenue(venueId)}
                 />
                 <FontAwesomeIcon
                   icon={faPenToSquare}
-                  width={40}
-                  height={40}
+                  width={15}
+                  // height={20}
                   className="ml-3 text-green-500 text-xl"
                   onClick={() => EditVenue(venueId)}
                 />

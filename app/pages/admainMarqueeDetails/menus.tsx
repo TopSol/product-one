@@ -23,17 +23,16 @@ import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 const initialFormState = {
   name: "",
   image: "",
-  price: "",
+  price: 0,
   type: "",
-  availability: "",
+  // availability: "",
   description: "",
   // category: "",
 };
 function Menus({ modalOpen, setModalOpen, handleClick }) {
-  const { userInformation, addUser,addMenus,Menus } = useStore();
+  const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
-  const [imageUrls, setImageUrls] = useState([]);
   const { Column } = Table;
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const [addVenuesImage, setAddVenuesImage] = useState([]);
@@ -42,12 +41,12 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
   const [blogs, setBlogs] = useState([]);
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setUser((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: name == 'price' ? Number(value) : value,
     }));
   };
-  console.log("imageUrls", imageUrls);
   useEffect(() => {
     listAll(ImageRef)
       .then((res) => {
@@ -68,7 +67,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
             id: doc.id,
           }));
 
-          addMenus(tempArray);
+        addMenus(tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
@@ -77,7 +76,6 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
     fetchBlogs();
   }, [addVenues]);
   const HandleAddVenues = async () => {
-    console.log("imageUrlseeee");
     const images = Object.values(user.image);
     const folderName = `images`;
 
@@ -87,20 +85,18 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const utls = await getDownloadURL(storageRef);
-        console.log("imageUrls123", utls);
+        // console.log("imageUrls123", utls);
         return utls;
       })
     );
-
-    console.log("imageUr22ls", urls);
-    setImageUrls(imageUrls);
+    // setImageUrls(imageUrls);
     if (
       !user.name ||
       !user.image ||
       !user.price ||
       !user.type ||
       // !user.marqueeId ||
-      !user.availability ||
+      // !user.availability ||
       !user.description
     ) {
       return;
@@ -110,7 +106,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
       name: user.name,
       image: urls,
       type: user.type,
-      availability: user.availability,
+      // availability: user.availability,
       description: user.description,
       menuId: MenuId,
       // category: user.category,
@@ -119,7 +115,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
     };
 
     try {
-      console.log(imageUrls, "images1112");
+      // console.log(imageUrls, "images1112");
       await setDoc(doc(db, "Menus", MenuId), users);
       console.log("close2");
     } catch (error) {
@@ -141,7 +137,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
       console.log(error, "error");
     }
   };
-   const EditVenue = async (dishId) => {
+  const EditVenue = async (dishId) => {
     setOpenEditVenue(true);
     setModalOpen((prevState) => !prevState);
     const docRef = doc(db, "Menus", dishId);
@@ -155,19 +151,51 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
     }
   };
   const updateVenue = async (venueId) => {
-   
+    const images = Object.values(user.image);
+    const folderName = `images`;
+
+    const urls = await Promise.all(
+      images.map(async (image) => {
+        const fileName = `${folderName}/${image.name}`;
+        const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, image);
+        const url = await getDownloadURL(storageRef);
+        return url;
+      })
+    );
+
     try {
-      await setDoc(doc(db, "Menus", venueId), user);
-      const newBlogs = Menus.filter((blog) => blog.id !== venueId);
-      console.log(newBlogs,"newBlogs33",user)
-      addMenus([...newBlogs,{...user,id:venueId}])
+      // Deep copy of the user object to ensure image property doesn't reference the original object
+      const updatedUser = JSON.parse(JSON.stringify(user));
+      updatedUser.image = urls;
+
+      await setDoc(doc(db, "Menus", venueId), updatedUser);
+
+      const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
+      if (updatedIndex !== -1) {
+        const updatedMenus = [...Menus];
+        updatedMenus[updatedIndex] = { ...updatedUser, id: venueId };
+        addMenus(updatedMenus);
+      } else {
+        addMenus([...Menus, { ...updatedUser, id: venueId }]);
+      }
     } catch (error) {
       console.log(error, "error");
     }
+
+    // try {
+    //   await setDoc(doc(db, "Menus", venueId), user);
+    //   const newBlogs = Menus.filter((blog) => blog.id !== venueId);
+    //   console.log(newBlogs,"newBlogs33",user)
+    //   addMenus([...newBlogs,{...user,id:venueId}])
+    // } catch (error) {
+    //   console.log(error, "error");
+    // }
     setModalOpen(false);
     setUser(initialFormState);
-    setOpenEditVenue(false)
+    setOpenEditVenue(false);
   };
+  console.log(user, "usdddder")
   return (
     <div className="">
       <Table dataSource={Menus} className="myTable">
@@ -207,15 +235,15 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
               <FontAwesomeIcon
                 icon={faTrashCan}
                 className="text-red-500 cursor-pointer text-xl"
-                width={40}
-                height={40}
+                width={15}
+                // height={30}
                 onClick={() => deleteMenu(menuId)}
               />
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 className="ml-3 text-green-500 text-xl"
-                width={40}
-                height={40}
+                width={15}
+                // height={30}
                 onClick={() => EditVenue(menuId)}
               />
             </div>
@@ -227,7 +255,9 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
         centered
         open={modalOpen}
         // onOk={() => HandleAddVenues()}
-        onOk={() => openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()}
+        onOk={() =>
+          openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+        }
         onCancel={() => setModalOpen(false)}
         width={700}
         bodyStyle={{ height: 800 }}
@@ -235,7 +265,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
       >
         <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
           <div className="mr-auto">
-            <p className="text-2xl    ">Menus</p>
+            <p className="text-2xl">Dish</p>
           </div>
           <hr className="w-full bg-black my-3" />
           <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[100%]  justify-center ">
@@ -295,7 +325,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
                 />
               </div>
             </div>
-            <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
+            {/* <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
               <label className="text-xl my-1">Avalibility</label>
               <div className="flex flex-col  md:flex-row  md:justify-between">
                 <Input
@@ -307,7 +337,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
                   className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
-            </div>
+            </div> */}
             <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
               <label className="text-xl my-1">Description</label>
               <div className="flex flex-col  md:flex-row  md:justify-between">

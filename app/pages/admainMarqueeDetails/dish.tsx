@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -6,6 +6,8 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { Table, Tag } from "antd";
+import { Select, Space } from "antd";
+import Menus from "./menus";
 // import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
 import {
@@ -21,8 +23,13 @@ import { useStore } from "../../../store";
 import { Input, Modal } from "antd";
 const initialFormState = {
   name: "",
-  price: "",
+  price: 0,
   dishes: [],
+  discount: 0,
+};
+
+const handleChange = (value) => {
+  console.log(`selected ${value}`);
 };
 function Dish({ modalOpen, setModalOpen }) {
   const [user, setUser] = useState(initialFormState);
@@ -30,8 +37,11 @@ function Dish({ modalOpen, setModalOpen }) {
   const [selectedItems, setSelectedItems] = useState([]);
   const [addVenues, setAddVenues] = useState([]);
   const [updateDish, setUpdateDish] = useState(false);
-  const { userInformation, addUser,Dishes,addDishes } = useStore();
+  const { userInformation, addUser, Dishes, addDishes, Menus } = useStore();
   const [blogs, setBlogs] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [dishPrice, setDishPrice] = useState([]);
+  const [dishName, setDishName] = useState([]);
   const { Column } = Table;
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
@@ -67,12 +77,38 @@ function Dish({ modalOpen, setModalOpen }) {
   };
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const newValue = name === 'discount' ? Number(value) : value;
+  
+    // Calculate the discountAmount only if price and discount are defined
+    const discountAmount = user.price && newValue ? (user.price * newValue) / 100 : 0;
+    const discountedPrice = user.price - discountAmount;
+  
     setUser((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: newValue,
+      price: name === 'discount' ?  Number(discountedPrice)  : prevState.price,
     }));
+    // const { name, value } = e.target;
+    // const discountAmount = user.price * (user.discount / 100);
+    // setUser((prevState) => ({
+    //   ...prevState,
+    //   [name]: name =='discount'? Number(value):  value,
+    // }));
   };
+  console.log(user, "user33");
   useEffect(() => {
+    const dishes = [];
+    const DishPrice = Menus.map((item, index) => {
+      const data = { Price: item.price, Dish: item.name };
+      dishes.push({ label: item.name, value: item.name });
+      if (index === Menus.length - 1) setDishName(dishes);
+      return data;
+    });
+    const totalPrice = DishPrice.reduce((acc, item) => acc + item.Price, 0);
+    setTotalPrice(totalPrice);
+    setDishPrice(DishPrice);
+
+    console.log(DishPrice, "DishPrice");
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Dish"));
@@ -82,7 +118,7 @@ function Dish({ modalOpen, setModalOpen }) {
             ...doc.data(),
             id: doc.id,
           }));
-          addDishes(tempArray)
+        addDishes(tempArray);
         // setBlogs(tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
@@ -102,6 +138,7 @@ function Dish({ modalOpen, setModalOpen }) {
       price: user.price,
       dishId: DishId,
       dishes: user.dishes,
+      discount: user.discount,
     };
     try {
       await setDoc(doc(db, "Dish", DishId), users);
@@ -112,12 +149,13 @@ function Dish({ modalOpen, setModalOpen }) {
     setModalOpen(false);
     setUser(initialFormState);
     setSelectedItems([]);
+    // setDishName([]);
   };
   const deleteDish = async (dishId) => {
     try {
       await deleteDoc(doc(db, "Dish", dishId));
       const newBlogs = Dishes.filter((blog) => blog.id !== dishId);
-      addDishes(newBlogs)
+      addDishes(newBlogs);
       // Dishes(newBlogs);
     } catch (error) {
       console.log(error, "error");
@@ -139,18 +177,57 @@ function Dish({ modalOpen, setModalOpen }) {
   const update = async (venueId) => {
     try {
       await setDoc(doc(db, "Dish", venueId), user);
-      const newBlogs = Dishes.filter((blog) => blog.id !== venueId);
-      console.log(newBlogs,"newBlogs33",user)
-      addDishes([...newBlogs,{...user,id:venueId}])
+
+      // Find the index of the entry with the specified venueId in the Dishes array
+      const updatedIndex = Dishes.findIndex((dish) => dish.id === venueId);
+
+      // If the entry is found (index is not -1), update it; otherwise, add it to the end
+      if (updatedIndex !== -1) {
+        const updatedDishes = [...Dishes];
+        updatedDishes[updatedIndex] = { ...user, id: venueId };
+        addDishes(updatedDishes);
+      } else {
+        addDishes([...Dishes, { ...user, id: venueId }]);
+      }
     } catch (error) {
       console.log(error, "error");
     }
+    // try {
+    //   await setDoc(doc(db, "Dish", venueId), user);
+    //   const newBlogs = Dishes.filter((blog) => blog.id !== venueId);
+    //   console.log(newBlogs,"newBlogs33",user)
+    //   addDishes([...newBlogs,{...user,id:venueId}])
+    // } catch (error) {
+    //   console.log(error, "error");
+    // }
     setModalOpen(false);
     setUser(initialFormState);
     setSelectedItems([]);
     setUpdateDish(false);
   };
-  console.log(user, "user")
+  const handleSelectionChange = (selectedOptions) => {
+    console.log(selectedOptions, "selectedOptions");
+    let price = 0;
+    selectedOptions.map((item) => {
+      const data = dishPrice.filter((item1) => item1.Dish === item);
+      price = price + data[0].Price;
+    });
+
+    setUser((prevState) => ({
+      ...prevState,
+      dishes: selectedOptions,
+      price,
+    }));
+  };
+
+  // const handleDiscountChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setUser((prevState) => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
+  console.log(user, "user");
   return (
     <div className="">
       <Table dataSource={Dishes} className="myTable">
@@ -176,15 +253,15 @@ function Dish({ modalOpen, setModalOpen }) {
             <div>
               <FontAwesomeIcon
                 icon={faTrashCan}
-                width={40}
-                height={40}
+                width={15}
+                // height={30}
                 className="text-red-500 cursor-pointer text-xl"
                 onClick={() => deleteDish(dishId)}
               />
               <FontAwesomeIcon
                 icon={faPenToSquare}
-                width={40}
-                height={40}
+                width={15}
+                // height={30}
                 className="ml-3 text-green-500 text-xl"
                 onClick={() => EditDish(dishId)}
               />
@@ -197,10 +274,10 @@ function Dish({ modalOpen, setModalOpen }) {
         centered
         open={modalOpen}
         // onOk={() => AddDish()}
-        onOk={() => (updateDish ?  update(user?.dishId)  : AddDish())} 
+        onOk={() => (updateDish ? update(user?.dishId) : AddDish())}
         onCancel={() => setModalOpen(false)}
         width={600}
-        bodyStyle={{ height: 400 }}
+        bodyStyle={{ height: 500 }}
         okButtonProps={{ className: "custom-ok-button" }}
       >
         <div className=" w-full h-full flex justify-start mt-12 md:mt-0 md:justify-center items-center flex-col">
@@ -234,8 +311,46 @@ function Dish({ modalOpen, setModalOpen }) {
             </div>
 
             <div className="mb-3 md:flex md:justify-between flex flex-col ">
-              <div className="  flex   rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative  ">
-                <div
+              <label className="text-xl my-1">Select Dish</label>
+              <div className="flex rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative  ">
+                <Space
+                  style={{
+                    width: "100%",
+                  }}
+                  direction="vertical"
+                >
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    style={{
+                      width: "100%",
+                      padding: "10px,0px",
+                    }}
+                    placeholder="Please select"
+                    // defaultValue={['a10', 'c12']}
+                    onChange={handleSelectionChange}
+                    options={dishName}
+                  />
+                </Space>
+                <div className="mt-5">
+                  <Input
+                    placeholder="Enter Discount Here"
+                    type="number"
+                    name="discount"
+                    value={user.discount}
+                    onChange={handleChange}
+                    className="rounded-none w-full py-2 lg:py-3"
+                  />
+                </div>
+                <div className="flex justify-end mt-2">
+                  <button className="py-3 px-2 rounded-md bg-blue-400">
+                    {" "}
+                    + Add Dish
+                  </button>
+                  {/* {modalOpen && <Menus  />} */}
+                </div>
+                
+                {/* <div
                   className="border py-3 w-[100%]relative"
                   onClick={() => setOpenDishMenus(!openDishMenus)}
                 >
@@ -244,10 +359,9 @@ function Dish({ modalOpen, setModalOpen }) {
                     <FontAwesomeIcon icon={faCaretDown} />
                   </div>
                 </div>
-
                 {openDishMenus && (
                   <div className="border  cursor-pointer w-[100%] absolute mt-10  ">
-                    {selectedOptions.map((item, index) => (
+                    {dishPrice.map((item, index) => (
                       <div
                         key={index}
                         onClick={() => handleItemClick(item)}
@@ -257,16 +371,17 @@ function Dish({ modalOpen, setModalOpen }) {
                             : "white",
                         }}
                       >
-                        <p className="pl-2">{item}</p>
+                        <p className="pl-2">{item.Dish}</p>
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </div>
         </div>
       </Modal>
+
     </div>
   );
 }

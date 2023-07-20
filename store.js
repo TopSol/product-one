@@ -29,7 +29,7 @@ export const useStore = create(persist((set) => ({
   addVenues: (venueData) => {
     set({ Venues: venueData })
   },
-  addMenus: (menuData) => {
+  addMenus: (menuData) => { 
     console.log(menuData,"menuData444")
     set({ Menus: menuData })
   }

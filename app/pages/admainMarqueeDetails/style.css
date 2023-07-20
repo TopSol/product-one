@@ -7,8 +7,9 @@
 
 
 .myTable .ant-table-thead > tr > th{
-    background-color: #4D5AAA;
-    color: #fff;
+    /* background-color: #4D5AAA; */
+    background-color: #DEB666;
+    color: #050505;
 }
 .myTable .ant-table-tbody > tr > td{
     
@@ -24,6 +25,10 @@
 .myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:last-child{
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
+}
+.ant-select-selector{
+    border-radius: 0px !important;
+    height: 50px !important;
 }
 
 
