@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-// import Modal from "@/app/component/Modal";
+import Loader from "../../component/Loader";
 import ImageLightbox from "react-image-lightbox";
-import { Input } from "antd";
+import { Button, Input, Popconfirm } from "antd";
+import DeleteItem from "../../component/DeleteItem";
 import {
   collection,
   getDocs,
@@ -31,14 +32,14 @@ const initialFormState = {
   maxCapacity: "",
   price: "",
 };
-function Venues({ modalOpen, setModalOpen,handleClick }) {
+function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenue, setaddVenue] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const { Column } = Table;
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const [addVenueImage, setaddVenueImage] = useState([]);
-  const { userInformation, addUser,Venues,addVenues } = useStore();
+  const { userInformation, addUser, Venues, addVenues } = useStore();
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
@@ -69,7 +70,7 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
             id: doc.id,
           }));
 
-          addVenues(tempArray);
+        addVenues(tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
@@ -78,7 +79,16 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
     fetchBlogs();
   }, [addVenue]);
   const HandleaddVenue = async () => {
-    console.log( "dddduser");
+    if (
+      !user.name ||
+      !user.image ||
+      !user.minCapacity ||
+      !user.maxCapacity ||
+      !user.price
+    ) {
+      return;
+    }
+    setLoading(true);
     const images = Object.values(user.image);
     const folderName = `images`;
     const imageUrls = await Promise.all(
@@ -91,15 +101,7 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
         return urls;
       })
     );
-    if (
-      !user.name ||
-      !user.image ||
-      !user.minCapacity ||
-      !user.maxCapacity ||
-      !user.price
-    ) {
-      return;
-    }
+
     const VenueId = Math.random().toString(36).substring(2);
     const venue = {
       name: user.name,
@@ -119,6 +121,7 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
     setaddVenue([...addVenue, user]);
     setModalOpen(false);
     setUser(initialFormState);
+    setLoading(false);
   };
   const deleteVenue = async (VenueId) => {
     try {
@@ -143,7 +146,6 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
     }
   };
   const updateVenue = async (venueId) => {
-
     const images = Object.values(user.image);
     const folderName = `images`;
     const imageUrls = await Promise.all(
@@ -156,14 +158,12 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
         return urls;
       })
     );
-    console.log("imageUrls", imageUrls);
-    
     try {
       const updatedUser = JSON.parse(JSON.stringify(user));
       updatedUser.image = imageUrls;
-    
+
       await setDoc(doc(db, "Venues", venueId), updatedUser);
-    
+
       const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
       if (updatedIndex !== -1) {
         const updatedVenues = [...Venues];
@@ -176,14 +176,14 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
     } catch (error) {
       console.log(error, "error");
     }
-      // try {
-      //   await setDoc(doc(db, "Venues", venueId), user);
-      //   const newBlogs = Venues.filter((blog) => blog.id !== venueId);
-      //   console.log(newBlogs,"newBlogs33",user)
-      //   addVenues([...newBlogs,{...user,id:venueId}])
-      // } catch (error) {
-      //   console.log(error, "error");
-      // }
+    // try {
+    //   await setDoc(doc(db, "Venues", venueId), user);
+    //   const newBlogs = Venues.filter((blog) => blog.id !== venueId);
+    //   console.log(newBlogs,"newBlogs33",user)
+    //   addVenues([...newBlogs,{...user,id:venueId}])
+    // } catch (error) {
+    //   console.log(error, "error");
+    // }
     setModalOpen(false);
     setUser(initialFormState);
     setOpenEditVenue(false);
@@ -219,7 +219,7 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
                       width={50}
                       height={50}
                       className="mr-2"
-                      onClick={() => handleClick(image,index)}
+                      onClick={() => handleClick(image, index)}
                     />
                   );
                 })}
@@ -232,13 +232,19 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
             key="venueId"
             render={(venueId) => (
               <div>
-                <FontAwesomeIcon
-                  icon={faTrashCan}
-                  width={15}
-                  // height={15}
-                  className="text-red-500 cursor-pointer text-xl"
-                  onClick={() => deleteVenue(venueId)}
-                />
+                <Popconfirm
+                  title="Delete Venues?"
+                  description="Are you sure to delete Venues?"
+                  okText="Yes"
+                  cancelText="No"
+                  onConfirm={() => deleteVenue(venueId)} 
+                >
+                  <FontAwesomeIcon
+                    icon={faTrashCan} 
+                    width={15}
+                    className="text-red-500 cursor-pointer text-xl"
+                  />
+                </Popconfirm>
                 <FontAwesomeIcon
                   icon={faPenToSquare}
                   width={15}
@@ -250,17 +256,29 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
             )}
           />
         </Table>
-        </div>
+      </div>
       <Modal
         className="text-center w-full"
         centered
         open={modalOpen}
-        // onOk={() => HandleaddVenue()}
-        onOk={() => (openEditVenue ?  updateVenue(user?.venueId)  : HandleaddVenue())} 
-        onCancel={() => setModalOpen(false)}
         width={700}
         bodyStyle={{ height: 630 }}
         okButtonProps={{ className: "custom-ok-button" }}
+        footer={[
+          <Button key="cancel" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>,
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() =>
+              openEditVenue ? updateVenue(user.menuId) : HandleaddVenue()
+            }
+            className="bg-blue-500"
+          >
+            {loading ? <Loader /> : "Ok"}
+          </Button>,
+        ]}
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div className="mr-auto">
@@ -287,7 +305,7 @@ function Venues({ modalOpen, setModalOpen,handleClick }) {
                 {" "}
                 <span className="text-red-600">*</span> Image
               </label>
-                <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
                 <Input
                   placeholder="Basic usage"
                   type="file"

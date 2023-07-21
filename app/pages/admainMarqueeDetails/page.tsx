@@ -23,7 +23,8 @@ function AdminMarqueeDetails() {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [selectImage, setSelectImage] = useState("");
   const [image, setImage] = useState([]);
-
+  const [dishModalOpen, setDishModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const sideBar = [
     {
       name: "Venues",
@@ -160,15 +161,21 @@ function AdminMarqueeDetails() {
                   modalOpen={modalOpen}
                   setModalOpen={setModalOpen}
                   handleClick={handleClick}
+                  loading={loading}
+                  setLoading={setLoading}
                 />
               ) : component === "Dishes" ? (
                 <Menus
                   modalOpen={modalOpen}
                   setModalOpen={setModalOpen}
                   handleClick={handleClick}
+                  loading={loading}
+                  setLoading={setLoading}
+                  
                 />
               ) : component === "Menus" ? (
-                <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} />
+                <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} loading={loading}
+                setLoading={setLoading} dishModalOpen={dishModalOpen} setDishModalOpen={setDishModalOpen}/>
               ) : null}
             </div>
           </div>
