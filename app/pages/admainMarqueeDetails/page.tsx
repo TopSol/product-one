@@ -18,12 +18,12 @@ function AdminMarqueeDetails() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen1, setModalOpen1] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
-
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [selectImage, setSelectImage] = useState("");
   const [image, setImage] = useState([]);
-
+  const [dishModalOpen, setDishModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const sideBar = [
     {
       name: "Venues",
@@ -66,8 +66,8 @@ function AdminMarqueeDetails() {
   return (
     <div>
       <AdminNavbar />
-      <div className="mt-16">
-        <div className="  sidebar flex h-[100vh]  ">
+      <div className="pt-20">
+        <div className="  sidebar flex height-[100vh]">
           <div className="  md:hidden flex p-2  absolute">
             <FontAwesomeIcon
               icon={faBars}
@@ -79,35 +79,34 @@ function AdminMarqueeDetails() {
               <p className=" text-xl pl-2 py-5">Marquee</p>
               {sideBar.map((item, index) => (
                 <div key={index}>
-
-                <button
-                  className={`side w-full text-left py-2 ${
-                    component === item.name ? "bg-sidebarColor" : ""
-                  }`}
-                  onClick={() => {
-                    console.log(item.name, "item.name");
-                    setComponent(item.name);
-                    setModalOpen1(!modalOpen1);
-                    if (window.innerWidth <= 768) {
-                      setModalOpen2(!modalOpen2);
-                    }
-                  }}
-                  >
-                  {component === item.name ? (
-                    <span className="bg-sidebarItemColor px-[2px] pt-[11px] pb-[9px]" />
-                    ) : null}
-                  <span
-                    className={`pl-${
-                      component === item.name ? "8" : ""
-                    } pl-[29px] text-${
-                      component !== item.name ? "sidebarColorText" : ""
+                  <button
+                    className={`side w-full text-left py-2 ${
+                      component === item.name ? "bg-sidebarColor" : ""
                     }`}
+                    onClick={() => {
+                      console.log(item.name, "item.name");
+                      setComponent(item.name);
+                      setModalOpen1(!modalOpen1);
+                      if (window.innerWidth <= 768) {
+                        setModalOpen2(!modalOpen2);
+                      }
+                    }}
+                  >
+                    {component === item.name ? (
+                      <span className="bg-sidebarItemColor px-[2px] pt-[11px] pb-[9px]" />
+                    ) : null}
+                    <span
+                      className={`pl-${
+                        component === item.name ? "8" : ""
+                      } pl-[29px] text-${
+                        component !== item.name ? "sidebarColorText" : ""
+                      }`}
                     >
-                    <FontAwesomeIcon icon={item.icon} className="pr-3" />
-                    {item.name}
-                  </span>
-                </button>
-                    </div>
+                      <FontAwesomeIcon icon={item.icon} className="pr-3" />
+                      {item.name}
+                    </span>
+                  </button>
+                </div>
               ))}
             </div>
           ) : null}
@@ -156,11 +155,26 @@ function AdminMarqueeDetails() {
                   modalOpen={modalOpen}
                   setModalOpen={setModalOpen}
                   handleClick={handleClick}
+                  loading={loading}
+                  setLoading={setLoading}
                 />
               ) : component === "Dish" ? (
-                <Menus modalOpen={modalOpen} setModalOpen={setModalOpen} handleClick={handleClick}/>
+                <Menus
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  handleClick={handleClick}
+                  loading={loading}
+                  setLoading={setLoading}
+                />
               ) : component === "Menu" ? (
-                <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} />
+                <Dish
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  dishModalOpen={dishModalOpen}
+                  setDishModalOpen={setDishModalOpen}
+                  loading={loading}
+                  setLoading={setLoading}
+                />
               ) : null}
             </div>
           </div>

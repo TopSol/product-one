@@ -30,5 +30,9 @@
     border-radius: 0px !important;
     height: 50px !important;
 }
+.ant-btn{
+    background-color: #4096FF;
+    color: #fff;
 
+}
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Input, Table } from "antd";
+import { Button, Input, Popconfirm, Table } from "antd";
+import Loader from "../../component/Loader"; 
 import {
   getStorage,
   ref,
@@ -25,11 +26,10 @@ const initialFormState = {
   image: "",
   price: 0,
   type: "",
-  // availability: "",
   description: "",
-  // category: "",
+ 
 };
-function Menus({ modalOpen, setModalOpen, handleClick }) {
+function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
   const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
@@ -39,6 +39,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
   const [blogs, setBlogs] = useState([]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -76,6 +77,16 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
     fetchBlogs();
   }, [addVenues]);
   const HandleAddVenues = async () => {
+    if (
+      !user.name ||
+      !user.image ||
+      !user.price ||
+      !user.type ||
+      !user.description
+    ) {
+      return;
+    }
+    setLoading(true);
     const images = Object.values(user.image);
     const folderName = `images`;
 
@@ -85,37 +96,22 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const utls = await getDownloadURL(storageRef);
-        // console.log("imageUrls123", utls);
         return utls;
       })
     );
-    // setImageUrls(imageUrls);
-    if (
-      !user.name ||
-      !user.image ||
-      !user.price ||
-      !user.type ||
-      // !user.marqueeId ||
-      // !user.availability ||
-      !user.description
-    ) {
-      return;
-    }
+   
     const MenuId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
       image: urls,
       type: user.type,
-      // availability: user.availability,
       description: user.description,
       menuId: MenuId,
-      // category: user.category,
       userId: userInformation.userId,
       price: user.price,
     };
 
     try {
-      // console.log(imageUrls, "images1112");
       await setDoc(doc(db, "Menus", MenuId), users);
       console.log("close2");
     } catch (error) {
@@ -126,6 +122,7 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
     setModalOpen(false);
     console.log("close4");
     setUser(initialFormState);
+    setLoading(false);
   };
   const { TextArea } = Input;
   const deleteMenu = async (menuId) => {
@@ -232,13 +229,21 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
           key="menuId"
           render={(menuId) => (
             <div>
-              <FontAwesomeIcon
-                icon={faTrashCan}
-                className="text-red-500 cursor-pointer text-xl"
-                width={15}
-                // height={30}
-                onClick={() => deleteMenu(menuId)}
-              />
+               <Popconfirm
+                  title="Delete Dish?"
+                  description="Are you sure to delete Dish?"
+                  okText="Yes"
+                  cancelText="No"
+                  onConfirm={() => deleteMenu(menuId)} 
+                >
+                  <FontAwesomeIcon
+                    icon={faTrashCan} 
+                    width={15}
+                    // height={15}
+                    className="text-red-500 cursor-pointer text-xl"
+                    // onClick={() => deleteVenue(venueId)}
+                  />
+                </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 className="ml-3 text-green-500 text-xl"
@@ -250,18 +255,34 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
           )}
         />
       </Table>
+      
       <Modal
         className="text-center"
         centered
         open={modalOpen}
-        // onOk={() => HandleAddVenues()}
-        onOk={() =>
-          openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
-        }
+        // onOk={() =>
+        //   openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+        // }
         onCancel={() => setModalOpen(false)}
         width={700}
         bodyStyle={{ height: 800 }}
         okButtonProps={{ className: "custom-ok-button" }}
+        footer={[
+          <Button key="cancel" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>,
+          <Button key="ok" type="primary" onClick={() =>
+            openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()} className="bg-blue-500">
+            {
+                  loading ? (
+                    <Loader />
+                  ) : (
+                    "Ok"
+                  ) 
+            }
+            
+          </Button>,
+        ]}
       >
         <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
           <div className="mr-auto">
@@ -325,19 +346,6 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
                 />
               </div>
             </div>
-            {/* <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
-              <label className="text-xl my-1">Avalibility</label>
-              <div className="flex flex-col  md:flex-row  md:justify-between">
-                <Input
-                  placeholder="Enter Avalibility Here"
-                  type="text"
-                  name="availability"
-                  value={user.availability}
-                  onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
-                />
-              </div>
-            </div> */}
             <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
               <label className="text-xl my-1">Description</label>
               <div className="flex flex-col  md:flex-row  md:justify-between">
@@ -353,20 +361,6 @@ function Menus({ modalOpen, setModalOpen, handleClick }) {
                 />
               </div>
             </div>
-
-            {/* <div className="flex flex-wrap">
-              {user.image &&
-                Object.values(user.image).map((img, index) => {
-                  return (
-                    <img
-                      src={URL.createObjectURL(img)}
-                      alt=""
-                      key={index}
-                      className="w-[25%]"
-                    />
-                  );
-                })}
-            </div> */}
           </div>
         </div>
       </Modal>

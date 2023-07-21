@@ -1,11 +1,12 @@
 import React, { use, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DishModal from "./dishModal";
+import Loader from "../../component/Loader"; 
 import {
-  faCaretDown,
   faPenToSquare,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
-import { Table, Tag } from "antd";
+import { Button, Popconfirm, Table, Tag } from "antd";
 import { Select, Space } from "antd";
 import Menus from "./menus";
 // import Modal from "@/app/component/Modal";
@@ -31,17 +32,16 @@ const initialFormState = {
 const handleChange = (value) => {
   console.log(`selected ${value}`);
 };
-function Dish({ modalOpen, setModalOpen }) {
+function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading,setLoading }) {
   const [user, setUser] = useState(initialFormState);
-  const [openDishMenus, setOpenDishMenus] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [addVenues, setAddVenues] = useState([]);
   const [updateDish, setUpdateDish] = useState(false);
   const { userInformation, addUser, Dishes, addDishes, Menus } = useStore();
-  const [blogs, setBlogs] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [dishPrice, setDishPrice] = useState([]);
   const [dishName, setDishName] = useState([]);
+  const [calculatedDiscount, setCalculatedDiscount] = useState(0);
   const { Column } = Table;
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
@@ -75,27 +75,44 @@ function Dish({ modalOpen, setModalOpen }) {
       }));
     }
   };
+   // const { name, value } = e.target;
+    // const newValue = name === 'discount' ? Number(value) : value;
+    // const discountAmount = user.price && newValue ? (user.price * newValue) / 100 : 0;
+    // const discountedPrice = user.price - discountAmount;
+    // setUser((prevState) => ({
+    //   ...prevState,
+    //   [name]: newValue,
+    //   price: name === 'discount' ?  Number(discountedPrice)  : prevState.price,
+    // }));
   const handleChange = (e) => {
+   
+    
     const { name, value } = e.target;
     const newValue = name === 'discount' ? Number(value) : value;
-  
-    // Calculate the discountAmount only if price and discount are defined
     const discountAmount = user.price && newValue ? (user.price * newValue) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
-  
+    
+    // Update the calculated discount in the separate state
+    if (name === 'discount') {
+      setCalculatedDiscount(discountAmount);
+    }
+
     setUser((prevState) => ({
       ...prevState,
       [name]: newValue,
-      price: name === 'discount' ?  Number(discountedPrice)  : prevState.price,
     }));
+
     // const { name, value } = e.target;
-    // const discountAmount = user.price * (user.discount / 100);
+    // const discountAmount =user.price && user.discount ? (user.price * user.discount) / 100 : 0;
+    // const discountedPrice = user.price - discountAmount;
+    // console.log(discountedPrice,"discountedPreeeice",user.price,user.discount,)
+    // console.log(discountAmount)
     // setUser((prevState) => ({
     //   ...prevState,
-    //   [name]: name =='discount'? Number(value):  value,
+    //   [name]: name == "discount" ? Number(value) : value,
     // }));
   };
-  console.log(user, "user33");
+  console.log(calculatedDiscount, "calculatedDiscount");
   useEffect(() => {
     const dishes = [];
     const DishPrice = Menus.map((item, index) => {
@@ -119,18 +136,29 @@ function Dish({ modalOpen, setModalOpen }) {
             id: doc.id,
           }));
         addDishes(tempArray);
-        // setBlogs(tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
     };
 
     fetchBlogs();
-  }, [addVenues]);
+  }, [addVenues,Menus]);
   const AddDish = async () => {
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
+    setLoading(true)
+    const discountAmount =
+    user.price && user.discount ? (user.price * user.discount) / 100 : 0;
+    const discountedPrice = user.price - discountAmount;
+    console.log(
+      discountedPrice,
+      "discountedPrice",
+      user.price,
+      user.discount,
+      discountAmount
+    );
+
     const DishId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
@@ -139,6 +167,8 @@ function Dish({ modalOpen, setModalOpen }) {
       dishId: DishId,
       dishes: user.dishes,
       discount: user.discount,
+      discountAmount: discountAmount,
+      discountedPrice: discountedPrice,
     };
     try {
       await setDoc(doc(db, "Dish", DishId), users);
@@ -149,6 +179,7 @@ function Dish({ modalOpen, setModalOpen }) {
     setModalOpen(false);
     setUser(initialFormState);
     setSelectedItems([]);
+    setLoading(false)
     // setDishName([]);
   };
   const deleteDish = async (dishId) => {
@@ -219,20 +250,11 @@ function Dish({ modalOpen, setModalOpen }) {
       price,
     }));
   };
-
-  // const handleDiscountChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUser((prevState) => ({
-  //     ...prevState,
-  //     [name]: value,
-  //   }));
-  // };
-  console.log(user, "user");
+  // console.log(user, "user");
   return (
     <div className="">
       <Table dataSource={Dishes} className="myTable">
         <Column title="Name" dataIndex="name" key="name" />
-        <Column title="Price" dataIndex="price" key="price" />
         <Column
           title="Dish"
           dataIndex="dishes"
@@ -245,23 +267,37 @@ function Dish({ modalOpen, setModalOpen }) {
             </ul>
           )}
         />
+        <Column title="Price" dataIndex="price" key="price" />
+        <Column title="discountAmount" dataIndex="discount" key="discount" />
+        <Column
+          title="Total Price"
+          dataIndex="discountedPrice"
+          key="discountedPrice"
+        />
         <Column
           title="Action"
           dataIndex="dishId"
           key="dishId"
           render={(dishId) => (
             <div>
-              <FontAwesomeIcon
-                icon={faTrashCan}
-                width={15}
-                // height={30}
-                className="text-red-500 cursor-pointer text-xl"
-                onClick={() => deleteDish(dishId)}
-              />
+              <Popconfirm
+                  title="Delete Menu?"
+                  description="Are you sure to delete Menu?"
+                  okText="Yes"
+                  cancelText="No"
+                  onConfirm={() => deleteDish(dishId)} 
+                >
+                  <FontAwesomeIcon
+                    icon={faTrashCan} 
+                    width={15}
+                    // height={15}
+                    className="text-red-500 cursor-pointer text-xl"
+                    // onClick={() => deleteVenue(venueId)}
+                  />
+                </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 width={15}
-                // height={30}
                 className="ml-3 text-green-500 text-xl"
                 onClick={() => EditDish(dishId)}
               />
@@ -273,12 +309,28 @@ function Dish({ modalOpen, setModalOpen }) {
         className="text-center"
         centered
         open={modalOpen}
-        // onOk={() => AddDish()}
         onOk={() => (updateDish ? update(user?.dishId) : AddDish())}
         onCancel={() => setModalOpen(false)}
         width={600}
-        bodyStyle={{ height: 500 }}
+        bodyStyle={{ height: 650 }}
         okButtonProps={{ className: "custom-ok-button" }}
+
+        footer={[
+          <Button key="cancel" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>,
+          <Button key="ok" type="primary" onClick={() =>
+            (updateDish ? update(user?.dishId) : AddDish())} className="bg-blue-500">
+            {
+                  loading ? (
+                    <Loader />
+                  ) : (
+                    "Ok"
+                  ) 
+            }
+            
+          </Button>,
+        ]}
       >
         <div className=" w-full h-full flex justify-start mt-12 md:mt-0 md:justify-center items-center flex-col">
           <div>
@@ -297,22 +349,8 @@ function Dish({ modalOpen, setModalOpen }) {
                   className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
-              <label className="text-xl my-1">Price</label>
-              <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <Input
-                  placeholder="Enter Price Here"
-                  type="price"
-                  name="price"
-                  value={user.price}
-                  onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
-                />
-              </div>
-            </div>
-
-            <div className="mb-3 md:flex md:justify-between flex flex-col ">
               <label className="text-xl my-1">Select Dish</label>
-              <div className="flex rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative  ">
+              <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
                 <Space
                   style={{
                     width: "100%",
@@ -327,12 +365,28 @@ function Dish({ modalOpen, setModalOpen }) {
                       padding: "10px,0px",
                     }}
                     placeholder="Please select"
-                    // defaultValue={['a10', 'c12']}
                     onChange={handleSelectionChange}
                     options={dishName}
                   />
                 </Space>
-                <div className="mt-5">
+              </div>
+            </div>
+
+            <div className="mb-3 md:flex md:justify-between flex flex-col ">
+              <div className="flex rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative  ">
+                <label className="text-xl my-1">Price</label>
+                <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
+                  <Input
+                    placeholder="Enter Price Here"
+                    type="price"
+                    name="price"
+                    value={user.price}
+                    onChange={handleChange}
+                    className="rounded-none w-full py-2 lg:py-3"
+                  />
+                </div>
+                <label className="text-xl my-1">Add Discount Percentage</label>
+                <div>
                   <Input
                     placeholder="Enter Discount Here"
                     type="number"
@@ -342,46 +396,38 @@ function Dish({ modalOpen, setModalOpen }) {
                     className="rounded-none w-full py-2 lg:py-3"
                   />
                 </div>
+                <label className="text-xl my-1 mt-5">Total Price</label>
+                <div>
+                  <Input
+                    placeholder="Enter Discount Here"
+                    type="number"
+                    name="discount"
+                    value={calculatedDiscount}
+                    className="rounded-none w-full py-2 lg:py-3"
+                  />
+                </div>
                 <div className="flex justify-end mt-2">
-                  <button className="py-3 px-2 rounded-md bg-blue-400">
-                    {" "}
+                  <p className="text-lg"
+                  onClick={() => {
+                    setModalOpen(!modalOpen);
+                    setDishModalOpen(!dishModalOpen);
+                  }}
+                  >
                     + Add Dish
-                  </button>
-                  {/* {modalOpen && <Menus  />} */}
+                  </p>
                 </div>
-                
-                {/* <div
-                  className="border py-3 w-[100%]relative"
-                  onClick={() => setOpenDishMenus(!openDishMenus)}
-                >
-                  <div className="justify-between flex mx-2">
-                    Select Dish
-                    <FontAwesomeIcon icon={faCaretDown} />
-                  </div>
-                </div>
-                {openDishMenus && (
-                  <div className="border  cursor-pointer w-[100%] absolute mt-10  ">
-                    {dishPrice.map((item, index) => (
-                      <div
-                        key={index}
-                        onClick={() => handleItemClick(item)}
-                        style={{
-                          backgroundColor: selectedItems.includes(item)
-                            ? "gray"
-                            : "white",
-                        }}
-                      >
-                        <p className="pl-2">{item.Dish}</p>
-                      </div>
-                    ))}
-                  </div>
-                )} */}
               </div>
             </div>
           </div>
         </div>
       </Modal>
-
+      <DishModal
+        setModalOpen={setModalOpen}
+        dishModalOpen={dishModalOpen}
+        setDishModalOpen={setDishModalOpen}
+        loading={loading}
+        setLoading={setLoading}
+      />
     </div>
   );
 }
