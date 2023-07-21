@@ -21,6 +21,8 @@ import {
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Input, Modal } from "antd";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import Link from "next/link";
 const initialFormState = {
   name: "",
   price: 0,
@@ -42,6 +44,8 @@ function Dish({ modalOpen, setModalOpen }) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [dishPrice, setDishPrice] = useState([]);
   const [dishName, setDishName] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [selectedDish, setSelectedDish] = useState(null);
   const { Column } = Table;
   const [selectedOptions, setSelectedOptions] = useState([
     "Mutton",
@@ -50,7 +54,6 @@ function Dish({ modalOpen, setModalOpen }) {
   ]);
   const handleItemClick = (item) => {
     const lowercaseItem = item.toLowerCase();
-
     if (
       selectedItems.some(
         (selectedItem) => selectedItem.toLowerCase() === lowercaseItem
@@ -78,7 +81,7 @@ function Dish({ modalOpen, setModalOpen }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const newValue = name === 'discount' ? Number(value) : value;
-  
+    
     // Calculate the discountAmount only if price and discount are defined
     const discountAmount = user.price && newValue ? (user.price * newValue) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
@@ -107,7 +110,6 @@ function Dish({ modalOpen, setModalOpen }) {
     const totalPrice = DishPrice.reduce((acc, item) => acc + item.Price, 0);
     setTotalPrice(totalPrice);
     setDishPrice(DishPrice);
-
     console.log(DishPrice, "DishPrice");
     const fetchBlogs = async () => {
       try {
@@ -228,19 +230,28 @@ function Dish({ modalOpen, setModalOpen }) {
   //   }));
   // };
   console.log(user, "user");
+  
+  const hideModal = () => {
+    setOpen(false);
+  };
+  const openModal = (dish) =>{
+    setSelectedDish(dish);
+    setOpen(true);
+  }
   return (
     <div className="">
       <Table dataSource={Dishes} className="myTable">
+        
         <Column title="Name" dataIndex="name" key="name" />
         <Column title="Price" dataIndex="price" key="price" />
         <Column
-          title="Dish"
+          title="Dishes"
           dataIndex="dishes"
           key="dishes"
           render={(dishes) => (
             <ul>
               {dishes?.map((dish, index) => (
-                <li key={index}>{dish}</li>
+                <li className="cursor-pointer"  onClick={() => openModal(dish)} key={index}> <Link href=""> {dish}</Link></li>
               ))}
             </ul>
           )}
@@ -269,6 +280,18 @@ function Dish({ modalOpen, setModalOpen }) {
           )}
         />
       </Table>
+      <Modal
+        title="Modal"
+        open={open}
+        onOk={hideModal}
+        onCancel={hideModal}
+        okText="ok"
+        cancelText="cancel"
+      >
+       <p>
+        {selectedDish}
+       </p>
+      </Modal>
       <Modal
         className="text-center"
         centered
