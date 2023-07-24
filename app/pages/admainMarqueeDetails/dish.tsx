@@ -1,13 +1,10 @@
 import React, { use, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DishModal from "./dishModal";
-import Loader from "../../component/Loader"; 
-import {
-  faPenToSquare,
-  faTrashCan,
-} from "@fortawesome/free-solid-svg-icons";
+import Loader from "../../component/Loader";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { Button, Popconfirm, Table, Tag } from "antd";
-import { Select, Space } from "antd";
+import { Select, Space, List, Typography } from "antd";
 import Menus from "./menus";
 // import Modal from "@/app/component/Modal";
 import { db } from "@/app/firebase";
@@ -22,8 +19,8 @@ import {
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Input, Modal } from "antd";
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Link from "next/link";
+import { log } from "console";
 const initialFormState = {
   name: "",
   price: 0,
@@ -34,7 +31,14 @@ const initialFormState = {
 const handleChange = (value) => {
   console.log(`selected ${value}`);
 };
-function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading,setLoading }) {
+function Dish({
+  modalOpen,
+  setModalOpen,
+  dishModalOpen,
+  setDishModalOpen,
+  loading,
+  setLoading,
+}) {
   const [user, setUser] = useState(initialFormState);
   const [selectedItems, setSelectedItems] = useState([]);
   const [addVenues, setAddVenues] = useState([]);
@@ -45,13 +49,9 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
   const [dishName, setDishName] = useState([]);
   const [calculatedDiscount, setCalculatedDiscount] = useState(0);
   const [open, setOpen] = useState(false);
-  const [selectedDish, setSelectedDish] = useState(null);
+  const [selectDish, setSelectDish] = useState({ dishes: [], prices: [] });
   const { Column } = Table;
-  const [selectedOptions, setSelectedOptions] = useState([
-    "Mutton",
-    "Chicken",
-    "Biryani",
-  ]);
+
   const handleItemClick = (item) => {
     const lowercaseItem = item.toLowerCase();
     if (
@@ -78,46 +78,21 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
       }));
     }
   };
-   // const { name, value } = e.target;
-    // const newValue = name === 'discount' ? Number(value) : value;
-    // const discountAmount = user.price && newValue ? (user.price * newValue) / 100 : 0;
-    // const discountedPrice = user.price - discountAmount;
-    // setUser((prevState) => ({
-    //   ...prevState,
-    //   [name]: newValue,
-    //   price: name === 'discount' ?  Number(discountedPrice)  : prevState.price,
-    // }));
+
   const handleChange = (e) => {
-   
-    
     const { name, value } = e.target;
-    const newValue = name === 'discount' ? Number(value) : value;
-    
-    // Calculate the discountAmount only if price and discount are defined
-    const discountAmount = user.price && newValue ? (user.price * newValue) / 100 : 0;
+    const newValue = name === "discount" ? Number(value) : value;
+    const discountAmount =
+      user.price && newValue ? (user.price * newValue) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
-    
-    // Update the calculated discount in the separate state
-    if (name === 'discount') {
+    if (name === "discount") {
       setCalculatedDiscount(discountAmount);
     }
-
     setUser((prevState) => ({
       ...prevState,
       [name]: newValue,
     }));
-
-    // const { name, value } = e.target;
-    // const discountAmount =user.price && user.discount ? (user.price * user.discount) / 100 : 0;
-    // const discountedPrice = user.price - discountAmount;
-    // console.log(discountedPrice,"discountedPreeeice",user.price,user.discount,)
-    // console.log(discountAmount)
-    // setUser((prevState) => ({
-    //   ...prevState,
-    //   [name]: name == "discount" ? Number(value) : value,
-    // }));
   };
-  console.log(calculatedDiscount, "calculatedDiscount");
   useEffect(() => {
     const dishes = [];
     const DishPrice = Menus.map((item, index) => {
@@ -144,16 +119,15 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
         console.error("Error fetching blogs:", error);
       }
     };
-
     fetchBlogs();
-  }, [addVenues,Menus]);
+  }, [addVenues, Menus]);
+
   const AddDish = async () => {
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
-    // setLoading(true)
     const discountAmount =
-    user.price && user.discount ? (user.price * user.discount) / 100 : 0;
+      user.price && user.discount ? (user.price * user.discount) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
     console.log(
       discountedPrice,
@@ -183,15 +157,13 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
     setModalOpen(false);
     setUser(initialFormState);
     setSelectedItems([]);
-    setLoading(false)
-    // setDishName([]);
+    setLoading(false);
   };
   const deleteDish = async (dishId) => {
     try {
       await deleteDoc(doc(db, "Dish", dishId));
       const newBlogs = Dishes.filter((blog) => blog.id !== dishId);
       addDishes(newBlogs);
-      // Dishes(newBlogs);
     } catch (error) {
       console.log(error, "error");
     }
@@ -212,11 +184,7 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
   const update = async (venueId) => {
     try {
       await setDoc(doc(db, "Dish", venueId), user);
-
-      // Find the index of the entry with the specified venueId in the Dishes array
       const updatedIndex = Dishes.findIndex((dish) => dish.id === venueId);
-
-      // If the entry is found (index is not -1), update it; otherwise, add it to the end
       if (updatedIndex !== -1) {
         const updatedDishes = [...Dishes];
         updatedDishes[updatedIndex] = { ...user, id: venueId };
@@ -255,41 +223,61 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
     }));
   };
 
-  // const handleDiscountChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setUser((prevState) => ({
-  //     ...prevState,
-  //     [name]: value,
-  //   }));
-  // };
-  console.log(user, "user");
-  
   const hideModal = () => {
     setOpen(false);
   };
-  const openModal = (dish) =>{
-    setSelectedDish(dish);
-    setOpen(true);
-  }
+  // const openModal = (dishes) => {
+  //   setOpen(true);
+  // };
+
+  // const openModal = (dishes) => {
+  //   if (dishes && dishes.length > 0) {
+  //     const prices = dishes.map((dish) => {
+  //       const dishData = dishPrice.find((item) => item.Dish === dish);
+  //       return dishData ? dishData.Price : 0;
+  //     });
+
+  //     console.log(dishes, prices);
+
+  //     setOpen(true);
+  //     setSelectDish({ dishes, prices });
+  //   }
+  // };
+
+  const openModal = (dishes) => {
+    if (dishes && dishes.length > 0) {
+      const prices = dishes.map((dish) => {
+        const dishData = dishPrice.find((item) => item.Dish === dish);
+        return dishData ? dishData.Price : 0;
+      });
+
+      setOpen(true);
+      setSelectDish({ dishes, prices });
+    }
+  };
+
   return (
     <div className="">
       <Table dataSource={Dishes} className="myTable">
-        
         <Column title="Name" dataIndex="name" key="name" />
         <Column
           title="Dishes"
           dataIndex="dishes"
           key="dishes"
           render={(dishes) => (
-            <ul>
-              {dishes?.map((dish, index) => (
-                <li className="cursor-pointer"  onClick={() => openModal(dish)} key={index}> <Link href=""> {dish}</Link></li>
-              ))}
-            </ul>
+            <p
+              className="cursor-pointer text-blue-700 underline"
+              onClick={() => {
+                openModal(dishes);
+                // setSelectDish(dishes);
+              }}
+            >
+              <Link href={""}>{dishes.length} Dishes </Link>
+            </p>
           )}
         />
         <Column title="Price" dataIndex="price" key="price" />
-        <Column title="discountAmount" dataIndex="discount" key="discount" />
+        <Column title="Discount Amount" dataIndex="discount" key="discount" />
         <Column
           title="Total Price"
           dataIndex="discountedPrice"
@@ -302,20 +290,18 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
           render={(dishId) => (
             <div>
               <Popconfirm
-                  title="Delete Menu?"
-                  description="Are you sure to delete Menu?"
-                  okText="Yes"
-                  cancelText="No"
-                  onConfirm={() => deleteDish(dishId)} 
-                >
-                  <FontAwesomeIcon
-                    icon={faTrashCan} 
-                    width={15}
-                    // height={15}
-                    className="text-red-500 cursor-pointer text-xl"
-                    // onClick={() => deleteVenue(venueId)}
-                  />
-                </Popconfirm>
+                title="Delete Menu?"
+                description="Are you sure to delete Menu?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={() => deleteDish(dishId)}
+              >
+                <FontAwesomeIcon
+                  icon={faTrashCan}
+                  width={15}
+                  className="text-red-500 cursor-pointer text-xl"
+                />
+              </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 width={15}
@@ -326,18 +312,40 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
           )}
         />
       </Table>
-      <Modal
-        title="Modal"
+      {/* <Modal
+        title="Dishes Content"
         open={open}
         onOk={hideModal}
         onCancel={hideModal}
         okText="ok"
         cancelText="cancel"
       >
-       <p>
-        {selectedDish}
-       </p>
+        <>
+          <List
+            header={<div className="font-bold flex">Dishes</div>}
+            bordered
+            dataSource={selectDish}
+            renderItem={(item, index) => (
+              <List.Item key={index}>{item}</List.Item>
+            )}
+          />
+        </>
+      </Modal>  */}
+      <Modal
+        title="Dishes Content"
+        open={open}
+        onOk={hideModal}
+        onCancel={hideModal}
+        okText="ok"
+        cancelText="cancel"
+      >
+        {selectDish.dishes.map((dish, index) => (
+          <p key={index}>
+          Dishes -  {dish} - Price: {selectDish.prices[index]}
+          </p>
+        ))}
       </Modal>
+
       <Modal
         className="text-center"
         centered
@@ -347,21 +355,17 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
         width={600}
         bodyStyle={{ height: 650 }}
         okButtonProps={{ className: "custom-ok-button" }}
-
         footer={[
           <Button key="cancel" onClick={() => setModalOpen(false)}>
             Cancel
           </Button>,
-          <Button key="ok" type="primary" onClick={() =>
-            (updateDish ? update(user?.dishId) : AddDish())} className="bg-blue-500">
-            {
-                  loading ? (
-                    <Loader />
-                  ) : (
-                    "Ok"
-                  ) 
-            }
-            
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() => (updateDish ? update(user?.dishId) : AddDish())}
+            className="bg-blue-500"
+          >
+            {loading ? <Loader /> : "Ok"}
           </Button>,
         ]}
       >
@@ -404,7 +408,6 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
                 </Space>
               </div>
             </div>
-
             <div className="mb-3 md:flex md:justify-between flex flex-col ">
               <div className="flex rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative  ">
                 <label className="text-xl my-1">Price</label>
@@ -440,11 +443,12 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
                   />
                 </div>
                 <div className="flex justify-end mt-2">
-                  <p className="text-lg"
-                  onClick={() => {
-                    setModalOpen(!modalOpen);
-                    setDishModalOpen(!dishModalOpen);
-                  }}
+                  <p
+                    className="text-lg"
+                    onClick={() => {
+                      setModalOpen(!modalOpen);
+                      setDishModalOpen(!dishModalOpen);
+                    }}
                   >
                     + Add Dish
                   </p>
@@ -464,5 +468,4 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
     </div>
   );
 }
-
 export default Dish;

@@ -117,12 +117,11 @@ function AdminMarqueeDetails() {
             </div>
           ) : null}
 
-          <div className="w-[100%]  h-[100vh] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200 md:px-5 ">
+          <div className="w-[100%]  h-[100vh] md:px-5 ">
             <div>
               {component === "Venues" ? (
                 <div className="flex justify-between mx-1  items-center">
                   <p className="text-2xl py-5">Venues</p>
-                  {/* <div className="border-b  w-[100%] "></div> */}
                   <button
                     className="border rounded-md px-2 py-3 font-extrabold text-white bg-[#F7C815] my-4"
                     onClick={() => openModal()}
@@ -133,7 +132,6 @@ function AdminMarqueeDetails() {
               ) : component === "Menus" ? (
                 <div className="flex justify-between mx-1  items-center">
                   <p className="text-2xl py-5">Menus</p>
-                  {/* <div className="border-b  w-[100%] "></div> */}
                   <button
                     className="border rounded-md px-3 py-3 font-extrabold text-white bg-[#F7C815] my-4"
                     onClick={() => openModal()}
@@ -144,7 +142,6 @@ function AdminMarqueeDetails() {
               ) : component === "Dishes" ? (
                 <div className="flex justify-between mx-1  items-center">
                   <p className="text-2xl py-5">Dishes</p>
-                  {/* <div className="border-b w-[100%] "></div> */}
                   <button
                     className="border rounded-md px-3 py-3 font-extrabold text-white bg-[#F7C815] my-4"
                     onClick={() => openModal()}
