@@ -46,12 +46,8 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
   const [calculatedDiscount, setCalculatedDiscount] = useState(0);
   const [open, setOpen] = useState(false);
   const [selectedDish, setSelectedDish] = useState(null);
+  console.log(Menus,"Menusddd" )
   const { Column } = Table;
-  const [selectedOptions, setSelectedOptions] = useState([
-    "Mutton",
-    "Chicken",
-    "Biryani",
-  ]);
   const handleItemClick = (item) => {
     const lowercaseItem = item.toLowerCase();
     if (
@@ -78,15 +74,6 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
       }));
     }
   };
-   // const { name, value } = e.target;
-    // const newValue = name === 'discount' ? Number(value) : value;
-    // const discountAmount = user.price && newValue ? (user.price * newValue) / 100 : 0;
-    // const discountedPrice = user.price - discountAmount;
-    // setUser((prevState) => ({
-    //   ...prevState,
-    //   [name]: newValue,
-    //   price: name === 'discount' ?  Number(discountedPrice)  : prevState.price,
-    // }));
   const handleChange = (e) => {
    
     
@@ -151,7 +138,7 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
-    // setLoading(true)
+    setLoading(true)
     const discountAmount =
     user.price && user.discount ? (user.price * user.discount) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
@@ -181,10 +168,10 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
     }
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
-    setUser(initialFormState);
     setSelectedItems([]);
     setLoading(false)
-    // setDishName([]);
+    setCalculatedDiscount(0);
+    setUser(initialFormState);
   };
   const deleteDish = async (dishId) => {
     try {
@@ -202,14 +189,17 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
     const docRef = doc(db, "Dish", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      console.log("Document data:",docSnap.data().dishes);  
       setUser(docSnap.data());
+      // setDishName(docSnap.data().dishes);
       setSelectedItems(docSnap.data().dishes);
-      console.log("Document data:", docSnap.data());
+      // console.log("Document data:", docSnap.data());
     } else {
       console.log("No such document!");
     }
   };
   const update = async (venueId) => {
+    setLoading(true)
     try {
       await setDoc(doc(db, "Dish", venueId), user);
 
@@ -239,10 +229,12 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
     setUser(initialFormState);
     setSelectedItems([]);
     setUpdateDish(false);
+    setLoading(false)
   };
   const handleSelectionChange = (selectedOptions) => {
     console.log(selectedOptions, "selectedOptions");
     let price = 0;
+    console.log(dishPrice, "dishPrice",selectedOptions)
     selectedOptions.map((item) => {
       const data = dishPrice.filter((item1) => item1.Dish === item);
       price = price + data[0].Price;
@@ -280,7 +272,7 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
           title="Dishes"
           dataIndex="dishes"
           key="dishes"
-          render={(dishes) => (
+          render={(dishes,PriceIndex) => (
             <ul>
               {dishes?.map((dish, index) => (
                 <li className="cursor-pointer"  onClick={() => openModal(dish)} key={index}> <Link href=""> {dish}</Link></li>
@@ -342,7 +334,7 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
         className="text-center"
         centered
         open={modalOpen}
-        onOk={() => (updateDish ? update(user?.dishId) : AddDish())}
+        // onOk={() => (updateDish ? update(user?.dishId) : AddDish())}
         onCancel={() => setModalOpen(false)}
         width={600}
         bodyStyle={{ height: 650 }}
@@ -397,6 +389,7 @@ function Dish({ modalOpen, setModalOpen, dishModalOpen, setDishModalOpen,loading
                       width: "100%",
                       padding: "10px,0px",
                     }}
+                    value={user.dishes}
                     placeholder="Please select"
                     onChange={handleSelectionChange}
                     options={dishName}

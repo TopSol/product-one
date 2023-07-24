@@ -1,20 +1,41 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect, use } from "react";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/app/firebase";
+import { Image } from 'antd';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Data } from "./data";
 import { useRouter } from "next/navigation";
 import Datepicker from "@/app/component/Calender";
+
 function Marquee() {
   const [sliderValue, setSliderValue] = useState("");
   const [open, setOpen] = useState({})
+  const [venuesData, setVenuesData] = useState([]);
   const router = useRouter();
   const handleSliderChange = (event) => {
     setSliderValue(event.target.value);
   };
+  useEffect(() => {
+    const getdata = async () => {
+      const querySnapshot = await getDocs(collection(db, "Venues"));
+      const dataArr = []; // Create an empty array to store the data.
+      
+      querySnapshot.forEach((doc) => {
+        // Push each document's data into the array.
+        dataArr.push({ id: doc.id, data: doc.data() });
+      });
+
+      setVenuesData(dataArr); // Set the array in the state.
+    };
+
+    getdata();
+  }, []);
+  console.log( JSON.stringify(venuesData) ,"venuesDaddddta");
   const handleClick = (id) => {
     setOpen((prevState) => ({
       ...prevState,
@@ -139,53 +160,79 @@ function Marquee() {
           </div>
         </div>
         <div className="w-full  lg:w-[75%]">
-          {Data.map((item) => (
-            <div
-              key={item.id}
-              className="mb-10 mx-5 "
-            // onClick={() => router.push("/pages/marqueedetail")}
-            >
-              <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
-                <div className="md:w-[40%]  ">
-                  <img
-                    src={item.src}
-                    className="md:rounded-r-none rounded-lg "
-                    alt=""
-                  />
-                </div>
-                <div className="pt-6 px-6 md:w-[40%] ">
-                  <h1 className="font-vollkorn text-2xl">{item.name}</h1>
-
-                  <p className="font-roboto text-textColor mt-4">{item.desc}</p>
-                  <p className="font-roboto text-textColor mt-6">Jaranwala</p>
-                </div>
-                <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
-                  <p className="text-center text-2xl font-roboto font-bold  text-textColor">
-                    {item.price}
-                  </p>
-                  <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
-                    PER NIGHT
-                  </p>
-                  <div className="flex items-center justify-center font-roboto font-semibold mb-14">
-                    <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded ">
-                      Select Booking Detials
-                    </p>
+          {venuesData?.map((item,index) => {
+            console.log(item.data?.image[0],"eeeddeeee");
+            return(
+              // {Data.map((item) => (
+                <div
+                  key={item?.id}
+                  className="mb-10 mx-5 "
+                // onClick={() => router.push("/pages/marqueedetail")}
+                >
+                  <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
+                    <div className="md:w-[40%]  ">
+                      <Image
+                        className="md:rounded-r-none rounded-lg w-[52%]"
+                         
+                        src={item.data?.image[0]}
+                      />
+                      {/* {
+                        item?.data?.image[0]?.map((item,index) => {
+                          return(
+                            <Image
+                            width={200}
+                            src={item}
+                          />
+                          //   <img
+                          //   key={index}
+                          //   src={item}
+                          //   className="md:rounded-r-none rounded-lg "
+                          //   alt=""
+                          // />
+                          )
+                        }
+                        )
+                      } */}
+                      {/* <img
+                        src={item}
+                        className="md:rounded-r-none rounded-lg "
+                        alt=""
+                      /> */}
+                    </div>
+                    <div className="pt-6 px-6 md:w-[40%] ">
+                      <h1 className="font-vollkorn text-2xl">{item?.name?.name}</h1>
+    
+                      {/* <p className="font-roboto text-textColor mt-4">{item.desc}</p> */}
+                      <p className="font-roboto text-textColor mt-6">Jaranwala</p>
+                    </div>
+                    <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
+                      <p className="text-center text-2xl font-roboto font-bold  text-textColor">
+                        {item.price}
+                      </p>
+                      <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
+                        PER NIGHT
+                      </p>
+                      <div className="flex items-center justify-center font-roboto font-semibold mb-14">
+                        <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded ">
+                          Select Booking Detials
+                        </p>
+                      </div>
+    
+                      <div className="cursor-pointer" onClick={() => handleClick(item.id)} >
+    
+                        <p className=" text-sm  text-textColor  flex justify-center items-center pt-3  font-roboto border-t-[1px]">
+                          Avalibility & Details
+                          <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
+                        </p>
+                      </div>
+                    </div>
                   </div>
-
-                  <div className="cursor-pointer" onClick={() => handleClick(item.id)} >
-
-                    <p className=" text-sm  text-textColor  flex justify-center items-center pt-3  font-roboto border-t-[1px]">
-                      Avalibility & Details
-                      <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
-                    </p>
-                  </div>
+                  {/* <div className="w-[98%]  ">
+                    {open[item.id] && <  Datepicker styles={{width:"100%", padding:"40px"}} />}
+                  </div> */}
                 </div>
-              </div>
-              <div className="w-[98%]  ">
-                {open[item.id] && <  Datepicker styles={{width:"100%", padding:"40px"}} />}
-              </div>
-            </div>
-          ))}
+              )
+          })}
         </div>
       </div>
       <Footer />
