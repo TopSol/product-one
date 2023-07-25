@@ -16,6 +16,8 @@ import "react-day-picker/dist/style.css";
 import { BookedLunch, BookedDinner } from "./data";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import "./style.css";
+import { useSearchParams } from 'next/navigation'
+
 function Marqueedetail() {
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -52,15 +54,15 @@ function Marqueedetail() {
     }
   };
 
-  
-
-
+  const searchParams = useSearchParams()
+  const search = searchParams.get('id')
+  console.log(search, "iddddddd");
   return (
     <div>
       <Navbar />
       <div className="bg-bgColor mt-24">
         <div className="md:container mx-auto py-5 flex justify-between items-center">
-          <div>
+          <div>          
             <h1 className="font-vollkorn text-4xl text-gray-600">
               Hotel Detail
             </h1>

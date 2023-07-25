@@ -49,7 +49,7 @@ function Dish({
   const [dishName, setDishName] = useState([]);
   const [calculatedDiscount, setCalculatedDiscount] = useState(0);
   const [open, setOpen] = useState(false);
-  const [selectDish, setSelectDish] = useState({ dishes: [], prices: [] });
+  const [selectDish, setSelectDish] = useState({ dishes: [], prices: [], status:[] });
   const { Column } = Table;
 
   const handleItemClick = (item) => {
@@ -126,7 +126,7 @@ function Dish({
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
-    setLoading(true)
+    setLoading(true);
     const discountAmount =
       user.price && user.discount ? (user.price * user.discount) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
@@ -157,7 +157,7 @@ function Dish({
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
     setSelectedItems([]);
-    setLoading(false)
+    setLoading(false);
     setCalculatedDiscount(0);
     setUser(initialFormState);
   };
@@ -176,7 +176,7 @@ function Dish({
     const docRef = doc(db, "Dish", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      console.log("Document data:",docSnap.data().dishes);  
+      console.log("Document data:", docSnap.data().dishes);
       setUser(docSnap.data());
       // setDishName(docSnap.data().dishes);
       setSelectedItems(docSnap.data().dishes);
@@ -186,7 +186,7 @@ function Dish({
     }
   };
   const update = async (venueId) => {
-    setLoading(true)
+    setLoading(true);
     try {
       await setDoc(doc(db, "Dish", venueId), user);
       const updatedIndex = Dishes.findIndex((dish) => dish.id === venueId);
@@ -212,12 +212,12 @@ function Dish({
     setUser(initialFormState);
     setSelectedItems([]);
     setUpdateDish(false);
-    setLoading(false)
+    setLoading(false);
   };
   const handleSelectionChange = (selectedOptions) => {
     console.log(selectedOptions, "selectedOptions");
     let price = 0;
-    console.log(dishPrice, "dishPrice",selectedOptions)
+    console.log(dishPrice, "dishPrice", selectedOptions);
     selectedOptions.map((item) => {
       const data = dishPrice.filter((item1) => item1.Dish === item);
       price = price + data[0].Price;
@@ -233,37 +233,33 @@ function Dish({
   const hideModal = () => {
     setOpen(false);
   };
-  // const openModal = (dishes) => {
-  //   setOpen(true);
-  // };
+  
+  const openModal = (dishes) => {
+    console.log(dishes, "dishes");
+    if (dishes && dishes.length > 0) {
+      const prices = dishes.map((dish) => {
+        const dishData = dishPrice.find((item) => item.Dish === dish);
+        console.log(dishData, "dishData");
+        return dishData ? dishData.Price : 0;
+      });
+      console.log(prices, "prices");
+
+      setOpen(true);
+      setSelectDish({ dishes, prices, status });
+    }
+  };
 
   // const openModal = (dishes) => {
   //   if (dishes && dishes.length > 0) {
-  //     const prices = dishes.map((dish) => {
+  //     const prices = dishes?.map((dish) => {
   //       const dishData = dishPrice.find((item) => item.Dish === dish);
   //       return dishData ? dishData.Price : 0;
   //     });
-
-  //     console.log(dishes, prices);
 
   //     setOpen(true);
   //     setSelectDish({ dishes, prices });
   //   }
   // };
-
-  const openModal = (dishes) => {
-    console.log(dishes, "dishes");
-    
-    if (dishes && dishes.length > 0) {
-      const prices = dishes?.map((dish) => {
-        const dishData = dishPrice.find((item) => item.Dish === dish);
-        return dishData ? dishData.Price : 0;
-      });
-
-      setOpen(true);
-      setSelectDish({ dishes, prices });
-    }
-  };
 
   return (
     <div className="">
@@ -275,7 +271,12 @@ function Dish({
           key="dishes"
           render={(dishes) => (
             <ul>
-                <li className="cursor-pointer"  onClick={() => openModal(dishes)}> <Link className="text-blue-600 underline" href="">{dishes.length} Dishes</Link></li>
+              <li className="cursor-pointer" onClick={() => openModal(dishes)}>
+                {" "}
+                <Link className="text-blue-600 underline" href="">
+                  {dishes.length} Dishes
+                </Link>
+              </li>
             </ul>
           )}
         />
@@ -315,47 +316,30 @@ function Dish({
           )}
         />
       </Table>
-      {/* <Modal
-        title="Dishes Content"
+      <Modal 
+        title= "Dishes Content"
         open={open}
         onOk={hideModal}
         onCancel={hideModal}
         okText="ok"
         cancelText="cancel"
+        
       >
-        <>
-          <List
-            header={<div className="font-bold flex">Dishes</div>}
-            bordered
-            dataSource={selectDish}
-            renderItem={(item, index) => (
-              <List.Item key={index}>{item}</List.Item>
-            )}
-          />
-        </>
-      </Modal>  */}
-      <Modal
-        title="Dishes Content"
-        open={open}
-        onOk={hideModal}
-        onCancel={hideModal}
-        okText="ok"
-        cancelText="cancel"
-      >  
-      <div className="flex justify-around font-bold">
-
-        <p>Dish</p> <p>Price</p>
-      </div>
-        {selectDish.dishes.map((dish, index) => (
-
-          <div  className="flex justify-around"> 
-            <p>{dish}</p>
-            <p>{selectDish.prices[index]}</p>
-          </div>
-          // <p key={index}>
-          // Dishes -  {dish} - Price: {selectDish.prices[index]}
-          // </p>
-        ))}
+        <List
+          bordered
+          header={
+          <div className="flex justify-between font-extrabold">
+          <p>Dishes</p>
+          <p>Price</p>
+          </div>}
+          dataSource={selectDish.dishes}
+          renderItem={(dish, index) => (
+            <List.Item key={index}>           
+                <p>{dish}</p>
+                <p>{selectDish.prices[index]}</p>
+            </List.Item>
+          )}
+        />
       </Modal>
 
       <Modal

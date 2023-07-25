@@ -30,11 +30,9 @@
 .ant-btn{
     background-color: blue;
     color: #fff;
+    font-weight: bolder;
 }
-.ant-btn :hover{
-    background-color: blue;
-    color: white;
-}
+
 
 /* .myTable .ant-table-tbody > tr > td {
         border-top-right-radius: 10px;
