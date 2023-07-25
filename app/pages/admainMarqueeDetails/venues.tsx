@@ -3,6 +3,7 @@ import Loader from "../../component/Loader";
 import ImageLightbox from "react-image-lightbox";
 import { Button, Input, Popconfirm } from "antd";
 import DeleteItem from "../../component/DeleteItem";
+import { Image } from "antd";
 import {
   collection,
   getDocs,
@@ -78,7 +79,9 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
 
     fetchBlogs();
   }, [addVenue]);
+
   const HandleaddVenue = async () => {
+    console.log("use333r", user);
     if (
       !user.name ||
       !user.image ||
@@ -137,56 +140,80 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     setModalOpen((prevState) => !prevState);
     const docRef = doc(db, "Venues", dishId);
     const docSnap = await getDoc(docRef);
+    console.log("sdfasdfafsda", docSnap.data());
     if (docSnap.exists()) {
       setUser(docSnap.data());
       // setSelectedItems(docSnap.data().dishes);
-      console.log("Document data:", docSnap.data());
+      console.log("Documentsss", docSnap.data());
     } else {
       console.log("No such document!");
     }
   };
   const updateVenue = async (venueId) => {
-    const images = Object.values(user.image);
-    const folderName = `images`;
-    const imageUrls = await Promise.all(
-      images.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
-        const storageRef = ref(storage, fileName);
-        await uploadBytes(storageRef, image);
-        const urls = await getDownloadURL(storageRef);
-        console.log("imageUrls123", urls);
-        return urls;
-      })
-    );
-    try {
-      const updatedUser = JSON.parse(JSON.stringify(user));
-      updatedUser.image = imageUrls;
+    // console.log("userddddd", user);
+    setLoading((pre) => !pre);
+    if (typeof user?.image[0] === "string") {
+      try {
+        // const updatedUser = JSON.parse(JSON.stringify(user));
+        // updatedUser.image = imageUrls;
+        // console.log("updatedUserdd", updatedUser,"venueId",venueId);
 
-      await setDoc(doc(db, "Venues", venueId), updatedUser);
+        await setDoc(doc(db, "Venues", venueId), user);
 
-      const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
-      if (updatedIndex !== -1) {
-        const updatedVenues = [...Venues];
-        updatedVenues[updatedIndex] = { ...updatedUser, id: venueId };
-        console.log(updatedVenues, "updatedVenues");
-        addVenues(updatedVenues);
-      } else {
-        addVenues([...Venues, { ...updatedUser, id: venueId }]);
+        const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
+        if (updatedIndex !== -1) {
+          const updatedVenues = [...Venues];
+          updatedVenues[updatedIndex] = { ...user, id: venueId };
+          console.log(updatedVenues, "updatedVenues");
+          addVenues(updatedVenues);
+        } else {
+          addVenues([...Venues, { ...user, id: venueId }]);
+        }
+      } catch (error) {
+        console.log(error, "error");
       }
-    } catch (error) {
-      console.log(error, "error");
+
+      // setModalOpen(false);
+      // setUser(initialFormState);
+      // setOpenEditVenue(false);
+      // setLoading(pre=>!pre)
+    } else {
+      const images = Object.values(user.image);
+      const folderName = `images`;
+      const imageUrls = await Promise.all(
+        images.map(async (image) => {
+          const fileName = `${folderName}/${image.name}`;
+          const storageRef = ref(storage, fileName);
+          await uploadBytes(storageRef, image);
+          const urls = await getDownloadURL(storageRef);
+          console.log("imageUrls123", urls);
+          return urls;
+        })
+      );
+      try {
+        const updatedUser = JSON.parse(JSON.stringify(user));
+        updatedUser.image = imageUrls;
+        console.log("updatedUserdd", updatedUser, "venueId", venueId);
+
+        await setDoc(doc(db, "Venues", venueId), updatedUser);
+
+        const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
+        if (updatedIndex !== -1) {
+          const updatedVenues = [...Venues];
+          updatedVenues[updatedIndex] = { ...updatedUser, id: venueId };
+          console.log(updatedVenues, "updatedVenues");
+          addVenues(updatedVenues);
+        } else {
+          addVenues([...Venues, { ...updatedUser, id: venueId }]);
+        }
+      } catch (error) {
+        console.log(error, "error");
+      }
     }
-    // try {
-    //   await setDoc(doc(db, "Venues", venueId), user);
-    //   const newBlogs = Venues.filter((blog) => blog.id !== venueId);
-    //   console.log(newBlogs,"newBlogs33",user)
-    //   addVenues([...newBlogs,{...user,id:venueId}])
-    // } catch (error) {
-    //   console.log(error, "error");
-    // }
     setModalOpen(false);
     setUser(initialFormState);
     setOpenEditVenue(false);
+    setLoading((pre) => !pre);
   };
   return (
     <>
@@ -210,22 +237,29 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
             key="image"
             render={(image) => (
               <div className="flex">
-                {image?.map((dish, index) => {
-                  return (
-                    <img
-                      key={index}
-                      src={dish}
-                      alt="img"
-                      width={50}
-                      height={50}
-                      className="mr-2"
-                      onClick={() => handleClick(image, index)}
-                    />
-                  );
-                })}
+                <Image.PreviewGroup>
+                  {image?.map((dish, index) => {
+                    return (
+                      <Image
+                        key={index}
+                        width={80}
+                        height={35}
+                        // visible={false}
+                        style={{ objectFit: "cover", paddingRight: 10 }}
+                        src={dish}
+                        onClick={() => {
+                          Image.previewGroup?.show({
+                            current: index,
+                          });
+                        }}
+                      />
+                    );
+                  })}
+                </Image.PreviewGroup>
               </div>
             )}
           />
+
           <Column
             title="Action"
             dataIndex="venueId"
@@ -237,10 +271,10 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
                   description="Are you sure to delete Venues?"
                   okText="Yes"
                   cancelText="No"
-                  onConfirm={() => deleteVenue(venueId)} 
+                  onConfirm={() => deleteVenue(venueId)}
                 >
                   <FontAwesomeIcon
-                    icon={faTrashCan} 
+                    icon={faTrashCan}
                     width={15}
                     className="text-red-500 cursor-pointer text-xl"
                   />
@@ -263,6 +297,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
         open={modalOpen}
         width={700}
         bodyStyle={{ height: 630 }}
+        onCancel={() => setModalOpen(false)}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
           <Button key="cancel" onClick={() => setModalOpen(false)}>
@@ -272,7 +307,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
             key="ok"
             type="primary"
             onClick={() =>
-              openEditVenue ? updateVenue(user.menuId) : HandleaddVenue()
+              openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
             }
             className="bg-blue-500"
           >
@@ -282,7 +317,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div className="mr-auto">
-            <p className="text-2xl mt-5  ">Venues</p>
+            <p className="text-2xl mt-5 ">Venues</p>
           </div>
           <hr className="w-full bg-black my-3" />
           <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[100%]  justify-center ">
@@ -310,6 +345,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
                   placeholder="Basic usage"
                   type="file"
                   name="image"
+                  // value={user.image}
                   multiple
                   onChange={(e) => {
                     setUser({ ...user, image: e.target.files });

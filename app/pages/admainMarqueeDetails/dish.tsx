@@ -126,6 +126,7 @@ function Dish({
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
+    setLoading(true)
     const discountAmount =
       user.price && user.discount ? (user.price * user.discount) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
@@ -155,9 +156,10 @@ function Dish({
     }
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
-    setUser(initialFormState);
     setSelectedItems([]);
-    setLoading(false);
+    setLoading(false)
+    setCalculatedDiscount(0);
+    setUser(initialFormState);
   };
   const deleteDish = async (dishId) => {
     try {
@@ -174,14 +176,17 @@ function Dish({
     const docRef = doc(db, "Dish", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      console.log("Document data:",docSnap.data().dishes);  
       setUser(docSnap.data());
+      // setDishName(docSnap.data().dishes);
       setSelectedItems(docSnap.data().dishes);
-      console.log("Document data:", docSnap.data());
+      // console.log("Document data:", docSnap.data());
     } else {
       console.log("No such document!");
     }
   };
   const update = async (venueId) => {
+    setLoading(true)
     try {
       await setDoc(doc(db, "Dish", venueId), user);
       const updatedIndex = Dishes.findIndex((dish) => dish.id === venueId);
@@ -207,10 +212,12 @@ function Dish({
     setUser(initialFormState);
     setSelectedItems([]);
     setUpdateDish(false);
+    setLoading(false)
   };
   const handleSelectionChange = (selectedOptions) => {
     console.log(selectedOptions, "selectedOptions");
     let price = 0;
+    console.log(dishPrice, "dishPrice",selectedOptions)
     selectedOptions.map((item) => {
       const data = dishPrice.filter((item1) => item1.Dish === item);
       price = price + data[0].Price;
@@ -245,8 +252,10 @@ function Dish({
   // };
 
   const openModal = (dishes) => {
+    console.log(dishes, "dishes");
+    
     if (dishes && dishes.length > 0) {
-      const prices = dishes.map((dish) => {
+      const prices = dishes?.map((dish) => {
         const dishData = dishPrice.find((item) => item.Dish === dish);
         return dishData ? dishData.Price : 0;
       });
@@ -265,15 +274,9 @@ function Dish({
           dataIndex="dishes"
           key="dishes"
           render={(dishes) => (
-            <p
-              className="cursor-pointer text-blue-700 underline"
-              onClick={() => {
-                openModal(dishes);
-                // setSelectDish(dishes);
-              }}
-            >
-              <Link href={""}>{dishes.length} Dishes </Link>
-            </p>
+            <ul>
+                <li className="cursor-pointer"  onClick={() => openModal(dishes)}> <Link className="text-blue-600 underline" href="">{dishes.length} Dishes</Link></li>
+            </ul>
           )}
         />
         <Column title="Price" dataIndex="price" key="price" />
@@ -338,11 +341,20 @@ function Dish({
         onCancel={hideModal}
         okText="ok"
         cancelText="cancel"
-      >
+      >  
+      <div className="flex justify-around font-bold">
+
+        <p>Dish</p> <p>Price</p>
+      </div>
         {selectDish.dishes.map((dish, index) => (
-          <p key={index}>
-          Dishes -  {dish} - Price: {selectDish.prices[index]}
-          </p>
+
+          <div  className="flex justify-around"> 
+            <p>{dish}</p>
+            <p>{selectDish.prices[index]}</p>
+          </div>
+          // <p key={index}>
+          // Dishes -  {dish} - Price: {selectDish.prices[index]}
+          // </p>
         ))}
       </Modal>
 
@@ -350,7 +362,7 @@ function Dish({
         className="text-center"
         centered
         open={modalOpen}
-        onOk={() => (updateDish ? update(user?.dishId) : AddDish())}
+        // onOk={() => (updateDish ? update(user?.dishId) : AddDish())}
         onCancel={() => setModalOpen(false)}
         width={600}
         bodyStyle={{ height: 650 }}
@@ -401,6 +413,7 @@ function Dish({
                       width: "100%",
                       padding: "10px,0px",
                     }}
+                    value={user.dishes}
                     placeholder="Please select"
                     onChange={handleSelectionChange}
                     options={dishName}

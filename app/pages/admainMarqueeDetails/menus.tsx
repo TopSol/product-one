@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
 import { Button, Input, Popconfirm, Table } from "antd";
 import Loader from "../../component/Loader"; 
+import { Image } from "antd";
 import {
   getStorage,
   ref,
@@ -148,49 +149,67 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
     }
   };
   const updateVenue = async (venueId) => {
-    const images = Object.values(user.image);
-    const folderName = `images`;
-
-    const urls = await Promise.all(
-      images.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
-        const storageRef = ref(storage, fileName);
-        await uploadBytes(storageRef, image);
-        const url = await getDownloadURL(storageRef);
-        return url;
-      })
-    );
-
-    try {
-      // Deep copy of the user object to ensure image property doesn't reference the original object
-      const updatedUser = JSON.parse(JSON.stringify(user));
-      updatedUser.image = urls;
-
-      await setDoc(doc(db, "Menus", venueId), updatedUser);
-
-      const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
-      if (updatedIndex !== -1) {
-        const updatedMenus = [...Menus];
-        updatedMenus[updatedIndex] = { ...updatedUser, id: venueId };
-        addMenus(updatedMenus);
-      } else {
-        addMenus([...Menus, { ...updatedUser, id: venueId }]);
+    setLoading((prevState) => !prevState);
+     if( typeof user?.image[0]==="string"){
+      try {
+        await setDoc(doc(db, "Menus", venueId), user);
+  
+        const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
+        if (updatedIndex !== -1) {
+          const updatedMenus = [...Menus];
+          updatedMenus[updatedIndex] = { ...user, id: venueId };
+          addMenus(updatedMenus);
+        } else {
+          addMenus([...Menus, { ...user, id: venueId }]);
+        }
+      } catch (error) {
+        console.log(error, "error");
       }
-    } catch (error) {
-      console.log(error, "error");
+      setModalOpen(false);
+      setUser(initialFormState);
+      setOpenEditVenue(false);
+    }else{
+      const images = Object.values(user.image);
+      const folderName = `images`;
+      const urls = await Promise.all(
+        images.map(async (image) => {
+          const fileName = `${folderName}/${image.name}`;
+          const storageRef = ref(storage, fileName);
+          await uploadBytes(storageRef, image);
+          const url = await getDownloadURL(storageRef);
+          return url;
+        }))
+       try {
+        const updatedUser = JSON.parse(JSON.stringify(user));
+        updatedUser.image = urls;
+        await setDoc(doc(db, "Menus", venueId), updatedUser);
+  
+        const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
+        if (updatedIndex !== -1) {
+          const updatedMenus = [...Menus];
+          updatedMenus[updatedIndex] = { ...updatedUser, id: venueId };
+          addMenus(updatedMenus);
+        } else {
+          addMenus([...Menus, { ...updatedUser, id: venueId }]);
+        }
+      } catch (error) {
+        console.log(error, "error");
+      }
+  
+      // try {
+      //   await setDoc(doc(db, "Menus", venueId), user);
+      //   const newBlogs = Menus.filter((blog) => blog.id !== venueId);
+      //   console.log(newBlogs,"newBlogs33",user)
+      //   addMenus([...newBlogs,{...user,id:venueId}])
+      // } catch (error) {
+      //   console.log(error, "error");
+      // }
+     
     }
-
-    // try {
-    //   await setDoc(doc(db, "Menus", venueId), user);
-    //   const newBlogs = Menus.filter((blog) => blog.id !== venueId);
-    //   console.log(newBlogs,"newBlogs33",user)
-    //   addMenus([...newBlogs,{...user,id:venueId}])
-    // } catch (error) {
-    //   console.log(error, "error");
-    // }
     setModalOpen(false);
-    setUser(initialFormState);
-    setOpenEditVenue(false);
+      setUser(initialFormState);
+      setOpenEditVenue(false);
+      setLoading((prevState) => !prevState);
   };
   console.log(user, "usdddder")
   return (
@@ -201,6 +220,36 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
         <Column title="Description" dataIndex="description" key="description" />
         <Column title="Price" dataIndex="price" key="price" />
         <Column
+            title="Images"
+            dataIndex="image"
+            key="image"
+            render={(image) => (
+              <div className="flex">
+                <Image.PreviewGroup
+                >
+                  {image?.map((dish, index) => {
+                    return (
+                      <Image
+                        key={index}
+                        width={80}
+                        height={35}
+                        // visible={false}
+                        style={{ objectFit: "cover", paddingRight: 10 }}
+                        src={dish}
+                        onClick={() => {
+                          Image.previewGroup?.show({
+                            current: index,
+                          });
+                        }}
+                      />
+                    );
+                  })}
+                </Image.PreviewGroup>
+              </div>
+            )}
+          />
+
+        {/* <Column
           title="Images"
           dataIndex="image"
           key="image"
@@ -222,7 +271,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
               })}
             </div>
           )}
-        />
+        /> */}
         <Column
           title="Action"
           dataIndex="menuId"
