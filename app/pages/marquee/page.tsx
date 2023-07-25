@@ -39,6 +39,8 @@ function Marquee() {
     } else if (selectedValue == "Dinner") {
       setDays(BookedDinner);
       setIsLunch("Dinner");
+      console.log("abc");
+      
     }
   };
   return (
