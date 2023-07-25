@@ -13,6 +13,7 @@ module.exports = {
       },
       colors: {
         primaryColor: "#DEB666",
+
         secondaryColor: "#32353C",
         bgColor: "#f5f5f5",
         textColor: "#878D8D",
@@ -20,6 +21,9 @@ module.exports = {
         blackColor: "#000",
         WhiteColor: "#ffff",
         thirdColor: "fcb900",
+        sidebarColor: "#EFEFEF",
+        sidebarItemColor: "#F9AA51",
+        sidebarColorText: "#818181",
       },
     },
   },

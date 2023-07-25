@@ -1,0 +1,47 @@
+.custom-ok-button{
+    background-color: #1890ff;
+    border-color: #1890ff;
+    color: #fff;
+}
+
+.myTable .ant-table-thead > tr > th{
+    background-color: #F7C815;
+    color: white;
+}
+.myTable .ant-table-tbody > tr > td{
+    
+    /* background-color: #F8F8F8; */
+    color: #000;
+}
+
+.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:first-child{
+    border-top-left-radius: 10px !important;
+    border-bottom-left-radius: 10px !important;
+}
+.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:last-child{
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 10px !important;
+}
+.ant-select-selector{
+    border-radius: 0px !important;
+    height: 50px !important;
+}
+.ant-btn{
+    background-color: blue;
+    color: #fff;
+}
+.ant-btn :hover{
+    background-color: blue;
+    color: white;
+}
+
+/* .myTable .ant-table-tbody > tr > td {
+        border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+} */
+
+/* .myTable .ant-table-container .ant-table-content table .ant-table-thead{
+
+    margin-bottom: 20px !important;
+} */

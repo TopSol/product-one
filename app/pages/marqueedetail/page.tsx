@@ -9,6 +9,7 @@ import { faBed } from "@fortawesome/free-solid-svg-icons";
 import { faMap } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import ImageLightbox from "react-image-lightbox";
+import Link from 'next/link';
 import "react-image-lightbox/style.css";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -30,7 +31,7 @@ function Marqueedetail() {
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271614-scaled.jpg",
     "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6538894-scaled.jpg",
   ];
-
+   
   const handleClick = (index: any) => {
     setSelectImage(images[index]);
     setPhotoIndex(index);
@@ -84,7 +85,6 @@ function Marqueedetail() {
               className="rounded  h-[508px] w-full object-cover"
             />
           </div>
-
           <div className="  flex justify-between space-x-3 my-3 ">
             {images.map((src, index) => (
               <div key={index}>
@@ -316,11 +316,11 @@ function Marqueedetail() {
               <p>Dinner</p>
             </div>
           </div>
-          <img
-            src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg"
-            alt=""
-            className="w-full mt-5"
-          />
+          <div className="flex bg-gray-50 rounded-lg justify-center p-3">
+          <Link href="/pages/details">Book Now</Link>
+            
+          </div>
+          <img src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg" alt="" className="w-full mt-8" />
         </div>
       </div>
       <div className="mt-24">
