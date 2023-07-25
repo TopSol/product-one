@@ -40,7 +40,7 @@
 //       setDays(BookedDinner);
 //       setIsLunch("Dinner");
 //       console.log("abc");
-      
+
 //     }
 //   };
 //   return (
@@ -283,7 +283,7 @@
 // export default Marquee;
 
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -306,14 +306,14 @@ import {
 } from "firebase/storage";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Data } from "./data";
-import NextLink from 'next/link';
+import NextLink from "next/link";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useStore } from "../../../store";
 import { BookedDinner, BookedLunch } from "../marqueedetail/data";
 import "./style.css";
 function Marquee() {
-  const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
+  const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [sliderValue, setSliderValue] = useState("");
   const [open, setOpen] = useState({});
   const initialDays: Date[] = [];
@@ -335,7 +335,7 @@ function Marquee() {
 
     const selectedValue = event?.target?.value || event;
     console.log(selectedValue, "selectedValue");
-    
+
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
       setDays(BookedLunch);
@@ -343,20 +343,16 @@ function Marquee() {
     } else if (selectedValue == "Dinner") {
       setDays(BookedDinner);
       setIsLunch("Dinner");
-      
     }
   };
   console.log(days, "days");
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
-      const dataArr = []; // Create an empty array to store the data.
-      
+      const dataArr = [];
       querySnapshot.forEach((doc) => {
-        // Push each document's data into the array.
         dataArr.push({ id: doc.id, data: doc.data() });
       });
-
       setVenuesData(dataArr); // Set the array in the state.
     };
 
@@ -481,26 +477,30 @@ function Marquee() {
         </div>
         <div className="w-full  lg:w-[75%]">
           {venuesData.map((item) => {
-            console.log(item, "item.data")
-           return  (
+            console.log(item, "item.data");
+            return (
               <div
                 // key={item.id}
                 className="mb-10 mx-5 "
               >
                 <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
-               
-      <div className="md:w-[40%] cursor-pointer">
-      <NextLink href={`/pages/marqueedetail?id=${item?.data?.venueId}`} passHref>
-        <img
-          src={item?.data?.image[0]}
-          className="md:rounded-r-none rounded-lg"
-          alt=""
-        />
-    </NextLink>
-      </div>
+                  <div className="md:w-[40%] cursor-pointer">
+                    <NextLink
+                      href={`/pages/marqueedetail?id=${item?.data?.venueId}`}
+                      passHref
+                    >
+                      <img
+                        src={item?.data?.image[0]}
+                        className="md:rounded-r-none rounded-lg"
+                        alt=""
+                      />
+                    </NextLink>
+                  </div>
                   <div className="pt-6 px-6 md:w-[40%] ">
-                    <h1 className="font-vollkorn text-2xl">{item?.data?.name}</h1>
-  
+                    <h1 className="font-vollkorn text-2xl">
+                      {item?.data?.name}
+                    </h1>
+
                     {/* <p className="font-roboto text-textColor mt-4">{item.desc}</p> */}
                     <p className="font-roboto text-textColor mt-6">Jaranwala</p>
                   </div>
@@ -516,7 +516,7 @@ function Marquee() {
                         Select Booking Detials
                       </p>
                     </div>
-  
+
                     <div
                       className="cursor-pointer"
                       onClick={() => handleClick(item.data?.venueId)}
@@ -541,7 +541,7 @@ function Marquee() {
                       onSelect={setDays}
                     />
                   )}
-  
+
                   {open[item.data.venueId] && (
                     <div className="w-full  pt-8">
                       <div className="w-full mb-3">
@@ -549,10 +549,10 @@ function Marquee() {
                           Meal Selection
                         </h1>
                         <p className="my-3">
-                        Choose your preferred mealtime option.
+                          Choose your preferred mealtime option.
                         </p>
                       </div>
-  
+
                       <div className="flex items-center mb-4">
                         <input
                           onClick={() => handleCheck("Lunch")}
@@ -587,16 +587,16 @@ function Marquee() {
                         </label>
                       </div>
                       <div className="flex items-center space-x-3 font-roboto mt-5">
-                          <div className="bg-[orange] h-3 w-3 rounded-full"></div>
-                          <p>Lunch</p>
-                          <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
-                          <p>Dinner</p>
-                        </div>
+                        <div className="bg-[orange] h-3 w-3 rounded-full"></div>
+                        <p>Lunch</p>
+                        <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
+                        <p>Dinner</p>
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       </div>

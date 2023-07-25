@@ -17,7 +17,6 @@ import { BookedLunch, BookedDinner } from "./data";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import "./style.css";
 import { useSearchParams } from 'next/navigation'
-
 function Marqueedetail() {
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
