@@ -49,7 +49,7 @@ function Dish({
   const [dishName, setDishName] = useState([]);
   const [calculatedDiscount, setCalculatedDiscount] = useState(0);
   const [open, setOpen] = useState(false);
-  const [selectDish, setSelectDish] = useState({ dishes: [], prices: [] });
+  const [selectDish, setSelectDish] = useState([]);
   const { Column } = Table;
 
   const handleItemClick = (item) => {
@@ -94,17 +94,37 @@ function Dish({
     }));
   };
   useEffect(() => {
+    //   const availableMenus = Menus.filter((item) => item.status === "Available");
+    //   const dishes = [];
+    //   const DishPrice = availableMenus.map((item) => {
+    //     const data = { Price: item.price, Dish: item.name };
+    //     dishes.push({ label: item.name, value: item.name });
+    //     return data;
+    //   });
+    //  const totalPrice = DishPrice.reduce((acc, item) => acc + item.Price, 0);
+    //   setTotalPrice(totalPrice);
+    //   setDishName(dishes);
+    //   setDishPrice(DishPrice);
+
     const dishes = [];
     const DishPrice = Menus.map((item, index) => {
-      const data = { Price: item.price, Dish: item.name };
-      dishes.push({ label: item.name, value: item.name });
+      const data = { Price: item.price, Dish: item.name, status: item.status };
+      dishes.push({ label: item.name, value: item.name, status: item.status });
       if (index === Menus.length - 1) setDishName(dishes);
       return data;
     });
-    const totalPrice = DishPrice.reduce((acc, item) => acc + item.Price, 0);
+    const totalPrice = DishPrice.reduce((acc, item) => {
+      if (item.status === "Available") {
+        return acc + item.Price;
+      } else {
+        return acc;
+      }
+    }, 0);
+    // let dishItems = [...Dishes]
+    // dishItems = dishItems.map((item) => item.status === "Available");
     setTotalPrice(totalPrice);
     setDishPrice(DishPrice);
-    console.log(DishPrice, "DishPrice");
+    console.log(Dishes, "DishPrice");
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Dish"));
@@ -126,7 +146,7 @@ function Dish({
     if (!user.name || !user.price || !user.dishes) {
       return;
     }
-    setLoading(true)
+    setLoading(true);
     const discountAmount =
       user.price && user.discount ? (user.price * user.discount) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
@@ -157,7 +177,7 @@ function Dish({
     setAddVenues([...addVenues, user]);
     setModalOpen(false);
     setSelectedItems([]);
-    setLoading(false)
+    setLoading(false);
     setCalculatedDiscount(0);
     setUser(initialFormState);
   };
@@ -176,7 +196,7 @@ function Dish({
     const docRef = doc(db, "Dish", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      console.log("Document data:",docSnap.data().dishes);  
+      console.log("Document data:", docSnap.data().dishes);
       setUser(docSnap.data());
       // setDishName(docSnap.data().dishes);
       setSelectedItems(docSnap.data().dishes);
@@ -186,7 +206,7 @@ function Dish({
     }
   };
   const update = async (venueId) => {
-    setLoading(true)
+    setLoading(true);
     try {
       await setDoc(doc(db, "Dish", venueId), user);
       const updatedIndex = Dishes.findIndex((dish) => dish.id === venueId);
@@ -212,12 +232,12 @@ function Dish({
     setUser(initialFormState);
     setSelectedItems([]);
     setUpdateDish(false);
-    setLoading(false)
+    setLoading(false);
   };
   const handleSelectionChange = (selectedOptions) => {
     console.log(selectedOptions, "selectedOptions");
     let price = 0;
-    console.log(dishPrice, "dishPrice",selectedOptions)
+    console.log(dishPrice, "dishPrice", selectedOptions);
     selectedOptions.map((item) => {
       const data = dishPrice.filter((item1) => item1.Dish === item);
       price = price + data[0].Price;
@@ -233,37 +253,19 @@ function Dish({
   const hideModal = () => {
     setOpen(false);
   };
-  // const openModal = (dishes) => {
-  //   setOpen(true);
-  // };
-
-  // const openModal = (dishes) => {
-  //   if (dishes && dishes.length > 0) {
-  //     const prices = dishes.map((dish) => {
-  //       const dishData = dishPrice.find((item) => item.Dish === dish);
-  //       return dishData ? dishData.Price : 0;
-  //     });
-
-  //     console.log(dishes, prices);
-
-  //     setOpen(true);
-  //     setSelectDish({ dishes, prices });
-  //   }
-  // };
-
   const openModal = (dishes) => {
-    console.log(dishes, "dishes");
-    
     if (dishes && dishes.length > 0) {
       const prices = dishes?.map((dish) => {
         const dishData = dishPrice.find((item) => item.Dish === dish);
-        return dishData ? dishData.Price : 0;
+        console.log(dishData, "dishData");
+        return dishData ? dishData : {};
       });
 
       setOpen(true);
-      setSelectDish({ dishes, prices });
+      setSelectDish(prices);
     }
   };
+  console.log(selectDish, "dishes");
 
   return (
     <div className="">
@@ -275,7 +277,12 @@ function Dish({
           key="dishes"
           render={(dishes) => (
             <ul>
-                <li className="cursor-pointer"  onClick={() => openModal(dishes)}> <Link className="text-blue-600 underline" href="">{dishes.length} Dishes</Link></li>
+              <li className="cursor-pointer" onClick={() => openModal(dishes)}>
+                {" "}
+                <Link className="text-blue-600 underline" href="">
+                  {dishes.length} Dishes
+                </Link>
+              </li>
             </ul>
           )}
         />
@@ -341,21 +348,26 @@ function Dish({
         onCancel={hideModal}
         okText="ok"
         cancelText="cancel"
-      >  
-      <div className="flex justify-around font-bold">
-
-        <p>Dish</p> <p>Price</p>
-      </div>
-        {selectDish.dishes.map((dish, index) => (
-
-          <div  className="flex justify-around"> 
-            <p>{dish}</p>
-            <p>{selectDish.prices[index]}</p>
-          </div>
+      >
+        <div className="flex justify-around font-bold">
+          <p>Dish</p> <p>Price</p>
+        </div>
+        {selectDish?.map((dish, index) => {
+          console.log(dish, "dish");
+          return (
+            <div
+              className={
+                dish.status === "Available" ? "flex justify-around" : "text-red-400 flex justify-around"
+              }
+            >
+              <p>{dish.Dish}</p>
+              <p>{dish.Price}</p>
+            </div>
+          );
           // <p key={index}>
           // Dishes -  {dish} - Price: {selectDish.prices[index]}
           // </p>
-        ))}
+        })}
       </Modal>
 
       <Modal
@@ -416,7 +428,9 @@ function Dish({
                     value={user.dishes}
                     placeholder="Please select"
                     onChange={handleSelectionChange}
-                    options={dishName}
+                    options={dishName.filter(
+                      (item) => item.status === "Available"
+                    )}
                   />
                 </Space>
               </div>

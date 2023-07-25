@@ -1,17 +1,35 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { db } from "@/app/firebase";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  listAll,
+} from "firebase/storage";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Data } from "./data";
 import { useRouter } from "next/navigation";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { useStore } from "../../../store";
 import { BookedDinner, BookedLunch } from "../marqueedetail/data";
 import "./style.css";
 function Marquee() {
+  const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
   const [sliderValue, setSliderValue] = useState("");
   const [open, setOpen] = useState({});
   const initialDays: Date[] = [];
@@ -19,6 +37,7 @@ function Marquee() {
   const [isLunch, setIsLunch] = useState<any>();
   const [selectedOption, setSelectedOption] = useState("");
   const router = useRouter();
+  const [venuesData, setVenuesData] = useState([]);
   const handleSliderChange = (event) => {
     setSliderValue(event.target.value);
   };
@@ -43,6 +62,21 @@ function Marquee() {
       
     }
   };
+  useEffect(() => {
+    const getdata = async () => {
+      const querySnapshot = await getDocs(collection(db, "Venues"));
+      const dataArr = []; // Create an empty array to store the data.
+      
+      querySnapshot.forEach((doc) => {
+        // Push each document's data into the array.
+        dataArr.push({ id: doc.id, data: doc.data() });
+      });
+
+      setVenuesData(dataArr); // Set the array in the state.
+    };
+
+    getdata();
+  }, []);
   return (
     <div>
       <Navbar />
@@ -161,119 +195,122 @@ function Marquee() {
           </div>
         </div>
         <div className="w-full  lg:w-[75%]">
-          {Data.map((item) => (
-            <div
-              key={item.id}
-              className="mb-10 mx-5 "
-              // onClick={() => router.push("/pages/marqueedetail")}
-            >
-              <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
-                <div className="md:w-[40%]  ">
-                  <img
-                    src={item.src}
-                    className="md:rounded-r-none rounded-lg "
-                    alt=""
-                  />
-                </div>
-                <div className="pt-6 px-6 md:w-[40%] ">
-                  <h1 className="font-vollkorn text-2xl">{item.name}</h1>
-
-                  <p className="font-roboto text-textColor mt-4">{item.desc}</p>
-                  <p className="font-roboto text-textColor mt-6">Jaranwala</p>
-                </div>
-                <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
-                  <p className="text-center text-2xl font-roboto font-bold  text-textColor">
-                    {item.price}
-                  </p>
-                  <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
-                    PER NIGHT
-                  </p>
-                  <div className="flex items-center justify-center font-roboto font-semibold mb-14">
-                    <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded ">
-                      Select Booking Detials
-                    </p>
+          {venuesData.map((item) => {
+            console.log(item.data, "item.data")
+           return  (
+              <div
+                // key={item.id}
+                className="mb-10 mx-5 "
+                // onClick={() => router.push("/pages/marqueedetail")}
+              >
+                <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
+                  <div className="md:w-[40%]  ">
+                    <img
+                      src={item?.data?.image[0]}
+                      className="md:rounded-r-none rounded-lg "
+                      alt=""
+                    />
                   </div>
-
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => handleClick(item.id)}
-                  >
-                    <p className=" text-sm  text-textColor  flex justify-center items-center pt-3  font-roboto border-t-[1px]">
-                      Avalibility & Details
-                      <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
-                    </p>
+                  <div className="pt-6 px-6 md:w-[40%] ">
+                    <h1 className="font-vollkorn text-2xl">{item?.data?.name}</h1>
+  
+                    {/* <p className="font-roboto text-textColor mt-4">{item.desc}</p> */}
+                    <p className="font-roboto text-textColor mt-6">Jaranwala</p>
                   </div>
-                </div>
-              </div>
-              <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
-                {open[item.id] && (
-                  <DayPicker
-                    className={`${
-                      isLunch == `Lunch` ? `customClasses` : `customClasses2`
-                    }`}
-                    style={{ width: "100%" }}
-                    mode="multiple"
-                    min={1}
-                    selected={days}
-                    onSelect={setDays}
-                  />
-                )}
-
-                {open[item.id] && (
-                  <div className="w-full  pt-8">
-                    <div className="w-full mb-3">
-                      <h1 className="text-xl flex items-center w-full font-vollkorn ">
-                        Meal Selection
-                      </h1>
-                      <p className="my-3">
-                      Choose your preferred mealtime option.
+                  <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
+                    <p className="text-center text-2xl font-roboto font-bold  text-textColor">
+                      {item.data?.price}
+                    </p>
+                    <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
+                      PER NIGHT
+                    </p>
+                    <div className="flex items-center justify-center font-roboto font-semibold mb-14">
+                      <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded ">
+                        Select Booking Detials
                       </p>
                     </div>
-
-                    <div className="flex items-center mb-4">
-                      <input
-                        onClick={() => handleCheck("Lunch")}
-                        checked
-                        id="default-radio-2"
-                        type="radio"
-                        value=""
-                        name="default-radio"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor="default-radio-2"
-                        className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                      >
-                        Lunch
-                      </label>
+  
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleClick(item.data?.venueId)}
+                    >
+                      <p className=" text-sm  text-textColor  flex justify-center items-center pt-3  font-roboto border-t-[1px]">
+                        Avalibility & Details
+                        <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
+                      </p>
                     </div>
-                    <div className="flex items-center">
-                      <input
-                        onClick={() => handleCheck("Dinner")}
-                        id="default-radio-3"
-                        type="radio"
-                        value=""
-                        name="default-radio"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor="default-radio-3"
-                        className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                      >
-                        Dinner
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-3 font-roboto mt-5">
-                        <div className="bg-[orange] h-3 w-3 rounded-full"></div>
-                        <p>Lunch</p>
-                        <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
-                        <p>Dinner</p>
-                      </div>
                   </div>
-                )}
+                </div>
+                <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
+                  {open[item.id] && (
+                    <DayPicker
+                      className={`${
+                        isLunch == `Lunch` ? `customClasses` : `customClasses2`
+                      }`}
+                      style={{ width: "100%" }}
+                      mode="multiple"
+                      min={1}
+                      selected={days}
+                      onSelect={setDays}
+                    />
+                  )}
+  
+                  {open[item.data.venueId] && (
+                    <div className="w-full  pt-8">
+                      <div className="w-full mb-3">
+                        <h1 className="text-xl flex items-center w-full font-vollkorn ">
+                          Meal Selection
+                        </h1>
+                        <p className="my-3">
+                        Choose your preferred mealtime option.
+                        </p>
+                      </div>
+  
+                      <div className="flex items-center mb-4">
+                        <input
+                          onClick={() => handleCheck("Lunch")}
+                          checked
+                          id="default-radio-2"
+                          type="radio"
+                          value=""
+                          name="default-radio"
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <label
+                          htmlFor="default-radio-2"
+                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
+                          Lunch
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          onClick={() => handleCheck("Dinner")}
+                          id="default-radio-3"
+                          type="radio"
+                          value=""
+                          name="default-radio"
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <label
+                          htmlFor="default-radio-3"
+                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
+                          Dinner
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-3 font-roboto mt-5">
+                          <div className="bg-[orange] h-3 w-3 rounded-full"></div>
+                          <p>Lunch</p>
+                          <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
+                          <p>Dinner</p>
+                        </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
       <Footer />

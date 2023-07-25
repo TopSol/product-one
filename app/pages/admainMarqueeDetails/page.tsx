@@ -4,6 +4,7 @@ import AdminNavbar from "./adminNavbar";
 import "react-image-lightbox/style.css";
 import Venues from "./venues";
 import Menus from "./menus";
+import Availability from "./availability";
 import Dish from "./dish";
 import Lightbox from "react-image-lightbox";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -41,6 +42,11 @@ function AdminMarqueeDetails() {
       icon: faBowlFood,
       color: "gray",
     },
+    {
+      name: "Availability",
+      icon: faBars,
+      color: "gray",
+    }
   ];
   useEffect(() => {
     const handleResize = () => {
@@ -173,7 +179,7 @@ function AdminMarqueeDetails() {
               ) : component === "Menus" ? (
                 <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} loading={loading}
                 setLoading={setLoading} dishModalOpen={dishModalOpen} setDishModalOpen={setDishModalOpen}/>
-              ) : null}
+              ) :  component === "Availability" ? <Availability/>: null}
             </div>
           </div>
         </div>
