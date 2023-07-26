@@ -230,7 +230,7 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   };
   console.log(user, "usdddder");
   return (
-    <div className="">
+    <div className="md:px-5">
       <Table dataSource={Menus} className="myTable">
         <Column
           title="Name"

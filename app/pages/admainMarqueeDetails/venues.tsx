@@ -217,7 +217,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   };
   return (
     <>
-      <div className="">
+      <div className="md:px-5">
         <Table dataSource={Venues} className="myTable">
           <Column title="Name" dataIndex="name" key="name" />
           <Column

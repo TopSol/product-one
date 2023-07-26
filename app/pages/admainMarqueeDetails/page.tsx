@@ -123,8 +123,8 @@ function AdminMarqueeDetails() {
             </div>
           ) : null}
 
-          <div className="w-[100%]  h-[100vh] md:px-5 ">
-            <div>
+          <div className="w-[100%]  h-[100vh] ">
+            <div className="md:px-5 ">
               {component === "Venues" ? (
                 <div className="flex justify-between mx-1  items-center">
                   <p className="text-2xl py-5">Venues</p>

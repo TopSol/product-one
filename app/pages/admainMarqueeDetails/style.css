@@ -35,7 +35,11 @@
     background-color: blue;
     color: white;
 }
-
+.select .ant-select-selector{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 /* .myTable .ant-table-tbody > tr > td {
         border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
