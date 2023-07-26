@@ -5,8 +5,10 @@ import MarqueeAvailability from "./selectHall";
 import UserInformation from "./userInformation";
 import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
+import { useSearchParams } from "next/navigation";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
+// import { useRouter } from "next/router";
 const steps = [
   {
     title: "First",
@@ -21,13 +23,17 @@ const steps = [
     title: "Last",
   },
 ];
-
 function Slider() { 
   const [slider, setSlider] = useState(0);
   const [selectedHall, setSelectedHall] = useState("");
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([] );
+  // const {query} = useRouter()
+  const params = useSearchParams()
+
+  console.log('parameter',params.get('data'))
+
   const sendData = async () => {
     const users = {
       selectedHall: selectedHall,
@@ -42,6 +48,9 @@ function Slider() {
     }
   };
   console.log(selectedMenu ,"dddselectedMendddu",selectedHall)
+  // console.log(query ,"dddselectedMendddu12") 
+  
+  
   return (
     <div>
       <Navbar />

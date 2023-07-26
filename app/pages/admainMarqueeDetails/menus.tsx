@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
 import { Button, Input, Popconfirm, Table } from "antd";
-import Loader from "../../component/Loader"; 
-import { Image } from "antd";
+import Loader from "../../component/Loader";
+import { Image, Radio } from "antd";
+
 import {
   getStorage,
   ref,
@@ -22,16 +23,17 @@ import { useStore } from "../../../store";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+const plainOptions = [{label:"Available",value:"Available"},{label: "Not Available",value:"NotAvailable"}];
 const initialFormState = {
   name: "",
   image: "",
   price: 0,
   type: "",
   description: "",
- 
+  status: plainOptions[0].value,
 };
-function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
-  const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
+function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
+  const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const { Column } = Table;
@@ -41,12 +43,22 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
   const ImageRef = ref(storage, "images/");
   const [blogs, setBlogs] = useState([]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
 
+
+  const handleChange = (e) => {
+    // if (plainOptions.includes(e.target.value)) {
+      //   setStatus(e.target.value);
+      //   setUser((prevState) => ({
+        //     ...prevState,
+    //     status: e.target.value,
+    //   }));
+    //   return;
+    // }
+    const { name, value } = e.target;
+    console.log(name, value , "value");
     setUser((prevState) => ({
       ...prevState,
-      [name]: name == 'price' ? Number(value) : value,
+      [name]: name == "price" ? Number(value) : value,
     }));
   };
   useEffect(() => {
@@ -77,13 +89,16 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
 
     fetchBlogs();
   }, [addVenues]);
+
   const HandleAddVenues = async () => {
+    console.log(user, "sdfsdfsdffds");
     if (
       !user.name ||
       !user.image ||
       !user.price ||
       !user.type ||
-      !user.description
+      !user.description ||
+      !user.status
     ) {
       return;
     }
@@ -100,7 +115,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
         return utls;
       })
     );
-   
+
     const MenuId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
@@ -110,6 +125,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
       menuId: MenuId,
       userId: userInformation.userId,
       price: user.price,
+      status: user.status,
     };
 
     try {
@@ -149,11 +165,12 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
     }
   };
   const updateVenue = async (venueId) => {
+    console.log(user, "usereeeeeee");
     setLoading((prevState) => !prevState);
-     if( typeof user?.image[0]==="string"){
+    if (typeof user?.image[0] === "string") {
       try {
         await setDoc(doc(db, "Menus", venueId), user);
-  
+
         const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
         if (updatedIndex !== -1) {
           const updatedMenus = [...Menus];
@@ -168,7 +185,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
       setModalOpen(false);
       setUser(initialFormState);
       setOpenEditVenue(false);
-    }else{
+    } else {
       const images = Object.values(user.image);
       const folderName = `images`;
       const urls = await Promise.all(
@@ -178,12 +195,13 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
           await uploadBytes(storageRef, image);
           const url = await getDownloadURL(storageRef);
           return url;
-        }))
-       try {
+        })
+      );
+      try {
         const updatedUser = JSON.parse(JSON.stringify(user));
         updatedUser.image = urls;
         await setDoc(doc(db, "Menus", venueId), updatedUser);
-  
+
         const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
         if (updatedIndex !== -1) {
           const updatedMenus = [...Menus];
@@ -195,7 +213,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
       } catch (error) {
         console.log(error, "error");
       }
-  
+
       // try {
       //   await setDoc(doc(db, "Menus", venueId), user);
       //   const newBlogs = Menus.filter((blog) => blog.id !== venueId);
@@ -204,107 +222,95 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
       // } catch (error) {
       //   console.log(error, "error");
       // }
-     
     }
     setModalOpen(false);
-      setUser(initialFormState);
-      setOpenEditVenue(false);
-      setLoading((prevState) => !prevState);
+    setUser(initialFormState);
+    setOpenEditVenue(false);
+    setLoading((prevState) => !prevState);
   };
-  console.log(user, "usdddder")
+  console.log(user, "usdddder");
   return (
     <div className="">
       <Table dataSource={Menus} className="myTable">
-        <Column title="Name" dataIndex="name" key="name" />
+        <Column
+          title="Name"
+          dataIndex="name"
+          key="name"
+          // className={`${
+          //   Menus.status === "NotAvailable" ? "bg-red-200" : "bg-green-200"
+          // }`}
+        />
         <Column title="Type" dataIndex="type" key="type" />
         <Column title="Description" dataIndex="description" key="description" />
         <Column title="Price" dataIndex="price" key="price" />
         <Column
-            title="Images"
-            dataIndex="image"
-            key="image"
-            render={(image) => (
-              <div className="flex">
-                <Image.PreviewGroup
-                >
-                  {image?.map((dish, index) => {
-                    return (
-                      <Image
-                        key={index}
-                        width={80}
-                        height={35}
-                        // visible={false}
-                        style={{ objectFit: "cover", paddingRight: 10 }}
-                        src={dish}
-                        onClick={() => {
-                          Image.previewGroup?.show({
-                            current: index,
-                          });
-                        }}
-                      />
-                    );
-                  })}
-                </Image.PreviewGroup>
-              </div>
-            )}
-          />
-
-        {/* <Column
           title="Images"
           dataIndex="image"
           key="image"
           render={(image) => (
             <div className="flex">
-              {image?.map((dish, index) => {
-                console.log(dish, "dishee");
-                return (
-                  <img
-                    key={index}
-                    src={dish}
-                    alt="img"
-                    width={60}
-                    height={60}
-                    className="mr-2"
-                    onClick={() => handleClick(image, index)}
-                  />
-                );
-              })}
+              <Image.PreviewGroup>
+                {image?.map((dish, index) => {
+                  return (
+                    <Image
+                      key={index}
+                      width={80}
+                      height={35}
+                      // visible={false}
+                      style={{ objectFit: "cover", paddingRight: 10 }}
+                      src={dish}
+                      onClick={() => {
+                        Image.previewGroup?.show({
+                          current: index,
+                        });
+                      }}
+                    />
+                  );
+                })}
+              </Image.PreviewGroup>
             </div>
           )}
-        /> */}
+        />
+         <Column
+          title="Status"
+          dataIndex="status"
+          key="status"
+          // className={`${
+          //   Menus.status === "NotAvailable" ? "bg-red-200" : "bg-green-200"
+          // }`}
+        />
         <Column
           title="Action"
           dataIndex="menuId"
           key="menuId"
           render={(menuId) => (
             <div>
-               <Popconfirm
-                  title="Delete Dish?"
-                  description="Are you sure to delete Dish?"
-                  okText="Yes"
-                  cancelText="No"
-                  onConfirm={() => deleteMenu(menuId)} 
-                >
-                  <FontAwesomeIcon
-                    icon={faTrashCan} 
-                    width={15}
-                    // height={15}
-                    className="text-red-500 cursor-pointer text-xl"
-                    // onClick={() => deleteVenue(venueId)}
-                  />
-                </Popconfirm>
+              <Popconfirm
+                title="Delete Dish?"
+                description="Are you sure to delete Dish?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={() => deleteMenu(menuId)}
+              >
+                <FontAwesomeIcon
+                  icon={faTrashCan}
+                  width={15}
+                  // height={15}
+                  className="text-red-500 cursor-pointer text-xl"
+                  // onClick={() => deleteVenue(venueId)}
+                />
+              </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 className="ml-3 text-green-500 text-xl"
                 width={15}
-                // height={30}
                 onClick={() => EditVenue(menuId)}
               />
             </div>
           )}
         />
       </Table>
-      
+
       <Modal
         className="text-center"
         centered
@@ -320,16 +326,15 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
           <Button key="cancel" onClick={() => setModalOpen(false)}>
             Cancel
           </Button>,
-          <Button key="ok" type="primary" onClick={() =>
-            openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()} className="bg-blue-500">
-            {
-                  loading ? (
-                    <Loader />
-                  ) : (
-                    "Ok"
-                  ) 
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() =>
+              openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
             }
-            
+            className="bg-blue-500"
+          >
+            {loading ? <Loader /> : "Ok"}
           </Button>,
         ]}
       >
@@ -407,6 +412,15 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
                   value={user.description}
                   onChange={handleChange}
                   className="rounded-none w-full py-2 lg:py-3"
+                />
+              </div>
+              <label className="text-xl my-1">Status</label>
+              <div className="flex flex-col  md:flex-row  md:justify-between">
+                <Radio.Group
+                  options={plainOptions}
+                  onChange={handleChange}
+                  value={status}
+                  name="status"
                 />
               </div>
             </div>
