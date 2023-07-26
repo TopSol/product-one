@@ -121,7 +121,11 @@ function Dish({
       }
     }, 0);
     // let dishItems = [...Dishes]
-    // dishItems = dishItems.map((item) => item.status === "Available");
+    // dishItems = dishItems.map((dish) => {
+    //   dish.dishes = dish.dishes.map((item) => {const findMenu =  Menus.find((menu) => menu.name === item); console.log(findMenu,"findMenu"); return findMenu ? findMenu : item})
+    // });
+    // console.log(dishItems,"dishItems")
+    
     setTotalPrice(totalPrice);
     setDishPrice(DishPrice);
     console.log(Dishes, "DishPrice");
@@ -280,7 +284,7 @@ function Dish({
   console.log(selectDish, "dishes");
 
   return (
-    <div className="">
+    <div className="md:px-5">
       <Table dataSource={Dishes} className="myTable">
         <Column title="Name" dataIndex="name" key="name" />
         <Column

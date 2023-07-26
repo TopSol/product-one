@@ -1,17 +1,3 @@
-// import create from 'zustand'
-// import { persist } from 'zustand/middleware'
-
-// export const useStore = create(persist((set) => ({
-//   userInformation: [],
-//   addUser: (userData) => set((state) => ({ userInformation: [state.userInformation, {userId:userData}] })),
-
-//   // addUser: (userData) => set((state) => ({ userInformation: [...state.userInformation, userData] })),
-// }), {
-//   name: 'userStore', // Specify a name for the persisted store
-//   getStorage: () => localStorage, // Specify the storage mechanism (localStorage in this example)
-// }))
-
-
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 export const useStore = create(persist((set) => ({
@@ -19,6 +5,24 @@ export const useStore = create(persist((set) => ({
   Dishes: [],
   Venues: [],
   Menus: [],
+  dates:{
+//     ewqe: [
+//       new Date(),
+//       new Date(),
+//       new Date(),
+//       new Date(),
+//       new Date(),
+//       new Date(),
+//   ],
+//   Marquee: [
+//     new Date(),
+//     new Date(),
+//     new Date(),
+//     new Date(),
+//     new Date(),
+//     new Date(),
+// ],
+  },
   addUser: (userData) => {
     console.log(userData,"Registration")
     set({ userInformation: { userId: userData } })
@@ -32,8 +36,22 @@ export const useStore = create(persist((set) => ({
   addMenus: (menuData) => { 
     console.log(menuData,"menuData444")
     set({ Menus: menuData })
-  }
-  // addDishes: (dishData) => {set((state) => ({ Dishes: [...state.Dishes, dishData] }))},
+  },
+
+  addDate: (dateData, key) => {
+    set((state) => ({
+      dates: {
+        ...state.dates,
+        [key]: dateData,
+      },
+    }));
+  },
+  addDateKey: (key)=>{
+    set({ dates: {
+      ...state.dates,
+      [key]: []
+    } })
+  },
 }), {
   name: 'userStore',
   getStorage: () => localStorage,

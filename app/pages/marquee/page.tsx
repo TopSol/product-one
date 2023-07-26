@@ -206,7 +206,7 @@ function Marquee() {
                       passHref
                     >
                       <img
-                        src={item?.data?.image[0]}
+                        src={item?.data?.image?.[0]}
                         className="md:rounded-r-none rounded-lg"
                         alt=""
                       />
