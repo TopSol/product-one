@@ -40,7 +40,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   const { Column } = Table;
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const [addVenueImage, setaddVenueImage] = useState([]);
-  const { userInformation, addUser, Venues, addVenues } = useStore();
+  const { userInformation, addUser, Venues, addVenues,dates } = useStore();
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
@@ -104,8 +104,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
         return urls;
       })
     );
-
-    const VenueId = Math.random().toString(36).substring(2);
+ const VenueId = Math.random().toString(36).substring(2);
     const venue = {
       name: user.name,
       image: imageUrls,
@@ -130,11 +129,13 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     try {
       await deleteDoc(doc(db, "Venues", VenueId));
       const newBlogs = Venues.filter((blog) => blog.id !== VenueId);
+      console.log(newBlogs, "newBlogs")
       addVenues(newBlogs);
     } catch (error) {
       console.error("Error removing document: ", error);
     }
   };
+  console.log(Venues, "Venues")
   const EditVenue = async (dishId) => {
     setOpenEditVenue(true);
     setModalOpen((prevState) => !prevState);
@@ -150,16 +151,11 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     }
   };
   const updateVenue = async (venueId) => {
-    // console.log("userddddd", user);
     setLoading((pre) => !pre);
+      
     if (typeof user?.image[0] === "string") {
       try {
-        // const updatedUser = JSON.parse(JSON.stringify(user));
-        // updatedUser.image = imageUrls;
-        // console.log("updatedUserdd", updatedUser,"venueId",venueId);
-
         await setDoc(doc(db, "Venues", venueId), user);
-
         const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
         if (updatedIndex !== -1) {
           const updatedVenues = [...Venues];
@@ -172,11 +168,6 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
       } catch (error) {
         console.log(error, "error");
       }
-
-      // setModalOpen(false);
-      // setUser(initialFormState);
-      // setOpenEditVenue(false);
-      // setLoading(pre=>!pre)
     } else {
       const images = Object.values(user.image);
       const folderName = `images`;
