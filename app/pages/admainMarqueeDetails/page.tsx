@@ -7,6 +7,7 @@ import Menus from "./menus";
 import Availability from "./availability";
 import Dish from "./dish";
 import Lightbox from "react-image-lightbox";
+import { getAuth, signOut } from "firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -79,6 +80,7 @@ function AdminMarqueeDetails() {
     setPhotoIndex(index);
     setIsOpen(true);
   };
+ 
   return (
     <div className=" h-[100vh]">
       <AdminNavbar />

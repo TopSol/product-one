@@ -16,7 +16,7 @@ function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
   const {Venues} = useStore()
   const searchParams = useSearchParams()
   const id = searchParams.get("id");
-  console.log(id, "iddiidididi");
+  console.log(id, "iddiidididi", Venues);
   const handleImageModal = (index) => {
     setSelectImage(data[index].image);
     setPhotoIndex(index);

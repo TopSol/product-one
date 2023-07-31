@@ -50,6 +50,8 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
       [name]: value,
     }));
   };
+  console.log(userInformation, "userInformation");
+  
   useEffect(() => {
     // listAll(ImageRef)
     //   .then((res) => {

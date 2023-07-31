@@ -11,16 +11,25 @@ import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { faHotel } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import { faBellConcierge, faUtensils } from "@fortawesome/free-solid-svg-icons";
-import Venues from "./venues";
-import Menus from "./menus";
-import Dish from "./dish";
+import {useStore} from "@/store"
+import { getAuth, signOut } from "firebase/auth";
 export default function AdminNavbar() {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [component, setComponent] = React.useState("Venues");
+  const {userInformation} = useStore()
+  console.log(userInformation, "dfadsfasf");
+  
+  const auth = getAuth();
   const handleLogout = () => {
     router.push("/pages/auth");
+    signOut(auth).then(() => {
+    console.log("Sign-out successful.");
+     
+    }).catch((error) => {
+    console.log(" error");
+    });
   };
   const items = [
     {
@@ -67,6 +76,7 @@ export default function AdminNavbar() {
       icon: faUtensils,
     },
   ];
+
   return (
     <div className="bg-white fixed top-0 left-0 right-0 z-50">
       <div className=" mx-auto flex justify-between items-center py-2 px-4 md:px-7 shadow">

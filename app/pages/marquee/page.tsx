@@ -4,6 +4,7 @@ import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
+import { Select } from "antd";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {
   collection,
@@ -69,7 +70,7 @@ function Marquee() {
       querySnapshot.forEach((doc) => {
         dataArr.push({ id: doc.id, data: doc.data() });
       });
-      setVenuesData(dataArr); // Set the array in the state.
+      setVenuesData(dataArr);
     };
 
     getdata();
@@ -78,7 +79,7 @@ function Marquee() {
     <div>
       <Navbar />
       <div className="bg-bgColor mt-24">
-        <div className="md:container mx-auto py-5">
+        <div className="md:container md:mx-auto py-5 mx-5">
           <h1 className="font-vollkorn text-4xl text-gray-600">Hotel</h1>
           <p className="mt-2 text-xs font-roboto">Home / Hotel</p>
         </div>
@@ -193,12 +194,8 @@ function Marquee() {
         </div>
         <div className="w-full  lg:w-[75%]">
           {venuesData.map((item) => {
-            // console.log(item, "item.data");
             return (
-              <div
-                // key={item.id}
-                className="mb-10 mx-5 "
-              >
+              <div className="mb-10 mx-5 ">
                 <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
                   <div className="md:w-[40%] cursor-pointer">
                     <NextLink
@@ -207,7 +204,7 @@ function Marquee() {
                     >
                       <img
                         src={item?.data?.image?.[0]}
-                        className="md:rounded-r-none rounded-lg"
+                        className="md:rounded-r-none rounded-lg w-72 h-48"
                         alt=""
                       />
                     </NextLink>
@@ -227,7 +224,7 @@ function Marquee() {
                     <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
                       PER NIGHT
                     </p>
-                    <div className="flex items-center justify-center font-roboto font-semibold mb-14">
+                    <div className="flex items-center justify-center font-roboto font-semibold mb-8">
                       <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded ">
                         Select Booking Detials
                       </p>
@@ -237,7 +234,7 @@ function Marquee() {
                       className="cursor-pointer"
                       onClick={() => handleClick(item.data?.venueId)}
                     >
-                      <p className=" text-sm  text-textColor  flex justify-center items-center pt-3  font-roboto border-t-[1px]">
+                      <p className=" text-sm  text-textColor  flex justify-center items-center py-1 font-roboto border-t-[1px]">
                         Avalibility & Details
                         <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
                       </p>
@@ -259,7 +256,40 @@ function Marquee() {
                   )}
 
                   {open[item.data.venueId] && (
-                    <div className="w-full  pt-8">
+                    <div className="w-full  p-5">
+                      <Select
+                        showSearch
+                        style={{
+                          width: 250,
+                          marginBottom:20,
+                        }}
+                        placeholder="Search to Select"
+                        size="large"
+                        placement="bottomLeft"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label ?? "").includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? "")
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                        }
+                        options={[
+                          {
+                            value: "1",
+                            label: "Marquee",
+                          },
+                          {
+                            value: "2",
+                            label: "Closed",
+                          },
+                          {
+                            value: "3",
+                            label: "Communicated",
+                          },
+                        ]}
+                      />
                       <div className="w-full mb-3">
                         <h1 className="text-xl flex items-center w-full font-vollkorn ">
                           Meal Selection

@@ -120,8 +120,8 @@ import Link from "next/link";
 import { auth } from "@/app/firebase";
 import { useRouter } from "next/navigation";
 import { useStore } from "../../../store";
-import { Input, Space, Button, Form } from "antd";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import { Input , Form } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const initialFormState = {
   email: "",
@@ -164,6 +164,14 @@ function Login() {
         // alert("Email or password is incorrect");
       });
   };
+  const antIcon = (
+    <LoadingOutlined
+      style={{
+        fontSize: 24,
+      }}
+      spin
+    />
+  );
   return (
     <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
       <div className="hidden md:block relative w-full lg:w-[42%] px-10 bg-bgColor">

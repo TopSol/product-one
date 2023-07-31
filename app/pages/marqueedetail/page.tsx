@@ -37,7 +37,7 @@ function Marqueedetail() {
   const [isShow, setIsShow] = useState(false);
   const { bookedDates, addBookedDates } = useStore();
   const [bookDates, setBookDates] = useState()
-  const [state , setState] = useState()
+  const [dates , setDates] = useState([])
   const handleClick = (index: any) => {
     setSelectImage(data?.image[index]);
     setPhotoIndex(index);
@@ -50,7 +50,7 @@ function Marqueedetail() {
     const selectedValue = event.target.value;
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
-      setRange(bookDates);
+      setRange(dates);
       setIsLunch("Lunch");
     } else if (selectedValue == "Dinner") {
       setRange(BookedDinner);
@@ -100,77 +100,20 @@ function Marqueedetail() {
       getCollection(id);
     }
   },[id])
-  
-  // console.log(bookDates, "setBookDates");
-  // const datess =  bookDates?.dates
-// if (!Array.isArray(datess)) {
-//   console.error("datess is not a valid array");
-// } else {
-//   const timestampsInMilliseconds = datess.map((timestamp) => {
-//     const seconds = Math.floor(timestamp / 1000000000); 
-//     const milliseconds = Math.floor((timestamp % 1000000000) / 1000000);
-//     return seconds * 1000 + milliseconds;
-//   });
-//   const dateObjects = timestampsInMilliseconds.map((timestamp) => new Date(timestamp));
-//   const formattedDates = dateObjects.map((dateObj) => dateObj.toISOString());
-//   setBookDates(formattedDates)
-//   console.log(formattedDates , "formattedDates");
-// }
-
-// const datess =  bookDates?.dates
-// if (!Array.isArray(datess)) {
-//   console.error("datess is not a valid array");
-// } else {
-//   const timestampsInMilliseconds = datess.map((timestamp) => {
-//     const seconds = Math.floor(timestamp / 1000000000); // Get the seconds part
-//     const milliseconds = Math.floor((timestamp % 1000000000) / 1000000); // Get the milliseconds part
-//     return seconds * 1000 + milliseconds;
-//   });
-//   const dateObjects = timestampsInMilliseconds.map((timestamp) => new Date(timestamp));
-//   const formattedDates = dateObjects.map((dateObj, index) => {
-//     const year = 2023; 
-//     const month = 7; 
-//     const day = index + 10; 
-//     dateObj.setUTCFullYear(year);
-//     dateObj.setUTCMonth(month);
-//     dateObj.setUTCDate(day);
-//     dateObj.setUTCHours(19);
-//     dateObj.setUTCMinutes(0);
-//     dateObj.setUTCSeconds(0);
-//     dateObj.setUTCMilliseconds(0);
-//     return dateObj.toISOString();
-//   });
-//   setBookDates(formattedDates)
-//   console.log(bookDates ,"bookDates");
-// }
-
-// Assuming datess is an array of objects with seconds and nanoseconds properties
-const datess = [
-  { seconds: 1688151600, nanoseconds: 0 },
-  { seconds: 1688238000, nanoseconds: 0 },
-  { seconds: 1688324400, nanoseconds: 0 },
-  { seconds: 1688756400, nanoseconds: 0 },
-  { seconds: 1688583600, nanoseconds: 0 },
-  { seconds: 1688497200, nanoseconds: 0 },
-];
-
-const convertToDateISOString = (timestamp) => {
-  const dateObj = new Date(timestamp * 1000); // Convert seconds to milliseconds
-  dateObj.setUTCHours(19);
-  dateObj.setUTCMinutes(0);
-  dateObj.setUTCSeconds(0);
-  dateObj.setUTCMilliseconds(0);
-  return dateObj.toISOString();
-};
-
-const formattedDates = datess.map((data) => convertToDateISOString(data.seconds));
-// setState(formattedDates)
-useEffect(() => {
-  setState(formattedDates);
-  console.log(state, "state");
-}, []);
 
 
+const datess =  bookDates?.dates || []
+useEffect(()=>{
+  if (!Array.isArray(datess)) {
+    console.error("datess is not a valid array");
+  } else {
+    const formattedDates = datess.map((v, i)=>(v.toDate()))
+    setDates(formattedDates)
+  }
+
+}, [datess.length])
+
+console.log(dates, "datessssssss");
 
   return (
     <div>

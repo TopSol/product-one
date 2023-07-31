@@ -18,7 +18,7 @@ const steps = [
     title: "Second",
   },
   {
-    title: "Last",
+    title: "Third",
   },
   {
     title: "Last",
@@ -61,7 +61,7 @@ function Slider() {
         <div className="flex justify-center mb-6">
           {
             steps.map((item, index)=>(
-              <div key={item.title} className="flex items-center">
+              <div key={index} className="flex items-center">
                 <div onClick={()=>setSlider(index)} className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
                   slider >= index ? "bg-blue-500" : "bg-slate-300"
                 } text-white`}>
