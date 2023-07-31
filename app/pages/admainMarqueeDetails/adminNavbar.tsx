@@ -14,24 +14,28 @@ import { faBellConcierge, faUtensils } from "@fortawesome/free-solid-svg-icons";
 import Venues from "./venues";
 import Menus from "./menus";
 import Dish from "./dish";
-export default function AdminNavbar() {
+import { useStore } from "../../../store";
+export default function AdminNavbar({setModalOpen2}) {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [component, setComponent] = React.useState("Venues");
+
+  const { userInformation,registration} = useStore();
+  console.log(registration,"registration")
   const handleLogout = () => {
     router.push("/pages/auth");
   };
   const items = [
     {
-      label: <p>Marquee Name</p>,
+      label: <p>{registration.name}</p>,
       key: "0",
       icon: <FontAwesomeIcon icon={faHotel} 
       className="text-primaryColor"
       />,
     },
     {
-      label: <p>mumarhussain126@gmail.com</p>,
+      label: <p>{registration.email}</p>,
       key: "1",
       icon: <FontAwesomeIcon icon={faEnvelope} 
       className="text-blue-500"
@@ -76,7 +80,7 @@ export default function AdminNavbar() {
               icon={faBarsStaggered}
               size="sm"
               className="h-7 text-[#DEB666] absolute cursor-pointer"
-              onClick={() => setIsModelOpen(!isModelOpen)}
+              onClick={() => setModalOpen2((prev => !prev))}
             />
           </p>
         </div>

@@ -128,6 +128,15 @@ function Availability() {
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectVenue, setSelectVenue] = useState("");
   const [venueDate, setVenueDate] = useState({});
+  const [menu,setMenu]=useState([{
+    label:"Lunch",
+    value:1
+  },
+{
+  label:"Diner",
+  value:2
+}
+])
   useEffect(() => {
     const VenueName = Venues.map((item) => ({
       value: item.id,
@@ -142,7 +151,6 @@ function Availability() {
   }, [Venues]);
   const handleVenueSelect = (value) => {
     const data = selectedDates.filter((item) => {
-      console.log(item, "itemmm");
       if (item?.value === value) {
         setSelectVenue(item?.label);
         setSelectedVenue(item?.value);
@@ -170,9 +178,7 @@ function Availability() {
     
   const SendDateInFirebase = async (item) => {
     console.log(item,"itessm")
-    // const data=dates?.item || {};
     console.log(dates?.[item],"dsssd",item)
-    // const data = dates?.[item?.[0]?.label] || {};
     const data = dates?.[item] || {};
     console.log(data, "wwwww");
     try {
@@ -196,11 +202,36 @@ function Availability() {
       console.error("Error fetching document:", error);
     }
   };
+  const handleMenuSelect=(e)=>{
+    console.log(e,"value")
+  }
   return (
     <div>
       <div className="flex ">
         <div className="w-[80%] pr-0">
+          <div className="flex">
+
           <Select
+            showSearch
+            style={{
+              width: 200,
+            }}
+            placeholder="Search to Select"
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.label.toLowerCase().includes(input.toLowerCase())
+            }
+            filterSort={(optionA, optionB) =>
+              optionA.label
+              .toLowerCase()
+              .localeCompare(optionB.label.toLowerCase())
+            }
+            options={selectedDates}
+            onChange={handleVenueSelect}
+            value={selectVenue}
+            className=" select my-3  ml-5 "
+            />
+             <Select
             showSearch
             style={{
               width: 200,
@@ -215,11 +246,12 @@ function Availability() {
                 .toLowerCase()
                 .localeCompare(optionB.label.toLowerCase())
             }
-            options={selectedDates}
-            onChange={handleVenueSelect}
-            value={selectVenue}
+            options={menu}
+            onChange={handleMenuSelect}
+            // value={selectVenue}
             className=" select my-3  ml-5 "
           />
+            </div>
           <div className="md:px-5">
             <MultipleDaySelectCalendar selectedVenue={selectedVenue} />
           </div>
