@@ -5,10 +5,11 @@ import MarqueeAvailability from "./selectHall";
 import UserInformation from "./userInformation";
 import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
-// import { useRouter } from "next/router";
+
+import {useStore} from "@/store"
 const steps = [
   {
     title: "First",
@@ -24,15 +25,17 @@ const steps = [
   },
 ];
 function Slider() { 
+  const {Venues} = useStore();
   const [slider, setSlider] = useState(0);
   const [selectedHall, setSelectedHall] = useState("");
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([] );
-  // const {query} = useRouter()
+  const asdas = useRouter()
   const params = useSearchParams()
 
-  console.log('parameter',params.get('data'))
+  // console.log('parameter',params.get('data'))
+  // console.log(params, "{searchParams}", asdas)
 
   const sendData = async () => {
     const users = {

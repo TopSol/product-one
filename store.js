@@ -5,27 +5,14 @@ export const useStore = create(persist((set) => ({
   Dishes: [],
   Venues: [],
   Menus: [],
-  dates:{
-//     ewqe: [
-//       new Date(),
-//       new Date(),
-//       new Date(),
-//       new Date(),
-//       new Date(),
-//       new Date(),
-//   ],
-//   Marquee: [
-//     new Date(),
-//     new Date(),
-//     new Date(),
-//     new Date(),
-//     new Date(),
-//     new Date(),
-// ],
-  },
+  dates:{},
+  bookedDates:[],
   addUser: (userData) => {
     console.log(userData,"Registration")
     set({ userInformation: { userId: userData } })
+  },
+  addBookedDates: (dishData) => {
+    set({ bookedDates: dishData })
   },
   addDishes: (dishData) => {
     set({ Dishes: dishData })

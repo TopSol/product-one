@@ -193,7 +193,7 @@ function Marquee() {
         </div>
         <div className="w-full  lg:w-[75%]">
           {venuesData.map((item) => {
-            console.log(item, "item.data");
+            // console.log(item, "item.data");
             return (
               <div
                 // key={item.id}

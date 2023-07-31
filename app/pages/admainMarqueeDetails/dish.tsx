@@ -296,7 +296,7 @@ function Dish({
               <li className="cursor-pointer" onClick={() => openModal(dishes)}>
                 {" "}
                 <Link className="text-blue-600 underline" href="">
-                  {dishes.length} Dishes
+                  {dishes?.length} Dishes
                 </Link>
               </li>
             </ul>
