@@ -24,7 +24,6 @@ export const useStore = create(persist((set) => ({
     console.log(menuData,"menuData444")
     set({ Menus: menuData })
   },
-
   addDate: (dateData, key) => {
     set((state) => ({
       dates: {
@@ -33,6 +32,14 @@ export const useStore = create(persist((set) => ({
       },
     }));
   },
+  // addDate: (dateData, key) => {
+  //   set((state) => ({
+  //     dates: {
+  //       ...state.dates,
+  //       [key]: dateData,
+  //     },
+  //   }));
+  // },
   addDateKey: (key)=>{
     set({ dates: {
       ...state.dates,

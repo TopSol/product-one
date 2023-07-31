@@ -13,8 +13,9 @@ import {
   faBellConcierge,
   faUtensils,
   faBowlFood,
+  faCalendar,
 } from "@fortawesome/free-solid-svg-icons";
-
+import BookedDate from "./bookedDate";
 function AdminMarqueeDetails() {
   const [component, setComponent] = React.useState("Venues");
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,6 +46,11 @@ function AdminMarqueeDetails() {
     {
       name: "Availability",
       icon: faBars,
+      color: "gray",
+    },
+    {
+      name: "Booking",
+      icon: faCalendar,
       color: "gray",
     }
   ];
@@ -179,7 +185,7 @@ function AdminMarqueeDetails() {
               ) : component === "Menus" ? (
                 <Dish modalOpen={modalOpen} setModalOpen={setModalOpen} loading={loading}
                 setLoading={setLoading} dishModalOpen={dishModalOpen} setDishModalOpen={setDishModalOpen}/>
-              ) :  component === "Availability" ? <Availability/>: null}
+              ) :  component === "Availability" ? <Availability/>: component === "Booking" ? <BookedDate/> :  null}
             </div>
           </div>
         </div>

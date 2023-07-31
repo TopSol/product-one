@@ -27,8 +27,13 @@
     border-radius: 0px !important;
     height: 50px !important;
 }
+.ant-btn :hover{
+    background-color: #4096FF;
+    color: #fff;
+    /* font-weight: bolder; */
+}
 .ant-btn{
-    background-color: blue;
+    background-color: #4096FF;
     color: #fff;
     font-weight: bolder;
 }
