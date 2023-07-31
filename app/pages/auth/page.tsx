@@ -122,7 +122,8 @@ import { useRouter } from "next/navigation";
 import { useStore } from "../../../store";
 import { Input, Space, Button, Form } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/app/firebase";
 const initialFormState = {
   email: "",
   password: "",
@@ -136,7 +137,7 @@ const onFinishFailed = (errorInfo) => {
 function Login() {
   const [user, setUser] = useState(initialFormState);
   const router = useRouter(); // Use useRouter instead of next/navigation
-  const { userInformation, addUser } = useStore();
+  const { userInformation, addUser, } = useStore();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -144,6 +145,18 @@ function Login() {
       [name]: value,
     }));
   };
+  const registrationInformation=async(item)=>{
+    const docRef = doc(db, "users", item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      addUser(docSnap.data());
+      console.log("Document data:", docSnap.data());
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  }
+console.log(userInformation,"userInformation")
   const handleLogin = () => {
  
     signInWithEmailAndPassword(auth, user.email, user.password)
@@ -151,17 +164,16 @@ function Login() {
         const user = userCredential.user;
         console.log(user, "signin", user.uid);
         if (user) {
-          addUser(user.uid);
-          console.log(userInformation, "userInformation");
-          console.log(user, "user");
+          registrationInformation(user.uid)
+          // addUser(user.uid);
+          // console.log(userInformation, "userInformation");
+          // console.log(user, "user");
           router.push("/pages/admainMarqueeDetails");
         }
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // Handle the error, show an alert, or display an error message to the user.
-        // alert("Email or password is incorrect");
       });
   };
   return (

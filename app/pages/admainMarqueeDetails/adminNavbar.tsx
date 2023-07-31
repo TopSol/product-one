@@ -80,7 +80,7 @@ export default function AdminNavbar() {
             />
           </p>
         </div>
-        {isModelOpen ? (
+        {/* {isModelOpen ? (
           <div className="md:hidden fixed top-[56px] left-0 w-full  z-40 h-full">
             <div className="w-[65%] md:w-[15%] border flex flex-col h-full bg-white">
               <p className=" text-xl pl-2 py-5">Marquee</p>
@@ -117,7 +117,7 @@ export default function AdminNavbar() {
               ))}
             </div>
           </div>
-        ) : null}
+        ) : null} */}
 
         <div className="block md:flex md:items-center ">
           <div className="mr-0 md:mr-16">

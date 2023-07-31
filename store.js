@@ -2,14 +2,21 @@ import create from 'zustand'
 import { persist } from 'zustand/middleware'
 export const useStore = create(persist((set) => ({
   userInformation: null, 
+  registration: null,
   Dishes: [],
   Venues: [],
   Menus: [],
   dates:{},
   bookedDates:[],
+  addRegistration: (userData) => {
+    console.log(userData,"Registration")
+    set({ registration: userData })
+  },
+  
   addUser: (userData) => {
     console.log(userData,"Registration")
-    set({ userInformation: { userId: userData } })
+    set({ userInformation: userData })
+    // set({ userInformation: { userId: userData } })
   },
   addBookedDates: (dishData) => {
     set({ bookedDates: dishData })

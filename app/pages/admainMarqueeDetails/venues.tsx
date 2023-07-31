@@ -50,6 +50,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
       [name]: value,
     }));
   };
+  console.log(userInformation.userId,"userInformaddtion",userInformation)
   useEffect(() => {
     // listAll(ImageRef)
     //   .then((res) => {
@@ -72,6 +73,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
           }));
 
         addVenues(tempArray);
+        console.log("tempArray", tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }

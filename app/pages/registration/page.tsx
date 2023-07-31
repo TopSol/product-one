@@ -345,7 +345,6 @@ import "leaflet-geosearch/dist/geosearch.css";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
-import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useRouter } from "next/navigation";
 import Modal from "@/app/component/Modal";
@@ -355,6 +354,21 @@ import { divIcon } from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useStore } from "../../../store";
 import "./style.css";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  listAll,
+} from "firebase/storage";
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  getDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import icon from "./consonant";
 import L from "leaflet";
 import { Input, Form, Button } from "antd";
@@ -367,6 +381,8 @@ const initialValue = {
   password: "",
   capacity: "",
   address: "",
+  marqueeDetails: "",
+  image: "",
 };
 const position = [51.505, -0.09];
 const onFinish = (values) => {
@@ -377,9 +393,10 @@ const onFinishFailed = (errorInfo) => {
 };
 function details() {
   const [details, setDetails] = useState(initialValue);
-  const { userInformation, addUser } = useStore();
+  const { userInformation, addUser,addRegistration,registration } = useStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [map, setMap] = useState(null);
+  const storage = getStorage();
   const [modalOpen2, setModalOpen2] = useState(false);
   const [location, setLocation] = useState({ lat: 55.702868, lng: 37.530865 });
   const [value, setValue] = useState();
@@ -387,6 +404,8 @@ function details() {
     lat: 55.702868,
     lng: 37.530865,
   });
+  console.log(registration,"registration")
+  const { TextArea } = Input;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -425,10 +444,11 @@ function details() {
     }),
     []
   );
-
+console.log(userInformation,"userInformation")
   const router = useRouter();
   const handleRegistration = async () => {
     // e.preventDefault();
+    console.log("details");
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -436,10 +456,22 @@ function details() {
         details.password
       );
       const user = userCredential.user;
-      console.log(details, "userdd44222", user.uid);
-
+      const images = Object.values(details.image);
+      const folderName = `Marquee`;
+      const imageUrls = await Promise.all(
+        images.map(async (image) => {
+          const fileName = `${folderName}/${image.name}`;
+          const storageRef = ref(storage, fileName);
+          await uploadBytes(storageRef, image);
+          const urls = await getDownloadURL(storageRef);
+          console.log("imageUrls123", urls);
+          return urls;
+        })
+      );
+      console.log(imageUrls, "imageUrls"); 
+      const VenueId = Math.random().toString(36).substring(2);
       const userInfo = {
-        id: user.uid,
+        userId: user.uid,
         name: details.name,
         email: details.email,
         address: details.address,
@@ -447,16 +479,19 @@ function details() {
         capacity: details.capacity,
         lattitude: markerPos.lat,
         longitude: markerPos.lng,
+        images: imageUrls,
+        description: details.marqueeDetails,
+        id:VenueId
       };
-
-      await addDoc(collection(db, "users"), userInfo);
+      console.log(userInfo, "userInfo")
+      // await addDoc(collection(db, "users"), userInfo);
+      await setDoc(doc(db, "users", user.uid), userInfo);
       if (userInfo) {
-        console.log(userInfo, "user created");
-        console.log(user.uid, "user.uid");
-        // e.preventDefault();
+        addRegistration(userInfo);
         addUser(user.uid);
         router.push("/pages/auth");
       }
+      console.log("user", user);
     } catch (error) {
       console.log(error, "error");
     }
@@ -574,7 +609,7 @@ function details() {
               onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
-             <div className="w-[100%]">
+              <div className="w-[100%]">
                 <label className="font-roboto font-bold my-2">Full Name</label>
                 <Form.Item
                   className="w-[100%]"
@@ -668,6 +703,28 @@ function details() {
               <div className="w-[100%]">
                 <label className="font-roboto font-bold my-2">Capacity</label>
                 <Form.Item
+                  className="w-[100%]"
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please fillout the password input!",
+                    },
+                  ]}
+                >
+                  <Input
+                    className=" outline-none rounded md:w-[25vw] py-3"
+                    placeholder="Enter Password Here"
+                    type="number"
+                    name="capacity"
+                    value={details.capacity}
+                    onChange={handleChange}
+                  />
+                </Form.Item>
+              </div>
+              {/* <div className="w-[100%]">
+                <label className="font-roboto font-bold my-2">Capacity</label>
+                <Form.Item
                   name="capacity"
                   rules={[
                     {
@@ -679,13 +736,40 @@ function details() {
                   <Input
                     className=" outline-none rounded md:w-[25vw] py-3 "
                     placeholder="Enter Capacity Here"
-                    type="capacity"
+                    type="number"
                     name="capacity"
                     value={details.capacity}
                     onChange={handleChange}
                   />
                 </Form.Item>
+              </div> */}
+             
+              <div className="w-[100%]">
+                <label className="font-roboto font-bold my-2">Image</label>
+                <Form.Item
+                  name="capacity"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please fillout the capacity input!",
+                    },
+                  ]}
+                >
+                  <Input
+                    className=" outline-none rounded md:w-[25vw] py-3 "
+                    placeholder="Enter Capacity Here"
+                    type="file"
+                    name="image"
+                    value={details.image}
+                    multiple
+                    onChange={(e) => {
+                      setDetails({ ...details, image: e.target.files });
+                    }}
+                    // onChange={handleChange}
+                  />
+                </Form.Item>
               </div>
+             
               <div className="w-[100%]">
                 <label className="font-roboto font-bold my-2">Address</label>
                 <Form.Item
@@ -707,7 +791,31 @@ function details() {
                   />
                 </Form.Item>
               </div>
-
+              <div className="w-[100%]">
+                <label className="font-roboto font-bold my-2">
+                  Description
+                </label>
+                <Form.Item
+                  name="marqueeDetails"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please fillout the marqueeDetails input!",
+                    },
+                  ]}
+                >
+                  <TextArea
+                    rows={6}
+                    maxLength={200}
+                    placeholder="Enter Description Here"
+                    name="marqueeDetails"
+                    // type="text"
+                    value={details.marqueeDetails}
+                    onChange={handleChange}
+                    className="rounded-none w-full py-2 lg:py-3"
+                  />
+                </Form.Item>
+              </div>
               <div className="flex justify-start w-full items-center  ">
                 <div className=" text-center">
                   <button
@@ -718,12 +826,12 @@ function details() {
                   </button>
                 </div>
                 <div className=" text-center mx-2">
-                <button
-              className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
-              onClick={handleRegistration}
-            >
-              Register Now
-            </button> 
+                  <button
+                    className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
+                    onClick={handleRegistration}
+                  >
+                    Register Now
+                  </button>
                 </div>
               </div>
             </Form>
@@ -771,5 +879,5 @@ export default details;
   //             onClick={(e) => handleRegistration(e)}
   //           >
   //             Register Now
-  //           </button> 
+  //           </button>
 }
