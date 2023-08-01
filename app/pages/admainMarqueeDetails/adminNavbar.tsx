@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { faBellConcierge, faUtensils } from "@fortawesome/free-solid-svg-icons";
 import {useStore} from "@/store"
 import { getAuth, signOut } from "firebase/auth";
-export default function AdminNavbar() {
+export default function AdminNavbar({setModalOpen2}) {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [isModelOpen, setIsModelOpen] = useState(false);
@@ -22,6 +22,9 @@ export default function AdminNavbar() {
   console.log(userInformation, "dfadsfasf");
   
   const auth = getAuth();
+
+  const {registration} = useStore();
+  console.log(registration,"registration")
   const handleLogout = () => {
     router.push("/pages/auth");
    addUser("")
@@ -29,14 +32,14 @@ export default function AdminNavbar() {
   };
   const items = [
     {
-      label: <p>Marquee Name</p>,
+      label: <p>{registration.name}</p>,
       key: "0",
       icon: <FontAwesomeIcon icon={faHotel} 
       className="text-primaryColor"
       />,
     },
     {
-      label: <p>mumarhussain126@gmail.com</p>,
+      label: <p>{registration.email}</p>,
       key: "1",
       icon: <FontAwesomeIcon icon={faEnvelope} 
       className="text-blue-500"
@@ -83,7 +86,7 @@ export default function AdminNavbar() {
               icon={faBarsStaggered}
               size="sm"
               className="h-7 text-[#DEB666] absolute cursor-pointer"
-              onClick={() => setIsModelOpen(!isModelOpen)}
+              onClick={() => setModalOpen2((prev => !prev))}
             />
           </p>
         </div>

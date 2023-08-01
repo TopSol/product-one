@@ -441,7 +441,7 @@ function details() {
                   ]}
                 >
                   <TextArea
-                    rows={6}
+                    rows={4}
                     maxLength={200}
                     placeholder="Enter Description Here"
                     name="marqueeDetails"
