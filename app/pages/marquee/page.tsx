@@ -257,11 +257,12 @@ function Marquee() {
 
                   {open[item.data.venueId] && (
                     <div className="w-full  p-5">
-                      <Select
+                      <Select 
                         showSearch
                         style={{
                           width: 250,
                           marginBottom:20,
+                          
                         }}
                         placeholder="Search to Select"
                         size="large"

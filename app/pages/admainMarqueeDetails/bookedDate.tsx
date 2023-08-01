@@ -1,3 +1,5 @@
+import { WhatsAppOutlined } from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Image } from "antd";
 import React from "react";
 
@@ -78,7 +80,7 @@ const data = [
 function BookedDate() {
   return (
     <div className="md:container mx-auto">
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         {data.map((item, index) => {
           return (
             <div
@@ -135,9 +137,23 @@ function BookedDate() {
                         <p className="text-lg pl-1">Price</p>
                         <p className="w-[40%]"> {item.selectHall.price}</p>
                       </div>
-                      <div className="flex justify-end border-b py-2 shadow">
-                          <button className="px-3 py-3 bg-green-500 rounded-md mr-2">Accept</button>
-                          <button className="px-3 py-3 bg-red-500 rounded-md mr-2">Reject</button>
+                      <div className="flex justify-between border-b py-2 shadow">
+                        <div className="pl-3">
+                          <a
+                            href={`https://wa.me/${item.userInformation.phone}`}
+                            target="_blank"
+                          >
+                            <WhatsAppOutlined className="text-green-500 text-3xl" />
+                          </a>
+                        </div>
+                        <div>
+                          <button className="px-3 py-3 bg-green-500 rounded-md mr-2">
+                            Accept
+                          </button>
+                          <button className="px-3 py-3 bg-red-500 rounded-md mr-2">
+                            Reject
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

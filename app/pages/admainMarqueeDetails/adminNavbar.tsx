@@ -18,18 +18,14 @@ export default function AdminNavbar() {
   const [show, setShow] = useState(false);
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [component, setComponent] = React.useState("Venues");
-  const {userInformation} = useStore()
+  const {userInformation, addUser} = useStore()
   console.log(userInformation, "dfadsfasf");
   
   const auth = getAuth();
   const handleLogout = () => {
     router.push("/pages/auth");
-    signOut(auth).then(() => {
-    console.log("Sign-out successful.");
-     
-    }).catch((error) => {
-    console.log(" error");
-    });
+   addUser("")
+   
   };
   const items = [
     {
@@ -78,6 +74,7 @@ export default function AdminNavbar() {
   ];
 
   return (
+ 
     <div className="bg-white fixed top-0 left-0 right-0 z-50">
       <div className=" mx-auto flex justify-between items-center py-2 px-4 md:px-7 shadow">
         <div className="block md:hidden">
@@ -90,7 +87,7 @@ export default function AdminNavbar() {
             />
           </p>
         </div>
-        {isModelOpen ? (
+        {/* {isModelOpen ? (
           <div className="md:hidden fixed top-[56px] left-0 w-full  z-40 h-full">
             <div className="w-[65%] md:w-[15%] border flex flex-col h-full bg-white">
               <p className=" text-xl pl-2 py-5">Marquee</p>
@@ -127,7 +124,7 @@ export default function AdminNavbar() {
               ))}
             </div>
           </div>
-        ) : null}
+        ) : null} */}
 
         <div className="block md:flex md:items-center ">
           <div className="mr-0 md:mr-16">

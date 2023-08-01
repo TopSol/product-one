@@ -120,9 +120,10 @@ import Link from "next/link";
 import { auth } from "@/app/firebase";
 import { useRouter } from "next/navigation";
 import { useStore } from "../../../store";
-import { Input , Form } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-
+import { Input, Space, Button, Form } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/app/firebase";
 const initialFormState = {
   email: "",
   password: "",
@@ -135,7 +136,7 @@ const onFinishFailed = (errorInfo) => {
 };
 function Login() {
   const [user, setUser] = useState(initialFormState);
-  const router = useRouter(); // Use useRouter instead of next/navigation
+  const router = useRouter();
   const { userInformation, addUser } = useStore();
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -144,34 +145,33 @@ function Login() {
       [name]: value,
     }));
   };
+  const registrationInformation = async (item) => {
+    const docRef = doc(db, "users", item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      addUser(docSnap.data());
+      console.log("Document data:", docSnap.data());
+    } else {
+      console.log("No document!");
+    }
+  };
+  console.log(userInformation, "userInformation");
   const handleLogin = () => {
- 
     signInWithEmailAndPassword(auth, user.email, user.password)
       .then((userCredential) => {
         const user = userCredential.user;
         console.log(user, "signin", user.uid);
         if (user) {
-          addUser(user.uid);
-          console.log(userInformation, "userInformation");
-          console.log(user, "user");
+          registrationInformation(user.uid);
           router.push("/pages/admainMarqueeDetails");
         }
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // Handle the error, show an alert, or display an error message to the user.
-        // alert("Email or password is incorrect");
       });
   };
-  const antIcon = (
-    <LoadingOutlined
-      style={{
-        fontSize: 24,
-      }}
-      spin
-    />
-  );
+
   return (
     <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
       <div className="hidden md:block relative w-full lg:w-[42%] px-10 bg-bgColor">
@@ -213,53 +213,55 @@ function Login() {
               Login to access your account
             </h1>
             <div className="flex flex-col items-start">
-              <label className="font-roboto font-bold my-2">EMAIL / PHONE</label>
+              <label className="font-roboto font-bold my-2">
+                EMAIL / PHONE
+              </label>
               <Form.Item
                 name="username"
                 rules={[
                   {
-                    type:"email",
+                    type: "email",
                     required: true,
                     message: "Please input your Email/Phone!",
                   },
                 ]}
               >
-                <Input 
-                className="border-[2px] md:border-[3px]   outline-none md:w-[500px] w-72  py-4 mb-3 flex justify-center "
-                placeholder="Type Your Email / Phone"
-                type="email"
-                name="email"
-                value={user.email}
-                onChange={handleChange}
+                <Input
+                  className="border-[2px] md:border-[3px]   outline-none md:w-[500px] w-72  py-4 mb-3 flex justify-center "
+                  placeholder="Type Your Email / Phone"
+                  type="email"
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
                 />
               </Form.Item>
             </div>
             <div>
-            <label className="font-roboto font-bold my-2">Password</label>
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
-            >
-              <Input 
-              className="border-[2px] md:border-[3px]   outline-none md:w-[500px] w-72  py-4 mb-3 flex justify-center "
-              placeholder="Type Your Password"
-              type="password"
-              name="password"
-              value={user.password}
-              onChange={handleChange}
-              />
-            </Form.Item>
+              <label className="font-roboto font-bold my-2">Password</label>
+              <Form.Item
+                name="email"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                ]}
+              >
+                <Input
+                  className="border-[2px] md:border-[3px]   outline-none md:w-[500px] w-72  py-4 mb-3 flex justify-center "
+                  placeholder="Type Your Password"
+                  type="password"
+                  name="password"
+                  value={user.password}
+                  onChange={handleChange}
+                />
+              </Form.Item>
             </div>
             <p className="flex justify-end   md:ml-[360px] cursor-pointer text-primaryColor font-bold items-end">
               Forgot Password?
             </p>
           </div>
-          
+
           <button
             className="border md:w-[500px] w-72 flex justify-center mx-auto items-center rounded-md  my-5 py-4 px-10 cursor-pointer text-white bg-secondaryColor "
             onClick={handleLogin}

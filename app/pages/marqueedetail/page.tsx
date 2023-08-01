@@ -108,6 +108,8 @@ useEffect(()=>{
     console.error("datess is not a valid array");
   } else {
     const formattedDates = datess.map((v, i)=>(v.toDate()))
+    console.log(formattedDates, "format");
+    
     setDates(formattedDates)
   }
 
