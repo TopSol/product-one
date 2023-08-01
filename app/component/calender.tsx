@@ -69,7 +69,6 @@
 
 // export default MultipleDaySelectCalendar;
 
-
 // import React, { useState } from "react";
 // import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 // import moment from "moment";
@@ -131,28 +130,27 @@
 
 // export default MultipleDaySelectCalendar;
 
-
 // Check if the property exists in the 'dates' object before rendering the Calendar
-  //   if (!dates.hasOwnProperty(selectedVenue)) {
-  //     return <div>No data available for this venue</div>;
-  //   }
+//   if (!dates.hasOwnProperty(selectedVenue)) {
+//     return <div>No data available for this venue</div>;
+//   }
 
-
-
-  import React from "react";
+import React from "react";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useStore } from "@/store";
+import { add } from "date-fns";
 
 const localizer = momentLocalizer(moment);
 
-const MultipleDaySelectCalendar = ({ selectedVenue }) => {
-  const { dates, addDate } = useStore();
-
+const MultipleDaySelectCalendar = ({ selectedVenue, lunchType }) => {
+  const { dates, addDate, addDateKey, lunchDinner } = useStore();
+  console.log(lunchDinner, "lunchTylunchDinnerpedd");
   const handleSelectSlot = ({ start, end }) => {
     const selectedRange = getDatesInRange(start, end);
-    const asd = dates[selectedVenue] || [];
+    const asd = lunchDinner[selectedVenue]?.[lunchType] || [];
+    // const asd = dates[selectedVenue] || [];
 
     // Check if the selected date(s) already exist in the state, and only add new dates
     const uniqueSelectedRange = selectedRange.filter(
@@ -160,17 +158,20 @@ const MultipleDaySelectCalendar = ({ selectedVenue }) => {
     );
 
     if (uniqueSelectedRange.length > 0) {
-      addDate([...asd, ...uniqueSelectedRange], selectedVenue);
+      // addDate([...asd, ...uniqueSelectedRange], selectedVenue);
+      addDateKey(selectedVenue, lunchType, [...asd, ...uniqueSelectedRange]);
     }
 
-    console.log(uniqueSelectedRange, "uniqueSelectedRange");
   };
 
   const handleEventClick = (event) => {
-    const newDates = dates[selectedVenue].filter((date) => !isSameDay(date, event.start));
-    addDate(newDates, selectedVenue);
+    const newDates = lunchDinner[selectedVenue]?.[lunchType].filter(
+      // const newDates = dates[selectedVenue].filter(
+      (date) => !isSameDay(date, event.start)
+    );
+    // addDate(newDates, selectedVenue);
+    addDateKey(selectedVenue, lunchType, newDates);
   };
-
   const getDatesInRange = (start, end) => {
     const dates = [];
     let current = new Date(start);
@@ -200,7 +201,7 @@ const MultipleDaySelectCalendar = ({ selectedVenue }) => {
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleEventClick}
         localizer={localizer}
-        events={dates[selectedVenue]?.map?.((date) => ({
+        events={lunchDinner?.[selectedVenue]?.[lunchType]?.map?.((date) => ({
           start: date,
           end: date,
           title: "Selected",
@@ -211,3 +212,8 @@ const MultipleDaySelectCalendar = ({ selectedVenue }) => {
 };
 
 export default MultipleDaySelectCalendar;
+// events={dates[selectedVenue]?.map?.((date) => ({
+        //   start: date,
+        //   end: date,
+        //   title: "Selected",
+        // }))}
