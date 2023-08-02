@@ -62,7 +62,6 @@
 //   )
 // );
 
-
 import create from "zustand";
 import { persist } from "zustand/middleware";
 export const useStore = create(
@@ -97,22 +96,38 @@ export const useStore = create(
         set({ Venues: venueData });
       },
       addMenus: (menuData) => {
-        console.log(menuData, "menuData444");
         set({ Menus: menuData });
       },
       addDate: (dateData) => {
-        set({dates:dateData});
+        set({ dates: dateData });
       },
       addDateKey: (key, lunchType, data) => {
         set((state) => ({
-         lunchDinner: {
+          lunchDinner: {
             ...state.lunchDinner,
             [key]: {
               ...state.lunchDinner[key],
-              [lunchType]:data
+              [lunchType]: data,
             },
           },
         }));
+      },
+
+      getDates: async () => {
+        try {
+          const docRef = doc(db, "bookDate", userInformation.userId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            set((state) => ({
+              lunchDinner: data,
+            }));
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching document:", error);
+        }
       },
     }),
     {

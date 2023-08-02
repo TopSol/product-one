@@ -48,11 +48,7 @@ function Marquee() {
     }));
   };
   const handleCheck = (event) => {
-    console.log(event, "event");
-
-    const selectedValue = event?.target?.value || event;
-    console.log(selectedValue, "selectedValue");
-
+const selectedValue = event?.target?.value || event;
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
       setDays(BookedLunch);

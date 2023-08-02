@@ -32,7 +32,7 @@ function AdminMarqueeDetails() {
   const [dishModalOpen, setDishModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoader, setIsLoader] = useState(true);
-  const { userInformation } = useStore();
+  const { userInformation,getDates } = useStore();
   const sideBar = [
     {
       name: "Venues",
@@ -126,6 +126,9 @@ function AdminMarqueeDetails() {
                           console.log(item.name, "item.name");
                           setComponent(item.name);
                           setModalOpen1(!modalOpen1);
+                          if(item.name === "Availability"){
+                            getDates()
+                          }
                           if (window.innerWidth <= 768) {
                             setModalOpen2(!modalOpen2);
                           }
