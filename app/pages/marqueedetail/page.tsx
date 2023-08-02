@@ -39,7 +39,7 @@ function Marqueedetail() {
   const [bookDates, setBookDates] = useState()
   const [dates , setDates] = useState([])
   const handleClick = (index: any) => {
-    setSelectImage(data?.image[index]);
+    setSelectImage(data?.images[index]);
     setPhotoIndex(index);
   };
 
@@ -58,16 +58,16 @@ function Marqueedetail() {
     }
   };
   const id = searchParams.get("id");
-  // console.log(id, "iddsddsss");
+  console.log(id, "iddsddsss");
+
   const handleButton = () => {
     addBookedDates(range);
     router.push("/pages/details");
   };
-  console.log(bookedDates, "range");
 
   const getDocById = async (id) => {
     try {
-      const docRef = doc(db, "Venues", id);
+      const docRef = doc(db, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setData(docSnap.data());
@@ -78,6 +78,7 @@ function Marqueedetail() {
       console.error("Error :", error);
     }
   };
+  
   useEffect(() => {
     getDocById(id);
   }, [id]);
@@ -139,12 +140,12 @@ console.log(dates, "datessssssss");
           <div className="">
             <img
               onClick={() => setIsOpen(true)}
-              src={selectImage ? `${selectImage}` : `${data?.image?.[0]}`}
+              src={selectImage ? `${selectImage}` : `${data?.images?.[0]}`}
               className="rounded  h-[508px] w-full object-cover"
             />
           </div>
           <div className="  flex space-x-3 my-3 ">
-            {data?.image?.map((data, index) => (
+            {data?.images?.map((data, index) => (
               <div key={index}>
                 <div onClick={() => handleClick(index)}>
                   <img
@@ -169,21 +170,21 @@ console.log(dates, "datessssssss");
           </div>
           {isOpen && (
             <ImageLightbox
-              mainSrc={data?.image[photoIndex]}
-              nextSrc={data?.image[(photoIndex + 1) % data?.image.length]}
+              mainSrc={data?.images[photoIndex]}
+              nextSrc={data?.images[(photoIndex + 1) % data?.images.length]}
               prevSrc={
-                data?.image[
-                  (photoIndex + data?.image.length - 1) % data?.image.length
+                data?.images[
+                  (photoIndex + data?.images.length - 1) % data?.images.length
                 ]
               }
               onCloseRequest={closeLightbox}
               onMovePrevRequest={() =>
                 setPhotoIndex(
-                  (photoIndex + data?.image.length - 1) % data?.image.length
+                  (photoIndex + data?.images.length - 1) % data?.images.length
                 )
               }
               onMoveNextRequest={() =>
-                setPhotoIndex((photoIndex + 1) % data?.image.length)
+                setPhotoIndex((photoIndex + 1) % data?.images.length)
               }
             />
           )}

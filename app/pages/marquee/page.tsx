@@ -369,8 +369,9 @@ import { BookedDinner, BookedLunch } from "../marqueedetail/data";
 import { collection, getDocs } from "firebase/firestore";
 import NextLink from "next/link";
 import "./style.css";
+import Item from "antd/es/list/Item";
 function Marquee() {
-  const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
+  const { userInformation, addUser, addMenus, Menus, Dishes, Venues } = useStore();
   const [sliderValue, setSliderValue] = useState("");
   const [open, setOpen] = useState({});
   const initialDays: Date[] = [];
@@ -378,22 +379,25 @@ function Marquee() {
   const [isLunch, setIsLunch] = useState<any>();
   const [selectedOption, setSelectedOption] = useState("");
   const [venuesData, setVenuesData] = useState([]);
-  const [userData, setUserData] = useState("")
+  const [userData, setUserData] = useState([])
+  const [venueName, setVenueName] = useState([])
+  const [name , setName] = useState([])
   const handleSliderChange = (event) => {
     setSliderValue(event.target.value);
   };
+
   const handleClick = (id) => {
+    console.log(id, "asdfasdf");
     setOpen((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
     }));
   };
+
   const handleCheck = (event) => {
     console.log(event, "event");
-
     const selectedValue = event?.target?.value || event;
     console.log(selectedValue, "selectedValue");
-
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
       // setDays(BookedLunch);
@@ -403,7 +407,8 @@ function Marquee() {
       // setIsLunch("Dinner");
     }
   };
-  console.log(days, "days");
+
+  
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
@@ -416,19 +421,29 @@ function Marquee() {
 
     getdata();
   }, []);
-
+  
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
-      const datesArr = [];
+      const dataArr = [];
       querySnapshot.forEach((doc) => {
-        datesArr.push({user: doc.data() });
+        dataArr.push({id: doc.id,data: doc.data() });
       });
-      setUserData(datesArr)
+      setUserData(dataArr)
     };
     getUser()
   },[]);
-  console.log(userData[0].user.name, "user");
+ console.log(userData,"userData");
+ 
+  const getVenueData = (id) =>{
+    console.log(id, "abc");
+    
+  const asd =  Venues.filter((item) => item.userId === id)
+  console.log(asd, "VenuesVenues");
+    setVenueName(asd)
+}
+  
+  // console.log(userData[0].user.name, "user");
 
   // useEffect(() => {
   //   const getDates = async () => {
@@ -442,7 +457,18 @@ function Marquee() {
   //   getDates()
   // },[]);
   // console.log(days[0]?.bookDates.dates, "da------yss");
-  
+  const handleVenueName = (e) =>{
+    console.log(e, "eeeeeeeee");
+    
+  }
+  useEffect(()=>{
+  const marqueeVenueName =   venueName.map((item)=>({
+      value : item.id,
+      label: item.name,
+    }))
+setName(marqueeVenueName)
+
+  })
   return (
     <div>
       <Navbar />
@@ -561,17 +587,17 @@ function Marquee() {
           </div>
         </div>
         <div className="w-full  lg:w-[75%]">
-          {venuesData.map((item) => {
+          {userData.map((item) => {
             return (
               <div className="mb-10 mx-5 ">
                 <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
                   <div className="md:w-[40%] cursor-pointer">
                     <NextLink
-                      href={`/pages/marqueedetail?id=${item?.data?.venueId}`}
+                      href={`/pages/marqueedetail?id=${item?.id}`}
                       passHref
                     >
                       <img
-                        src={item?.data?.image?.[0]}
+                        src={item?.data?.images?.[0]}
                         className="md:rounded-r-none rounded-lg w-72 h-48"
                         alt=""
                       />
@@ -582,8 +608,8 @@ function Marquee() {
                       {item?.data?.name}
                     </h1>
 
-                    {/* <p className="font-roboto text-textColor mt-4">{item.desc}</p> */}
-                    <p className="font-roboto text-textColor mt-6">Jaranwala</p>
+                    <p className="font-roboto text-textColor mt-4">{item?.data?.description}</p>
+                    <p className="font-roboto text-textColor mt-6">{item?.data?.address}</p>
                   </div>
                   <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
                     <p className="text-center text-2xl font-roboto font-bold  text-textColor">
@@ -600,7 +626,10 @@ function Marquee() {
 
                     <div
                       className="cursor-pointer"
-                      onClick={() => handleClick(item.data?.venueId)}
+                      onClick={() => {
+                        handleClick(item?.data?.id)
+                        getVenueData(item?.id)
+                      }}
                     >
                       <p className=" text-sm  text-textColor  flex justify-center items-center py-1 font-roboto border-t-[1px]">
                         Avalibility & Details
@@ -610,7 +639,7 @@ function Marquee() {
                   </div>
                 </div>
                 <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
-                  {open[item.id] && (
+                  {open[item?.data?.id] && (
                     <DayPicker
                       className={`${
                         isLunch == `Lunch` ? `customClasses` : `customClasses2`
@@ -623,7 +652,7 @@ function Marquee() {
                     />
                   )}
 
-                  {open[item.data.venueId] && (
+                  {open[item?.data?.id] && (
                     <div className="w-full  p-5">
                       <Select
                         showSearch
@@ -643,20 +672,22 @@ function Marquee() {
                             .toLowerCase()
                             .localeCompare((optionB?.label ?? "").toLowerCase())
                         }
-                        options={[
-                          {
-                            value: "1",
-                            label: "Marquee",
-                          },
-                          {
-                            value: "2",
-                            label: "Closed",
-                          },
-                          {
-                            value: "3",
-                            label: "Communicated",
-                          },
-                        ]}
+                        onChange={handleVenueName}
+                        options={
+                          name
+                          // {
+                          //   label:venueName.map((item)=>{
+                          //     return(
+                          //     <p>
+
+                          //         {
+                          //           item.name
+                          //         }
+                          //         </p>
+                          //     )
+                          //   })
+                          // },
+                        }
                       />
                       <div className="w-full mb-3">
                         <h1 className="text-xl flex items-center w-full font-vollkorn ">
