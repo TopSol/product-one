@@ -27,7 +27,7 @@
 // import { DayPicker } from "react-day-picker";
 // import "react-day-picker/dist/style.css";
 // import { useStore } from "../../../store";
-// import { BookedDinner, BookedLunch } from "../marqueedetail/data";
+// import { BookedDiner, BookedLunch } from "../marqueedetail/data";
 // import "./style.css";
 // function Marquee() {
 //   const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
@@ -57,9 +57,9 @@
 //     if (selectedValue == "Lunch") {
 //       setDays(BookedLunch);
 //       setIsLunch("Lunch");
-//     } else if (selectedValue == "Dinner") {
-//       setDays(BookedDinner);
-//       setIsLunch("Dinner");
+//     } else if (selectedValue == "Diner") {
+//       setDays(BookedDiner);
+//       setIsLunch("Diner");
 //     }
 //   };
 //   console.log(days, "days");
@@ -319,7 +319,7 @@
 //                       </div>
 //                       <div className="flex items-center">
 //                         <input
-//                           onClick={() => handleCheck("Dinner")}
+//                           onClick={() => handleCheck("Diner")}
 //                           id="default-radio-3"
 //                           type="radio"
 //                           value=""
@@ -330,14 +330,14 @@
 //                           htmlFor="default-radio-3"
 //                           className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
 //                         >
-//                           Dinner
+//                           Diner
 //                         </label>
 //                       </div>
 //                       <div className="flex items-center space-x-3 font-roboto mt-5">
 //                         <div className="bg-[orange] h-3 w-3 rounded-full"></div>
 //                         <p>Lunch</p>
 //                         <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
-//                         <p>Dinner</p>
+//                         <p>Diner</p>
 //                       </div>
 //                     </div>
 //                   )}
@@ -360,28 +360,33 @@ import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
-import { Select } from "antd";
+import { Radio, Select } from "antd";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useStore } from "../../../store";
-import { BookedDinner, BookedLunch } from "../marqueedetail/data";
+import { BookedDiner, BookedLunch } from "../marqueedetail/data";
 import { collection, getDocs } from "firebase/firestore";
 import NextLink from "next/link";
 import "./style.css";
 import Item from "antd/es/list/Item";
 function Marquee() {
-  const { userInformation, addUser, addMenus, Menus, Dishes, Venues } = useStore();
+  const { userInformation, addUser, addMenus, Menus, Dishes, Venues } =
+    useStore();
   const [sliderValue, setSliderValue] = useState("");
   const [open, setOpen] = useState({});
   const initialDays: Date[] = [];
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState("Lunch");
   const [venuesData, setVenuesData] = useState([]);
-  const [userData, setUserData] = useState([])
-  const [venueName, setVenueName] = useState([])
-  const [name , setName] = useState([])
+  const [userData, setUserData] = useState([]);
+  const [venueName, setVenueName] = useState([]);
+  const [name, setName] = useState([]);
+  const [selectedDate, setSelectedDate] = useState([]);
+  const [bookDates, setBookDates] = useState([]);
+  const [meal, setMeal] = useState("Lunch");
+  const [value, setValue] = useState("1");
   const handleSliderChange = (event) => {
     setSliderValue(event.target.value);
   };
@@ -393,22 +398,22 @@ function Marquee() {
       [id]: !prevState[id],
     }));
   };
-
-  const handleCheck = (event) => {
-    console.log(event, "event");
+  console.log(name, "name", selectedOption);
+  const handleCheck = (event, item) => {
+    console.log(event, "event", item);
     const selectedValue = event?.target?.value || event;
     console.log(selectedValue, "selectedValue");
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
-      // setDays(BookedLunch);
-      // setIsLunch("Lunch");
-    } else if (selectedValue == "Dinner") {
-      // setDays(BookedDinner);
-      // setIsLunch("Dinner");
+      setDays(item);
+      setIsLunch("Lunch");
+    } else if (selectedValue == "Diner") {
+      setDays(item);
+      setIsLunch("Diner");
     }
   };
+  console.log(days, "setDays");
 
-  
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
@@ -421,58 +426,97 @@ function Marquee() {
 
     getdata();
   }, [Venues]);
-  
+
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
       const dataArr = [];
       querySnapshot.forEach((doc) => {
-        dataArr.push({id: doc.id,data: doc.data() });
+        dataArr.push({ id: doc.id, data: doc.data() });
       });
-      setUserData(dataArr)
+      setUserData(dataArr);
     };
-    getUser()
-  },[]);
-//  console.log(userData,"userData");
- 
-const getVenueData = (id) => {
-  console.log(id, "sssss",venuesData);
-  const asd = venuesData?.filter((item) => {
-    console.log(item, "sadfasssfad");
-    return item?.data?.userId === id;
-  });
-  console.log(asd, "VenuesVenussshges");
-  setVenueName(asd);
+    getUser();
+  }, []);
+  //  console.log(userData,"userData");
 
-};
-  
+  const getVenueData = (id) => {
+    console.log(id, "sssss", venuesData);
+    const asd = venuesData?.filter((item) => {
+      console.log(item, "sadfasssfad");
+      return item?.data?.userId === id;
+    });
+    console.log(id, "VenuesVenussshges");
+    setVenueName(asd);
+  };
+
+  const getDatess = async (id) => {
+    const querySnapshot = await getDocs(collection(db, "bookDate"));
+    const datesArr = [];
+    querySnapshot.forEach((doc) => {
+      datesArr.push(doc.data());
+    });
+    const asdf = datesArr?.filter((item) => {
+      return item?.id === id;
+    });
+    setSelectedDate(asdf);
+  };
+
+  console.log(selectedDate, "dayssss");
+
+  const getFromatDates = (arr = []) => {
+    const format = arr.map((v, i) => {
+      console.log("asdasdas", v);
+      return v.toDate();
+    });
+    return format;
+  };
+
+  const handleVenueName = (id) => {
+    console.log(selectedDate, "ekeeada", id);
+    const data = name.filter((item) => {
+      return item?.value == id;
+    });
+    console.log(data, "dsafadsfaf");
+    const reserveDate = selectedDate.map((item) => {
+      return {
+        id,
+        dates: {
+          Diner: getFromatDates(item.dates[id].Diner),
+          Lunch: getFromatDates(item.dates[id].Lunch),
+        },
+      };
+    });
+    console.log(reserveDate, "asdfasdf");
+    setBookDates(reserveDate);
+    console.log(data, "asdfasdsda");
+    // handleCheck(data.label,reserveDate[0]?.dates)
+    console.log(data, "asfasddfasf", reserveDate);
+    // lunchDinerDates(data,reserveDate)
+    // console.log(data.label,bookDates[0]?.dates?.data?.label,"asdfasf")
+    {
+      meal == "Diner"
+        ? handleCheck(meal, reserveDate[0]?.dates?.Diner)
+        : handleCheck(meal, reserveDate[0]?.dates?.Lunch);
+    }
+    // handleCheck("Lunch",reserveDate[0]?.dates?.Lunch)
+  };
+  // const lunchDinerDates=(item,value)=>{
+  //   console.log(item,"sdafasdfadsf",value)
+
+  // }
+  console.log(bookDates, "asdfasf", bookDates?.[0]?.dates);
+  // console.log(bookDates[0].dates.Diner, "dsfsafasfas");
+  // console.log(bookDates[0].dates.Diner, "dsfsafasfas");
 
   useEffect(() => {
-    const getDates = async () => {
-      const querySnapshot = await getDocs(collection(db, "bookDate"));
-      const datesArr = [];
-      querySnapshot.forEach((doc) => {
-        datesArr.push({bookDates: doc.data() });
-      });
-      setDays(datesArr)
-    };
-    getDates()
-  },[]);
-  console.log(days[0]?.bookDates.dates, "dayssss");
-  
-  const handleVenueName = (e) =>{
-    console.log(e, "eeeeeeeee");
-    
-  }
-  useEffect(()=>{
-  const marqueeVenueName =  venueName?.map((item)=>({
-      value : item?.data?.venueId,
+    const marqueeVenueName = venueName?.map((item) => ({
+      value: item?.data?.venueId,
       label: item?.data?.name,
-    }))
-setName(marqueeVenueName)
-console.log(name, "asdfg");
-
-  },[venueName])
+    }));
+    setName(marqueeVenueName);
+    console.log(name, "asdfg");
+  }, [venueName]);
   return (
     <div>
       <Navbar />
@@ -612,8 +656,12 @@ console.log(name, "asdfg");
                       {item?.data?.name}
                     </h1>
 
-                    <p className="font-roboto text-textColor mt-4">{item?.data?.description}</p>
-                    <p className="font-roboto text-textColor mt-6">{item?.data?.address}</p>
+                    <p className="font-roboto text-textColor mt-4">
+                      {item?.data?.description}
+                    </p>
+                    <p className="font-roboto text-textColor mt-6">
+                      {item?.data?.address}
+                    </p>
                   </div>
                   <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
                     <p className="text-center text-2xl font-roboto font-bold  text-textColor">
@@ -631,8 +679,9 @@ console.log(name, "asdfg");
                     <div
                       className="cursor-pointer"
                       onClick={() => {
-                        handleClick(item?.data?.id)
-                        getVenueData(item?.id)
+                        handleClick(item?.data?.id);
+                        getVenueData(item?.id);
+                        getDatess(item?.id);
                       }}
                     >
                       <p className=" text-sm  text-textColor  flex justify-center items-center py-1 font-roboto border-t-[1px]">
@@ -689,15 +738,30 @@ console.log(name, "asdfg");
                       </div>
 
                       <div className="flex items-center mb-4">
-                        <input
-                          onClick={() => handleCheck("Lunch")}
+                        <Radio.Group
+                          onChange={(e) => setValue(e.target.value)}
+                          value={value}
+                        >
+                          <Radio
+                            onClick={() => setMeal("Lunch")}
+                            onChange={() => setValue("1")}
+                            id="default-radio-2"
+                            type="radio"
+                            value="1"
+                            name="default-radio"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                        </Radio.Group>
+                        {/* <input
+                          // onClick={() => handleCheck("Lunch",bookDates[0]?.dates.Lunch)}
+                          onClick={()=> setMeal("Lunch")}
                           checked
                           id="default-radio-2"
                           type="radio"
                           value=""
                           name="default-radio"
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
+                        /> */}
                         <label
                           htmlFor="default-radio-2"
                           className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
@@ -706,26 +770,41 @@ console.log(name, "asdfg");
                         </label>
                       </div>
                       <div className="flex items-center">
-                        <input
-                          onClick={() => handleCheck("Dinner")}
+                        <Radio.Group
+                          onChange={(e) => setValue(e.target.value)}
+                          value={value}
+                        >
+                          <Radio
+                            onClick={() => setMeal("Diner")}
+                            id="default-radio-3"
+                            // onChange={(e)=>setValue(e.target.value)}
+                            type="radio"
+                            value="2"
+                            name="default-radio"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                        </Radio.Group>
+                        {/* <input
+                          // onClick={() => handleCheck("Diner",bookDates[0]?.dates.Diner)}
+                          onClick={()=> setMeal("Diner")}
                           id="default-radio-3"
                           type="radio"
                           value=""
                           name="default-radio"
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
+                        /> */}
                         <label
                           htmlFor="default-radio-3"
                           className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                         >
-                          Dinner
+                          Diner
                         </label>
                       </div>
                       <div className="flex items-center space-x-3 font-roboto mt-5">
                         <div className="bg-[orange] h-3 w-3 rounded-full"></div>
                         <p>Lunch</p>
                         <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
-                        <p>Dinner</p>
+                        <p>Diner</p>
                       </div>
                     </div>
                   )}
@@ -733,7 +812,6 @@ console.log(name, "asdfg");
               </div>
             );
           })}
-         
         </div>
       </div>
       <Footer />
