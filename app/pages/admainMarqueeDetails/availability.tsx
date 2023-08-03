@@ -127,7 +127,7 @@
 //             );
 //           });
 //           SetAllDate(data);
-//           console.log(data,"dddggd") 
+//           console.log(data,"dddggd")
 //           setLunchType("All");
 //         }
 //         break;
@@ -393,13 +393,6 @@
 // // }
 // // export default Availability;
 
-
-
-
-
-
-
-
 import MultipleDaySelectCalendar from "@/app/component/calender";
 import { useStore } from "../../../store";
 import React, { useState, useEffect } from "react";
@@ -441,18 +434,20 @@ function Availability() {
     setSelectedDates(VenueName);
     if (VenueName.length > 0) {
       setSelectVenue(VenueName[0].label);
+      setSelectedVenue(VenueName[0].value);
     }
   }, [Venues]);
   const handleVenueSelect = (value) => {
-    console.log(value, "valueddd");
     const data = selectedDates.filter((item) => {
       if (item?.value === value) {
         setSelectVenue(item?.label);
+       
         setSelectedVenue(item?.value);
         return item;
       }
     });
   };
+  console.log(selectedVenue, "selectedVenue");
   // const update = async (id, venueDate) => {
   //   console.log(venueDate, "venueDate");
   //   const NotAvailableDate = {
@@ -485,10 +480,7 @@ function Availability() {
     }
   };
   const SendDateInFirebase = async (item) => {
-    console.log(item, "itessm");
-    console.log(dates?.[item], "dsssd", item);
     const data = dates?.[item] || {};
-    console.log(data, "wwwww");
     try {
       const docRef = doc(db, "Venues", item);
       const docSnap = await getDoc(docRef);
@@ -499,7 +491,6 @@ function Availability() {
           ...docSnap.data(),
           dates: data,
         };
-        console.log(user, "qqqqqssqq");
         setVenueDate(user);
         update(item, user, venueDates);
       } else {
@@ -514,8 +505,6 @@ function Availability() {
     switch (e) {
       case 1:
         setLunchType("Lunch");
-console.log(UserInformation, "userInformation");
-
         break;
       case 2:
         setLunchType("Diner");
@@ -523,15 +512,14 @@ console.log(UserInformation, "userInformation");
         break;
       case 3:
         {
-          const lunchDinnerValue = lunchDinner[selectedVenue]
+          const lunchDinnerValue = lunchDinner[selectedVenue];
           Object.keys(lunchDinnerValue).map((item) => {
             lunchDinnerValue[item].map((value) => {
-              data.push({title:item,start:value,end:value});
-            }
-            );
+              data.push({ title: item, start: value, end: value });
+            });
           });
           SetAllDate(data);
-          console.log(data,"dddggd") 
+          console.log(data, "dddggd");
           setLunchType("All");
         }
         break;
