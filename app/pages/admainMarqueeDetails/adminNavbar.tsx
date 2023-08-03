@@ -32,14 +32,14 @@ export default function AdminNavbar({setModalOpen2}) {
   };
   const items = [
     {
-      label: <p>{registration.name}</p>,
+      label: <p>{userInformation.name}</p>,
       key: "0",
       icon: <FontAwesomeIcon icon={faHotel} 
       className="text-primaryColor"
       />,
     },
     {
-      label: <p>{registration.email}</p>,
+      label: <p>{userInformation.email}</p>,
       key: "1",
       icon: <FontAwesomeIcon icon={faEnvelope} 
       className="text-blue-500"

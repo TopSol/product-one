@@ -420,7 +420,7 @@ function Marquee() {
     };
 
     getdata();
-  }, []);
+  }, [Venues]);
   
   useEffect(() => {
     const getUser = async () => {
@@ -433,42 +433,46 @@ function Marquee() {
     };
     getUser()
   },[]);
- console.log(userData,"userData");
+//  console.log(userData,"userData");
  
-  const getVenueData = (id) =>{
-    console.log(id, "abc");
-    
-  const asd =  Venues.filter((item) => item.userId === id)
-  console.log(asd, "VenuesVenues");
-    setVenueName(asd)
-}
-  
-  // console.log(userData[0].user.name, "user");
+const getVenueData = (id) => {
+  console.log(id, "sssss",venuesData);
+  const asd = venuesData?.filter((item) => {
+    console.log(item, "sadfasssfad");
+    return item?.data?.userId === id;
+  });
+  console.log(asd, "VenuesVenussshges");
+  setVenueName(asd);
 
-  // useEffect(() => {
-  //   const getDates = async () => {
-  //     const querySnapshot = await getDocs(collection(db, "bookDate"));
-  //     const datesArr = [];
-  //     querySnapshot.forEach((doc) => {
-  //       datesArr.push({bookDates: doc.data() });
-  //     });
-  //     setDays(datesArr)
-  //   };
-  //   getDates()
-  // },[]);
-  // console.log(days[0]?.bookDates.dates, "da------yss");
+};
+  
+
+  useEffect(() => {
+    const getDates = async () => {
+      const querySnapshot = await getDocs(collection(db, "bookDate"));
+      const datesArr = [];
+      querySnapshot.forEach((doc) => {
+        datesArr.push({bookDates: doc.data() });
+      });
+      setDays(datesArr)
+    };
+    getDates()
+  },[]);
+  console.log(days[0]?.bookDates.dates, "dayssss");
+  
   const handleVenueName = (e) =>{
     console.log(e, "eeeeeeeee");
     
   }
   useEffect(()=>{
-  const marqueeVenueName =   venueName.map((item)=>({
-      value : item.id,
-      label: item.name,
+  const marqueeVenueName =  venueName?.map((item)=>({
+      value : item?.data?.venueId,
+      label: item?.data?.name,
     }))
 setName(marqueeVenueName)
+console.log(name, "asdfg");
 
-  })
+  },[venueName])
   return (
     <div>
       <Navbar />
@@ -673,21 +677,7 @@ setName(marqueeVenueName)
                             .localeCompare((optionB?.label ?? "").toLowerCase())
                         }
                         onChange={handleVenueName}
-                        options={
-                          name
-                          // {
-                          //   label:venueName.map((item)=>{
-                          //     return(
-                          //     <p>
-
-                          //         {
-                          //           item.name
-                          //         }
-                          //         </p>
-                          //     )
-                          //   })
-                          // },
-                        }
+                        options={name}
                       />
                       <div className="w-full mb-3">
                         <h1 className="text-xl flex items-center w-full font-vollkorn ">
