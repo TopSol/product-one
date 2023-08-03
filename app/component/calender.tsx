@@ -14,7 +14,9 @@ const MultipleDaySelectCalendar = ({
   const { addDateKey, lunchDinner } = useStore();
   const [lunchDinnerDate, setLunchDinnerDate] = useState({});
   const handleSelectSlot = ({ start, end }) => {
+   
     const selectedRange = getDatesInRange(start, end);
+
     const asd = lunchDinnerDate[selectedVenue]?.[lunchType] || [];
     const uniqueSelectedRange = selectedRange.filter(
       (date) => !asd.some((existingDate) => isSameDay(existingDate, date))
@@ -31,6 +33,7 @@ const MultipleDaySelectCalendar = ({
     const newDates = lunchDinnerDate[selectedVenue]?.[lunchType].filter(
       (date) => !isSameDay(date, event.start)
     );
+    console.log(newDates, "newDassstes");
     addDateKey(selectedVenue, lunchType, newDates);
   };
   useEffect(() => {
@@ -56,7 +59,22 @@ const MultipleDaySelectCalendar = ({
     );
   };
   console.log(selectedVenue, "selectedVenue",lunchType)
-
+   const eventStyleGetter = (event, start, end, isSelected) => {
+    console.log(event, "event");
+    var backgroundColor = event.title === "Diner" ? "#DEB666" :  "red";
+    var style = {
+      backgroundColor: backgroundColor,
+      borderRadius: "0px",
+      opacity: 0.8,
+      // height: 200,
+      color: "black",
+      border: "0px",
+      display: "block",
+    };
+    return {
+      style: style,
+    };
+  };
   return (
     <div>
       <Calendar
@@ -72,9 +90,11 @@ const MultipleDaySelectCalendar = ({
           (date) => ({
             start: date,
             end: date,
-            title: "Selected",
+            title: lunchType,
+            
           })
         )}
+        eventPropGetter={eventStyleGetter}
         // events={allDate?.map(
         //   (data) => (data)
         // )}
