@@ -403,7 +403,7 @@ import { db } from "@/app/firebase";
 import { getDoc, doc, updateDoc, setDoc } from "firebase/firestore";
 import UserInformation from "../details/userInformation";
 function Availability() {
-  const { Venues, dates, lunchDinner } = useStore();
+  const { Venues, dates, lunchDinner,userInformation } = useStore();
   const [selectedDates, setSelectedDates] = useState([]);
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectVenue, setSelectVenue] = useState("");
@@ -480,6 +480,7 @@ function Availability() {
     }
   };
   const SendDateInFirebase = async (item) => {
+    console.log(dates,"sdfsdfdsf")
     const data = dates?.[item] || {};
     try {
       const docRef = doc(db, "Venues", item);
@@ -527,6 +528,7 @@ function Availability() {
         break;
     }
   };
+  console.log(userInformation.userId,"asdfasdfasdf")
   return (
     <div>
       <div className="flex ">
