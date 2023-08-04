@@ -23,8 +23,10 @@ import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
-
+import { Select } from "antd";
+import { getFormatDates } from "@/app/utils";
 function Marqueedetail() {
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates } = useStore();
   const router = useRouter();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -35,28 +37,23 @@ function Marqueedetail() {
   const [selectedOption, setSelectedOption] = useState("");
   const [data, setData] = useState();
   const [isShow, setIsShow] = useState(false);
-  const { bookedDates, addBookedDates } = useStore();
-  const [bookDates, setBookDates] = useState()
-  const [dates , setDates] = useState([])
+  const [bookDates, setBookDates] = useState();
+  const [dates, setDates] = useState([]);
+  const [meal, setMeal] = useState("Lunch");
+  const [days, setDays] = useState<any>([]);
+  const [lunchDinner, setLunchDinner] = useState<any>([
+    { value: "1", label: "Lunch" },
+    { value: "2", label: "Diner" },
+  ]);
   const handleClick = (index: any) => {
     setSelectImage(data?.images[index]);
     setPhotoIndex(index);
   };
-
+console.log(data,"days",marqueeVenueNames,marqueeVenueDates)
   const closeLightbox = () => {
     setIsOpen(false);
   };
-  const handleCheck = (event: any) => {
-    const selectedValue = event.target.value;
-    setSelectedOption(selectedValue);
-    if (selectedValue == "Lunch") {
-      setRange(dates);
-      setIsLunch("Lunch");
-    } else if (selectedValue == "Dinner") {
-      setRange(BookedDinner);
-      setIsLunch("Dinner");
-    }
-  };
+
   const id = searchParams.get("id");
   console.log(id, "iddsddsss");
 
@@ -78,12 +75,12 @@ function Marqueedetail() {
       console.error("Error :", error);
     }
   };
-  
+
   useEffect(() => {
     getDocById(id);
   }, [id]);
 
-  const getCollection = async (id) =>{
+  const getCollection = async (id) => {
     try {
       const docRef = doc(db, "BookDate", id);
       const docSnap = await getDoc(docRef);
@@ -95,28 +92,71 @@ function Marqueedetail() {
     } catch (error) {
       console.error("Error :", error);
     }
-  }
-  useEffect(()=>{
+  };
+  useEffect(() => {
     if (id) {
       getCollection(id);
     }
-  },[id])
+  }, [id]);
+  const handleCheck = (event, item) => {
+    // const selectedValue = event.target.value;
+    // setSelectedOption(selectedValue);
+    // if (selectedValue == "Lunch") {
+    //   setRange(dates);
+    //   setIsLunch("Lunch");
+    // } else if (selectedValue == "Dinner") {
+    //   setRange(BookedDinner);
+    //   setIsLunch("Dinner");
+    // }
+    console.log(event, "event", item);
+    const selectedValue = event?.target?.value || event;
+    console.log(selectedValue, "selectedValue");
+    setSelectedOption(selectedValue);
+    if (selectedValue == "Lunch") {
+      setDays(item);
+      setIsLunch("Lunch");
+    } else if (selectedValue == "Diner") {
+      setDays(item);
+      setIsLunch("Diner");
+    }
+  };
+  const handleVenueName = (id) => {
+    console.log(marqueeVenueDates, "marqueeVenueDates");
+    const reserveDate = marqueeVenueDates.map((item) => {
+      return {
+        id,
+        dates: {
+          Diner: getFormatDates(item.dates[id].Diner),
+          Lunch: getFormatDates(item.dates[id].Lunch),
+        },
+      };
+    });
+    console.log(reserveDate, "reserveDate");
+    setBookDates(reserveDate);
+    {
+      meal == "Diner"
+        ? handleCheck(meal, reserveDate[0]?.dates?.Diner)
+        : handleCheck(meal, reserveDate[0]?.dates?.Lunch);
+    }
+  };
 
+  const datess = bookDates?.dates || [];
+  useEffect(() => {
+    if (!Array.isArray(datess)) {
+      console.error("datess is not a valid array");
+    } else {
+      const formattedDates = datess.map((v, i) => v.toDate());
+      console.log(formattedDates, "format");
 
-const datess =  bookDates?.dates || []
-useEffect(()=>{
-  if (!Array.isArray(datess)) {
-    console.error("datess is not a valid array");
-  } else {
-    const formattedDates = datess.map((v, i)=>(v.toDate()))
-    console.log(formattedDates, "format");
-    
-    setDates(formattedDates)
+      setDates(formattedDates);
+    }
+  }, [datess.length]);
+   
+  const handleVenueType=(e)=>{
+  console.log(e,"dsfsdffdsfsdf")
+     e== "1"? setMeal("Lunch"):setMeal("Diner")
   }
-
-}, [datess.length])
-
-console.log(dates, "datessssssss");
+  console.log("datessssssss", marqueeVenueNames);
 
   return (
     <div>
@@ -156,17 +196,6 @@ console.log(dates, "datessssssss");
                 </div>
               </div>
             ))}
-            {/* {
-              data?.dates?.map((item,index)=>{
-                <div key={index}>
-                  <p>
-                    {item}
-                  </p>
-                </div>
-                
-              
-              })
-            } */}
           </div>
           {isOpen && (
             <ImageLightbox
@@ -365,18 +394,63 @@ console.log(dates, "datessssssss");
         </div>
         <div className="lg:w-[30%] ml-5">
           <div className="-ml-6 lg:ml-0">
-            <div className="w-full  relative">
-              <select
+            <div className="w-[100%]  relative flex justify-between ">
+              <Select
+                showSearch
+                style={{
+                  width: 210,
+                  marginBottom: 20,
+                  borderRadius: 10,
+                }}
+                placeholder="Search to Select"
+                size="large"
+                placement="bottomLeft"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                onChange={handleVenueName}
+                options={marqueeVenueNames}
+              />
+              <Select
+                showSearch
+                style={{
+                  width: 210,
+                  marginBottom: 20,
+                  borderRadius: 10,
+                }}
+                placeholder="Search to Select"
+                size="large"
+                placement="bottomLeft"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                onChange={handleVenueType}
+                options={lunchDinner}
+                value={meal}
+              />
+              {/* <select
                 onClick={handleCheck}
                 className="w-[96%] outline-none p-2 rounded-md pl-2 appearance-none"
               >
                 <option>Choose Here</option>
                 <option>Lunch</option>
                 <option>Dinner</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center  text-gray-700">
+              </select> */}
+              {/* <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center  text-gray-700">
                 <FontAwesomeIcon icon={faAngleDown} className="pr-8" />
-              </div>
+              </div> */}
             </div>
             <div onClick={() => setIsShow(true)}>
               <DayPicker
@@ -386,7 +460,7 @@ console.log(dates, "datessssssss");
                 mode="range"
                 min={2}
                 max={5}
-                selected={range}
+                selected={days}
                 onSelect={setRange}
               />
             </div>
@@ -401,11 +475,10 @@ console.log(dates, "datessssssss");
             <div
               onClick={handleButton}
               className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer"
-            >  
-                    <NextLink href={`/pages/details?id=${data?.venueId}`} passHref>
-                      Book Now
-                    </NextLink>
-                 
+            >
+              <NextLink href={`/pages/details?id=${data?.venueId}`} passHref>
+                Book Now
+              </NextLink>
             </div>
           )}
           <img

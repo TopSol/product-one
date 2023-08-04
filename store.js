@@ -157,8 +157,17 @@ export const useStore = create(
       Menus: [],
       dates: {},
       lunchDinner: {},
-      // setLunchDinner: (data) => set((state) => ({ lunchDinner: data })),
       bookedDates: [],
+      marqueeVenueNames:[],
+      marqueeVenueDates:[],
+          
+      addMarqueeVenueNames: (data) => {
+        set({ marqueeVenueNames: data });
+      },
+      addMarqueeVenueDates: (data) => {
+        set({ marqueeVenueDates: data });
+      },
+
       addRegistration: (userData) => {
         console.log(userData, "Registration");
         set({ registration: userData });
@@ -167,7 +176,6 @@ export const useStore = create(
       addUser: (userData) => {
         console.log(userData, "Registration");
         set({ userInformation: userData });
-        // set({ userInformation: { userId: userData } })
       },
       addBookedDates: (dishData) => {
         set({ bookedDates: dishData });
