@@ -11,27 +11,10 @@ import MarqueeDetails from "@/app/component/MarqueeDetails";
 function Marquee() {
   const { Venues } = useStore();
   const [sliderValue, setSliderValue] = useState("");
-  const [venuesData, setVenuesData] = useState([]);
   const [userData, setUserData] = useState([]);
-  const [venueName, setVenueName] = useState([]);
-  const [name, setName] = useState([]);
-
   const handleSliderChange = (event) => {
     setSliderValue(event.target.value);
   };
-
-  useEffect(() => {
-    const getdata = async () => {
-      const querySnapshot = await getDocs(collection(db, "Venues"));
-      const dataArr = [];
-      querySnapshot.forEach((doc) => {
-        dataArr.push({ id: doc.id, data: doc.data() });
-      });
-      setVenuesData(dataArr);
-    };
-    getdata();
-  }, [Venues]);
-
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
@@ -43,16 +26,6 @@ function Marquee() {
     };
     getUser();
   }, []);
-
-  useEffect(() => {
-    const marqueeVenueName = venueName?.map((item) => ({
-      value: item?.data?.venueId,
-      label: item?.data?.name,
-    }));
-    setName(marqueeVenueName);
-    console.log(name, "asdfg");
-  }, [venueName]);
-
   return (
     <div>
       <Navbar />

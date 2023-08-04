@@ -1,15 +1,15 @@
 "use client";
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import Navbar from "@/app/component/Navbar";
 import MarqueeAvailability from "./selectHall";
 import UserInformation from "./userInformation";
 import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
-import { usePathname, useSearchParams, useRouter } from 'next/navigation'
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { useSearchParams, useRouter } from "next/navigation";
 import { db } from "@/app/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
-import {useStore} from "@/store"
+import { useStore } from "@/store";
 const steps = [
   {
     title: "First",
@@ -24,18 +24,17 @@ const steps = [
     title: "Last",
   },
 ];
-function Slider() { 
-  const {Venues} = useStore();
+function Slider() {
+  const { Venues } = useStore();
   const [slider, setSlider] = useState(0);
   const [selectedHall, setSelectedHall] = useState("");
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
-  const [hallInformation, setHallInformation] = useState([] );
-  const asdas = useRouter()
-  const params = useSearchParams()
+  const [hallInformation, setHallInformation] = useState([]);
 
-  // console.log('parameter',params.get('data'))
-  // console.log(params, "{searchParams}", asdas)
+  const params = useSearchParams();
+  const id = params.get("id");
+  console.log(id, "abcIDIDID");
 
   const sendData = async () => {
     const users = {
@@ -43,36 +42,50 @@ function Slider() {
       Menu: selectedMenu,
       UserInformation: userInformation,
     };
-    setHallInformation([users])
+    setHallInformation([users]);
     try {
       await addDoc(collection(db, "ContactUs"), users);
     } catch {
       console.log(" error");
     }
   };
-  console.log(selectedMenu ,"dddselectedMendddu",selectedHall)
-  // console.log(query ,"dddselectedMendddu12") 
-  
-  
+  console.log(selectedMenu, "dddselectedMendddu", selectedHall);
+ 
+const fetchData = async (id) => {
+  try {
+    const q = query(collection(db, "Venues"), where("id", "==", id));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(doc.id, " => ", doc.data());
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+
+
   return (
     <div>
       <Navbar />
       <div className="mt-28">
         <div className="flex justify-center mb-6">
-          {
-            steps.map((item, index)=>(
-              <div key={index} className="flex items-center">
-                <div onClick={()=>setSlider(index)} className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
+          {steps.map((item, index) => (
+            <div key={index} className="flex items-center">
+              <div
+                onClick={() => setSlider(index)}
+                className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
                   slider >= index ? "bg-blue-500" : "bg-slate-300"
-                } text-white`}>
+                } text-white`}
+              >
                 {index + 1}
-                </div>
-                {index !== steps.length - 1 && (
+              </div>
+              {index !== steps.length - 1 && (
                 <div className="w-12 md:w-28 border-b-8 border-slate-300"></div>
               )}
-              </div>
-            ))
-          }
+            </div>
+          ))}
         </div>
 
         {slider === 0 ? (
@@ -96,7 +109,7 @@ function Slider() {
             selectedMenu={selectedMenu}
           />
         ) : slider == 3 ? (
-          <Preview hallInformation={hallInformation}/>
+          <Preview hallInformation={hallInformation} />
         ) : null}
       </div>
     </div>
