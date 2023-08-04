@@ -8,6 +8,7 @@ import "react-image-lightbox/style.css";
 import NextLink from "next/link";
 import { collection, getDocs } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "react-day-picker/dist/style.css";
 import {
   faCalendarDays,
   faPerson,
@@ -26,7 +27,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Select } from "antd";
 import { getFormatDates } from "@/app/utils";
 function Marqueedetail() {
-  const { addBookedDates, marqueeVenueNames, marqueeVenueDates } = useStore();
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates,bookedDates } = useStore();
   const router = useRouter();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -41,6 +42,7 @@ function Marqueedetail() {
   const [dates, setDates] = useState([]);
   const [meal, setMeal] = useState("Lunch");
   const [days, setDays] = useState<any>([]);
+  const [marqueeDates, setMarqueeDates] = useState([]);
   const [lunchDinner, setLunchDinner] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
@@ -49,7 +51,7 @@ function Marqueedetail() {
     setSelectImage(data?.images[index]);
     setPhotoIndex(index);
   };
-console.log(data,"days",marqueeVenueNames,marqueeVenueDates)
+  console.log(data, "days", marqueeVenueNames, marqueeVenueDates);
   const closeLightbox = () => {
     setIsOpen(false);
   };
@@ -58,10 +60,10 @@ console.log(data,"days",marqueeVenueNames,marqueeVenueDates)
   console.log(id, "iddsddsss");
 
   const handleButton = () => {
-    addBookedDates(range);
+    addBookedDates(marqueeDates);
     router.push("/pages/details");
   };
-
+console.log(bookedDates, "bookedDates")
   const getDocById = async (id) => {
     try {
       const docRef = doc(db, "users", id);
@@ -151,13 +153,17 @@ console.log(data,"days",marqueeVenueNames,marqueeVenueDates)
       setDates(formattedDates);
     }
   }, [datess.length]);
-   
-  const handleVenueType=(e)=>{
-  console.log(e,"dsfsdffdsfsdf")
-     e== "1"? setMeal("Lunch"):setMeal("Diner")
-  }
-  console.log("datessssssss", marqueeVenueNames);
 
+  const handleVenueType = (e) => {
+    console.log(e, "dsfsdffdsfsdf");
+    e == "1" ? setMeal("Lunch") : setMeal("Diner");
+  };
+  const disabledStyle = {
+    backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
+    color: "#aaa", // Set your desired text color for disabled dates
+  };
+  console.log("datessssssss", marqueeVenueNames);
+  console.log(marqueeDates, "asdfasdfsdafasdfas");
   return (
     <div>
       <Navbar />
@@ -452,17 +458,34 @@ console.log(data,"days",marqueeVenueNames,marqueeVenueDates)
                 <FontAwesomeIcon icon={faAngleDown} className="pr-8" />
               </div> */}
             </div>
-            <div onClick={() => setIsShow(true)}>
+            <div>
+              <div onClick={() => setIsShow(true)}>
               <DayPicker
+                className={`${
+                  isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
+                }`}
+                // mode="range"
+                mode="multiple"
+                disabled={days}
+                min={2}
+                // max={5}
+                selected={marqueeDates}
+                onSelect={setMarqueeDates}
+              />
+              </div>
+              {/* <DayPicker
                 className={`${
                   isLunch == `Lunch` ? `combinedClasses` : `combinedClasses2`
                 }`}
                 mode="range"
-                min={2}
-                max={5}
-                selected={days}
-                onSelect={setRange}
-              />
+                //  mode="multiple"
+                 disabled={days}
+                // min={2}
+                // max={5}
+                selected={venuesData}
+                // onSelect={setRange}
+                onSelect={setVenuesData}
+              /> */}
             </div>
             <div className="flex items-center space-x-2">
               <div className="bg-[orange] p-1 w-1 rounded-full"></div>
@@ -494,4 +517,5 @@ console.log(data,"days",marqueeVenueNames,marqueeVenueDates)
     </div>
   );
 }
+
 export default Marqueedetail;

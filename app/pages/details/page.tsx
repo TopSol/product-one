@@ -50,10 +50,6 @@ function Slider() {
       console.log(" error");
     }
   };
-  console.log(selectedMenu ,"dddselectedMendddu",selectedHall)
-  // console.log(query ,"dddselectedMendddu12") 
-  
-  
   return (
     <div>
       <Navbar />
