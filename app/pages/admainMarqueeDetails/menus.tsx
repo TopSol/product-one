@@ -46,14 +46,6 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
 
 
   const handleChange = (e) => {
-    // if (plainOptions.includes(e.target.value)) {
-      //   setStatus(e.target.value);
-      //   setUser((prevState) => ({
-        //     ...prevState,
-    //     status: e.target.value,
-    //   }));
-    //   return;
-    // }
     const { name, value } = e.target;
     console.log(name, value , "value");
     setUser((prevState) => ({

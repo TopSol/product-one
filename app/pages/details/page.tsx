@@ -1,5 +1,5 @@
 "use client";
-import React, { Component, useEffect, useState } from "react";
+import React, { Component, use, useEffect, useState } from "react";
 import Navbar from "@/app/component/Navbar";
 import MarqueeAvailability from "./selectHall";
 import UserInformation from "./userInformation";
@@ -43,22 +43,31 @@ function Slider() {
   console.log(id, "abcIDIDID");
 
   const sendData = async () => {
-    const id=Math.random().toString(36).slice(2)
+    const fieldId=Math.random().toString(36).slice(2)  
     const users = {
       selectedHall: selectedHall,
       Menu: selectedMenu,
       UserInformation: userInformation,
-      id:id
+      id:fieldId,
+      marqueeId:id
     };
-    setHallInformation([users]);
+    // setHallInformation([users]);
+    console.log(users,"asdfasdfasfdadsf")
     try {
       // await addDoc(collection(db, "ContactUs"), users);
-      await setDoc(doc(db, "ContactUs", id), users);
-    } catch {
-      console.log(" error");
+      await setDoc(doc(db, "contactUs", fieldId), users);
+    } catch(error) {
+      console.log(" errosssssr",error);
     }
   };
-
+   const preview =()=>{
+    const users = {
+      selectedHall: selectedHall,
+      Menu: selectedMenu,
+      UserInformation: userInformation,
+    };
+    setHallInformation([users]);
+   }
   console.log(hallInformation,"hallInformationhallInformation")
   const fetchData = async () => {
     try {
@@ -89,14 +98,12 @@ function Slider() {
   useEffect(() => {
     let isMounted = true;
     fetchData().then(() => {
-      // Check if the component is still mounted before updating the state
       if (isMounted) {
         // Update the state
         // setMarqueeData(data);
       }
     });
 
-    // Cleanup function to cancel any pending fetches if the component unmounts
     return () => {
       isMounted = false;
     };
@@ -195,7 +202,7 @@ function Slider() {
           dish ={marqueeData.dish}
             setSlider={setSlider}
             setSelectedMenu={setSelectedMenu}
-            sendData={sendData}
+            preview={preview}
             selectedMenu={selectedMenu}
           />
         ) : slider == 3 ? (

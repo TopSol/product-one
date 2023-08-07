@@ -8,6 +8,7 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
+import { Image, Radio } from "antd";
 import {
   collection,
   getDocs,
@@ -20,19 +21,21 @@ import Loader from "../../component/Loader";
 
 import { useStore } from "../../../store";
 import { Modal } from "antd";
+const plainOptions = [{label:"Available",value:"Available"},{label: "Not Available",value:"NotAvailable"}];
 const initialFormState = {
     name: "",
     image: "",
     price: 0,
     type: "",
     description: "",
+    status: plainOptions[0].value,
   };
 function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoading }) {
     const [user, setUser] = useState(initialFormState);
     const [addVenues, setAddVenues] = useState([]);
     const { TextArea } = Input;
     const storage = getStorage();
-    const [openEditVenue, setOpenEditVenue] = useState(false);
+    const [openEditVenue, setOpenEditVenue] = useState(false); 
     const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
 
       const fetchBlogs = async () => {
@@ -64,7 +67,8 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
         !user.image ||
         !user.price ||
         !user.type ||
-        !user.description
+        !user.description ||
+        !user.status
       ) {
         return;
       }
@@ -91,6 +95,7 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
           menuId: MenuId,
           userId: userInformation.userId,
           price: user.price,
+          status: user.status,
         };
         try {
           await setDoc(doc(db, "Menus", MenuId), users);
@@ -240,6 +245,15 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
                   value={user.description}
                   onChange={handleChange}
                   className="rounded-none w-full py-2 lg:py-3"
+                />
+              </div>
+              <label className="text-xl my-1">Status</label>
+              <div className="flex flex-col  md:flex-row  md:justify-between">
+                <Radio.Group
+                  options={plainOptions}
+                  onChange={handleChange}
+                  value={status}
+                  name="status"
                 />
               </div>
             </div>

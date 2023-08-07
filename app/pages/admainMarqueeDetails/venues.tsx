@@ -47,8 +47,15 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     const { name, value } = e.target;
     setUser((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: name === "price" ? Number(value) :
+              name === "maxCapacity" ? Number(value) :
+              name === "minCapacity" ? Number(value) :
+              value,
     }));
+    // setUser((prevState) => ({
+    //   ...prevState,
+    //   [name]: value,
+    // }));
   };
   console.log(userInformation, "userInformation");
   
