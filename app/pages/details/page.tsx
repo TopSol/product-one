@@ -31,7 +31,7 @@ function Slider() {
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([]);
-
+  const [marqueeData, setMarqueeData] = useState("")
   const params = useSearchParams();
   const id = params.get("id");
   console.log(id, "abcIDIDID");
@@ -49,22 +49,99 @@ function Slider() {
       console.log(" error");
     }
   };
-  console.log(selectedMenu, "dddselectedMendddu", selectedHall);
- 
-const fetchData = async (id) => {
-  try {
-    const q = query(collection(db, "Venues"), where("id", "==", id));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data());
+  const fetchData = async () => {
+    try {
+      const venuesQuery = query(collection(db, "Venues"), where("userId", "==", id));
+      const menusQuery = query(collection(db, "Dish"), where("userId", "==", id));
+
+      const [venuesSnapshot, menusSnapshot] = await Promise.all([
+        getDocs(venuesQuery),
+        getDocs(menusQuery),
+      ]);
+
+      let venueDataArr = [];
+      venuesSnapshot.forEach((doc) => {
+        venueDataArr.push(doc.data());
+      });
+
+      let menuDataArr = [];
+      menusSnapshot.forEach((doc) => {
+        menuDataArr.push(doc.data());
+      });
+
+      setMarqueeData({ venues: venueDataArr, dish: menuDataArr });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchData().then(() => {
+      // Check if the component is still mounted before updating the state
+      if (isMounted) {
+        // Update the state
+        // setMarqueeData(data);
+      }
     });
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
 
+    // Cleanup function to cancel any pending fetches if the component unmounts
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+  console.log(marqueeData,"marqueemarqueeDatesDates")
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const q = query(collection(db, "Venues"), where("userId", "==", id));
+  //       const querySnapshot = await getDocs(q);
+  //       let dataArr = []
+  //       querySnapshot.forEach((doc) => {
+  //         dataArr.push(doc.data())
+  //         console.log(dataArr, "marqueggggeData");
+  //       });
+  //       setMarqueeData(dataArr)
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //     try {
+  //       const q = query(collection(db, "Menus"), where("userId", "==", id));
+  //       const querySnapshot = await getDocs(q);
+  //       let dataArr1 = []
+  //       querySnapshot.forEach((doc) => {
+  //         dataArr1.push(doc.data())
+  //         console.log(dataArr1, "marqueggggeDagfdfdta");
+  //       });
+  //       // setMarqueeData(dataArr)
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+    
+  //   fetchData();
+  // }, [id]);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+      // try {
+      //   const q = query(collection(db, "Menus"), where("userId", "==", id));
+      //   const querySnapshot = await getDocs(q);
+      //   let dataArr = []
+      //   querySnapshot.forEach((doc) => {
+      //     dataArr.push(doc.data())
+      //     console.log(dataArr, "marqueggggeData");
+      //   });
+      //   setMarqueeData(dataArr)
+      // } catch (error) {
+      //   console.error("Error fetching data:", error);
+      // }
+  //   };
+    
+  //   fetchData();
+  // }, [id]);
+  
+  console.log(marqueeData, "dataArrrrrrr");
 
   return (
     <div>
@@ -90,6 +167,7 @@ const fetchData = async (id) => {
 
         {slider === 0 ? (
           <MarqueeAvailability
+          venus= {marqueeData.venues}
             setSlider={setSlider}
             setSelectedHall={setSelectedHall}
             selectedHall={selectedHall}
@@ -103,6 +181,7 @@ const fetchData = async (id) => {
           />
         ) : slider === 2 ? (
           <ChooseMenu
+          dish ={marqueeData.dish}
             setSlider={setSlider}
             setSelectedMenu={setSelectedMenu}
             sendData={sendData}

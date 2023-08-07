@@ -21,7 +21,10 @@
 .combinedClasses  .rdp-caption{
     padding-top: 10px;
 }
-
+.DayPicker-Day--disabled {
+    background-color: red; /* Set your desired color for disabled dates */
+    color: #aaa; /* Set your desired text color for disabled dates */
+  }
 
 
 .combinedClasses2 .rdp-months {

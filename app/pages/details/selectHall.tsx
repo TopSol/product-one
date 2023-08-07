@@ -3,7 +3,9 @@ import data from "./data";
 import ImageLightbox from "react-image-lightbox";
 import {useStore} from "@/store"
 import { useSearchParams } from "next/navigation";
-function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
+function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall , venus}) {
+  console.log(venus,"venusvenus");
+  
   const [clickedIndex, setClickedIndex] = useState(null);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [selectImage, setSelectImage] = useState("");
@@ -28,6 +30,9 @@ function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
   const nextPage = () => {
   setSlider(1);
   };
+console.log(venus,"asdfadsfs");
+// console.log(Object.keys?.venus,"asdfadsfs");
+
   return (
     <div className="md:container mx-auto ">
       <div className="flex justify-center">
@@ -38,7 +43,7 @@ function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
             <p className="w-28 text-center text-xl ">Availability</p>
           </div>
           <div className="h-[510px] ">
-            {Venues.map((item, index) => ( 
+            {venus?.map((item, index) => ( 
               <div
                 key={index}
                 className="flex flex-col justify-center  md:flex md:flex-row md:justify-around md:items-center pb-2 border  rounded-md mb-3 md:border-none "
@@ -46,7 +51,7 @@ function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
                 <div className=" md:border md:rounded-md  ">
                   <div onClick={() => handleImageModal(index)}>
                     <img
-                      src={item.image}
+                      src={item.image[0]}
                       alt=""
                       className=" md:w-[200px] md:h-[175px] rounded-t-md  cursor-pointer object-cover "
                     />
@@ -65,7 +70,8 @@ function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
                   }`}
                   onClick={() => handleClick(item,index)}>
                  <p>
-                 {item.availability}
+                 {/* {item.availability} */}
+                 Availability
                   </p> 
                 </div>
               </div>

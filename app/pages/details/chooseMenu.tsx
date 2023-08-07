@@ -29,7 +29,9 @@ const menu = [
 ];
 const data = ["biryani", "chicken", "mutton"];
 
-function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu }) {
+function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish }) {
+  console.log(dish,"menusmenus");
+  
   const [selectedDish, setSelectedDish] = useState(false);
 
   const [selectedItems, setSelectedItems] = useState([]);
@@ -92,7 +94,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu }) {
   return (
     <div className="md:container mx-auto">
       <div className="md:border p-5 rounded-md mb-2 flex justify-center items-center flex-col md:flex-row ">
-        {menu?.map((item, index) => (
+        {dish?.map((item, index) => (
           <div
             key={index}
             className={`border p-3 rounded-md flex  w-4/5 flex-col mb-2 ml-3 cursor-pointer hover:bg-primaryColor hover:text-black ${
@@ -101,11 +103,11 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu }) {
             onClick={() => setSelectedMenu(item)}
           >
             <div>
-              <p className="text-center text-xl">{item.menu}</p>
+              <p className="text-center text-xl">{item.name}</p>
             </div>
             <div className="w-1/2">
               <ul>
-                {item?.dish?.map((dish, index) => {
+                {item?.dishes?.map((dish, index) => {
                   if (index < 3) {
                     return <li key={index}>{dish}</li>;
                     // return <li key={index}>{dish}</li>;
@@ -115,7 +117,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu }) {
               </ul>
             </div>
             <div className=" flex justify-center items-center w-full">
-              <p className="text-xl"> {item.price}</p>
+              <p className="text-xl"> ${item.price}</p>
             </div>
           </div>
         ))}
