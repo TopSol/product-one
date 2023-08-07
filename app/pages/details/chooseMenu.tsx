@@ -64,7 +64,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish })
     const lowercaseItem = item.toLowerCase();
 
     if (
-      !arr.some((existingItem) => existingItem.toLowerCase() === lowercaseItem)
+      !arr?.some((existingItem) => existingItem.toLowerCase() === lowercaseItem)
     ) {
       arr.push(item);
       setSelectedMenu({ ...selectedMenu, dish: arr });
@@ -97,8 +97,8 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish })
         {dish?.map((item, index) => (
           <div
             key={index}
-            className={`border p-3 rounded-md flex  w-4/5 flex-col mb-2 ml-3 cursor-pointer hover:bg-primaryColor hover:text-black h-[50%] ${
-              selectedMenu?.menu === item.menu ? "bg-primaryColor" : ""
+            className={`border p-3 rounded-md flex  w-4/5  flex-col mb-2 ml-3 cursor-pointer hover:bg-primaryColor hover:text-black h-48 ${
+              selectedMenu?.menu === item.menu ? "bg-white" : ""
             }`}
             onClick={() => setSelectedMenu(item)}
           >
@@ -116,8 +116,8 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish })
                 })}
               </ul>
             </div>
-            <div className=" flex justify-center items-center w-full">
-              <p className="text-xl"> ${item.price}</p>
+            <div className=" flex justify-center items-end my-auto w-full">
+              <p className="text-xl flex flex-col justify-end my-auto"> ${item.price}</p>
             </div>
           </div>
         ))}

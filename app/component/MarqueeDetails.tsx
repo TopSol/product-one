@@ -95,8 +95,8 @@ console.log(venuesData,"sdfsdfsdfd")
       return {
         id,
         dates: {
-          Diner: getFormatDates(item.dates[id].Diner),
-          Lunch: getFormatDates(item.dates[id].Lunch),
+          Diner: getFormatDates(item?.dates[id]?.Diner),
+          Lunch: getFormatDates(item?.dates[id]?.Lunch),
         },
       };
     });

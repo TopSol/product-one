@@ -13,6 +13,7 @@ import Modal from "@/app/component/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { divIcon } from "leaflet";
+import Loader from "@/app/component/Loader";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useStore } from "../../../store";
 import "./style.css";
@@ -23,10 +24,7 @@ import {
   getDownloadURL,
   listAll,
 } from "firebase/storage";
-import {
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import icon from "./consonant";
 import L from "leaflet";
 import { Input, Form, Button } from "antd";
@@ -49,6 +47,59 @@ const onFinish = (values) => {
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
+
+function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
+  const map = useMap();
+  const markerRef = useRef(null);
+
+  useEffect(() => {
+    const provider = new OpenStreetMapProvider();
+    const searchControl = GeoSearchControl({
+      notFoundMessage: "Sorry, that address could not be found.",
+      provider,
+      showMarker: false,
+      style: "bar",
+      marker: {
+        icon,
+        draggable: true,
+      },
+    });
+
+    map.addControl(searchControl);
+
+    const handleLocationChange = (result) => {
+      const { y: lat, x: lng } = result.location;
+      console.log("Updated Marker Position12:", { lat, lng });
+      if (markerRef.current) {
+        markerRef.current.setLatLng([lat, lng]);
+      } else {
+        markerRef.current = L.marker([lat, lng], {
+          icon: customMarkerIcon,
+          draggable: true,
+        }).addTo(map);
+
+        markerRef.current.on("dragend", function (event) {
+          const { lat, lng } = event.target.getLatLng();
+          console.log("Updated Marker Position:", { lat, lng });
+          setLocation({ lat, lng });
+        });
+      }
+    };
+
+    map.on("geosearch/showlocation", handleLocationChange);
+
+    return () => {
+      map.removeControl(searchControl);
+      if (markerRef.current) {
+        markerRef.current.off("dragend");
+        map.removeLayer(markerRef.current);
+      }
+    };
+  }, [map]);
+
+  return <div></div>;
+}
+
 function details() {
   const [details, setDetails] = useState(initialValue);
   const { userInformation, addUser, addRegistration, registration } =
@@ -57,12 +108,13 @@ function details() {
   const [map, setMap] = useState(null);
   const storage = getStorage();
   const [modalOpen2, setModalOpen2] = useState(false);
-  const [location, setLocation] = useState({ lat: 55.702868, lng: 37.530865 });
+  const [location, setLocation] = useState({});
   const [value, setValue] = useState();
   const [markerPos, setMarkerPos] = useState({
     lat: 55.702868,
     lng: 37.530865,
   });
+  const [loading, setLoading] =useState(false)
   console.log(registration, "registration");
   const { TextArea } = Input;
 
@@ -106,8 +158,9 @@ function details() {
   console.log(userInformation, "userInformation");
   const router = useRouter();
   const handleRegistration = async () => {
-    // e.preventDefault();
-    console.log(details,"details");
+    setLoading((pre)=>(!pre))
+
+    console.log(details, "details");
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -136,8 +189,7 @@ function details() {
         address: details.address,
         phoneNumber: value,
         capacity: details.capacity,
-        lattitude: markerPos.lat,
-        longitude: markerPos.lng,
+        locations : location,
         images: imageUrls,
         description: details.marqueeDetails,
         id: VenueId,
@@ -149,6 +201,8 @@ function details() {
         addRegistration(userInfo);
         addUser(user.uid);
         router.push("/pages/auth");
+        setLoading((pre)=>(!pre))
+
       }
       console.log("user", user);
     } catch (error) {
@@ -164,59 +218,9 @@ function details() {
     iconSize: [40, 40],
   });
 
-  function LeafletgeoSearch() {
-    const map = useMap();
-    useEffect(() => {
-      const provider = new OpenStreetMapProvider();
-      const searchControl = GeoSearchControl({
-        notFoundMessage: "Sorry, that address could not be found.",
-        provider,
-        showMarker: false,
-        style: "bar",
-        marker: {
-          icon,
-          draggable: true,
-        },
-      });
-
-      let marker;
-      map.on("geosearch/showlocation", function (result) {
-        const { y: lat, x: lng } = result.location;
-        if (marker) {
-          // console.log(marker, "marker");
-
-          marker.setLatLng([lat, lng]);
-          marker;
-          // console.log("Updated Marker Position:", lat, lng);
-        } else {
-          marker = L.marker([lat, lng], {
-            icon: customMarkerIcon,
-            draggable: true,
-          }).addTo(map);
-          marker.on("dragend", function (event) {
-            const { lat, lng } = event.target.getLatLng();
-            // console.log("Updated Marker Position:", lat, lng);
-          });
-        }
-      });
-
-      map.addControl(searchControl);
-      return () => {
-        map.removeControl(searchControl);
-        if (marker) {
-          marker.off("dragend");
-          map.removeLayer(marker);
-        }
-      };
-    }, []);
-
-    return null;
-  }
-
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
-      // console.log(windowWidth, "windowWidth");
       if (windowWidth >= 768) {
         setModalOpen2(true);
       } else {
@@ -230,7 +234,6 @@ function details() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  // console.log(location, "location");
 
   return (
     <div>
@@ -466,7 +469,11 @@ function details() {
                     className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
                     onClick={handleRegistration}
                   >
-                    Register Now
+                   {
+                    loading ? 
+                    <Loader/> : 
+                    "Register Now"
+                   } 
                   </button>
                 </div>
               </div>
@@ -495,7 +502,10 @@ function details() {
             icon={customMarkerIcon}
           >
             <div>
-              <LeafletgeoSearch />
+              <LeafletGeoSearch
+                customMarkerIcon={customMarkerIcon}
+                setLocation={setLocation}
+              />
             </div>
             <Popup>
               A pretty CSS3 popup. <br /> Easily customizable.
@@ -508,12 +518,3 @@ function details() {
 }
 
 export default details;
-
-{
-  //  <button
-  //             className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
-  //             onClick={(e) => handleRegistration(e)}
-  //           >
-  //             Register Now
-  //           </button>
-}

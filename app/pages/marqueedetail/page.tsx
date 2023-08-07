@@ -26,6 +26,7 @@ import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Select } from "antd";
 import { getFormatDates } from "@/app/utils";
+import Loader from "@/app/component/Loader";
 function Marqueedetail() {
   const { addBookedDates, marqueeVenueNames, marqueeVenueDates,bookedDates } = useStore();
   const router = useRouter();
@@ -43,6 +44,7 @@ function Marqueedetail() {
   const [meal, setMeal] = useState("Lunch");
   const [days, setDays] = useState<any>([]);
   const [marqueeDates, setMarqueeDates] = useState([]);
+  const [loading, setLoading] = useState(false)
   const [lunchDinner, setLunchDinner] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
@@ -62,6 +64,8 @@ function Marqueedetail() {
 
   const handleButton = () => {
     addBookedDates(marqueeDates);
+    setLoading(true)
+    // setLoading((pre) => (!pre))
   };
 console.log(bookedDates, "bookedDates")
   const getDocById = async (id) => {
@@ -70,6 +74,8 @@ console.log(bookedDates, "bookedDates")
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setData(docSnap.data());
+        // setLoading((pre) => (!pre))
+
       } else {
         console.log("No such document!");
       }
@@ -130,11 +136,14 @@ console.log(bookedDates, "bookedDates")
       return {
         id,
         dates: {
-          Diner: getFormatDates(item.dates[id].Diner),
-          Lunch: getFormatDates(item.dates[id].Lunch),
+          
+          Diner: getFormatDates(item?.dates[id]?.Diner),
+          Lunch: getFormatDates(item?.dates[id]?.Lunch),
         },
       };
+      
     });
+    console.log(marqueeVenueDates, "fasdhjkafhakjsdhfkjasf");
     console.log(reserveDate, "reserveDate");
     setBookDates(reserveDate);
     {
@@ -273,7 +282,7 @@ console.log(bookedDates, "bookedDates")
             </div>
           </div>
 
-          <p className=" font-roboto text-textColor text-justify ">
+          <p className=" font-roboto text-textColor text-justify mx-3">
             Aliquam erat volutpat. Morbi semper tempus quam. Aenean quis porta
             velit. Aliquam dictum neque lobortis ipsum hendrerit facilisis.
             Curabitur vel sapien convallis, convallis metus id, facilisis metus.
@@ -295,7 +304,7 @@ console.log(bookedDates, "bookedDates")
             in faucibus. Ut viverra arcu a metus interdum, at laoreet elit
             accumsan.
           </p>
-          <p className="font-roboto mt-8 text-textColor text-justify ">
+          <p className="font-roboto mt-8 text-textColor text-justify mx-3">
             Nulla elementum enim quis nisi elementum, a placerat eros accumsan.
             Mauris aliquet tincidunt erat, at dignissim neque bibendum vel.
             Donec scelerisque odio at malesuada venenatis. Etiam vel lectus eu
@@ -401,8 +410,8 @@ console.log(bookedDates, "bookedDates")
             </div>
           </div>
         </div>
-        <div className="lg:w-[30%] ml-5">
-          <div className="-ml-6 lg:ml-0">
+        <div className="lg:w-[30%] mx-3 lg:mx-7 ">
+          <div className="">
             <div className="w-[100%]  relative flex justify-between ">
               <Select
                 showSearch
@@ -466,31 +475,21 @@ console.log(bookedDates, "bookedDates")
               <DayPicker
                 className={`${
                   isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
-                }`}
-                // mode="range"
+                } `}
                 mode="multiple"
                 disabled={days}
                 min={2}
-                // max={5}
                 selected={marqueeDates}
                 onSelect={setMarqueeDates}
               />
               </div>
-              {/* <DayPicker
-                className={`${
-                  isLunch == `Lunch` ? `combinedClasses` : `combinedClasses2`
-                }`}
-                mode="range"
-                //  mode="multiple"
-                 disabled={days}
-                // min={2}
-                // max={5}
-                selected={venuesData}
-                // onSelect={setRange}
-                onSelect={setVenuesData}
-              /> */}
             </div>
-            <div className="flex items-center space-x-2">
+            {/* <div>
+              <DayPicker 
+              className=""
+              />
+            </div> */}
+            <div className="flex items-center space-x-2 mb-3">
               <div className="bg-[orange] p-1 w-1 rounded-full"></div>
               <p>Lunch</p>
               <div className="bg-blue-600 p-1 w-1 rounded-full"></div>
@@ -499,14 +498,18 @@ console.log(bookedDates, "bookedDates")
           </div>
           {isShow && (
             <div
-              onClick={handleButton}
-              className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer"
+             
+              className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer mx-auto"
             >
               <NextLink href={`/pages/details?id=${data?.userId}`} passHref>
-               <div>
-               {console.log(data?.userId, "userIduserId")}
+               <div  onClick={handleButton}>
+                {
+                  loading? 
+                  <Loader/> :
+                  " Book Now"
+                }
                 </div>
-                Book Now
+               
               </NextLink>
             </div>
           )}
