@@ -9,9 +9,10 @@ function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall , venus}) 
   const [clickedIndex, setClickedIndex] = useState(null);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [selectImage, setSelectImage] = useState("");
-  // const[selectedHall,setSelectedHall]=useState('')
   const [isOpen, setIsOpen] = useState(false);
   const handleClick = (item,index) => {
+    console.log(item, "abcdef");
+    
     setClickedIndex(index);
     setSelectedHall(item)
   };
@@ -69,6 +70,7 @@ console.log(venus,"asdfadsfs");
                     clickedIndex === index ? "bg-red-500" : "bg-primaryColor"
                   }`}
                   onClick={() => handleClick(item,index)}>
+                 
                  <p>
                  {/* {item.availability} */}
                  Availability

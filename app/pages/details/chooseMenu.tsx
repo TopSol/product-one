@@ -30,23 +30,23 @@ const menu = [
 const data = ["biryani", "chicken", "mutton"];
 
 function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish }) {
-  console.log(dish,"menusmenus");
+  console.log(dish,"menusmenus",selectedMenu);
   
   const [selectedDish, setSelectedDish] = useState(false);
 
   const [selectedItems, setSelectedItems] = useState([]);
   const nextPage = () => {
-    sendData();
+    // sendData();
     setSlider(3);
   };
 
   const removeDish = (item) => {
     setSelectedMenu({
       ...selectedMenu,
-      dish: selectedMenu.dish.filter((dish) => dish !== item),
+      dishes: selectedMenu.dishes.filter((dish) => dish !== item),
     });
   };
-  const arr = selectedMenu.dish;
+  const arr = selectedMenu.dishes;
   const AddDish = (item) => {
     const lowercaseItem = item.toLowerCase();
     const isDuplicate = arr.some(
@@ -55,7 +55,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish })
 
     if (!isDuplicate) {
       arr.push(item);
-      setSelectedMenu({ ...selectedMenu, dish: arr });
+      setSelectedMenu({ ...selectedMenu, dishes: arr });
     } else {
       alert("This dish is already added to the menu.");
     }
@@ -97,7 +97,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish })
         {dish?.map((item, index) => (
           <div
             key={index}
-            className={`border p-3 rounded-md flex  w-4/5 flex-col mb-2 ml-3 cursor-pointer hover:bg-primaryColor hover:text-black ${
+            className={`border p-3 rounded-md flex  w-4/5 flex-col mb-2 ml-3 cursor-pointer hover:bg-primaryColor hover:text-black h-[50%] ${
               selectedMenu?.menu === item.menu ? "bg-primaryColor" : ""
             }`}
             onClick={() => setSelectedMenu(item)}
@@ -169,9 +169,9 @@ function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish })
           )}
         </div>
       </div>
-      {selectedMenu?.dish?.length > 0 && (
+      {selectedMenu?.dishes?.length > 0 && (
         <div className="flex  items-center flex-wrap border mb-3">
-          {selectedMenu?.dish?.map((dish, index) => (
+          {selectedMenu?.dishes?.map((dish, index) => (
             <div
               key={index}
               className="flex items-center border ml-2 justify-between w-24 p-2 rounded-md my-2"

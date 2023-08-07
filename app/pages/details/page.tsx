@@ -7,7 +7,13 @@ import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
 import { useSearchParams, useRouter } from "next/navigation";
 import { db } from "@/app/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc,setDoc } from "firebase/firestore";
+import {
+  getDoc,
+ 
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 
 import { useStore } from "@/store";
 const steps = [
@@ -27,7 +33,7 @@ const steps = [
 function Slider() {
   const { Venues } = useStore();
   const [slider, setSlider] = useState(0);
-  const [selectedHall, setSelectedHall] = useState("");
+  const [selectedHall, setSelectedHall] = useState({});
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([]);
@@ -37,18 +43,23 @@ function Slider() {
   console.log(id, "abcIDIDID");
 
   const sendData = async () => {
+    const id=Math.random().toString(36).slice(2)
     const users = {
       selectedHall: selectedHall,
       Menu: selectedMenu,
       UserInformation: userInformation,
+      id:id
     };
     setHallInformation([users]);
     try {
-      await addDoc(collection(db, "ContactUs"), users);
+      // await addDoc(collection(db, "ContactUs"), users);
+      await setDoc(doc(db, "ContactUs", id), users);
     } catch {
       console.log(" error");
     }
   };
+
+  console.log(hallInformation,"hallInformationhallInformation")
   const fetchData = async () => {
     try {
       const venuesQuery = query(collection(db, "Venues"), where("userId", "==", id));
@@ -188,7 +199,8 @@ function Slider() {
             selectedMenu={selectedMenu}
           />
         ) : slider == 3 ? (
-          <Preview hallInformation={hallInformation} />
+          <Preview hallInformation={hallInformation} 
+          sendData={sendData}/>
         ) : null}
       </div>
     </div>

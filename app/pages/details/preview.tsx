@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/app/firebase";
-function Preview({ hallInformation }) {
+function Preview({ hallInformation,sendData }) {
   console.log(JSON.stringify(hallInformation), "ddr");
+  console.log(hallInformation, "ssssss");
   const [blogs, setBlogs] = useState([]);
   const fetchBlogs = async () => {
     try {
@@ -19,7 +20,7 @@ function Preview({ hallInformation }) {
   console.log(JSON.stringify(blogs), "blogsddddds222ddd444");
   // console.log(blogs[0].selectHall?.capacity , "wwwblogsssqqqsddddds222ddd");
   const nextPage = () => {
-    // sendData();
+    sendData();
   };
   let a = parseInt(hallInformation[0]?.UserInformation?.Heating);
   let b = parseInt(hallInformation[0]?.Menu?.Heating);
@@ -64,11 +65,11 @@ function Preview({ hallInformation }) {
             <div className=" flex justify-between mb-3 ">
               {/* <div className=" flex justify-between border-b-2 border-red-100"> */}
               <p className="font-bold">Hall Name</p>
-              <p> {`${hallInformation[0]?.selectedHall?.select}`}</p>
+              <p> {`${hallInformation[0]?.selectedHall?.name}`}</p>
             </div>
             <div className=" flex justify-between  mb-3">
               <p className="font-bold">Capacity</p>
-              <p> {`${hallInformation[0]?.selectedHall?.capacity}`}</p>
+              <p> {`${hallInformation[0]?.selectedHall?.maxCapacity}`}</p>
             </div>
             <div className=" flex justify-between  mb-3">
               <p className="font-bold">Price</p>
@@ -87,7 +88,7 @@ function Preview({ hallInformation }) {
             <div className=" flex justify-between  mb-3">
               <p className="font-bold">Dish</p>
               <div className="flex flex-col">
-                {hallInformation[0]?.Menu?.dish?.map((item, index) => (
+                {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </div>
