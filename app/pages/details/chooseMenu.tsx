@@ -29,14 +29,14 @@ const menu = [
 ];
 const data = ["biryani", "chicken", "mutton"];
 
-function ChooseMenu({ setSlider, setSelectedMenu, sendData, selectedMenu,dish }) {
+function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish }) {
   console.log(dish,"menusmenus",selectedMenu);
   
   const [selectedDish, setSelectedDish] = useState(false);
 
   const [selectedItems, setSelectedItems] = useState([]);
   const nextPage = () => {
-    // sendData();
+    preview();
     setSlider(3);
   };
 

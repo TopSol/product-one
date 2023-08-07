@@ -1,87 +1,113 @@
 import { WhatsAppOutlined } from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Image } from "antd";
-import React from "react";
-
-const data = [
-  {
-    Menu: {
-      dishes: ["Chicken", "Mutton", "Fish", "Egg"],
-      name: "Menu 1",
-      price: 1000,
-    },
-    userInformation: {
-      firstName: "Rahul",
-      lastName: "Kumar",
-      email: "asdfasfdaf@gamil.com",
-      phone: 1234567890,
-      address: "Faisalabad Kenal Road",
-      notes:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
-    },
-    date: {
-      date: [
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-      ],
-    },
-    selectHall: {
-      image:
-        "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6198654-scaled.jpg",
-      hall: "Hall 1",
-      capacity: 100,
-      price: 1000,
-      select: "Brat/wedding",
-    },
-  },
-  {
-    Menu: {
-      dishes: ["Chicken", "Mutton", "Fish", "Egg"],
-      name: "Menu 1",
-      price: 1000,
-    },
-    userInformation: {
-      firstName: "Rahul",
-      lastName: "Kumar",
-      email: "asdfasfdaf@gamil.com",
-      phone: 1234567890,
-      address: "Faisalabad Kenal Road",
-      notes:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
-    },
-    date: {
-      date: [
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-        "2021-09-01",
-      ],
-    },
-    selectHall: {
-      image:
-        "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg",
-      hall: "Hall 1",
-      capacity: 100,
-      price: 1000,
-      select: "Brat/wedding",
-    },
-  },
-];
+import React, { useEffect, useState } from "react";
+import { db } from "@/app/firebase";
+import { collection, query, where, getDocs, addDoc,setDoc } from "firebase/firestore";
+import { useStore } from "../../../store";
+// const data = [
+//   {
+//     Menu: {
+//       dishes: ["Chicken", "Mutton", "Fish", "Egg"],
+//       name: "Menu 1",
+//       price: 1000,
+//     },
+//     userInformation: {
+//       firstName: "Rahul",
+//       lastName: "Kumar",
+//       email: "asdfasfdaf@gamil.com",
+//       phone: 1234567890,
+//       address: "Faisalabad Kenal Road",
+//       notes:
+//         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
+//     },
+//     date: {
+//       date: [
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//       ],
+//     },
+//     selectHall: {
+//       image:
+//         "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6198654-scaled.jpg",
+//       hall: "Hall 1",
+//       capacity: 100,
+//       price: 1000,
+//       select: "Brat/wedding",
+//     },
+//   },
+//   {
+//     Menu: {
+//       dishes: ["Chicken", "Mutton", "Fish", "Egg"],
+//       name: "Menu 1",
+//       price: 1000,
+//     },
+//     userInformation: {
+//       firstName: "Rahul",
+//       lastName: "Kumar",
+//       email: "asdfasfdaf@gamil.com",
+//       phone: 1234567890,
+//       address: "Faisalabad Kenal Road",
+//       notes:
+//         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
+//     },
+//     date: {
+//       date: [
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//         "2021-09-01",
+//       ],
+//     },
+//     selectHall: {
+//       image:
+//         "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg",
+//       hall: "Hall 1",
+//       capacity: 100,
+//       price: 1000,
+//       select: "Brat/wedding",
+//     },
+//   },
+// ];
 function BookedDate() {
+  const { userInformation} = useStore();
+const [customerInformation,setCustomerInformation]=useState([])
+console.log(userInformation.userId,"sdfdsfdsffdsfdsfdsfsdfdsf")
+useEffect(()=>{
+  const fetchData = async () => {
+    try {
+      const venuesQuery = query(collection(db, "contactUs"), where("marqueeId", "==", userInformation.userId));
+      const [venuesSnapshot] = await Promise.all([
+        getDocs(venuesQuery),
+      ]);
+
+      let venueDataArr = [];
+      venuesSnapshot.forEach((doc) => {
+        venueDataArr.push(doc.data());
+      });
+       console.log(venueDataArr,"vensdfsdfsdfsdf")
+      setCustomerInformation(venueDataArr);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  fetchData()
+},[])
+console.log(customerInformation,"customerInformation")
   return (
     <div className="md:container mx-auto">
       <div className="flex flex-col md:flex-row">
-        {data.map((item, index) => {
+        {customerInformation?.map((item, index) => {
           return (
             <div
               key={index}
@@ -91,7 +117,7 @@ function BookedDate() {
                 <div className="flex flex-col">
                   <img
                     className=" h-60 w-full object-cover"
-                    src={item.selectHall.image}
+                    src={item?.selectedHall.image[0]}
                     alt=""
                   />
                   <div className="w-full ">
@@ -99,52 +125,52 @@ function BookedDate() {
                       <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Name</p>
                         <p className="w-[40%]">
-                          {item.userInformation.firstName +
+                          {item?.UserInformation.firstName +
                             " " +
-                            item.userInformation.lastName}
+                            item?.UserInformation.lastName}
                         </p>
                       </div>
                       <div className="flex justify-between border-b  py-2 shadow">
                         <p className=" text-lg pl-1">Phone Number</p>
-                        <p className="w-[40%] ">{item.userInformation.phone}</p>
+                        <p className="w-[40%] ">{item.UserInformation.PhoneNumber}</p>
                       </div>
                       <div className="flex justify-between border-b  py-2 shadow">
                         <p className="text-lg pl-1">Email</p>
                         <p className="w-[40%] break-words">
-                          {item.userInformation.email}
+                          {item?.UserInformation.email}
                         </p>
                       </div>
                       <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Address</p>
                         <p className="w-[40%]">
-                          {item.userInformation.address}
+                          {item.UserInformation.address}
                         </p>
                       </div>
 
                       <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Hall Name</p>
-                        <p className="w-[40%]">{item.selectHall.hall}</p>
+                        <p className="w-[40%]">{item?.selectedHall.name}</p>
                       </div>
-                      <div className="flex justify-between border-b py-2 shadow">
+                      {/* <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Hall Type</p>
                         <p className="w-[40%]">{item.selectHall.select}</p>
-                      </div>
+                      </div> */}
                       <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Capacity</p>
-                        <p className="w-[40%]">{item.selectHall.capacity}</p>
+                        <p className="w-[40%]">{item.selectedHall.maxCapacity}</p>
                       </div>
                       <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Price</p>
-                        <p className="w-[40%]"> {item.selectHall.price}</p>
+                        <p className="w-[40%]"> {item.Menu?.discountedPrice + item?.selectedHall?.price}</p>
                       </div>
                       <div className="flex justify-between border-b py-2 shadow">
                         <div className="pl-3">
-                          <a
+                          {/* <a
                             href={`https://wa.me/${item.userInformation.phone}`}
                             target="_blank"
                           >
                             <WhatsAppOutlined className="text-green-500 text-3xl" />
-                          </a>
+                          </a> */}
                         </div>
                         <div>
                           <button className="px-3 py-3 bg-green-500 rounded-md mr-2">

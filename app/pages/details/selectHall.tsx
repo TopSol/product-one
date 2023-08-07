@@ -3,6 +3,7 @@ import data from "./data";
 import ImageLightbox from "react-image-lightbox";
 import {useStore} from "@/store"
 import { useSearchParams } from "next/navigation";
+import { Image } from "antd";
 function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall , venus}) {
   console.log(venus,"venusvenus");
   
@@ -20,15 +21,15 @@ function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall , venus}) 
   const searchParams = useSearchParams()
   const id = searchParams.get("id");
   console.log(id, "iddiidididi", Venues);
-  const handleImageModal = (index) => {
-    setSelectImage(data[index].image);
-    setPhotoIndex(index);
-    setIsOpen(true);
-  };
+  // const handleImageModal = (index) => {
+  //   setSelectImage(data[index].image);
+  //   setPhotoIndex(index);
+  //   setIsOpen(true);
+  // };
   const closeLightbox = () => {
     setIsOpen(false);
   };
-  const nextPage = () => {
+  const nextPage = () => { 
   setSlider(1);
   };
 console.log(venus,"asdfadsfs");
@@ -44,45 +45,68 @@ console.log(venus,"asdfadsfs");
             <p className="w-28 text-center text-xl ">Availability</p>
           </div>
           <div className="h-[510px] ">
-            {venus?.map((item, index) => ( 
+            {venus?.map((item, index) => {
+              console.log(item,"asdfadsfdsdafafdasfds")
+              return( 
               <div
-                key={index}
-                className="flex flex-col justify-center  md:flex md:flex-row md:justify-around md:items-center pb-2 border  rounded-md mb-3 md:border-none "
-               >
-                <div className=" md:border md:rounded-md  ">
-                  <div onClick={() => handleImageModal(index)}>
-                    <img
-                      src={item.image[0]}
-                      alt=""
-                      className=" md:w-[200px] md:h-[175px] rounded-t-md  cursor-pointer object-cover "
-                    />
-                  </div>
-                  <div className="px-2 items-center text-center py-3">
-                    <p> {item.select}</p>
-                    <p> $ {item.price}</p>
-                  </div>
+              key={index}
+              className="flex flex-col justify-center  md:flex md:flex-row md:justify-around md:items-center pb-2 border  rounded-md mb-3 md:border-none "
+             >
+              <div className=" md:border md:rounded-md  ">
+                <div>
+                {/* <div onClick={() => handleImageModal(index)}> */}
+                {/* <Image.PreviewGroup>
+                  {item.image?.map((dish, index) => {
+                    return (
+                      <Image
+                        key={index}
+                        width={80}
+                        height={35}
+                        // visible={false}
+                        style={{ objectFit: "cover", paddingRight: 10 }}
+                        src={dish}
+                        onClick={() => {
+                          Image.previewGroup?.show({
+                            current: index,
+                          });
+                        }}
+                      />
+                    );
+                  })}
+                </Image.PreviewGroup> */}
+                  <Image
+                    src={item.image}
+                    alt=""
+                    width={250}
+                    className=" md:w-[200px] md:h-[175px] rounded-t-md  cursor-pointer object-cover "
+                  />
                 </div>
-                <div className=" flex flex-col justify-center mx-auto md:-mt-5 md:flex md:flex-col md:justify-center ">
-                  <p className="">Siting Capacity</p>
-                  <p className="text-center border p-3 w-28 bg-slate-300 rounded-md">{item.minCapacity}->{item.maxCapacity}</p>
-                </div>
-                <div className={` border p-3 rounded-md w-28 text-center mt-3  md:mt-0 flex justify-center mx-auto md:block  ${
-                    clickedIndex === index ? "bg-red-500" : "bg-primaryColor"
-                  }`}
-                  onClick={() => handleClick(item,index)}>
-                 
-                 <p>
-                 {/* {item.availability} */}
-                 Availability
-                  </p> 
+                <div className="px-2 items-center text-center py-3">
+                  <p> {item.select}</p>
+                  <p> $ {item.price}</p>
                 </div>
               </div>
-            ))}
+              <div className=" flex flex-col justify-center mx-auto md:-mt-5 md:flex md:flex-col md:justify-center ">
+                <p className="">Siting Capacity</p>
+                <p className="text-center border p-3 w-28 bg-slate-300 rounded-md">{item.minCapacity}->{item.maxCapacity}</p>
+              </div>
+              <div className={` border p-3 rounded-md w-28 text-center mt-3  md:mt-0 flex justify-center mx-auto md:block  ${
+                  clickedIndex === index ? "bg-red-500" : "bg-primaryColor"
+                }`}
+                onClick={() => handleClick(item,index)}>
+               
+               <p>
+               {/* {item.availability} */}
+               Availability
+                </p> 
+              </div>
+            </div>
+            )})}
           </div>
         </div>
       </div>
 
-      {isOpen && (
+      {/* {isOpen && (
         <ImageLightbox
           mainSrc={selectImage}
           nextSrc={data[(photoIndex + 1) % data.length].image}
@@ -95,7 +119,7 @@ console.log(venus,"asdfadsfs");
             setPhotoIndex((photoIndex + 1) % data.length)
           }
         />
-      )}
+      )} */}
       <div className="flex justify-end ">
         <button
           className="border px-7 py-2 bg-bgColor rounded-md"
