@@ -35,7 +35,7 @@ function Marqueedetail() {
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isLunch, setIsLunch] = useState<any>();
-  const [range, setRange] = useState<any>([]);
+  const [range, setRange] = useState<any>([]); 
   const [selectedOption, setSelectedOption] = useState("");
   const [data, setData] = useState();
   const [isShow, setIsShow] = useState(false);
@@ -49,6 +49,7 @@ function Marqueedetail() {
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
   ]);
+  console.log(bookedDates, "bookedDates")
   const handleClick = (index: any) => {
     setSelectImage(data?.images[index]);
     setPhotoIndex(index);

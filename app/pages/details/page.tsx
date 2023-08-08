@@ -31,7 +31,7 @@ const steps = [
   },
 ];
 function Slider() {
-  const { Venues } = useStore();
+  const { bookedDates } = useStore();
   const [slider, setSlider] = useState(0);
   const [selectedHall, setSelectedHall] = useState({});
   const [selectedMenu, setSelectedMenu] = useState("");
@@ -48,9 +48,10 @@ function Slider() {
       selectedHall: selectedHall,
       Menu: selectedMenu,
       UserInformation: userInformation,
+      dates:bookedDates,
       id:fieldId,
       marqueeId:id
-    };
+    }; 
     // setHallInformation([users]);
     console.log(users,"asdfasdfasfdadsf")
     try {
