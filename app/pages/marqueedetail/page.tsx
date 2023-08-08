@@ -109,15 +109,6 @@ console.log(bookedDates, "bookedDates")
     }
   }, [id]);
   const handleCheck = (event, item) => {
-    // const selectedValue = event.target.value;
-    // setSelectedOption(selectedValue);
-    // if (selectedValue == "Lunch") {
-    //   setRange(dates);
-    //   setIsLunch("Lunch");
-    // } else if (selectedValue == "Dinner") {
-    //   setRange(BookedDinner);
-    //   setIsLunch("Dinner");
-    // }
     console.log(event, "event", item);
     const selectedValue = event?.target?.value || event;
     console.log(selectedValue, "selectedValue");
@@ -458,17 +449,6 @@ console.log(bookedDates, "bookedDates")
                 options={lunchDinner}
                 value={meal}
               />
-              {/* <select
-                onClick={handleCheck}
-                className="w-[96%] outline-none p-2 rounded-md pl-2 appearance-none"
-              >
-                <option>Choose Here</option>
-                <option>Lunch</option>
-                <option>Dinner</option>
-              </select> */}
-              {/* <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center  text-gray-700">
-                <FontAwesomeIcon icon={faAngleDown} className="pr-8" />
-              </div> */}
             </div>
             <div>
               <div onClick={() => setIsShow(true)}>

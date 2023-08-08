@@ -170,7 +170,7 @@ console.log(venuesData,"sdfsdfsdfd")
               getDatess(item?.id);
             }}
           >
-            <p className=" text-sm  text-textColor  flex justify-center items-center py-1 font-roboto border-t-[1px]">
+            <p className=" text-sm  text-textColor  flex justify-center items-center pt-[17px] font-roboto border-t-[1px]">
               Avalibility & Details
               <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
             </p>

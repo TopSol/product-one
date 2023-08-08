@@ -201,8 +201,8 @@ function details() {
         addRegistration(userInfo);
         addUser(user.uid);
         router.push("/pages/auth");
-        setLoading((pre)=>(!pre))
-
+        // setLoading((pre)=>(!pre))
+        setLoading(true)
       }
       console.log("user", user);
     } catch (error) {

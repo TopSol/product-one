@@ -93,11 +93,12 @@ function Login() {
           className="w-full mx-auto"
         >
           <div className="flex justify-center items-center mx-auto mt-2 mb-14">
-            <img
-              src="https://media.licdn.com/dms/image/D4D3DAQGLvK2QlE3Tlw/image-scale_191_1128/0/1679133066724?e=1689843600&v=beta&t=xhdlD8DfKXTKHe1tTXhhge8IW0k2I0lx8Bc9QMMATLQ"
+            {/* <img
+              src=""
+              // src="https://media.licdn.com/dms/image/D4D3DAQGLvK2QlE3Tlw/image-scale_191_1128/0/1679133066724?e=1689843600&v=beta&t=xhdlD8DfKXTKHe1tTXhhge8IW0k2I0lx8Bc9QMMATLQ"
               alt=""
               className="w-[70%]"
-            />
+            /> */}
           </div>
           <div className="flex flex-col justify-center items-center mx-auto">
             <h1 className=" flex justify-start items-start mb-5 text-2xl font-extrabold font-vollkorn  md:-ml-[205px] ">
