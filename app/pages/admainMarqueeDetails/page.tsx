@@ -102,7 +102,7 @@ function AdminMarqueeDetails() {
         </div>
       ) : (
         <div className=" h-[100vh]">
-          <AdminNavbar />
+          <AdminNavbar setModalOpen2={setModalOpen2}/>
           <div className="mt-14">
             <div className="sidebar flex">
               <div className="hidden  p-2  absolute">
@@ -112,7 +112,7 @@ function AdminMarqueeDetails() {
                 />
               </div>
               {modalOpen2 ? (
-                <div className="w-[130%] md:w-[22%] border flex flex-col shadow-lg">
+                <div className="w-[70%]  h-[100vh] md:w-[22%] border flex flex-col shadow-lg absolute lg:static z-20 lg:z-0 bg-white">
                   <p className="  flex justify-center items-center mx-auto text-xl font-extrabold pl-2 py-5">
                     Marquee
                   </p>
@@ -157,7 +157,7 @@ function AdminMarqueeDetails() {
                 </div>
               ) : null}
 
-              <div className="w-[100%]  h-[100vh] ">
+              <div className="w-[100%]  h-[100vh] z-10 lg:z-0">
                 <div className="md:px-5 ">
                   {component === "Venues" ? (
                     <div className="flex justify-between mx-1  items-center">
