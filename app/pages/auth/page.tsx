@@ -25,6 +25,7 @@ const onFinishFailed = (errorInfo) => {
 function Login() {
   const [user, setUser] = useState(initialFormState);
   const [loader, setLoader] = useState(false)
+  const [loading , setLoading] = useState(false)
   const router = useRouter();
   const { userInformation, addUser } = useStore();
   const handleChange = (e) => {
@@ -55,6 +56,7 @@ function Login() {
           registrationInformation(user.uid);
           router.push("/pages/admainMarqueeDetails");
           setLoader(true)
+          setLoading(true)
         }
       })
       .catch((error) => {
@@ -171,7 +173,13 @@ function Login() {
               className=" text-[#006CE1] ml-2 font-semibold"
               href="/pages/registration"
             >
-              Register
+              <div>
+
+              {
+                loading? <Loader/> : "Register"
+              }
+              </div>
+              
             </Link>
           </p>
         </Form>

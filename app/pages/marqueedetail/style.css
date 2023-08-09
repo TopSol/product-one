@@ -1,4 +1,4 @@
-.combinedClasses  .rdp-months {
+  .combinedClasses  .rdp-months {
     background-color: #f5f5f5;
     margin-top: -5px;
     padding-left: 10px;
@@ -7,9 +7,10 @@
     margin-left: -18px;
     display: flex;
     justify-content: center;
-    width: 385px;
+  }
+.rdp  {
+    width: 96%;
 }
-
 .combinedClasses .rdp-day_selected{
     background-color: orange;
     border-radius: 0 ;
@@ -23,8 +24,8 @@
     padding-top: 10px;
 }
 .DayPicker-Day--disabled {
-    background-color: red; /* Set your desired color for disabled dates */
-    color: #aaa; /* Set your desired text color for disabled dates */
+    background-color: red; 
+    color: #aaa;
   }
 
 
@@ -36,7 +37,6 @@
     border-radius: 8px;
     margin-left: -18px;
     display: flex;
-    width: 385px;
     justify-content: center;
 }
 .combinedClasses2 .rdp-day_selected{
@@ -62,7 +62,6 @@
     padding-right: 0px;
     border-radius: 0px;
         display: block;
-    /* justify-content: center; */
     }
     .combinedClasses .rdp-button_reset{
     margin: 0px  0px ;
@@ -77,7 +76,6 @@
     padding-right: 0px;
     border-radius: 0px;
         display: block;
-    /* justify-content: ; */
       }
       .combinedClasses2 .rdp-button_reset{
         margin: 0px  0px ;
