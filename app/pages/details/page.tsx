@@ -136,7 +136,7 @@ function Slider() {
                 {index + 1}
               </div>
               {index !== steps.length - 1 && (
-                <div className="w-12 md:w-28 border-b-8 border-slate-300"></div>
+                <div className={`w-12 md:w-28 border-b-8 ${slider > index ? "border-blue-500" : "bg-white"}`} />
               )}
             </div>
           ))}
