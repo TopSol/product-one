@@ -25,6 +25,8 @@ function MarqueeDetails({ item }) {
   const [bookDates, setBookDates] = useState([]);
   const [meal, setMeal] = useState("Lunch");
   const [value, setValue] = useState("1");
+  const [venueId,setVenueId]=useState()
+
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
@@ -33,22 +35,22 @@ function MarqueeDetails({ item }) {
         dataArr.push({ id: doc.id, data: doc.data() });
       });
       setVenuesData(dataArr);
+      getVenueData(item.id, dataArr);
     };
     getdata();
-  }, []);
-console.log(venuesData,"sdfsdfsdfd")
-  const getVenueData = (id) => {
-    const asd = venuesData?.filter((item) => {
-      console.log(item, "sadfasssfad");
+    getDatess(item.id);
+  }, [item]);
+
+  const getVenueData = (id, arr) => {
+    const asd = arr?.filter((item) => {
       return item?.data?.userId === id;
     });
-    console.log(asd,"sdfadfasdfadfas")
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
     }));
+    console.log(marqueeVenueName, "marqueeVenueName", id, arr);
     setName(marqueeVenueName);
-    addMarqueeVenueNames(marqueeVenueName)
   };
 
   useEffect(() => {
@@ -61,8 +63,22 @@ console.log(venuesData,"sdfsdfsdfd")
       setUserData(dataArr);
     };
     getUser();
-  }, []);
+  }, [item]);
 
+  const getDatess = async (id) => {
+    const querySnapshot = await getDocs(collection(db, "bookDate"));
+    const datesArr = [];
+    querySnapshot.forEach((doc) => {
+      datesArr.push(doc.data());
+    });
+    const asdf = datesArr?.filter((item) => {
+      return item?.id === id;
+    });
+  
+    setSelectedDate(asdf);
+    addMarqueeVenueDates(asdf)
+
+  };
   const handleClick = (id) => {
     console.log(id, "asdfasdf");
     setOpen((prevState) => ({
@@ -85,12 +101,15 @@ console.log(venuesData,"sdfsdfsdfd")
     }
   };
 
-  const handleVenueName = (id) => {
-    console.log(selectedDate, "ekeeada", id);
+
+  
+  const handleVenueName = (id,propMeal = "Lunch") => {
+    setVenueId(id);
+         console.log(id,"idddddd")
     const data = name.filter((item) => {
       return item?.value == id;
     });
-
+      console.log(selectedDate,"selectessssdDate")
     const reserveDate = selectedDate.map((item) => {
       return {
         id,
@@ -102,27 +121,17 @@ console.log(venuesData,"sdfsdfsdfd")
     });
     console.log(reserveDate, "reserveDate");
     setBookDates(reserveDate);
-    {
-      meal == "Diner"
-        ? handleCheck(meal, reserveDate[0]?.dates?.Diner)
-        : handleCheck(meal, reserveDate[0]?.dates?.Lunch);
-    }
+    
+    propMeal == "Diner"
+        ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
+        : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch);
+    
+    
+ 
   };
 
-  const getDatess = async (id) => {
-    const querySnapshot = await getDocs(collection(db, "bookDate"));
-    const datesArr = [];
-    querySnapshot.forEach((doc) => {
-      datesArr.push(doc.data());
-    });
-    const asdf = datesArr?.filter((item) => {
-      return item?.id === id;
-    });
-    console.log(item?.id, "asdfasdfasdf");
-    setSelectedDate(asdf);
-    addMarqueeVenueDates(asdf)
-  };
-
+  
+console.log(name,"meal",meal,venueId)
   return (
     <div className="mb-10 mx-5 ">
       <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
@@ -133,7 +142,7 @@ console.log(venuesData,"sdfsdfsdfd")
               className="md:rounded-r-none rounded-lg w-72 h-48"
               alt=""
               onClick={()=>{
-                getVenueData(item?.id);
+                // getVenueData(item?.id);
                 getDatess(item?.id);
               }}
             />
@@ -166,8 +175,9 @@ console.log(venuesData,"sdfsdfsdfd")
             className="cursor-pointer"
             onClick={() => {
               handleClick(item?.data?.id);
-              getVenueData(item?.id);
+              // getVenueData(item?.id);
               getDatess(item?.id);
+              handleVenueName(name[0].value)
             }}
           >
             <p className=" text-sm  text-textColor  flex justify-center items-center pt-[17px] font-roboto border-t-[1px]">
@@ -198,6 +208,10 @@ console.log(venuesData,"sdfsdfsdfd")
                 width: 250,
                 marginBottom: 20,
               }}
+              defaultValue={{
+                value: name[0].value,
+                label: name[0].label,
+              }}
               placeholder="Search to Select"
               size="large"
               placement="bottomLeft"
@@ -210,7 +224,10 @@ console.log(venuesData,"sdfsdfsdfd")
                   .toLowerCase()
                   .localeCompare((optionB?.label ?? "").toLowerCase())
               }
-              onChange={handleVenueName}
+              onChange={(e)=>{
+                console.log(e,"e")
+                handleVenueName(e,meal)
+              }}
               options={name}
             />
             <div className="w-full mb-3">
@@ -221,12 +238,18 @@ console.log(venuesData,"sdfsdfsdfd")
             </div>
             <div className="flex items-center mb-4">
               <Radio.Group
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => {setValue(e.target.value)
+                console.log(e,"sdssddssrrrr")
+                }}
                 value={value}
               >
                 <Radio
-                  onClick={() => setMeal("Lunch")}
-                  onChange={() => setValue("1")}
+                  onClick={() => {
+                    setMeal("Lunch");
+                  console.log("onClick",venueId)
+                  handleVenueName(venueId,"Lunch");
+                }}
+                  // onChange={() => setValue("1")}
                   id="default-radio-2"
                   type="radio"
                   value="1"
@@ -247,7 +270,11 @@ console.log(venuesData,"sdfsdfsdfd")
                 value={value}
               >
                 <Radio
-                  onClick={() => setMeal("Diner")}
+                  onClick={() => {
+                    setMeal("Diner")
+                  console.log("onClick",venueId)
+                  handleVenueName(venueId,"Diner")
+                }}
                   id="default-radio-3"
                 
                   type="radio"
