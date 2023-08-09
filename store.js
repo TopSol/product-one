@@ -62,12 +62,6 @@
 //   )
 // );
 
-
-
-
-
-
-
 // import create from "zustand";
 // import { persist } from "zustand/middleware";
 // export const useStore = create(
@@ -122,7 +116,7 @@
 //       getDates: async () => {
 //         try {
 //           const docRef = doc(db, "bookDate", userInformation.userId);
-//           console.log(userInformation.userId ,"abcded");  
+//           console.log(userInformation.userId ,"abcded");
 //           const docSnap = await getDoc(docRef);
 //           if (docSnap.exists()) {
 //             const data = docSnap.data();
@@ -144,11 +138,10 @@
 //   )
 // );
 
-
 import create from "zustand";
 import { persist } from "zustand/middleware";
 export const useStore = create(
-  persist( 
+  persist(
     (set) => ({
       userInformation: null,
       registration: null,
@@ -158,9 +151,17 @@ export const useStore = create(
       dates: {},
       lunchDinner: {},
       bookedDates: [],
-      marqueeVenueNames:[],
-      marqueeVenueDates:[],
-          
+      marqueeVenueNames: [],
+      marqueeVenueDates: [],
+      hallInformation: {},
+      hallIndex: null,
+      userInformation: {},
+      addUserInformation: (data) => {
+        set({ userInformation: data });
+      },
+      addHallInformation: (data, item) => {
+        set({ hallInformation: data, hallIndex: item });
+      },
       addMarqueeVenueNames: (data) => {
         set({ marqueeVenueNames: data });
       },
@@ -210,7 +211,7 @@ export const useStore = create(
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
-            console.log(data,"datasdatae")
+            console.log(data, "datasdatae");
             set((state) => ({
               lunchDinner: data,
             }));

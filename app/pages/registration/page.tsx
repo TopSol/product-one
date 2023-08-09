@@ -247,8 +247,8 @@ function details() {
           ) : null}
         </div>
 
-        <div className="w-full lg:w-[35%] px-8 md:px-14  py-3 pt-80 2xl:justify-around rounded-md shadow-xl overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200  flex-col flex justify-evenly">
-          <h1 className=" mt-36 mb-2 text-[28px] md:text-3xl font-vollkorn text-primaryColor items-center">
+        <div className="w-full lg:w-[35%] px-8 md:px-14  rounded-md shadow-xl overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200  flex-col flex ">
+          <h1 className=" mb-2 text-[28px] pt-2 md:text-3xl font-vollkorn text-primaryColor items-center">
             Marquee Registration
           </h1>
           <div className="flex flex-col justify-between w-full 2xl:h-[70vh] my-3">
@@ -444,7 +444,7 @@ function details() {
                   ]}
                 >
                   <TextArea
-                    rows={4}
+                    rows={1}
                     maxLength={200}
                     placeholder="Enter Description Here"
                     name="marqueeDetails"

@@ -5,17 +5,20 @@ import MarqueeAvailability from "./selectHall";
 import UserInformation from "./userInformation";
 import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams} from "next/navigation";
 import { db } from "@/app/firebase";
-import { collection, query, where, getDocs, addDoc,setDoc } from "firebase/firestore";
-import {
-  getDoc,
- 
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
-
+import { collection, query, where, getDocs, doc,setDoc } from "firebase/firestore";
 import { useStore } from "@/store";
+import Success from "./success";
+const initialFormState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  address: "",
+  notes: "",
+  PhoneNumber: "",
+  tableShape: "",
+};
 const steps = [
   {
     title: "First",
@@ -33,15 +36,23 @@ const steps = [
 function Slider() {
   const { bookedDates } = useStore();
   const [slider, setSlider] = useState(0);
+  const [user, setUser] = useState(initialFormState);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [clickedIndex, setClickedIndex] = useState(null);
+  const [menuIndex, setMenuIndex] = useState(null);
   const [selectedHall, setSelectedHall] = useState({});
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([]);
   const [marqueeData, setMarqueeData] = useState("")
+  const [successPage,setSuccessPage]=useState(false)
   const params = useSearchParams();
+    const [inputs, setInputs] = useState({
+    Heating: false,
+    Cooling: false,
+    MusicSystem: false,
+  });
   const id = params.get("id");
-  console.log(id, "abcIDIDID");
-
   const sendData = async () => {
     const fieldId=Math.random().toString(36).slice(2)  
     const users = {
@@ -52,10 +63,7 @@ function Slider() {
       id:fieldId,
       marqueeId:id
     }; 
-    // setHallInformation([users]);
-    console.log(users,"asdfasdfasfdadsf")
     try {
-      // await addDoc(collection(db, "ContactUs"), users);
       await setDoc(doc(db, "contactUs", fieldId), users);
     } catch(error) {
       console.log(" errosssssr",error);
@@ -69,7 +77,6 @@ function Slider() {
     };
     setHallInformation([users]);
    }
-  console.log(hallInformation,"hallInformationhallInformation")
   const fetchData = async () => {
     try {
       const venuesQuery = query(collection(db, "Venues"), where("userId", "==", id));
@@ -109,64 +116,15 @@ function Slider() {
       isMounted = false;
     };
   }, [id]);
-  console.log(marqueeData,"marqueemarqueeDatesDates")
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const q = query(collection(db, "Venues"), where("userId", "==", id));
-  //       const querySnapshot = await getDocs(q);
-  //       let dataArr = []
-  //       querySnapshot.forEach((doc) => {
-  //         dataArr.push(doc.data())
-  //         console.log(dataArr, "marqueggggeData");
-  //       });
-  //       setMarqueeData(dataArr)
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //     try {
-  //       const q = query(collection(db, "Menus"), where("userId", "==", id));
-  //       const querySnapshot = await getDocs(q);
-  //       let dataArr1 = []
-  //       querySnapshot.forEach((doc) => {
-  //         dataArr1.push(doc.data())
-  //         console.log(dataArr1, "marqueggggeDagfdfdta");
-  //       });
-  //       // setMarqueeData(dataArr)
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-    
-  //   fetchData();
-  // }, [id]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-      // try {
-      //   const q = query(collection(db, "Menus"), where("userId", "==", id));
-      //   const querySnapshot = await getDocs(q);
-      //   let dataArr = []
-      //   querySnapshot.forEach((doc) => {
-      //     dataArr.push(doc.data())
-      //     console.log(dataArr, "marqueggggeData");
-      //   });
-      //   setMarqueeData(dataArr)
-      // } catch (error) {
-      //   console.error("Error fetching data:", error);
-      // }
-  //   };
-    
-  //   fetchData();
-  // }, [id]);
-  
-  console.log(marqueeData, "dataArrrrrrr");
-
-  return (
+    return (
     <div>
-      <Navbar />
+      {
+         successPage ? (<Success setSuccessPage={setSuccessPage}/>):(
+          <>
+          <Navbar />
       <div className="mt-28">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-6 ">
+        {/* <div className="flex justify-center mb-6 mx-auto fixed z-10  w-full  "> */}
           {steps.map((item, index) => (
             <div key={index} className="flex items-center">
               <div
@@ -183,13 +141,14 @@ function Slider() {
             </div>
           ))}
         </div>
-
         {slider === 0 ? (
           <MarqueeAvailability
-          venus= {marqueeData.venues}
+            venus= {marqueeData.venues}
             setSlider={setSlider}
             setSelectedHall={setSelectedHall}
             selectedHall={selectedHall}
+            setClickedIndex={setClickedIndex}
+            clickedIndex={clickedIndex}
           />
         ) : slider === 1 ? (
           <UserInformation
@@ -197,20 +156,35 @@ function Slider() {
             selectedHall={selectedHall}
             selectedMenu={selectedMenu}
             setUserInformation={setUserInformation}
+            setUser={setUser}
+            user={user}
+            setSelectedOption={setSelectedOption}
+            selectedOption={selectedOption}
+            setInputs={setInputs}
+            inputs={inputs}
           />
         ) : slider === 2 ? (
           <ChooseMenu
-          dish ={marqueeData.dish}
+            dish ={marqueeData.dish}
             setSlider={setSlider}
             setSelectedMenu={setSelectedMenu}
             preview={preview}
             selectedMenu={selectedMenu}
+            setMenuIndex={setMenuIndex}
+            menuIndex={menuIndex}
           />
         ) : slider == 3 ? (
           <Preview hallInformation={hallInformation} 
-          sendData={sendData}/>
+            sendData={sendData}
+            setSuccessPage={setSuccessPage}
+            />
+            
         ) : null}
       </div>
+          </>
+         )
+      }
+      
     </div>
   );
 }

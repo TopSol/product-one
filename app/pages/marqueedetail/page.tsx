@@ -459,7 +459,8 @@ console.log(bookedDates, "bookedDates")
                 } `}
                 mode="multiple"
                 disabled={days}
-                min={2}
+                min={1}
+                max={5}
                 selected={marqueeDates}
                 onSelect={setMarqueeDates}
               />

@@ -4,49 +4,33 @@ import ImageLightbox from "react-image-lightbox";
 import {useStore} from "@/store"
 import { useSearchParams } from "next/navigation";
 import { Image } from "antd";
-function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall , venus}) {
+function MarqueeAvailability({ setSlider,setSelectedHall,setClickedIndex,clickedIndex, venus}) {
   console.log(venus,"venusvenus");
-  
-  const [clickedIndex, setClickedIndex] = useState(null);
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [selectImage, setSelectImage] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  // const {Venues,addHallInformation,hallIndex,hallInformation} = useStore()
   const handleClick = (item,index) => {
-    console.log(item, "abcdef");
-    
+    // addHallInformation(item,index)
     setClickedIndex(index);
     setSelectedHall(item)
   };
-  const {Venues} = useStore()
   const searchParams = useSearchParams()
   const id = searchParams.get("id");
-  console.log(id, "iddiidididi", Venues);
-  // const handleImageModal = (index) => {
-  //   setSelectImage(data[index].image);
-  //   setPhotoIndex(index);
-  //   setIsOpen(true);
-  // };
-  const closeLightbox = () => {
-    setIsOpen(false);
-  };
   const nextPage = () => { 
+    if(clickedIndex!==null){
   setSlider(1);
+    }
   };
-console.log(venus,"asdfadsfs");
-// console.log(Object.keys?.venus,"asdfadsfs");
-
   return (
     <div className="md:container mx-auto ">
-      <div className="flex justify-center">
+      <div className="flex justify-center ">
         <div className="border p-5 rounded-md mb-2 w-3/4 ">
           <div className="hidden md:flex justify-around items-center bg-primaryColor py-2.5 rounded-md mb-4">
             <p className="w-56 text-center text-xl ">Images</p>
             <p className="w-29 text-center text-xl ">Venue Details</p>
             <p className="w-28 text-center text-xl ">Availability</p>
           </div>
-          <div className="h-[510px] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200">
+          <div className="">
+          {/* <div className="h-[510px] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200"> */}
             {venus?.map((item, index) => {
-              console.log(item,"asdfadsfdsdafafdasfds")
               return( 
               <div
               key={index}
@@ -54,26 +38,6 @@ console.log(venus,"asdfadsfs");
              >
               <div className=" md:border md:rounded-md  ">
                 <div>
-                {/* <div onClick={() => handleImageModal(index)}> */}
-                {/* <Image.PreviewGroup>
-                  {item.image?.map((dish, index) => {
-                    return (
-                      <Image
-                        key={index}
-                        width={80}
-                        height={35}
-                        // visible={false}
-                        style={{ objectFit: "cover", paddingRight: 10 }}
-                        src={dish}
-                        onClick={() => {
-                          Image.previewGroup?.show({
-                            current: index,
-                          });
-                        }}
-                      />
-                    );
-                  })}
-                </Image.PreviewGroup> */}
                   <Image
                     src={item.image}
                     alt=""
@@ -88,16 +52,15 @@ console.log(venus,"asdfadsfs");
               </div>
               <div className=" flex flex-col justify-center mx-auto md:-mt-5 md:flex md:flex-col md:justify-center ">
                 <p className="flex items-center justify-center">Siting Capacity</p>
-                <p className="text-center border p-3 w-40 bg-slate-300 rounded-md">{item.minCapacity}->{item.maxCapacity}</p>
+                <p className="text-center border p-3 w-40 bg-primaryColor rounded-md">{item.minCapacity} to {item.maxCapacity}</p>
               </div>
               <div className={` border p-3 rounded-md w-28 text-center mt-3  md:mt-0 flex justify-center mx-auto md:block  ${
-                  clickedIndex === index ? "bg-red-500" : "bg-primaryColor"
+                  clickedIndex === index ? "bg-[#4bc87f]" : "bg-primaryColor"
                 }`}
                 onClick={() => handleClick(item,index)}>
                
                <p>
-               {/* {item.availability} */}
-               Availability
+               Select
                 </p> 
               </div>
             </div>
@@ -105,21 +68,6 @@ console.log(venus,"asdfadsfs");
           </div>
         </div>
       </div>
-
-      {/* {isOpen && (
-        <ImageLightbox
-          mainSrc={selectImage}
-          nextSrc={data[(photoIndex + 1) % data.length].image}
-          prevSrc={data[(photoIndex + data.length - 1) % data.length].image}
-          onCloseRequest={closeLightbox}
-          onMovePrevRequest={() =>
-            setPhotoIndex((photoIndex + data.length - 1) % data.length)
-          }
-          onMoveNextRequest={() =>
-            setPhotoIndex((photoIndex + 1) % data.length)
-          }
-        />
-      )} */}
       <div className="flex justify-end ">
         <button
           className="border px-7 py-2 bg-bgColor rounded-md"

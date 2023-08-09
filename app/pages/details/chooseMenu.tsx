@@ -29,15 +29,17 @@ const menu = [
 ];
 const data = ["biryani", "chicken", "mutton"];
 
-function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish }) {
+function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish,setMenuIndex,menuIndex }) {
   console.log(dish,"menusmenus",selectedMenu);
   
   const [selectedDish, setSelectedDish] = useState(false);
-
   const [selectedItems, setSelectedItems] = useState([]);
   const nextPage = () => {
-    preview();
-    setSlider(3);
+    console.log(menuIndex,"menuIndex")
+    if(menuIndex !== null){
+      preview();
+      setSlider(3);
+    }
   };
 
   const removeDish = (item) => {
@@ -90,7 +92,11 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish }) 
     "Mutton",
     "Chicken",
     "Biryani",
-  ]);
+  ]); 
+  const handleClick = (item,index) => {
+    setSelectedMenu(item);
+    setMenuIndex(index)
+  };
   return (
     <div className="md:container mx-auto">
       <div className="md:border p-5 rounded-md mb-2 flex justify-center items-center flex-col md:flex-row ">
@@ -98,9 +104,12 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish }) 
           <div
             key={index}
             className={`border p-3 rounded-md flex  w-4/5  flex-col mb-2 ml-3 cursor-pointer hover:bg-primaryColor hover:text-black h-48 ${
-              selectedMenu?.menu === item.menu ? "bg-white" : ""
-            }`}
-            onClick={() => setSelectedMenu(item)}
+              menuIndex === index && `bg-primaryColor`
+            }
+            `
+            
+          }
+            onClick={() => handleClick(item,index)}
           >
             <div>
               <p className="text-center text-xl">{item.name}</p>
@@ -128,9 +137,10 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish }) 
             <div
               key={index}
               className=" flex justify-center items-center p-3   "
+              onClick={() => AddDish(item)}
             >
               <FontAwesomeIcon icon={faCirclePlus} />
-              <p className="pl-1 pr-3" onClick={() => AddDish(item)}>
+              <p className="pl-1 pr-3">
                 Add
               </p>
               <p className="border p-2  rounded-md font-semibold text-textColor font-roboto">
@@ -140,7 +150,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish }) 
           ))}
         </div>
         <div className="  flex items-center  rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
-          <div
+          {/* <div
             className="border py-2 w-48  rounded-md relative"
             onClick={() => setSelectedDish(!selectedDish)}
           >
@@ -148,7 +158,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish }) 
               Select More Dish
               <FontAwesomeIcon icon={faCaretDown} />
             </div>
-          </div>
+          </div> */}
 
           {selectedDish && (
             <div className="border  cursor-pointer w-48  absolute mt-10  ">

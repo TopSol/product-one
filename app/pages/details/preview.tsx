@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/app/firebase";
-function Preview({ hallInformation,sendData }) {
+function Preview({ hallInformation,sendData,setSuccessPage }) {
   console.log(JSON.stringify(hallInformation), "ddr");
   console.log(hallInformation, "ssssss");
   const [blogs, setBlogs] = useState([]);
@@ -21,6 +21,7 @@ function Preview({ hallInformation,sendData }) {
   // console.log(blogs[0].selectHall?.capacity , "wwwblogsssqqqsddddds222ddd");
   const nextPage = () => {
     sendData();
+    setSuccessPage(true)
   };
   let a = parseInt(hallInformation[0]?.UserInformation?.Heating);
   let b = parseInt(hallInformation[0]?.Menu?.Heating);
