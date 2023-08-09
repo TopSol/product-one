@@ -4,35 +4,37 @@ import React, { useState } from "react";
 import { Input, Space } from "antd";
 import { Radio } from "antd";
 import { Checkbox } from "antd";
-const initialFormState = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  address: "",
-  notes: "",
-  PhoneNumber: "",
-  tableShape: "",
-};
+import {useStore} from "@/store"
+// const initialFormState = {
+//   firstName: "",
+//   lastName: "",
+//   email: "",
+//   address: "",
+//   notes: "",
+//   PhoneNumber: "",
+//   tableShape: "",
+// };
 function UserInformation({
   setSlider,
   selectedHall,
-  selectedMenu,
+  setUser,
+  user,
+  setSelectedOption,
+  selectedOption,
   setUserInformation,
+  setInputs,
+  inputs,
 }) {
-  const [user, setUser] = useState(initialFormState);
-  const [inputs, setInputs] = useState({
-    Heating: false,
-    Cooling: false,
-    MusicSystem: false,
-  });
-
-  const [selectedOption, setSelectedOption] = useState("");
+  const {addUserInformation} = useStore();
+  // const [user, setUser] = useState(initialFormState);
+  // const [inputs, setInputs] = useState({
+  //   Heating: false,
+  //   Cooling: false,
+  //   MusicSystem: false,
+  // });
+  // const [selectedOption, setSelectedOption] = useState("");
   const [value, setValue] = useState(1);
   console.log(selectedHall, "selectedHallselectedHall");
-  const handleOptionChange = (event) => {
-    console.log("eventtargevalue", event.target.value);
-    // setSelectedOption(event.target.value);
-  };
 
   const handleInputChange = (event) => {
     const { name, checked } = event.target;
@@ -41,7 +43,6 @@ function UserInformation({
       [name]: checked,
     }));
   };
-  console.log(inputs, "inputsinputs");
   const handleChange = (e,type) => {
     // const { name, value } = e.target;
     // setSelectedOption(name)
@@ -60,35 +61,12 @@ function UserInformation({
     }
    
   };
-  console.log(selectedOption, "selectedOption");
-  const onChange = (e) => {
-    console.log(`checked = ${e.target.checked}`);
-  };
   const { TextArea } = Input;
-  // const sendData = async (e) => {
-  //   e.preventDefault();
-  //   const users = {
-  //     firstName: user.firstName,
-  //     lastName: user.lastName,
-  //     email: user.email,
-  //     address: user.address,
-  //     notes: user.notes,
-  //     PhoneNumber: user.PhoneNumber,
-  //     Heating: inputs.Heating,
-  //     Cooling: inputs.Cooling,
-  //     MusicSystem: inputs.MusicSystem,
-  //     selectedOption: selectedOption,
-  //     selectedHall: selectedHall,
-  //     Menu:selectedMenu
-  //   };
-  //   try {
-  //     await addDoc(collection(db, "ContactUs"), users);
-  //     setUser(initialFormState);
-  //   } catch {
-  //     console.log("error");
-  //   }
-  // };
   const nextPage = () => {
+if(!user.firstName || !user.lastName || !user.email || !user.address || !user.notes || !user.PhoneNumber || !user.tableShape){
+  alert("Please fill all the fields")
+  return
+}
     const phone = user.PhoneNumber;
     const convertedPhoneNumber = "92" + phone.replace(/^0/, '');
     const users = {
@@ -109,8 +87,8 @@ function UserInformation({
   console.log(user, "useruseruser");
   return (
     <div className="md:container mx-auto">
-      <div className="border p-5 rounded-md mb-2 flex justify-center items-center  flex-col w-full">
-        <div className="border p-5 rounded-md mb-2 md:w-[74%]">
+      <div className="border p-5 rounded-md mb-2 flex justify-center items-center  flex-col w-full ">
+        <div className="border p-5 rounded-md mb-2 md:w-[74%] ">
           <div className="md:flex md:justify-between">
             <label className="text-xl">F/Name:</label>
             <div className="mb-6 flex flex-col md:flex-row md:w-80 md:justify-between">
@@ -254,7 +232,7 @@ function UserInformation({
       </div>
       <div className="flex justify-end ">
         <button
-          className="border px-7 py-3 bg-bgColor rounded-md"
+          className="border px-7 py-3 my-3 bg-bgColor rounded-md"
           onClick={() => nextPage()}
         >
           Next

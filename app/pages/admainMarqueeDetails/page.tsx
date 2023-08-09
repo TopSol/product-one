@@ -102,8 +102,8 @@ function AdminMarqueeDetails() {
         </div>
       ) : (
         <div className=" h-[100vh]">
-          <AdminNavbar setModalOpen2={setModalOpen2}/>
           <div className="mt-14">
+          <AdminNavbar setModalOpen2={setModalOpen2}/>
             <div className="sidebar flex">
               <div className="hidden  p-2  absolute">
                 <FontAwesomeIcon

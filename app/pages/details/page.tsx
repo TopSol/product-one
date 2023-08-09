@@ -5,17 +5,22 @@ import MarqueeAvailability from "./selectHall";
 import UserInformation from "./userInformation";
 import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
-import Success from "./success"
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams} from "next/navigation";
 import { db } from "@/app/firebase";
-import { collection, query, where, getDocs, addDoc,setDoc } from "firebase/firestore";
-import {
-  getDoc,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
-
+import { collection, query, where, getDocs, doc,setDoc } from "firebase/firestore";
 import { useStore } from "@/store";
+import Success from "./success";
+import { Button, message } from 'antd';
+
+const initialFormState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  address: "",
+  notes: "",
+  PhoneNumber: "",
+  tableShape: "",
+};
 const steps = [
   {
     title: "First",
@@ -33,6 +38,10 @@ const steps = [
 function Slider() {
   const { bookedDates } = useStore();
   const [slider, setSlider] = useState(0);
+  const [user, setUser] = useState(initialFormState);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [clickedIndex, setClickedIndex] = useState(null);
+  const [menuIndex, setMenuIndex] = useState(null);
   const [selectedHall, setSelectedHall] = useState({});
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
@@ -40,6 +49,11 @@ function Slider() {
   const [marqueeData, setMarqueeData] = useState("")
   const [successPage,setSuccessPage]=useState(false)
   const params = useSearchParams();
+    const [inputs, setInputs] = useState({
+    Heating: false,
+    Cooling: false,
+    MusicSystem: false,
+  });
   const id = params.get("id");
   const sendData = async () => {
     const fieldId=Math.random().toString(36).slice(2)  
@@ -52,10 +66,7 @@ function Slider() {
       id:fieldId,
       marqueeId:id
     }; 
-    // setHallInformation([users]);
-    console.log(users,"asdfasdfasfdadsf")
     try {
-      // await addDoc(collection(db, "ContactUs"), users);
       await setDoc(doc(db, "contactUs", fieldId), users);
     } catch(error) {
       console.log(" errosssssr",error);
@@ -69,7 +80,6 @@ function Slider() {
     };
     setHallInformation([users]);
    }
-  console.log(hallInformation,"hallInformationhallInformation")
   const fetchData = async () => {
     try {
       const venuesQuery = query(collection(db, "Venues"), where("userId", "==", id));
@@ -109,65 +119,95 @@ function Slider() {
       isMounted = false;
     };
   }, [id]);
-
-  return (
+  const [messageApi, contextHolder] = message.useMessage();
+  const key = 'updatable';
+  const openMessage = () => {
+    messageApi.open({
+      key,
+      type: 'loading',
+      content: 'Loading...',
+    });
+    setTimeout(() => {
+      messageApi.open({
+        key,
+        type: 'success',
+        content: 'Successfully Done',
+        duration: 2,
+      });
+    }, 100);
+  };
+    return (
     <div>
       {
-        successPage ? (<Success setSuccessPage={setSuccessPage}/>): (
+         successPage ? (<Success setSuccessPage={setSuccessPage}/>):(
           <>
-            <Navbar />
-          <div className="mt-28">
-            <div className="flex justify-center mb-6">
-              {steps.map((item, index) => (
-                <div key={index} className="flex items-center">
-                  <div
-                    onClick={() => setSlider(index)}
-                    className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
-                      slider >= index ? "bg-blue-500" : "bg-slate-300"
-                    } text-white`}
-                  >
-                    {index + 1}
-                  </div>
-                  {index !== steps.length - 1 && (
-                    <div className="w-12 md:w-28 border-b-8 border-slate-300"></div>
-                  )}
-                </div>
-              ))}
+          <Navbar />
+      <div className="mt-28">
+        <div className="flex justify-center mb-6 ">
+        {/* <div className="flex justify-center mb-6 mx-auto fixed z-10  w-full  "> */}
+          {steps.map((item, index) => (
+            <div key={index} className="flex items-center">
+              <div
+                onClick={() => setSlider(index)}
+                className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
+                  slider >= index ? "bg-blue-500" : "bg-slate-300"
+                } text-white`}
+              >
+                {index + 1}
+              </div>
+              {index !== steps.length - 1 && (
+                <div className="w-12 md:w-28 border-b-8 border-slate-300"></div>
+              )}
             </div>
-    
-            {slider === 0 ? (
-              <MarqueeAvailability
-              venus= {marqueeData.venues}
-                setSlider={setSlider}
-                setSelectedHall={setSelectedHall}
-                selectedHall={selectedHall}
-              />
-            ) : slider === 1 ? (
-              <UserInformation
-                setSlider={setSlider}
-                selectedHall={selectedHall}
-                selectedMenu={selectedMenu}
-                setUserInformation={setUserInformation}
-              />
-            ) : slider === 2 ? (
-              <ChooseMenu
-              dish ={marqueeData.dish}
-                setSlider={setSlider}
-                setSelectedMenu={setSelectedMenu}
-                preview={preview}
-                selectedMenu={selectedMenu}
-              />
-            ) : slider == 3 ? (
-              <Preview hallInformation={hallInformation} 
-              setSuccessPage={setSuccessPage}
-              sendData={sendData}/>
-            ) : null}
-          </div>
+          ))}
+        </div>
+        {slider === 0 ? (
+          <MarqueeAvailability
+            venus= {marqueeData.venues}
+            setSlider={setSlider}
+            setSelectedHall={setSelectedHall}
+            selectedHall={selectedHall}
+            setClickedIndex={setClickedIndex}
+            clickedIndex={clickedIndex}
+          />
+        ) : slider === 1 ? (
+          <UserInformation
+            setSlider={setSlider}
+            selectedHall={selectedHall}
+            selectedMenu={selectedMenu}
+            setUserInformation={setUserInformation}
+            setUser={setUser}
+            user={user}
+            setSelectedOption={setSelectedOption}
+            selectedOption={selectedOption}
+            setInputs={setInputs}
+            inputs={inputs}
+          />
+        ) : slider === 2 ? (
+          <ChooseMenu
+            dish ={marqueeData.dish}
+            setSlider={setSlider}
+            setSelectedMenu={setSelectedMenu}
+            preview={preview}
+            selectedMenu={selectedMenu}
+            setMenuIndex={setMenuIndex}
+            menuIndex={menuIndex}
+          />
+        ) : slider == 3 ? (
+          <Preview hallInformation={hallInformation} 
+            sendData={sendData}
+            setSuccessPage={setSuccessPage}
+            openMessage={openMessage}
+            
+            />
+            
+        ) : null}
+      </div>
           </>
-        
-        )
+         )
       }
-   
+              {contextHolder}
+
     </div>
   );
 }

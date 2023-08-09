@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/app/firebase";
-import { useRouter } from "next/navigation";
-function Preview({ hallInformation,sendData,setSuccessPage }) {
-const router = useRouter()
-  console.log(JSON.stringify(hallInformation), "ddr");
-  console.log(hallInformation, "ssssss");
+import { Modal } from "antd";
+import Link from "next/link";
+function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
+  const [open, setOpen] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const fetchBlogs = async () => {
     try {
@@ -19,17 +18,18 @@ const router = useRouter()
   useEffect(() => {
     fetchBlogs();
   }, []);
-  console.log(JSON.stringify(blogs), "blogsddddds222ddd444");
   const nextPage = () => {
     sendData();
-    setSuccessPage(true)
+    setSuccessPage(true);
+    openMessage();
   };
   let a = parseInt(hallInformation[0]?.UserInformation?.Heating);
   let b = parseInt(hallInformation[0]?.Menu?.Heating);
-  let data = a + b;
-  console.log(data, "datadssdddsss", a, b);
+
   const total = `${hallInformation[0]?.selectedHall?.price} + ${hallInformation[0]?.Menu?.price}`;
-  console.log(blogs, "blogsddd");
+  const hideModal = () => {
+    setOpen(false);
+  };
   return (
     <div className="md:container mx-auto ">
       <div className="flex item-center  flex-col ">
@@ -87,10 +87,26 @@ const router = useRouter()
             </div>
             <div className=" flex justify-between  mb-3">
               <p className="font-bold">Dish</p>
-              <div className="flex flex-col">
-                {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
+              <div onClick={() => setOpen(true)} className="flex flex-col">
+               
+                {
+                  <Link className="text-blue-600 underline" href="">
+                    {hallInformation[0]?.Menu?.dishes.length} Dishes
+                  </Link>
+                }
+                <Modal
+                  title="Modal 1000px width"
+                  centered
+                  open={open}
+                  onOk={hideModal}
+                  onCancel={() => setOpen(false)}
+                  width={500}
+                >
+                  {" "}
+                  {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
+                </Modal>
               </div>
               {/* <p> {`${hallInformation[0]?.Menu?.dish.map}`}</p> */}
             </div>
@@ -107,7 +123,7 @@ const router = useRouter()
       </div>
       <div className="flex justify-end ">
         <button
-          className="border px-7 py-2 bg-bgColor rounded-md"
+          className="border px-7 py-2 my-3 bg-bgColor rounded-md"
           onClick={() => nextPage()}
         >
           Next

@@ -28,14 +28,15 @@ import { Select } from "antd";
 import { getFormatDates } from "@/app/utils";
 import Loader from "@/app/component/Loader";
 function Marqueedetail() {
-  const { addBookedDates, marqueeVenueNames, marqueeVenueDates,bookedDates } = useStore();
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates } =
+    useStore();
   const router = useRouter();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isLunch, setIsLunch] = useState<any>();
-  const [range, setRange] = useState<any>([]); 
+  const [range, setRange] = useState<any>([]);
   const [selectedOption, setSelectedOption] = useState("");
   const [data, setData] = useState();
   const [isShow, setIsShow] = useState(false);
@@ -44,39 +45,35 @@ function Marqueedetail() {
   const [meal, setMeal] = useState("Lunch");
   const [days, setDays] = useState<any>([]);
   const [marqueeDates, setMarqueeDates] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [lunchDinner, setLunchDinner] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
   ]);
-  console.log(bookedDates, "bookedDates")
+  console.log(bookedDates, "bookedDates");
   const handleClick = (index: any) => {
     setSelectImage(data?.images[index]);
     setPhotoIndex(index);
   };
   console.log(data, "days", marqueeVenueNames, marqueeVenueDates);
-  console.log(data, "days", marqueeVenueNames, marqueeVenueDates);
   const closeLightbox = () => {
     setIsOpen(false);
   };
 
-  const id =  searchParams.get("id");
+  const id = searchParams.get("id");
   console.log(id, "iddsddsss");
 
   const handleButton = () => {
     addBookedDates(marqueeDates);
-    setLoading(true)
-    // setLoading((pre) => (!pre))
+    setLoading(true);
   };
-console.log(bookedDates, "bookedDates")
+  console.log(bookedDates, "bookedDates");
   const getDocById = async (id) => {
     try {
       const docRef = doc(db, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setData(docSnap.data());
-        // setLoading((pre) => (!pre))
-
       } else {
         console.log("No such document!");
       }
@@ -84,8 +81,8 @@ console.log(bookedDates, "bookedDates")
       console.error("Error :", error);
     }
   };
- console.log(data, "abcccccc");
- 
+  console.log(data, "abcccccc");
+
   useEffect(() => {
     getDocById(id);
   }, [id]);
@@ -103,7 +100,7 @@ console.log(bookedDates, "bookedDates")
       console.error("Error :", error);
     }
   };
-  
+
   useEffect(() => {
     if (id) {
       getCollection(id);
@@ -128,12 +125,10 @@ console.log(bookedDates, "bookedDates")
       return {
         id,
         dates: {
-          
           Diner: getFormatDates(item?.dates[id]?.Diner),
           Lunch: getFormatDates(item?.dates[id]?.Lunch),
         },
       };
-      
     });
     console.log(marqueeVenueDates, "fasdhjkafhakjsdhfkjasf");
     console.log(reserveDate, "reserveDate");
@@ -162,8 +157,8 @@ console.log(bookedDates, "bookedDates")
     e == "1" ? setMeal("Lunch") : setMeal("Diner");
   };
   const disabledStyle = {
-    backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
-    color: "#aaa", // Set your desired text color for disabled dates
+    backgroundColor: "#f2f2f2",
+    color: "#aaa", 
   };
   console.log("datessssssss", marqueeVenueNames);
   console.log(marqueeDates, "asdfasdfsdafasdfas");
@@ -187,12 +182,11 @@ console.log(bookedDates, "bookedDates")
       <div className="md:container mx-auto flex flex-col lg:flex-row mt-16 ">
         <div className="lg:w-[70%] ">
           <div className="">
-              <img
-                onClick={() => setIsOpen(true)}
-                src={selectImage ? `${selectImage}` : `${data?.images?.[0]}`}
-                className="rounded  h-[508px] w-full object-cover"
-              />
-            
+            <img
+              onClick={() => setIsOpen(true)}
+              src={selectImage ? `${selectImage}` : `${data?.images?.[0]}`}
+              className="rounded  h-[508px] w-full object-cover"
+            />
           </div>
           <div className="  flex space-x-3 my-3 ">
             {data?.images?.map((data, index) => (
@@ -407,6 +401,10 @@ console.log(bookedDates, "bookedDates")
             <div className="w-[100%]  relative flex justify-between ">
               <Select
                 showSearch
+                defaultValue={{
+                  value: marqueeVenueNames[0].value,
+                  label: marqueeVenueNames[0].label,
+                }}
                 style={{
                   width: 210,
                   marginBottom: 20,
@@ -453,16 +451,17 @@ console.log(bookedDates, "bookedDates")
             </div>
             <div>
               <div onClick={() => setIsShow(true)}>
-              <DayPicker
-                className={`${
-                  isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
-                } `}
-                mode="multiple"
-                disabled={days}
-                min={2}
-                selected={marqueeDates}
-                onSelect={setMarqueeDates}
-              />
+                <DayPicker
+                  className={`${
+                    isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
+                  } `}
+                  mode="multiple"
+                  disabled={days}
+                  min={1}
+                  max={5}
+                  selected={marqueeDates}
+                  onSelect={setMarqueeDates}
+                />
               </div>
             </div>
             {/* <div>
@@ -478,19 +477,11 @@ console.log(bookedDates, "bookedDates")
             </div>
           </div>
           {isShow && (
-            <div
-             
-              className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer mx-auto"
-            >
+            <div className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer mx-auto">
               <NextLink href={`/pages/details?id=${data?.userId}`} passHref>
-               <div  onClick={handleButton}>
-                {
-                  loading? 
-                  <Loader/> :
-                  " Book Now"
-                }
+                <div onClick={handleButton}>
+                  {loading ? <Loader /> : " Book Now"}
                 </div>
-               
               </NextLink>
             </div>
           )}

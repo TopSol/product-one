@@ -48,7 +48,7 @@ function BookedDate() {
               <div className="w-full">
                 <div className="flex flex-col">
                   <img
-                    className=" h-60 w-full object-cover"
+                    className=" h-60 w-full object-cover rounded-t-md"
                     src={item?.selectedHall.image[0]}
                     alt=""
                   />
