@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { useStore } from "@/store";
 function MarqueeDetails({ item }) {
-  const { addDateKey, lunchDinner,addMarqueeVenueNames,addMarqueeVenueDates } = useStore();
+  const { addDateKey, lunchDinner,addMarqueeVenueNames,marqueeVenueName,addMarqueeVenueDates } = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
@@ -38,9 +38,21 @@ function MarqueeDetails({ item }) {
       getVenueData(item.id, dataArr);
     };
     getdata();
-    getDatess(item.id);
+    getDates(item.id);
   }, [item]);
-
+// const marqueeVenueNames ()=>marqueeVenueName?.map((item)=>item?.label)
+const venuesName =(id)=>{
+  const asd = venuesData?.filter((item) => {
+    console.log(item, "sadfasssfad");
+    return item?.data?.userId === id;
+  });
+  console.log(asd,"sdfadfasdfadfas")
+  const marqueeVenueName = asd?.map((item) => ({
+    value: item?.data?.venueId,
+    label: item?.data?.name,
+  }));
+  addMarqueeVenueNames(marqueeVenueName)
+}
   const getVenueData = (id, arr) => {
     const asd = arr?.filter((item) => {
       return item?.data?.userId === id;
@@ -49,10 +61,12 @@ function MarqueeDetails({ item }) {
       value: item?.data?.venueId,
       label: item?.data?.name,
     }));
-    console.log(marqueeVenueName, "marqueeVenueName", id, arr);
+    console.log(marqueeVenueName, "marqueeVenueddddName",);
+    addMarqueeVenueNames(marqueeVenueName)
     setName(marqueeVenueName);
   };
-
+  
+console.log(marqueeVenueName,"namemarqueeVenueName")
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
@@ -65,7 +79,7 @@ function MarqueeDetails({ item }) {
     getUser();
   }, [item]);
 
-  const getDatess = async (id) => {
+  const getDates = async (id) => {
     const querySnapshot = await getDocs(collection(db, "bookDate"));
     const datesArr = [];
     querySnapshot.forEach((doc) => {
@@ -100,17 +114,13 @@ function MarqueeDetails({ item }) {
       setIsLunch("Diner");
     }
   };
-
-
-  
   const handleVenueName = (id,propMeal = "Lunch") => {
     setVenueId(id);
-         console.log(id,"idddddd")
     const data = name.filter((item) => {
       return item?.value == id;
     });
       console.log(selectedDate,"selectessssdDate")
-    const reserveDate = selectedDate.map((item) => {
+     const reserveDate = selectedDate.map((item) => {
       return {
         id,
         dates: {
@@ -124,14 +134,8 @@ function MarqueeDetails({ item }) {
     
     propMeal == "Diner"
         ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
-        : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch);
-    
-    
- 
+        : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch); 
   };
-
-  
-console.log(name,"meal",meal,venueId)
   return (
     <div className="mb-10 mx-5 ">
       <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
@@ -142,8 +146,9 @@ console.log(name,"meal",meal,venueId)
               className="md:rounded-r-none rounded-lg w-72 h-48"
               alt=""
               onClick={()=>{
-                // getVenueData(item?.id);
-                getDatess(item?.id);
+                venuesName(item?.id)
+                getDates(item?.id);
+                handleVenueName(name[0]?.value)
               }}
             />
           </NextLink>
@@ -175,8 +180,7 @@ console.log(name,"meal",meal,venueId)
             className="cursor-pointer"
             onClick={() => {
               handleClick(item?.data?.id);
-              // getVenueData(item?.id);
-              getDatess(item?.id);
+              getDates(item?.id);
               handleVenueName(name[0].value)
             }}
           >

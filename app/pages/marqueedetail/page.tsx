@@ -28,8 +28,7 @@ import { Select } from "antd";
 import { getFormatDates } from "@/app/utils";
 import Loader from "@/app/component/Loader";
 function Marqueedetail() {
-  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates } =
-    useStore();
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates,bookedDates } = useStore();
   const router = useRouter();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -45,12 +44,12 @@ function Marqueedetail() {
   const [meal, setMeal] = useState("Lunch");
   const [days, setDays] = useState<any>([]);
   const [marqueeDates, setMarqueeDates] = useState([]);
+  const [venueId,setVenueId] = useState();
   const [loading, setLoading] = useState(false);
   const [lunchDinner, setLunchDinner] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
   ]);
-  console.log(bookedDates, "bookedDates");
   const handleClick = (index: any) => {
     setSelectImage(data?.images[index]);
     setPhotoIndex(index);
@@ -67,7 +66,7 @@ function Marqueedetail() {
     addBookedDates(marqueeDates);
     setLoading(true);
   };
-  console.log(bookedDates, "bookedDates");
+console.log(bookedDates, "bookedDates")
   const getDocById = async (id) => {
     try {
       const docRef = doc(db, "users", id);
@@ -81,7 +80,6 @@ function Marqueedetail() {
       console.error("Error :", error);
     }
   };
-  console.log(data, "abcccccc");
 
   useEffect(() => {
     getDocById(id);
@@ -100,10 +98,10 @@ function Marqueedetail() {
       console.error("Error :", error);
     }
   };
-
   useEffect(() => {
     if (id) {
       getCollection(id);
+      handleVenueName(marqueeVenueNames[0]?.value);
     }
   }, [id]);
   const handleCheck = (event, item) => {
@@ -119,27 +117,31 @@ function Marqueedetail() {
       setIsLunch("Diner");
     }
   };
-  const handleVenueName = (id) => {
+  const handleVenueName = (id ,lunchProps= "Lunch") => {
+    setVenueId(id);
     console.log(marqueeVenueDates, "marqueeVenueDates");
     const reserveDate = marqueeVenueDates.map((item) => {
       return {
         id,
         dates: {
-          Diner: getFormatDates(item?.dates[id]?.Diner),
-          Lunch: getFormatDates(item?.dates[id]?.Lunch),
+          Diner: getFormatDates(item.dates[id]?.Diner),
+          Lunch: getFormatDates(item.dates[id]?.Lunch),
         },
       };
     });
-    console.log(marqueeVenueDates, "fasdhjkafhakjsdhfkjasf");
     console.log(reserveDate, "reserveDate");
     setBookDates(reserveDate);
     {
-      meal == "Diner"
-        ? handleCheck(meal, reserveDate[0]?.dates?.Diner)
-        : handleCheck(meal, reserveDate[0]?.dates?.Lunch);
+      lunchProps == "Diner"
+        ? handleCheck(lunchProps, reserveDate[0]?.dates?.Diner)
+        : handleCheck(lunchProps, reserveDate[0]?.dates?.Lunch);
     }
   };
 
+  const handleVenueType = (e) => {
+ 
+    e == "1" ? handleVenueName(venueId,"Lunch")  : handleVenueName(venueId,"Diner");
+  };
   const datess = bookDates?.dates || [];
   useEffect(() => {
     if (!Array.isArray(datess)) {
@@ -152,13 +154,10 @@ function Marqueedetail() {
     }
   }, [datess.length]);
 
-  const handleVenueType = (e) => {
-    console.log(e, "dsfsdffdsfsdf");
-    e == "1" ? setMeal("Lunch") : setMeal("Diner");
-  };
+ 
   const disabledStyle = {
-    backgroundColor: "#f2f2f2",
-    color: "#aaa", 
+    backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
+    color: "#aaa", // Set your desired text color for disabled dates
   };
   console.log("datessssssss", marqueeVenueNames);
   console.log(marqueeDates, "asdfasdfsdafasdfas");
@@ -268,7 +267,7 @@ function Marqueedetail() {
             </div>
           </div>
 
-          <p className=" font-roboto text-textColor text-justify mx-3">
+          <p className=" font-roboto text-textColor text-justify ">
             Aliquam erat volutpat. Morbi semper tempus quam. Aenean quis porta
             velit. Aliquam dictum neque lobortis ipsum hendrerit facilisis.
             Curabitur vel sapien convallis, convallis metus id, facilisis metus.
@@ -290,7 +289,7 @@ function Marqueedetail() {
             in faucibus. Ut viverra arcu a metus interdum, at laoreet elit
             accumsan.
           </p>
-          <p className="font-roboto mt-8 text-textColor text-justify mx-3">
+          <p className="font-roboto mt-8 text-textColor text-justify ">
             Nulla elementum enim quis nisi elementum, a placerat eros accumsan.
             Mauris aliquet tincidunt erat, at dignissim neque bibendum vel.
             Donec scelerisque odio at malesuada venenatis. Etiam vel lectus eu
@@ -396,14 +395,14 @@ function Marqueedetail() {
             </div>
           </div>
         </div>
-        <div className="lg:w-[30%] mx-3 lg:mx-7 ">
-          <div className="">
+        <div className="lg:w-[30%] ml-5">
+          <div className="-ml-6 lg:ml-0">
             <div className="w-[100%]  relative flex justify-between ">
               <Select
                 showSearch
                 defaultValue={{
-                  value: marqueeVenueNames[0].value,
-                  label: marqueeVenueNames[0].label,
+                  value: marqueeVenueNames?.[0]?.value,
+                  label: marqueeVenueNames?.[0]?.label,
                 }}
                 style={{
                   width: 210,
@@ -422,7 +421,7 @@ function Marqueedetail() {
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? "").toLowerCase())
                 }
-                onChange={handleVenueName}
+                onChange={(e)=>handleVenueName(e)}
                 options={marqueeVenueNames}
               />
               <Select
@@ -444,32 +443,52 @@ function Marqueedetail() {
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? "").toLowerCase())
                 }
-                onChange={handleVenueType}
+                onChange={(e)=>handleVenueType(e)}
                 options={lunchDinner}
                 value={meal}
               />
+              {/* <select
+                onClick={handleCheck}
+                className="w-[96%] outline-none p-2 rounded-md pl-2 appearance-none"
+              >
+                <option>Choose Here</option>
+                <option>Lunch</option>
+                <option>Dinner</option>
+              </select> */}
+              {/* <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center  text-gray-700">
+                <FontAwesomeIcon icon={faAngleDown} className="pr-8" />
+              </div> */}
             </div>
             <div>
               <div onClick={() => setIsShow(true)}>
-                <DayPicker
-                  className={`${
-                    isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
-                  } `}
-                  mode="multiple"
-                  disabled={days}
-                  min={1}
-                  max={5}
-                  selected={marqueeDates}
-                  onSelect={setMarqueeDates}
-                />
-              </div>
-            </div>
-            {/* <div>
-              <DayPicker 
-              className=""
+              <DayPicker
+                className={`${
+                  isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
+                }`}
+                // mode="range"
+                mode="multiple"
+                disabled={days}
+                min={2}
+                // max={5}
+                selected={marqueeDates}
+                onSelect={setMarqueeDates}
               />
-            </div> */}
-            <div className="flex items-center space-x-2 mb-3">
+              </div>
+              {/* <DayPicker
+                className={`${
+                  isLunch == `Lunch` ? `combinedClasses` : `combinedClasses2`
+                }`}
+                mode="range"
+                //  mode="multiple"
+                 disabled={days}
+                // min={2}
+                // max={5}
+                selected={venuesData}
+                // onSelect={setRange}
+                onSelect={setVenuesData}
+              /> */}
+            </div>
+            <div className="flex items-center space-x-2">
               <div className="bg-[orange] p-1 w-1 rounded-full"></div>
               <p>Lunch</p>
               <div className="bg-blue-600 p-1 w-1 rounded-full"></div>
@@ -477,7 +496,10 @@ function Marqueedetail() {
             </div>
           </div>
           {isShow && (
-            <div className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer mx-auto">
+            <div
+              onClick={handleButton}
+              className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer"
+            >
               <NextLink href={`/pages/details?id=${data?.userId}`} passHref>
                 <div onClick={handleButton}>
                   {loading ? <Loader /> : " Book Now"}

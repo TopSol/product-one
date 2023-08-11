@@ -66,6 +66,7 @@ function Slider() {
       id:fieldId,
       marqueeId:id
     }; 
+    console.log("usersdfsdfsdfdsff",users);
     try {
       await setDoc(doc(db, "contactUs", fieldId), users);
     } catch(error) {
