@@ -49,9 +49,11 @@ function MarqueeDetails({ item }) {
       value: item?.data?.venueId,
       label: item?.data?.name,
     }));
-    console.log(marqueeVenueName, "marqueeVenueName", id, arr);
+    console.log(marqueeVenueName, "marqueeVenueName");
     setName(marqueeVenueName);
+    addMarqueeVenueNames(marqueeVenueName)
   };
+  console.log(name, "namename");
 
   useEffect(() => {
     const getUser = async () => {
@@ -80,7 +82,7 @@ function MarqueeDetails({ item }) {
 
   };
   const handleClick = (id) => {
-    console.log(id, "asdfasdf");
+    console.log(id, "abcdefabcdef");
     setOpen((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
@@ -107,9 +109,11 @@ function MarqueeDetails({ item }) {
     setVenueId(id);
          console.log(id,"idddddd")
     const data = name.filter((item) => {
+      console.log(item, "itabcem");
+      
       return item?.value == id;
     });
-      console.log(selectedDate,"selectessssdDate")
+      console.log(data,"datadata")
     const reserveDate = selectedDate.map((item) => {
       return {
         id,
@@ -174,7 +178,10 @@ console.log(name,"meal",meal,venueId)
           <div
             className="cursor-pointer"
             onClick={() => {
-              handleClick(item?.data?.id);
+              handleClick(item?.data?.id)
+              {console.log(item, "itemitemitem");
+              
+              }
               // getVenueData(item?.id);
               getDatess(item?.id);
               handleVenueName(name[0].value)

@@ -151,9 +151,9 @@ function Marqueedetail() {
       setDates(formattedDates);
     }
   }, [datess.length]);
+console.log(dates, "datesdates");
 
   const handleVenueType = (e) => {
-    console.log(e, "dsfsdffdsfsdf");
     e == "1" ? setMeal("Lunch") : setMeal("Diner");
   };
   const disabledStyle = {
@@ -401,10 +401,10 @@ function Marqueedetail() {
             <div className="w-[100%]  relative flex justify-between ">
               <Select
                 showSearch
-                defaultValue={{
-                  value: marqueeVenueNames[0].value,
-                  label: marqueeVenueNames[0].label,
-                }}
+                // defaultValue={{
+                //   value: marqueeVenueNames[0].value,
+                //   label: marqueeVenueNames[0].label,
+                // }}
                 style={{
                   width: 210,
                   marginBottom: 20,
