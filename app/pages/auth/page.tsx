@@ -67,14 +67,14 @@ function Login() {
 
   return (
     <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
-      <div className="hidden md:block relative w-full lg:w-[42%] px-10 ">
+      <div className="hidden md:flex md:flex-col md:justify-center md:h-[100vh] relative w-full lg:w-[42%] px-1 ">
         <img
           src="https://account.asus.com/img/login_img02.png"
-          className=" lg:absolute inset-0 object-cover flex justify-center mx-auto mt-32 "
+          className="inset-0 object-cover flex justify-center mx-auto mt-32 "
         />
       </div>
 
-      <div className="w-full  lg:w-[60%] bg-bgColor  py-3   flex justify-center mx-auto items-start    ">
+      <div className="w-full flex justify-center items-center  lg:w-[60%] bg-bgColor  py-3   mx-auto    ">
         <Form
           name="basic"
           labelCol={{
@@ -95,12 +95,6 @@ function Login() {
           className="w-full mx-auto"
         >
           <div className="flex justify-center items-center mx-auto mt-2 mb-14">
-            {/* <img
-              src=""
-              // src="https://media.licdn.com/dms/image/D4D3DAQGLvK2QlE3Tlw/image-scale_191_1128/0/1679133066724?e=1689843600&v=beta&t=xhdlD8DfKXTKHe1tTXhhge8IW0k2I0lx8Bc9QMMATLQ"
-              alt=""
-              className="w-[70%]"
-            /> */}
           </div>
           <div className="flex flex-col justify-center items-center mx-auto">
             <h1 className=" flex justify-start items-start mb-5 text-2xl font-extrabold font-vollkorn  md:-ml-[205px] ">

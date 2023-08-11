@@ -87,10 +87,10 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
             </div>
             <div className=" flex justify-between  mb-3">
               <p className="font-bold">Dish</p>
-              <div onClick={() => setOpen(true)} className="flex flex-col">
+              <div  className="flex flex-col">
                
                 {
-                  <Link className="text-blue-600 underline" href="">
+                  <Link onClick={() => setOpen(true)} className="text-blue-600 underline" href="">
                     {hallInformation[0]?.Menu?.dishes.length} Dishes
                   </Link>
                 }
@@ -98,9 +98,10 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                   title="Modal 1000px width"
                   centered
                   open={open}
-                  onOk={hideModal}
+                  // onOk={hideModal}
                   onCancel={() => setOpen(false)}
-                  width={500}
+                  footer={null}
+                  // width={500}
                 >
                   {" "}
                   {hallInformation[0]?.Menu?.dishes?.map((item, index) => (

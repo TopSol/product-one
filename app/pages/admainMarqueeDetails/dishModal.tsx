@@ -37,7 +37,7 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
     const storage = getStorage();
     const [openEditVenue, setOpenEditVenue] = useState(false); 
     const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
-
+    const [status, setStatus] = useState();
       const fetchBlogs = async () => {
         try {
           const response = await getDocs(collection(db, "Menus"));
@@ -55,7 +55,7 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
       };
     const handleChange = (e) => {
         const { name, value } = e.target;
-    
+        setStatus(value)
         setUser((prevState) => ({
           ...prevState,
           [name]: name == 'price' ? Number(value) : value,

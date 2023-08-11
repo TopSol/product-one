@@ -201,7 +201,7 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
             mode="multiple"
             min={1}
             selected={days}
-            // onSelect={setDays}
+            onSelect={setDays}
           />
         )}
         {open[item?.data?.id] && (

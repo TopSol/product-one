@@ -111,7 +111,7 @@ function BookedDate() {
                         <p className="text-lg pl-1">Price</p>
                         <p className="w-[40%]"> Rs {item?.Menu?.totalDiscount + item?.selectedHall?.price}</p>
                       </div>
-                      <div className="flex justify-between border-b py-2 shadow">
+                      <div className="flex justify-between  py-2 shadow">
                         <div className="pl-3">
                           <a
                             href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
