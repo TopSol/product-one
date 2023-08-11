@@ -154,7 +154,7 @@ function BookedDate() {
                             item?.selectedHall?.price}
                         </p>
                       </div>
-                      <div className="flex justify-between border-b py-2 shadow">
+                      <div className="flex justify-between  py-2 shadow">
                         <div className="pl-3">
                           <a
                             href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
@@ -166,7 +166,7 @@ function BookedDate() {
                         <div>
                           <button
                             onClick={() => setIsModalOpen(true)}
-                            className="px-3 py-3 bg-blue-500 rounded-md mr-2"
+                            className="px-2 py-2 bg-blue-500 rounded-md mr-2"
                           >
                             Details
                           </button>
@@ -257,10 +257,10 @@ function BookedDate() {
                                   <li key={index}>{item}</li>
                                 ))}
                               </Modal>
-                          <button className="px-3 py-3 bg-green-500 rounded-md mr-2">
+                          <button className="px-2 py-2 bg-green-500 rounded-md mr-2">
                             Accept
                           </button>
-                          <button className="px-3 py-3 bg-red-500 rounded-md mr-2">
+                          <button className="px-2 py-2 bg-red-500 rounded-md mr-2">
                             Reject
                           </button>
                         </div>

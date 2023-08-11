@@ -41,12 +41,14 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
+  const [status, setStatus] = useState();
   const [blogs, setBlogs] = useState([]);
 
 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setStatus(value)
     console.log(name, value , "value");
     setUser((prevState) => ({
       ...prevState,

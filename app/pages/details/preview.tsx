@@ -93,64 +93,42 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
             </div>
             <div className=" flex justify-between  mb-3">
               <p className="font-bold">Dish</p>
-              <div  className="flex flex-col">
-               
-                {
-                  <Link onClick={showModal} className="text-blue-600 underline" href="">
-                    {hallInformation[0]?.Menu?.dishes.length} Dishes
-                  </Link>
-                }
-                {/* <Modal
-                  title="Modal 1000px width"
-                  centered
-                  open={open}
-                  onOk={hideModal}
-                  onCancel={() => setOpen(false)}
-                  width={500}
-                >
-                  {" "}
-                  {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-                </Modal> */}
-                <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                {" "}
-                  {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-      </Modal>
-              </div>
-              {/* <p> {`${hallInformation[0]?.Menu?.dish.map}`}</p> */}
-            </div>
-            <div className="flex justify-between  mb-3">
-              {/* <p>Total Rs</p>
               <div className="flex flex-col">
-              <p>{total}</p>
-              {hallInformation[0]?.selectedHall?.price}+{hallInformation[0]?.Menu?.price}
+                  {
+                    <Link
+                      onClick={showModal}
+                      className="text-blue-600 underline"
+                      href=""
+                    >
+                      {hallInformation[0]?.Menu?.dishes.length} Dishes
+                    </Link>
+                  }
+
+                  <Modal
+                    title="Dishes"
+                    open={isModalOpen}
+                    footer={null}
+                    onCancel={handleCancel}
+                  >
+                    {" "}
+                    {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </Modal>
               </div>
-              <p> {`${hallInformation[0]?.Menu?.dish.map}`}</p> */}
+             
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex justify-end ">
-        <button
-          className="border px-7 py-2 my-3 bg-bgColor rounded-md"
-          onClick={() => nextPage()}
-        >
-          Next
-        </button>
-      </div>
-      {/* <div className="flex justify-around items-center pb-2 ">
-        <div className=" border  "></div>
-        <div className="px-2 items-center text-center py-3">
-          <p> {`${hallInformation[0]?.selectedHall?.select}`}</p>
-          <p> {`${hallInformation[0]?.selectedHall?.price}`}</p>
+        <div className="flex justify-end ">
+          <button
+            className="border px-7 py-2 my-3 bg-bgColor rounded-md"
+            onClick={() => nextPage()}
+          >
+            Next
+          </button>
         </div>
-        <div className="border p-3 w-28 bg-slate-300 rounded-md">
-          <p className="text-center">{`${hallInformation[0]?.selectedHall?.capacity}`}</p>
-        </div>
-      </div> */}
+      </div>
     </div>
   );
 }
