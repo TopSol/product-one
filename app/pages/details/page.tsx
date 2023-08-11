@@ -11,7 +11,7 @@ import { collection, query, where, getDocs, doc,setDoc } from "firebase/firestor
 import { useStore } from "@/store";
 import Success from "./success";
 import { Button, message } from 'antd';
-
+  
 const initialFormState = {
   firstName: "",
   lastName: "",
@@ -85,10 +85,11 @@ function Slider() {
     try {
       const venuesQuery = query(collection(db, "Venues"), where("userId", "==", id));
       const menusQuery = query(collection(db, "Dish"), where("userId", "==", id));
-
-      const [venuesSnapshot, menusSnapshot] = await Promise.all([
+      const marqueeDishes = query(collection(db, "Menus"), where("userId", "==", id));
+      const [venuesSnapshot, menusSnapshot,dishSnapshot] = await Promise.all([
         getDocs(venuesQuery),
         getDocs(menusQuery),
+        getDocs(marqueeDishes),
       ]);
 
       let venueDataArr = [];
@@ -100,13 +101,16 @@ function Slider() {
       menusSnapshot.forEach((doc) => {
         menuDataArr.push(doc.data());
       });
-
-      setMarqueeData({ venues: venueDataArr, dish: menuDataArr });
+      let withoutVenueDish = [];
+      dishSnapshot.forEach((doc) => {
+        withoutVenueDish.push(doc.data());
+      });
+      setMarqueeData({ venues: venueDataArr, dish: menuDataArr ,withoutVenueDish:withoutVenueDish });
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-
+console.log(marqueeData,"marqueeDatamarqueeDatamarqueeData")
   useEffect(() => {
     let isMounted = true;
     fetchData().then(() => {
@@ -193,6 +197,7 @@ function Slider() {
             selectedMenu={selectedMenu}
             setMenuIndex={setMenuIndex}
             menuIndex={menuIndex}
+            withoutVenueDish={marqueeData.withoutVenueDish}
           />
         ) : slider == 3 ? (
           <Preview hallInformation={hallInformation} 

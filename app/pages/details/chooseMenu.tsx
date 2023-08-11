@@ -29,14 +29,23 @@ const menu = [
 ];
 const data = ["biryani", "chicken", "mutton"];
 
-function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish,setMenuIndex,menuIndex }) {
-  console.log(dish,"menusmenus",selectedMenu);
-  
+function ChooseMenu({
+  setSlider,
+  setSelectedMenu,
+  preview,
+  selectedMenu,
+  dish,
+  setMenuIndex,
+  menuIndex,
+  withoutVenueDish,
+}) {
+  console.log(withoutVenueDish, "ddddddddddddd");
+
   const [selectedDish, setSelectedDish] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const nextPage = () => {
-    console.log(menuIndex,"menuIndex")
-    if(menuIndex !== null){
+    console.log(menuIndex, "menuIndex");
+    if (menuIndex !== null) {
       preview();
       setSlider(3);
     }
@@ -50,6 +59,7 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish,set
   };
   const arr = selectedMenu.dishes;
   const AddDish = (item) => {
+    console.log(item, "item");
     const lowercaseItem = item.toLowerCase();
     const isDuplicate = arr.some(
       (existingItem) => existingItem.toLowerCase() === lowercaseItem
@@ -92,10 +102,10 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish,set
     "Mutton",
     "Chicken",
     "Biryani",
-  ]); 
-  const handleClick = (item,index) => {
+  ]);
+  const handleClick = (item, index) => {
     setSelectedMenu(item);
-    setMenuIndex(index)
+    setMenuIndex(index);
   };
   return (
     <div className="md:container mx-auto">
@@ -106,10 +116,8 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish,set
             className={`border p-3 rounded-md flex  w-4/5  flex-col mb-2 ml-3 cursor-pointer hover:bg-primaryColor hover:text-black h-48 ${
               menuIndex === index && `bg-primaryColor`
             }
-            `
-            
-          }
-            onClick={() => handleClick(item,index)}
+            `}
+            onClick={() => handleClick(item, index)}
           >
             <div>
               <p className="text-center text-xl">{item.name}</p>
@@ -119,47 +127,44 @@ function ChooseMenu({ setSlider, setSelectedMenu, preview, selectedMenu,dish,set
                 {item?.dishes?.map((dish, index) => {
                   if (index < 3) {
                     return <li key={index}>{dish}</li>;
-                    // return <li key={index}>{dish}</li>;
                   }
                   return null;
                 })}
               </ul>
             </div>
             <div className=" flex justify-center items-end my-auto w-full">
-              <p className="text-xl flex flex-col justify-end my-auto"> ${item.price}</p>
+              <p className="text-xl flex flex-col justify-end my-auto">
+                {" "}
+                ${item.price}
+              </p>
             </div>
           </div>
         ))}
       </div>
       <div className=" flex-wrap lg:flex items-center border rounded-md cursor-pointer mb-5 justify-between  ">
         <div className=" md:flex">
-          {data.map((item, index) => (
+          {withoutVenueDish.map((item, index) => (
             <div
               key={index}
-              className=" flex justify-center items-center p-3   "
-              onClick={() => AddDish(item)}
+              className=" flex justify-center items-center "
+              onClick={() => AddDish(item?.name)}
             >
-              <FontAwesomeIcon icon={faCirclePlus} />
-              <p className="pl-1 pr-3">
-                Add
-              </p>
-              <p className="border p-2  rounded-md font-semibold text-textColor font-roboto">
-                {item}
-              </p>
+              {item.type === "one Dish" && (
+                <>
+                <FontAwesomeIcon icon={faCirclePlus} />
+                <p className="pl-1 pr-3 ">Add</p>
+                </>
+              )}
+             
+              {item.type === "one Dish" && (
+                <p className="border p-2 rounded-md font-semibold text-textColor font-roboto">
+                  {item.name}
+                </p>
+              )}
             </div>
           ))}
         </div>
         <div className="  flex items-center  rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative mr-3 ">
-          {/* <div
-            className="border py-2 w-48  rounded-md relative"
-            onClick={() => setSelectedDish(!selectedDish)}
-          >
-            <div className="justify-between flex mx-2 "> 
-              Select More Dish
-              <FontAwesomeIcon icon={faCaretDown} />
-            </div>
-          </div> */}
-
           {selectedDish && (
             <div className="border  cursor-pointer w-48  absolute mt-10  ">
               {selectedOptions.map((item, index) => (

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DishModal from "./dishModal";
@@ -25,7 +25,7 @@ const initialFormState = {
   price: 0,
   dishes: [],
   discount: 0,
-  totalDiscount:0
+  totalDiscount: 0,
 };
 
 const handleChange = (value) => {
@@ -84,23 +84,23 @@ function Dish({
     const discountAmount =
       user.price && newValue ? (user.price * newValue) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
-    
+
     if (name === "discount") {
       const data = discountedPrice;
       setCalculatedDiscount(Math.floor(data));
     }
-  
+
     setUser((prevState) => ({
       ...prevState,
       [name]: newValue,
-      totalDiscount: Math.floor(discountedPrice), 
+      totalDiscount: Math.floor(discountedPrice),
     }));
   };
   useEffect(() => {
     const dishes = [];
     const DishPrice = Menus.map((item, index) => {
-      const data = { Price: item.price, Dish: item.name, status: item.status };
-      dishes.push({ label: item.name, value: item.name, status: item.status });
+      const data = { Price: item.price, Dish: item.name, status: item.status, type:item.type };
+      dishes.push({ label: item.name, value: item.name, status: item.status ,type:item.type });
       if (index === Menus.length - 1) setDishName(dishes);
       return data;
     });
@@ -110,7 +110,7 @@ function Dish({
       } else {
         return acc;
       }
-    }, 0); 
+    }, 0);
     setTotalPrice(totalPrice);
     setDishPrice(DishPrice);
     const fetchBlogs = async () => {
@@ -129,7 +129,7 @@ function Dish({
     };
     fetchBlogs();
   }, [addVenues, Menus]);
-console.log(Menus,"Menuesdfsdf")
+  console.log(Menus, "Menuesdfsdf");
   const AddDish = async () => {
     if (!user.name || !user.price || !user.dishes) {
       return;
@@ -138,7 +138,6 @@ console.log(Menus,"Menuesdfsdf")
     const discountAmount =
       user.price && user.discount ? (user.price * user.discount) / 100 : 0;
     const discountedPrice = user.price - discountAmount;
-   
 
     const DishId = Math.random().toString(36).substring(2);
     const users = {
@@ -186,16 +185,16 @@ console.log(Menus,"Menuesdfsdf")
   };
   const update = async (venueId) => {
     setLoading(true);
-    console.log("sdfasdfasdfasfdafdsafsfdf",user.dishes)
+    console.log("sdfasdfasdfasfdafdsafsfdf", user.dishes);
     try {
       await setDoc(doc(db, "Dish", venueId), user);
       const updatedIndex = Dishes.findIndex((dish) => dish.id === venueId);
-      console.log(updatedIndex,"updatedIndex")
+      console.log(updatedIndex, "updatedIndex");
       if (updatedIndex !== -1) {
         const updatedDishes = [...Dishes];
-        console.log(updatedDishes,"updatedDisssshes")
+        console.log(updatedDishes, "updatedDisssshes");
         updatedDishes[updatedIndex] = { ...user, id: venueId };
-        console.log(updatedDishes,"updatedDishes")
+        console.log(updatedDishes, "updatedDishes");
         addDishes(updatedDishes);
       } else {
         addDishes([...Dishes, { ...user, id: venueId }]);
@@ -295,36 +294,43 @@ console.log(Menus,"Menuesdfsdf")
           )}
         />
       </Table>
-      <Modal 
-        title= "Dishes Content"
+      <Modal
+        title="Dishes Content"
         open={open}
         onOk={hideModal}
         onCancel={hideModal}
         okText="ok"
         cancelText="cancel"
-        
       >
         <List
           bordered
           header={
-          <div 
-          className="flex justify-between font-extrabold "
-          
-          >
-          <p>Dishes</p>
-          <p>Price</p>
-          </div>}
+            <div className="flex justify-between font-extrabold ">
+              <p>Dishes</p>
+              <p>Price</p>
+            </div>
+          }
           dataSource={selectDish}
           renderItem={(dish, index) => (
-            <List.Item key={index}>  
-            
-                <p className={
-            dish.status === "Available" ? "flex justify-bet" : "text-red-400 flex justify-around"
-          }>{dish.Dish}</p>
-                <p className={
-            dish.status === "Available" ? "flex justify-bet" : "text-red-400 flex justify-around"
-          }>{dish.Price}</p>
-                  
+            <List.Item key={index}>
+              <p
+                className={
+                  dish.status === "Available"
+                    ? "flex justify-bet"
+                    : "text-red-400 flex justify-around"
+                }
+              >
+                {dish.Dish}
+              </p>
+              <p
+                className={
+                  dish.status === "Available"
+                    ? "flex justify-bet"
+                    : "text-red-400 flex justify-around"
+                }
+              >
+                {dish.Price}
+              </p>
             </List.Item>
           )}
         />
@@ -339,10 +345,13 @@ console.log(Menus,"Menuesdfsdf")
         bodyStyle={{ height: 650 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
-          <Button key="cancel" onClick={() => {
-            setModalOpen(false)
-            setUser("")
-            }}>
+          <Button
+            key="cancel"
+            onClick={() => {
+              setModalOpen(false);
+              setUser(" ");
+            }}
+          >
             Cancel
           </Button>,
           <Button
@@ -385,15 +394,35 @@ console.log(Menus,"Menuesdfsdf")
                     allowClear
                     style={{
                       width: "100%",
+                      padding: "10px 0px", // Corrected padding values
+                    }}
+                    value={user.dishes}
+                    placeholder="Please select"
+                    onChange={handleSelectionChange}
+                    options={dishName.filter(
+                      (item) =>
+                      
+                        // console.log(item,"itemddddditem")
+                        item?.status == "Available" &&
+                        item?.type == "Venue Dish"
+                      
+                        
+                    )}
+                  />
+                  {/* <Select
+                    mode="multiple"
+                    allowClear
+                    style={{
+                      width: "100%",
                       padding: "10px,0px",
                     }}
                     value={user.dishes}
                     placeholder="Please select"
                     onChange={handleSelectionChange}
                     options={dishName.filter(
-                      (item) => item.status === "Available"
+                      (item) => item.status === "Available" && item.type ==="Venue Dish"
                     )}
-                  />
+                  /> */}
                 </Space>
               </div>
             </div>
