@@ -4,7 +4,7 @@ import { db } from "@/app/firebase";
 import { Modal } from "antd";
 import Link from "next/link";
 function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
-  const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const fetchBlogs = async () => {
     try {
@@ -27,8 +27,14 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
   let b = parseInt(hallInformation[0]?.Menu?.Heating);
 
   const total = `${hallInformation[0]?.selectedHall?.price} + ${hallInformation[0]?.Menu?.price}`;
-  const hideModal = () => {
-    setOpen(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
   return (
     <div className="md:container mx-auto ">
@@ -87,14 +93,14 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
             </div>
             <div className=" flex justify-between  mb-3">
               <p className="font-bold">Dish</p>
-              <div onClick={() => setOpen(true)} className="flex flex-col">
+              <div  className="flex flex-col">
                
                 {
-                  <Link className="text-blue-600 underline" href="">
+                  <Link onClick={showModal} className="text-blue-600 underline" href="">
                     {hallInformation[0]?.Menu?.dishes.length} Dishes
                   </Link>
                 }
-                <Modal
+                {/* <Modal
                   title="Modal 1000px width"
                   centered
                   open={open}
@@ -106,7 +112,13 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                   {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
-                </Modal>
+                </Modal> */}
+                <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                {" "}
+                  {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+      </Modal>
               </div>
               {/* <p> {`${hallInformation[0]?.Menu?.dish.map}`}</p> */}
             </div>

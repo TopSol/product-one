@@ -163,6 +163,7 @@ export const useStore = create(
         set({ hallInformation: data, hallIndex: item });
       },
       addMarqueeVenueNames: (data) => {
+        console.log(data, "marqueeVenueNamesdddd");
         set({ marqueeVenueNames: data });
       },
       addMarqueeVenueDates: (data) => {
