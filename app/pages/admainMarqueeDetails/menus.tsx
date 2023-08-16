@@ -49,8 +49,16 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
       value: "1",
     },
     {
-      label: "one Dish",
+      label: "Drink",
       value: "2",
+    },
+    {
+      label: "Dessert",
+      value: "3",
+    },
+    {
+      label: "food",
+      value: "4",
     },
   ]);
   const handleChange = (e) => {
@@ -231,13 +239,22 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   };
   const handleMenuSelect = (e) => {
     console.log(e,"eeeeeee")
-    if(e === "1"){
-      setUser({ ...user, type: "Venue Dish" });
-      // setLunchType("1")
-    }
-    else if(e === "2"){
-      setUser({ ...user, type: "one Dish" });
-      // setLunchType("2")
+    switch (e) {  
+      case "1":
+        setUser({ ...user, type: "Venue Dish" });
+        break;
+      case "2":
+        setUser({ ...user, type: "Drink" });
+        break;
+      case "3":
+        setUser({ ...user, type: "Dessert" });
+        break;
+      case "4":
+        setUser({ ...user, type: "food" });
+        break;
+      default:
+       
+        break;
     }
   };
   console.log(user,"sdfsdffdsfsdfsdf")

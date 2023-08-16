@@ -110,7 +110,6 @@ function Slider() {
       console.error("Error fetching data:", error);
     }
   };
-console.log(marqueeData,"marqueeDatamarqueeDatamarqueeData")
   useEffect(() => {
     let isMounted = true;
     fetchData().then(() => {

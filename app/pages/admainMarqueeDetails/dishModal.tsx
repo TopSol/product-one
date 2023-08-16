@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Input, Table } from "antd";
+import { Button, Input, Select, Table } from "antd";
 import {
   getStorage,
   ref,
@@ -38,6 +38,24 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
     const [openEditVenue, setOpenEditVenue] = useState(false); 
     const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
     const [status, setStatus] = useState();
+    const [menu, setMenu] = useState([
+      {
+        label: "Venue Dish",
+        value: "1",
+      },
+      {
+        label: "Drink",
+        value: "2",
+      },
+      {
+        label: "Dessert",
+        value: "3",
+      },
+      {
+        label: "food",
+        value: "4",
+      },
+    ]);
       const fetchBlogs = async () => {
         try {
           const response = await getDocs(collection(db, "Menus"));
@@ -60,7 +78,7 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
           ...prevState,
           [name]: name == 'price' ? Number(value) : value,
         }));
-      };
+      }; 
     const HandleAddVenues = async () => {
       if (
         !user.name ||
@@ -110,6 +128,26 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
         fetchBlogs();
         setLoading(false);
       };
+      const handleMenuSelect = (e) => {
+        console.log(e,"eeeeeee")
+        switch (e) {  
+          case "1":
+            setUser({ ...user, type: "Venue Dish" });
+            break;
+          case "2":
+            setUser({ ...user, type: "Drink" });
+            break;
+          case "3":
+            setUser({ ...user, type: "Dessert" });
+            break;
+          case "4":
+            setUser({ ...user, type: "food" });
+            break;
+          default:
+            // setUser({ ...user, type: "Venue Dish" });
+            break;
+        }
+      }
     const updateVenue = async (venueId) => {
     const images = Object.values(user.image);
     const folderName = `images`;
@@ -144,6 +182,7 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
     setUser(initialFormState);
     setOpenEditVenue(false);
      };
+     
   return (
     <div>
         <Modal
@@ -223,14 +262,34 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
               </div>
               <label className="text-xl my-1">Type</label>
               <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <Input
+              <Select
+              showSearch
+              style={{
+                width: "100%",
+              }}
+              placeholder="Search to Select"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              filterSort={(optionA, optionB) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={menu}
+              onChange={handleMenuSelect}
+              value={user.type} 
+              // className=" select my-3  ml-5 "
+            />
+                {/* <Input
                   placeholder="Enter Type Here"
                   type="text"
                   name="type"
                   value={user.type}
                   onChange={handleChange}
                   className="rounded-none w-full py-2 lg:py-3"
-                />
+                /> */}
               </div>
             </div>
             <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
@@ -238,7 +297,7 @@ function DishModal({ dishModalOpen,setDishModalOpen,setModalOpen,loading,setLoad
               <div className="flex flex-col  md:flex-row  md:justify-between">
                 <TextArea
                   rows={4}
-                  maxLength={6}
+                  maxLength={200}
                   placeholder="Enter Description Here"
                   name="description"
                   typeof="text"
