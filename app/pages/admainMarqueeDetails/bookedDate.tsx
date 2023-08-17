@@ -9,8 +9,6 @@ import {
   query,
   where,
   getDocs,
-  addDoc,
-  setDoc,
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { getFormatDates } from "@/app/utils";
@@ -22,7 +20,6 @@ function BookedDate() {
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
   const [details, setDetails] = useState(false);
   const [detailsData, setDetailsData] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,14 +40,10 @@ function BookedDate() {
     };
     fetchData();
   }, []);
-  console.log(detailsData, "detailsDatadetailsDatadetailsData");
   return (
     <div className="md:container mx-auto">
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col md:flex-row flex-wrap">
         {customerInformation?.map((item, index) => {
-         
-          console.log(customerInformation, "customerInformation");
-
           return (
             <div
               key={index}
@@ -65,59 +58,61 @@ function BookedDate() {
                   />
                   <div className="w-full ">
                     <div className="flex flex-col ju ">
-                     <div>
-                     <div className="flex justify-between border-b py-2 shadow">
-                        <p className="text-lg pl-1">Name</p>
-                        <p className="w-[40%]">
-                          {item?.UserInformation.firstName +
-                            " " +
-                            item?.UserInformation.lastName}
-                        </p>
-                      </div>
-                      <div className="flex justify-between border-b  py-2 shadow">
-                        <p className=" text-lg pl-1">Phone Number</p>
-                        <p className="w-[40%] ">
-                          {item.UserInformation.PhoneNumber}
-                        </p>
-                      </div>
-                      <div className="flex justify-between border-b  py-2 shadow">
-                        <p className="text-lg pl-1">Email</p>
-                        <p className="w-[40%] break-words">
-                          {item?.UserInformation.email}
-                        </p>
-                      </div>
-                      <div className="flex justify-between border-b py-2 shadow">
-                        <p className="text-lg pl-1">Address</p>
-                        <p className="w-[40%]">
-                          {item.UserInformation.address}
-                        </p>
-                      </div>
-                      <div className="flex justify-between border-b py-2 shadow">
-                        <p className="text-lg pl-1">Dates</p>
-                        <div className="flex flex-col w-[40%] flex-end">
-                        {item?.dates.map((item) => {
-                          const dates=getFormatDates([item])
-                          const date = new Date(dates);
-                          const formattedDate = `${(date.getMonth() + 1)
-                            .toString()
-                            .padStart(2, "0")}-${date
-                              .getDate()
-                              .toString()
-                              .padStart(2, "0")}-${date.getFullYear()}`;
-                              return <p className="w-[100%]">{formattedDate}</p>;
+                      <div>
+                        <div className="flex justify-between border-b py-2 shadow">
+                          <p className="text-lg pl-1">Name</p>
+                          <p className="w-[40%]">
+                            {item?.UserInformation.firstName +
+                              " " +
+                              item?.UserInformation.lastName}
+                          </p>
+                        </div>
+                        <div className="flex justify-between border-b  py-2 shadow">
+                          <p className=" text-lg pl-1">Phone Number</p>
+                          <p className="w-[40%] ">
+                            {item.UserInformation.PhoneNumber}
+                          </p>
+                        </div>
+                        <div className="flex justify-between border-b  py-2 shadow">
+                          <p className="text-lg pl-1">Email</p>
+                          <p className="w-[40%] break-words">
+                            {item?.UserInformation.email}
+                          </p>
+                        </div>
+                        <div className="flex justify-between border-b py-2 shadow">
+                          <p className="text-lg pl-1">Address</p>
+                          <p className="w-[40%]">
+                            {item.UserInformation.address}
+                          </p>
+                        </div>
+                        <div className="flex justify-between border-b py-2 shadow">
+                          <p className="text-lg pl-1">Dates</p>
+                          <div className="flex flex-col w-[40%] flex-end">
+                            {item?.dates.map((item) => {
+                              const dates = getFormatDates([item]);
+                              const date = new Date(dates);
+                              const formattedDate = `${(date.getMonth() + 1)
+                                .toString()
+                                .padStart(2, "0")}-${date
+                                .getDate()
+                                .toString()
+                                .padStart(2, "0")}-${date.getFullYear()}`;
+                              return (
+                                <p className="w-[100%]">{formattedDate}</p>
+                              );
                             })}
-                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-between border-b py-2 shadow">
+                          <p className="text-lg pl-1">Price</p>
+                          <p className="w-[40%]">
+                            {" "}
+                            Rs{" "}
+                            {item?.Menu?.totalDiscount +
+                              item?.selectedHall?.price}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex justify-between border-b py-2 shadow">
-                        <p className="text-lg pl-1">Price</p>
-                        <p className="w-[40%]">
-                          {" "}
-                          Rs{" "}
-                          {item?.Menu?.totalDiscount +
-                            item?.selectedHall?.price}
-                        </p>
-                      </div>
-                     </div>
                       <div className="flex justify-between  py-2 shadow">
                         <div className="pl-3">
                           <a
@@ -129,7 +124,8 @@ function BookedDate() {
                         </div>
                         <div>
                           <button
-                            onClick={() =>{ setIsModalOpen(true)
+                            onClick={() => {
+                              setIsModalOpen(true);
                               setDetailsData(item);
                             }}
                             className="px-2 py-2 bg-blue-500 rounded-md mr-2"
@@ -176,7 +172,7 @@ function BookedDate() {
                                 >
                                   {detailsData?.Menu?.dishes.length} Dishes
                                 </Link>
-                              }  
+                              }
                             </div>
                             <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
                               <p>Price</p>
@@ -192,16 +188,16 @@ function BookedDate() {
                             </div>
                           </Modal>
                           <Modal
-                                title="Dishes"
-                                open={isNestedModalOpen}
-                                footer={null}
-                                centered
-                                onCancel={() => setIsNestedModalOpen(false)}
-                              >
-                                {" "}
-                                {detailsData?.Menu?.dishes?.map((item, index) => (
-                                  <li key={index}>{item}</li>
-                                ))}
+                            title="Dishes"
+                            open={isNestedModalOpen}
+                            footer={null}
+                            centered
+                            onCancel={() => setIsNestedModalOpen(false)}
+                          >
+                            {" "}
+                            {detailsData?.Menu?.dishes?.map((item, index) => (
+                              <li key={index}>{item}</li>
+                            ))}
                           </Modal>
                           <button className="px-2 py-2 bg-green-500 rounded-md mr-2">
                             Accept

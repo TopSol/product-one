@@ -133,7 +133,6 @@ function details() {
   const closeModal = () => {
     setModalOpen(false);
   };
-
   useEffect(() => {
     if (map) {
       setInterval(function () {
@@ -155,6 +154,8 @@ function details() {
     }),
     []
   );
+console.log(details.image,"dsfsdfsdff")
+
   console.log(userInformation, "userInformation");
   const router = useRouter();
   const handleRegistration = async () => {
@@ -169,6 +170,8 @@ function details() {
       );
       const user = userCredential.user;
       const images = Object.values(details.image);
+      console.log(images, "fffffffff");
+      
       const folderName = `Marquee`;
       const imageUrls = await Promise.all(
         images.map(async (image) => {
