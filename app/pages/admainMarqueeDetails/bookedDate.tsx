@@ -45,14 +45,15 @@ function BookedDate() {
 
   return (
     <div className="md:container mx-auto">
-      <div className="flex flex-col md:flex-row">
+      {/* <div className="flex flex-col md:flex-row flex-wrap"> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-[100%]">
         {customerInformation?.map((item, index) => {
           console.log(customerInformation, "customerInformation");
 
           return (
             <div
               key={index}
-              className=" justify-center items-center md:m-2 border border-gray-300 md:w-[30%] rounded-md shadow-md my-2"
+              className=" justify-center items-center md:m-2 border border-gray-300 rounded-md shadow-md my-2"
             >
               <div className="w-full">
                 <div className="flex flex-col">
@@ -90,15 +91,7 @@ function BookedDate() {
                         </p>
                       </div>
 
-                      {/* <div className="flex justify-between border-b py-2 shadow">
-                        <p className="text-lg pl-1">Hall Name</p>
-                        <p className="w-[40%]">{item?.selectedHall.name}</p>
-                      </div>
-                      <div className="flex justify-between border-b py-2 shadow">
-                        <p className="text-lg pl-1">Capacity</p>
-                        <p className="w-[40%]">
-                        </p>
-                      </div> */}
+                      
                       <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Dates</p>
                         <div className="flex flex-col w-[40%] flex-end">
@@ -115,36 +108,7 @@ function BookedDate() {
                             })}
                             </div>
                       </div>
-                      {/* <div className="flex justify-between border-b py-2 shadow">
-                        <p className="text-lg pl-1">Dates</p>
-                        <div className="flex flex-col w-[40%] flex-end">
-                          {
-                            <Link onClick={()=>setIsDatesModalOpen(true)} className="text-blue-600 underline" href="">
-                              {item.dates.length} Dates
-                            </Link>
-                          }
-                          <Modal
-                            title="Basic Modal"
-                            open={isDatesModalOpen}
-                            onCancel={()=>setIsDatesModalOpen(false)}
-                           footer={null}
-                          >
-                            {" "}
-                          {item?.dates.map((item) => {
-                          const dates=getFormatDates([item])
-                          const date = new Date(dates);
-                          const formattedDate = `${(date.getMonth() + 1)
-                            .toString()
-                            .padStart(2, "0")}-${date
-                              .getDate()
-                              .toString()
-                              .padStart(2, "0")}-${date.getFullYear()}`;
-                              return <p className="w-[100%]">{formattedDate}</p>;
-                            })}
-                           
-                          </Modal>
-                        </div>
-                      </div> */}
+                    
                       <div className="flex justify-between border-b py-2 shadow">
                         <p className="text-lg pl-1">Price</p>
                         <p className="w-[40%]">
@@ -154,22 +118,6 @@ function BookedDate() {
                             item?.selectedHall?.price}
                         </p>
                       </div>
-                      <div className="flex justify-between  py-2 shadow">
-                        <div className="pl-3">
-                          <a
-                            href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
-                            target="_blank"
-                          >
-                            <WhatsAppOutlined className="text-green-500 text-3xl" />
-                          </a>
-                        </div>
-                        <div>
-                          <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="px-2 py-2 bg-blue-500 rounded-md mr-2"
-                          >
-                            Details
-                          </button>
                           <Modal
                             centered
                             open={isModalOpen}
@@ -257,13 +205,29 @@ function BookedDate() {
                                   <li key={index}>{item}</li>
                                 ))}
                               </Modal>
+                      <div className="flex justify-between flex-wrap  py-2 shadow mx-3">
+                       
+                          <a className="mr-3"
+                            href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
+                            target="_blank"
+                          >
+                            <WhatsAppOutlined className="text-green-500 text-3xl" />
+                          </a>
+                        
+                        
+                          <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="px-2 py-2 bg-blue-500 rounded-md mr-2"
+                          >
+                            Details
+                          </button>
                           <button className="px-2 py-2 bg-green-500 rounded-md mr-2">
                             Accept
                           </button>
                           <button className="px-2 py-2 bg-red-500 rounded-md mr-2">
                             Reject
                           </button>
-                        </div>
+                        
                       </div>
                     </div>
                   </div>

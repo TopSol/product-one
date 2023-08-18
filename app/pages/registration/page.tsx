@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import * as React from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
@@ -8,15 +7,20 @@ import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { db } from "@/app/firebase";
+import { message } from "antd";
 import { useRouter } from "next/navigation";
-import Modal from "@/app/component/Modal";
+import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faL, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { divIcon } from "leaflet";
 import Loader from "@/app/component/Loader";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useStore } from "../../../store";
 import "./style.css";
+import ImageCropper from "@/app/component/ImageCropper";
+import React, { useCallback } from "react";
+import Demo from "@/app/component/ImageCropper";
+import { Point, Area } from "react-easy-crop/types";
 import {
   getStorage,
   ref,
@@ -102,21 +106,21 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
 
 function details() {
   const [details, setDetails] = useState(initialValue);
-  const { userInformation, addUser, addRegistration, registration } =
-    useStore();
+  const [modal1Open, setModal1Open] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [map, setMap] = useState(null);
-  const storage = getStorage();
   const [modalOpen2, setModalOpen2] = useState(false);
   const [location, setLocation] = useState({});
   const [value, setValue] = useState();
-  const [markerPos, setMarkerPos] = useState({
-    lat: 55.702868,
-    lng: 37.530865,
-  });
-  const [loading, setLoading] =useState(false)
-  console.log(registration, "registration");
+  const [loading, setLoading] = useState(false);
+  const [markerPos, setMarkerPos] = useState();
+  const [open, setOpen] = useState(false);
+  const [imageDiemension, setImageDiemension] = useState(false);
+  const [cropImage, setCropImage] = useState({});
+  const [image, setImage] = useState("");
   const { TextArea } = Input;
+  const { addUser, addRegistration } = useStore();
+  const storage = getStorage();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -130,6 +134,7 @@ function details() {
     e.preventDefault();
     setModalOpen(true);
   };
+
   const closeModal = () => {
     setModalOpen(false);
   };
@@ -155,12 +160,15 @@ function details() {
     }),
     []
   );
-  console.log(userInformation, "userInformation");
   const router = useRouter();
-  const handleRegistration = async () => {
-    setLoading((pre)=>(!pre))
+  console.log(cropImage, "cropImagecropImage");
 
-    console.log(details, "details");
+  const handleRegistration = async () => {
+    if (!cropImage) {
+      message.warning("Please select a valid image");
+      return;
+    }
+    setLoading((pre) => !pre);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -168,19 +176,11 @@ function details() {
         details.password
       );
       const user = userCredential.user;
-      const images = Object.values(details.image);
-      const folderName = `Marquee`;
-      const imageUrls = await Promise.all(
-        images.map(async (image) => {
-          const fileName = `${folderName}/${image.name}`;
-          const storageRef = ref(storage, fileName);
-          await uploadBytes(storageRef, image);
-          const urls = await getDownloadURL(storageRef);
-          console.log("imageUrls123", urls);
-          return urls;
-        })
-      );
-      console.log(imageUrls, "imageUrls");
+      const fileName = `Marquee/Marquee`;
+      const storageRef = ref(storage, fileName);
+      await uploadBytes(storageRef, cropImage);
+      const urls = await getDownloadURL(storageRef);
+      console.log("imageUrls123", urls);
       const VenueId = Math.random().toString(36).substring(2);
       const userInfo = {
         userId: user.uid,
@@ -189,26 +189,26 @@ function details() {
         address: details.address,
         phoneNumber: value,
         capacity: details.capacity,
-        locations : location,
-        images: imageUrls,
+        locations: location,
+        images: [urls],
         description: details.marqueeDetails,
         id: VenueId,
       };
       console.log(userInfo, "userInfo");
-      // await addDoc(collection(db, "users"), userInfo);
       await setDoc(doc(db, "users", user.uid), userInfo);
+      console.log(userInfo, "userInfo 2");
       if (userInfo) {
         addRegistration(userInfo);
         addUser(user.uid);
         router.push("/pages/auth");
-        // setLoading((pre)=>(!pre))
-        setLoading(true)
+        setLoading(true);
       }
       console.log("user", user);
     } catch (error) {
       console.log(error, "error");
     }
   };
+
   const iconMarkup = renderToStaticMarkup(
     <FontAwesomeIcon icon={faLocationDot} className="text-4xl text-blue-600" />
   );
@@ -217,6 +217,7 @@ function details() {
     className: "custom-marker-icon",
     iconSize: [40, 40],
   });
+  console.log(details.image, "details");
 
   useEffect(() => {
     const handleResize = () => {
@@ -234,6 +235,28 @@ function details() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+ console.log(open, "openopen");
+  const handleImageDiemension = async (e) => {
+    let images = e.target.files;
+    for (const image of images) {
+      const img = new Image();
+      img.src = URL.createObjectURL(image);
+      console.log(cropImage, "img.srcimg.src");
+
+      await new Promise((resolve) => {
+        img.onload = function () {
+          if (img.width > 2000 && img.height > 1300) {
+            setModal1Open(true);
+            setImage(img.src);
+            message.success("Image dimensions are valid.");
+          } else {
+            message.warning("Image dimensions are not valid.");
+          }
+          resolve("");
+        };
+      });
+    }
+  };
 
   return (
     <div>
@@ -247,7 +270,7 @@ function details() {
           ) : null}
         </div>
 
-        <div className="w-full lg:w-[35%] px-8 md:px-14  rounded-md shadow-xl overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200  flex-col flex ">
+        <div className="w-full lg:w-[35%] px-8 md:px-14  rounded-md shadow-xl overflow-y-auto  flex-col flex ">
           <h1 className=" mb-2 text-[28px] pt-2 md:text-3xl font-vollkorn text-primaryColor items-center">
             Marquee Registration
           </h1>
@@ -390,21 +413,16 @@ function details() {
                   rules={[
                     {
                       required: true,
-                      message: "Please fillout the capacity input!",
+                      message: "Please fill out the capacity input!",
                     },
                   ]}
                 >
                   <Input
-                    className=" outline-none rounded md:w-[25vw] py-3 "
+                    className="outline-none rounded md:w-[25vw] py-3"
                     placeholder="Enter Capacity Here"
                     type="file"
                     name="image"
-                    value={details.image}
-                    multiple
-                    onChange={(e) => {
-                      setDetails({ ...details, image: e.target.files });
-                    }}
-                    // onChange={handleChange}
+                    onChange={(e) => handleImageDiemension(e)}
                   />
                 </Form.Item>
               </div>
@@ -448,7 +466,6 @@ function details() {
                     maxLength={200}
                     placeholder="Enter Description Here"
                     name="marqueeDetails"
-                    // type="text"
                     value={details.marqueeDetails}
                     onChange={handleChange}
                     className="rounded-none w-full py-2 lg:py-3"
@@ -466,14 +483,10 @@ function details() {
                 </div>
                 <div className=" text-center mx-2">
                   <button
-                    className="flex justify-center border py-2 px-2 lg:px-3 rounded-md  bg-primaryColor"
+                    className="flex justify-center border py-2 w-28 lg:px-3 rounded-md  bg-primaryColor"
                     onClick={handleRegistration}
                   >
-                   {
-                    loading ? 
-                    <Loader/> : 
-                    "Register Now"
-                   } 
+                    {loading ? <Loader /> : "Register Now"}
                   </button>
                 </div>
               </div>
@@ -513,8 +526,20 @@ function details() {
           </Marker>
         </MapContainer>
       </Modal>
+
+      <Modal
+        open={modal1Open}
+        onCancel={() => setModal1Open(false)}
+        width={2000}
+        centered
+      >
+        <Demo
+          image={image}
+          setModal1Open={setModal1Open}
+          setCropImage={setCropImage}
+        />
+      </Modal>
     </div>
   );
 }
-
 export default details;

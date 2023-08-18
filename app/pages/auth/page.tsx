@@ -169,9 +169,7 @@ function Login() {
             >
               <div>
 
-              {
-                loading? <Loader/> : "Register"
-              }
+              Register
               </div>
               
             </Link>
