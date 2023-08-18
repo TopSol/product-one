@@ -138,7 +138,6 @@ function details() {
   const closeModal = () => {
     setModalOpen(false);
   };
-
   useEffect(() => {
     if (map) {
       setInterval(function () {
@@ -494,11 +493,12 @@ function details() {
           </div>
         </div>
       </div>
-      <Modal isOpen={modalOpen} onClose={closeModal}>
+      <Modal open={modalOpen} onCancel={closeModal} width={1000}>
         <MapContainer
           center={position}
           zoom={20}
           scrollWheelZoom={false}
+          
           style={{ height: "500px", width: "100%" }}
           whenCreated={setMap}
         >

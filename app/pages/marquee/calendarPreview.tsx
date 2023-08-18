@@ -4,7 +4,7 @@ import { Radio, Select } from "antd";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
-function CalendarPreview({item,isLunch,setIsLunch,setDays,days,setOpen,open,handleVenueName,setName,name}) {
+function CalendarPreview({item,isLunch,setDays,days,open,handleVenueName,setName,name}) {
     const [value, setValue] = useState("1")
     const [meal,setMeal]=useState("Lunch")
   return (

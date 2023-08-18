@@ -448,27 +448,11 @@ function Availability() {
     });
   };
   console.log(selectedVenue, "selectedVenue");
-  // const update = async (id, venueDate) => {
-  //   console.log(venueDate, "venueDate");
-  //   const NotAvailableDate = {
-  //     dates: venueDate.dates,
-  //     marqueeId: venueDate.userId,
-  //     VenueId: venueDate.venueId,
-  //   };
-  //   console.log(NotAvailableDate, "NotAvailableDate");
-  //   try {
-  //     await setDoc(doc(db, "BookDate", id), NotAvailableDate);
-  //     console.log("Document successfully updated!");
-  //   } catch (error) {
-  //     console.log(error, "error");
-  //   }
-  // };
+  
   const update = async (id, venueDate, venueDates) => {
     console.log(venueDate, "venueDate");
     const NotAvailableDate = {
-      // dates: venueDate.dates,
       id: venueDate.userId,
-      // VenueId: venueDate.venueId,
       dates: venueDates,
     };
     console.log(NotAvailableDate, "NotAvailableDate");

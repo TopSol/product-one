@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Input, Popconfirm, Table } from "antd";
+import { Button, Input, Popconfirm, Select, Table } from "antd";
 import Loader from "../../component/Loader";
 import { Image, Radio } from "antd";
 
@@ -42,10 +42,25 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
   const [status, setStatus] = useState();
-  const [blogs, setBlogs] = useState([]);
-
-
-
+  const [lunchType, setLunchType] = useState("0");
+  const [menu, setMenu] = useState([
+    {
+      label: "Venue Dish",
+      value: "1",
+    },
+    {
+      label: "Drink",
+      value: "2",
+    },
+    {
+      label: "Dessert",
+      value: "3",
+    },
+    {
+      label: "food",
+      value: "4",
+    },
+  ]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setStatus(value)
@@ -222,7 +237,27 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     setOpenEditVenue(false);
     setLoading((prevState) => !prevState);
   };
-  console.log(user, "usdddder");
+  const handleMenuSelect = (e) => {
+    console.log(e,"eeeeeee")
+    switch (e) {  
+      case "1":
+        setUser({ ...user, type: "Venue Dish" });
+        break;
+      case "2":
+        setUser({ ...user, type: "Drink" });
+        break;
+      case "3":
+        setUser({ ...user, type: "Dessert" });
+        break;
+      case "4":
+        setUser({ ...user, type: "food" });
+        break;
+      default:
+       
+        break;
+    }
+  };
+  console.log(user,"sdfsdffdsfsdfsdf")
   return (
     <div className="md:px-5">
       <Table dataSource={Menus} className="myTable">
@@ -309,9 +344,6 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
         className="text-center"
         centered
         open={modalOpen}
-        // onOk={() =>
-        //   openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
-        // }
         onCancel={() => setModalOpen(false)}
         width={700}
         bodyStyle={{ height: 800 }}
@@ -384,14 +416,34 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
               </div>
               <label className="text-xl my-1">Type</label>
               <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <Input
+              <Select
+              showSearch
+              style={{
+                width: "100%",
+              }}
+              placeholder="Search to Select"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              filterSort={(optionA, optionB) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={menu}
+              onChange={handleMenuSelect}
+              value={user.type} 
+              // className=" select my-3  ml-5 "
+            />
+                {/* <Input
                   placeholder="Enter Type Here"
                   type="text"
                   name="type"
                   value={user.type}
                   onChange={handleChange}
                   className="rounded-none w-full py-2 lg:py-3"
-                />
+                /> */}
               </div>
             </div>
             <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
