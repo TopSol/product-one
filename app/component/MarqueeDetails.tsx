@@ -11,7 +11,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { useStore } from "@/store";
-function MarqueeDetails({ item }) {
+function MarqueeDetails({ item,filterMarqueeWithPrice }) {
   const { addDateKey, lunchDinner,addMarqueeVenueNames,marqueeVenueName,addMarqueeVenueDates } = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
