@@ -9,53 +9,72 @@ import { collection, getDocs } from "firebase/firestore";
 import "./style.css";
 import MarqueeDetails from "@/app/component/MarqueeDetails";
 import { Input } from "antd";
-import { DayPicker } from "react-day-picker";
+
+import { format } from 'date-fns';
+import { DateRange, DayPicker } from 'react-day-picker';
 import Modal from "antd/es/modal/Modal";
 import { getFormatDates } from "@/app/utils";
+const pastMonth = new Date();
 function Marquee() {
-  const { Venues } = useStore();
-  const initialDays: Date[] = [];
   const [sliderValue, setSliderValue] = useState(300);
   const [userData, setUserData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [venuesPrice, setVenuesPrice] = useState([]);
+  const [filterMarqueeWithPrice, setFilterMarqueeWithPrice] = useState([]); // [
   const [filteredVenuesPrice, setFilteredVenuesPrice] = useState([]);
-  const [selected, setSelected] = React.useState<Date[] | undefined>(
-    initialDays
-  );
+  const [controlPrice,setControlPrice]=useState([])
+  const [bookDate,setBookDate]=useState([])
+  const [range, setRange] = useState<DateRange | undefined>();
   const handleSliderChange = async (event) => {
-    const price=Number(event.target.value)
-     setSliderValue( price);
-      calculatePrice(price);
+    const price = Number(event.target.value);
+    setSliderValue(price);
+    calculatePrice(price);
   };
   const calculatePrice = (value) => {
-    const filteredVenues = venuesPrice.filter(item => {
-      console.log(item?.data?.price, "<<<<<", value);
+    const filteredVenues = venuesPrice.filter((item) => {
       return item?.data?.price < value;
     });
-    console.log(filteredVenues,"filterednues",userData)
     let arr = [];
-    userData.map((item) => {
-      filteredVenues.map((item1)=>{
-        // console.log(item.data.userId,"item.data.userId",item1.data.userId)
-        if(item.data.userId.includes(item1.data.userId)){
-          console.log(item,"itemi")
-          if(!arr.includes(item)){
-            arr.push(item)
+    const data=controlPrice.length?controlPrice:userData
+    data.map((item) => {
+      filteredVenues.map((item1) => {
+        if (item.data.userId.includes(item1.data.userId)) {
+          console.log(item, "itemi");
+          if (!arr.includes(item)) {
+            arr.push(item);
           }
-          // arr.push(item)
         }
-      })
+      });
     });
-    setUserData(arr)
-    setFilteredVenuesPrice(filteredVenues)
-    return filteredVenues;
+    setFilterMarqueeWithPrice(arr);
+    setFilteredVenuesPrice(arr);
   };
+  const handleSittingCapacity =(e)=>{
+  const capacity=Number(e.target.value)
+  const filteredVenues = venuesPrice.filter((item) => {
+    return capacity > item?.data?.minCapacity ;
+  });
+  let arr = [];
+  const data=filteredVenuesPrice.length ? filteredVenuesPrice : userData
+  data.map((item) => {
+    filteredVenues.map((item1) => {
+      if (item.data.userId.includes(item1.data.userId)) {
+        if (!arr.includes(item)) {
+          arr.push(item);
+        }
+      }
+    });
+  });
+  setFilterMarqueeWithPrice(arr);
+  setControlPrice(arr)
+
+  }
   console.log(userData, "userDatauserData");
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
       const venueSnapshot = await getDocs(collection(db, "Venues"));
+      const bookDateSnapshot = await getDocs(collection(db, "bookDate"));
       const dataArr = [];
       querySnapshot.forEach((doc) => {
         dataArr.push({ id: doc.id, data: doc.data() });
@@ -64,16 +83,51 @@ function Marquee() {
       venueSnapshot.forEach((doc) => {
         VenueArr.push({ id: doc.id, data: doc.data() });
       });
+      const bookDateArr = [];
+      bookDateSnapshot.forEach((doc) => {
+        bookDateArr.push({ id: doc.id, data: doc.data() });
+      });
       setVenuesPrice(VenueArr);
       setUserData(dataArr);
+      setBookDate(bookDateArr)
     };
     getUser();
   }, []);
+  console.log(bookDate,"bookDatebookDate")
   useEffect(() => {
-    const dates = getFormatDates([selected]);
-    console.log(dates, "datesdatesdates");
-  }, [selected]);
-  console.log(selected, "dsfsdf");
+    const dates = getFormatDates([range]);
+    const startDate = new Date(dates[0]?.from);
+    const endDate = new Date(dates[0]?.to);
+    venuesPrice.map((item1) => {
+      console.log( item1?.data?.venueId,"sdfsdfsdfdsfsdf")
+      bookDate.map((item2)=>{
+        // item2?.data?.dates?.map((item3)=>{
+        //   const date=new Date(item3)
+        //   if(item1?.data?.venueId===item2?.data?.venueId){
+        //     if(date>=startDate && date<=endDate){
+        //       console.log(item1?.data?.venueId,"item1?.data?.venueId")
+        //     }
+        //   }
+        // })
+        console.log(item2?.data?.dates,"dfsdfsdfddddsddfsdf")
+      })
+      // console.log(item?.data?.venueId, "itemdatauserId");
+    });
+    console.log(startDate,"endDate", endDate,"endDate");
+  }, [range]);
+
+  let footer = <p>Select Date</p>;
+  if (range?.from) {
+    if (!range.to) {
+      footer = <p>{format(range.from, 'PPP')}</p>;
+    } else if (range.to) {
+      footer = (
+        <p>
+          {format(range.from, 'PPP')}–{format(range.to, 'PPP')}
+        </p>
+      );
+    }
+  }
   return (
     <>
       <div>
@@ -90,38 +144,16 @@ function Marquee() {
             <div>
               <h1 className="font-vollkorn text-xl ">Booking Details</h1>
               <div
-                className="flex flex-col w-[100%] rounded-md flex-end border py-5 justify-between"
+                className="flex flex-col w-[100%] rounded-md flex-end border py-3 pl-2 justify-between"
                 onClick={() => setIsModalOpen((pre) => !pre)}
               >
-                {selected?.map((item) => {
-                  const dates = getFormatDates([item]);
-                  const date = new Date(dates);
-                  const formattedDate = `${(date.getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0")}-${date
-                    .getDate()
-                    .toString()
-                    .padStart(2, "0")}-${date.getFullYear()}`;
-                  return <p className="w-[100%]">{formattedDate}</p>;
-                })}
+                {footer}
               </div>
-              {/* <Input
-              type="text"
-              placeholder="Check In  Check Out"
-              value={ selected}
-              className="py-3 border-r-gray-200 mt-6 border-[1px] outline-none rounded-md px-3 w-full "
-              onClick={() => setIsModalOpen((pre)=> !pre)}
-            /> */}
-              {/* <input
-              type="text"
-              placeholder="Check In  Check Out"
-              className="py-3 border-r-gray-200 mt-6 border-[1px] outline-none rounded-md px-3 w-full "
-              // onClick={() => setIsModalOpen((pre)=> !pre)}
-            /> */}
               <input
                 type="text"
-                placeholder="Guest 1"
+                placeholder="maximum capacity"
                 className="py-3 border-r-gray-200 mt-6 border-[1px] outline-none rounded-md px-3 w-full "
+                onChange={handleSittingCapacity}
               />
             </div>
             <div>
@@ -217,8 +249,8 @@ function Marquee() {
             </div>
           </div>
           <div className="w-full  lg:w-[75%]">
-            { userData.map((item, index) => {
-              return <MarqueeDetails key={index} item={item} />;
+            {(filterMarqueeWithPrice.length || sliderValue > 300 ? filterMarqueeWithPrice : userData).map((item, index) => {
+              return <MarqueeDetails key={index} item={item} filterMarqueeWithPrice={filterMarqueeWithPrice} />;
             })}
           </div>
         </div>
@@ -230,12 +262,14 @@ function Marquee() {
         onCancel={() => setIsModalOpen((pre) => !pre)}
         footer={null}
       >
-        <DayPicker
-          style={{ width: "100%" }}
-          mode="multiple"
-          selected={selected}
-          onSelect={setSelected}
-        />
+      <DayPicker
+      id="test"
+      mode="range"
+      defaultMonth={pastMonth}
+      selected={range}
+      footer={footer}
+      onSelect={setRange}
+    />
       </Modal>
     </>
   );

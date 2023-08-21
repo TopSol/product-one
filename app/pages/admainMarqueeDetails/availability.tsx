@@ -455,7 +455,6 @@ function Availability() {
       id: venueDate.userId,
       dates: venueDates,
     };
-    console.log(NotAvailableDate, "NotAvailableDate");
     try {
       await setDoc(doc(db, "bookDate", venueDate.userId), NotAvailableDate);
       console.log("Document successfully updated!");
