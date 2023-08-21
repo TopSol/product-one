@@ -26,9 +26,6 @@ function Success() {
         >
         ok
         </button>
-      {/* <Button type="primary" onClick={openMessage}>
-        Open the message box
-      </Button> */}
       </div>
     </div>
   );

@@ -1,8 +1,7 @@
-import { WhatsAppOutlined } from "@ant-design/icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Divider, List, Typography, Modal } from "antd";
-
+"use client"
 import React, { useEffect, useState } from "react";
+import { WhatsAppOutlined } from "@ant-design/icons";
+import { Modal } from "antd";
 import { db } from "@/app/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useStore } from "../../../store";
@@ -37,7 +36,6 @@ function BookedDate() {
   }, []);
   return (
     <div className="md:container mx-auto">
-      {/* <div className="flex flex-col md:flex-row flex-wrap">/ */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-[100%]">
         {customerInformation?.map((item, index) => {
           return (
@@ -80,7 +78,6 @@ function BookedDate() {
                           {item.UserInformation.address}
                         </p>
                       </div>
-
                       <div className="flex justify-between border-b py-2 shadow">
                         <div className="w-[100%] flex flex-col ju ">
                           <div className="w-[100%]">
@@ -112,7 +109,74 @@ function BookedDate() {
                               </p>
                             </div>
                           </div>
-                          <div className="flex justify-between  py-2 shadow">
+                          <Modal
+                            centered
+                            open={isModalOpen}
+                            footer={null}
+                            onCancel={() => setIsModalOpen(false)}
+                          >
+                            <p className="flex justify-center my-3 font-bold font-vollkorn text-xl">
+                              Hall Information
+                            </p>
+
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Name</p>
+                              <p>{detailsData?.selectedHall?.name}</p>
+                            </div>
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Minimum Capacity</p>
+                              <p>{detailsData?.selectedHall?.minCapacity}</p>
+                            </div>
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Maximum Capacity</p>
+                              <p>{detailsData?.selectedHall?.maxCapacity}</p>
+                            </div>
+
+                            <p className="flex justify-center my-3 font-bold font-vollkorn text-xl">
+                              Menu Information
+                            </p>
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Name</p>
+                              <p>{detailsData?.Menu?.name}</p>
+                            </div>
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Dishes</p>
+                              {
+                                <Link
+                                  onClick={() => setIsNestedModalOpen(true)}
+                                  className="text-blue-600 underline"
+                                  href=""
+                                >
+                                  {detailsData?.Menu?.dishes.length} Dishes
+                                </Link>
+                              }
+                            </div>
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Price</p>
+                              <p>{detailsData?.Menu?.price}</p>
+                            </div>
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Discount Amount</p>
+                              <p>{detailsData?.Menu?.discountAmount}</p>
+                            </div>
+                            <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+                              <p>Net Price</p>
+                              <p>{detailsData?.Menu?.totalDiscount}</p>
+                            </div>
+                          </Modal>
+                          <Modal
+                            title="Dishes"
+                            open={isNestedModalOpen}
+                            footer={null}
+                            centered
+                            onCancel={() => setIsNestedModalOpen(false)}
+                          >
+                            {" "}
+                            {detailsData?.Menu?.dishes?.map((item, index) => (
+                              <li key={index}>{item}</li>
+                            ))}
+                          </Modal>
+                          <div className="flex justify-between  py-2 ">
                             <div className="pl-3">
                               <a
                                 href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
@@ -121,97 +185,21 @@ function BookedDate() {
                                 <WhatsAppOutlined className="text-green-500 text-3xl" />
                               </a>
                             </div>
-                            <div>
-                              <button
-                                onClick={() => {
-                                  setIsModalOpen(true);
-                                  setDetailsData(item);
-                                }}
-                                className="px-2 py-2 bg-blue-500 rounded-md mr-2"
-                              >
-                                Details
-                              </button>
-                              <Modal
-                                centered
-                                open={isModalOpen}
-                                footer={null}
-                                onCancel={() => setIsModalOpen(false)}
-                              >
-                                <p className="flex justify-center my-3 font-bold font-vollkorn text-xl">
-                                  Hall Information
-                                </p>
-
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Name</p>
-                                  <p>{detailsData?.selectedHall?.name}</p>
-                                </div>
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Minimum Capacity</p>
-                                  <p>
-                                    {detailsData?.selectedHall?.minCapacity}
-                                  </p>
-                                </div>
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Maximum Capacity</p>
-                                  <p>
-                                    {detailsData?.selectedHall?.maxCapacity}
-                                  </p>
-                                </div>
-
-                                <p className="flex justify-center my-3 font-bold font-vollkorn text-xl">
-                                  Menu Information
-                                </p>
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Name</p>
-                                  <p>{detailsData?.Menu?.name}</p>
-                                </div>
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Dishes</p>
-                                  {
-                                    <Link
-                                      onClick={() => setIsNestedModalOpen(true)}
-                                      className="text-blue-600 underline"
-                                      href=""
-                                    >
-                                      {detailsData?.Menu?.dishes.length} Dishes
-                                    </Link>
-                                  }
-                                </div>
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Price</p>
-                                  <p>{detailsData?.Menu?.price}</p>
-                                </div>
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Discount Amount</p>
-                                  <p>{detailsData?.Menu?.discountAmount}</p>
-                                </div>
-                                <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-                                  <p>Net Price</p>
-                                  <p>{detailsData?.Menu?.totalDiscount}</p>
-                                </div>
-                              </Modal>
-                              <Modal
-                                title="Dishes"
-                                open={isNestedModalOpen}
-                                footer={null}
-                                centered
-                                onCancel={() => setIsNestedModalOpen(false)}
-                              >
-                                {" "}
-                                {detailsData?.Menu?.dishes?.map(
-                                  (item, index) => (
-                                    <li key={index}>{item}</li>
-                                  )
-                                )}
-                              </Modal>
-
-                              <button className="px-2 py-2 bg-green-500 rounded-md mr-2">
-                                Accept
-                              </button>
-                              <button className="px-2 py-2 bg-red-500 rounded-md mr-2">
-                                Reject
-                              </button>
-                            </div>
+                            <button
+                              onClick={() => {
+                                setIsModalOpen(true);
+                                setDetailsData(item);
+                              }}
+                              className="px-2 py-2 bg-blue-500 rounded-md mr-2"
+                            >
+                              Details
+                            </button>
+                            <button className="px-2 py-2 bg-green-500 rounded-md mr-2">
+                              Accept
+                            </button>
+                            <button className="px-3 py-2 bg-red-500 rounded-md mr-2">
+                              Reject
+                            </button>
                           </div>
                         </div>
                       </div>

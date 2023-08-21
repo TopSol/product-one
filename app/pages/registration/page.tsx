@@ -1,8 +1,7 @@
 "use client";
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import "leaflet-geosearch/dist/geosearch.css";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
@@ -11,29 +10,23 @@ import { message } from "antd";
 import { useRouter } from "next/navigation";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faL, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { divIcon } from "leaflet";
-import Loader from "@/app/component/Loader";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useStore } from "../../../store";
-import "./style.css";
-import ImageCropper from "@/app/component/ImageCropper";
-import React, { useCallback } from "react";
-import Demo from "@/app/component/ImageCropper";
-import { Point, Area } from "react-easy-crop/types";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  listAll,
-} from "firebase/storage";
+import { Input, Form } from "antd";
 import { setDoc, doc } from "firebase/firestore";
+import Loader from "@/app/component/Loader";
+import Demo from "@/app/component/ImageCropper";
 import icon from "./consonant";
 import L from "leaflet";
-import { Input, Form, Button } from "antd";
 import PhoneInput from "react-phone-number-input";
+import "./style.css";
+import "leaflet/dist/leaflet.css";
+import "leaflet-geosearch/dist/geosearch.css";
 import "react-phone-number-input/style.css";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const initialValue = {
   name: "",
   email: "",
@@ -44,13 +37,68 @@ const initialValue = {
   marqueeDetails: "",
   image: "",
 };
-const position = [51.505, -0.09];
+
+const position = [30.3753, 69.3451];
+
 const onFinish = (values) => {
   console.log("Success:", values);
 };
+
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
+
+// function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
+//   const map = useMap();
+//   const markerRef = useRef(null);
+
+//   useEffect(() => {
+//     const provider = new OpenStreetMapProvider();
+//     const searchControl = GeoSearchControl({
+//       notFoundMessage: "Sorry, that address could not be found.",
+//       provider,
+//       showMarker: false,
+//       style: "bar",
+//       marker: {
+//         icon,
+//         draggable: true,
+//       },
+//     });
+
+//     map.addControl(searchControl);
+
+//     const handleLocationChange = (result) => {
+//       const { y: lat, x: lng } = result.location;
+//       console.log("Updated Marker Position12:", { lat, lng });
+//       if (markerRef.current) {
+//         markerRef.current.setLatLng([lat, lng]);
+//       } else {
+//         markerRef.current = L.marker([lat, lng], {
+//           icon: customMarkerIcon,
+//           draggable: true,
+//         }).addTo(map);
+
+//         markerRef.current.on("dragend", function (event) {
+//           const { lat, lng } = event.target.getLatLng();
+//           console.log("Updated Marker Position:", { lat, lng });
+//           setLocation({ lat, lng });
+//         });
+//       }
+//     };
+
+//     map.on("geosearch/showlocation", handleLocationChange);
+
+//     return () => {
+//       map.removeControl(searchControl);
+//       if (markerRef.current) {
+//         markerRef.current.off("dragend");
+//         map.removeLayer(markerRef.current);
+//       }
+//     };
+//   }, [map]);
+
+//   return <div></div>;
+// }
 
 function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
   const map = useMap();
@@ -59,21 +107,19 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
   useEffect(() => {
     const provider = new OpenStreetMapProvider();
     const searchControl = GeoSearchControl({
-      notFoundMessage: "Sorry, that address could not be found.",
       provider,
-      showMarker: false,
       style: "bar",
-      marker: {
-        icon,
-        draggable: true,
-      },
+      showMarker: false,
+      autoComplete: true,
+      autoCompleteDelay: 250,
+      autoClose: true,
     });
 
     map.addControl(searchControl);
 
     const handleLocationChange = (result) => {
       const { y: lat, x: lng } = result.location;
-      console.log("Updated Marker Position12:", { lat, lng });
+      console.log("Updated Marker Position:", { lat, lng });
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
       } else {
@@ -99,23 +145,21 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
         map.removeLayer(markerRef.current);
       }
     };
-  }, [map]);
+  }, [map, customMarkerIcon, setLocation]);
 
-  return <div></div>;
+  return null; // You can return null since this component doesn't render anything
 }
 
 function details() {
   const [details, setDetails] = useState(initialValue);
-  const [modal1Open, setModal1Open] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [map, setMap] = useState(null);
+  const [modal1Open, setModal1Open] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
-  const [location, setLocation] = useState({});
+  const [map, setMap] = useState(null);
+  const [location, setLocation] = useState({ lat: 30.3753, lng: 69.3451 });
   const [value, setValue] = useState();
   const [loading, setLoading] = useState(false);
   const [markerPos, setMarkerPos] = useState();
-  const [open, setOpen] = useState(false);
-  const [imageDiemension, setImageDiemension] = useState(false);
   const [cropImage, setCropImage] = useState({});
   const [image, setImage] = useState("");
   const { TextArea } = Input;
@@ -159,9 +203,9 @@ function details() {
     }),
     []
   );
-  const router = useRouter();
-  console.log(cropImage, "cropImagecropImage");
+  console.log(cropImage, "cropImage");
 
+  const router = useRouter();
   const handleRegistration = async () => {
     if (!cropImage) {
       message.warning("Please select a valid image");
@@ -174,6 +218,7 @@ function details() {
         details.email,
         details.password
       );
+
       const user = userCredential.user;
       const fileName = `Marquee/Marquee`;
       const storageRef = ref(storage, fileName);
@@ -193,16 +238,14 @@ function details() {
         description: details.marqueeDetails,
         id: VenueId,
       };
-      console.log(userInfo, "userInfo");
+
       await setDoc(doc(db, "users", user.uid), userInfo);
-      console.log(userInfo, "userInfo 2");
       if (userInfo) {
         addRegistration(userInfo);
         addUser(user.uid);
         router.push("/pages/auth");
         setLoading(true);
       }
-      console.log("user", user);
     } catch (error) {
       console.log(error, "error");
     }
@@ -211,12 +254,12 @@ function details() {
   const iconMarkup = renderToStaticMarkup(
     <FontAwesomeIcon icon={faLocationDot} className="text-4xl text-blue-600" />
   );
+
   const customMarkerIcon = divIcon({
     html: iconMarkup,
     className: "custom-marker-icon",
     iconSize: [40, 40],
   });
-  console.log(details.image, "details");
 
   useEffect(() => {
     const handleResize = () => {
@@ -234,14 +277,12 @@ function details() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
- console.log(open, "openopen");
+
   const handleImageDiemension = async (e) => {
     let images = e.target.files;
     for (const image of images) {
       const img = new Image();
       img.src = URL.createObjectURL(image);
-      console.log(cropImage, "img.srcimg.src");
-
       await new Promise((resolve) => {
         img.onload = function () {
           if (img.width > 2000 && img.height > 1300) {
@@ -260,7 +301,7 @@ function details() {
   return (
     <div>
       <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row h-[100vh]">
-        <div className="relative w-full lg:w-[65%] px-10 md:block">
+        <div className="w-full lg:w-[65%] px-10 relative md:block">
           {modalOpen2 ? (
             <img
               src="https://images.pexels.com/photos/3887985/pexels-photo-3887985.jpeg?auto=compress&cs=tinysrgb&w=600"
@@ -493,13 +534,12 @@ function details() {
           </div>
         </div>
       </div>
-      <Modal open={modalOpen} onCancel={closeModal} width={1000}>
+      <Modal open={modalOpen} onCancel={closeModal} width={2000} centered>
         <MapContainer
-          center={position}
+          // center={position}
           zoom={20}
           scrollWheelZoom={false}
-          
-          style={{ height: "500px", width: "100%" }}
+          style={{ height: "85vh" }}
           whenCreated={setMap}
         >
           <TileLayer
@@ -528,17 +568,22 @@ function details() {
       </Modal>
 
       <Modal
+      // className="h-[50vh]"
         open={modal1Open}
-        onCancel={() => setModal1Open(false)}
-        width={2000}
+        footer={null}
+        width={800}
+        closable={false}
         centered
       >
-        <Demo
+        <Demo 
+
           image={image}
           setModal1Open={setModal1Open}
           setCropImage={setCropImage}
         />
       </Modal>
+
+      
     </div>
   );
 }

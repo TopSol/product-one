@@ -112,7 +112,7 @@ function AdminMarqueeDetails() {
                 />
               </div>
               {modalOpen2 ? (
-                <div className="w-[70%]  h-[100vh] md:w-[22%] border flex flex-col shadow-lg   z-20 lg:z-0 bg-white sticky">
+                <div className="w-[70%]  h-[100vh] md:w-[22%] border flex flex-col shadow-lg   z-20 lg:z-0 bg-white relative md:block">
                   <p className="  flex justify-center items-center mx-auto text-xl font-extrabold pl-2 py-5">
                     Marquee
                   </p>
