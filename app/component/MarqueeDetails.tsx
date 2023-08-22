@@ -11,7 +11,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { useStore } from "@/store";
-function MarqueeDetails({ item,filterMarqueeWithPrice }) {
+function MarqueeDetails({ item,showMessage }) {
   const { addDateKey, lunchDinner,addMarqueeVenueNames,marqueeVenueName,addMarqueeVenueDates } = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
@@ -140,173 +140,179 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
         : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch); 
   };
   return (
-    <div className="mb-10 mx-5 ">
-      <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
-        <div className="md:w-[40%] cursor-pointer">
-          <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
-            <img
-              src={item?.data?.images?.[0]}
-              className="md:rounded-r-none rounded-lg w-72 h-48"
-              alt=""
-              onClick={()=>{
-                venuesName(item?.id)
+    <>
+     
+        <div className="mb-10 mx-5 ">
+        <div className="md:container mx-auto flex flex-col md:flex-row border-gray-200 border-[1px] rounded-lg  ">
+          <div className="md:w-[40%] cursor-pointer">
+            <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
+              <img
+                src={item?.data?.images?.[0]}
+                className="md:rounded-r-none rounded-lg w-72 h-48"
+                alt=""
+                onClick={()=>{
+                  venuesName(item?.id)
+                  getDates(item?.id);
+                  handleVenueName(name[0]?.value)
+                }}
+              />
+            </NextLink>
+          </div>
+          <div className="pt-6 px-6 md:w-[40%] ">
+            <h1 className="font-vollkorn text-2xl">{item?.data?.name}</h1>
+  
+            <p className="font-roboto text-textColor mt-4">
+              {item?.data?.description}
+            </p>
+            <p className="font-roboto text-textColor mt-6">
+              {item?.data?.address}
+            </p>
+          </div>
+          <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
+            <p className="text-center text-2xl font-roboto font-bold  text-textColor">
+              {item.data?.price}
+            </p>
+            <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
+              PER NIGHT
+            </p>
+            <div className="flex items-center justify-center font-roboto font-semibold mb-8">
+              <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded ">
+                Select Booking Detials
+              </p>
+            </div>
+  
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                handleClick(item?.data?.id);
                 getDates(item?.id);
-                handleVenueName(name[0]?.value)
+                handleVenueName(name[0].value)
               }}
+            >
+              <p className=" text-sm  text-textColor  flex justify-center items-center pt-[17px] font-roboto border-t-[1px]">
+                Avalibility & Details
+                <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
+          {open[item?.data?.id] && (
+            <DayPicker
+              className={`${
+                isLunch == `Lunch` ? `customClasses` : `customClasses2`
+              }`}
+              style={{ width: "100%" }}
+              mode="multiple"
+              min={1}
+              selected={days}
+              onSelect={setDays}
             />
-          </NextLink>
-        </div>
-        <div className="pt-6 px-6 md:w-[40%] ">
-          <h1 className="font-vollkorn text-2xl">{item?.data?.name}</h1>
-
-          <p className="font-roboto text-textColor mt-4">
-            {item?.data?.description}
-          </p>
-          <p className="font-roboto text-textColor mt-6">
-            {item?.data?.address}
-          </p>
-        </div>
-        <div className="md:w-[20%] border-l-[1px] flex flex-col justify-center mt-5 md:mt-0 ">
-          <p className="text-center text-2xl font-roboto font-bold  text-textColor">
-            {item.data?.price}
-          </p>
-          <p className="text-center mt-3 mb-6 font-vollkorn text-textColor">
-            PER NIGHT
-          </p>
-          <div className="flex items-center justify-center font-roboto font-semibold mb-8">
-            <p className="text-[11px] text-textColor bg-[#f5f5f5] px-3 py-1 rounded ">
-              Select Booking Detials
-            </p>
-          </div>
-
-          <div
-            className="cursor-pointer"
-            onClick={() => {
-              handleClick(item?.data?.id);
-              getDates(item?.id);
-              handleVenueName(name[0].value)
-            }}
-          >
-            <p className=" text-sm  text-textColor  flex justify-center items-center pt-[17px] font-roboto border-t-[1px]">
-              Avalibility & Details
-              <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
-            </p>
-          </div>
+          )}
+          {open[item?.data?.id] && (
+            <div className="w-full  p-5">
+              <Select
+                showSearch
+                style={{
+                  width: 250,
+                  marginBottom: 20,
+                }}
+                defaultValue={{
+                  value: name[0].value,
+                  label: name[0].label,
+                }}
+                placeholder="Search to Select"
+                size="large"
+                placement="bottomLeft"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                onChange={(e)=>{
+                  console.log(e,"e")
+                  handleVenueName(e,meal)
+                }}
+                options={name}
+              />
+              <div className="w-full mb-3">
+                <h1 className="text-xl flex items-center w-full font-vollkorn ">
+                  Meal Selection
+                </h1>
+                <p className="my-3">Choose your preferred mealtime option.</p>
+              </div>
+              <div className="flex items-center mb-4">
+                <Radio.Group
+                  onChange={(e) => {setValue(e.target.value)
+                  console.log(e,"sdssddssrrrr")
+                  }}
+                  value={value}
+                >
+                  <Radio
+                    onClick={() => {
+                      setMeal("Lunch");
+                    console.log("onClick",venueId)
+                    handleVenueName(venueId,"Lunch");
+                  }}
+                    // onChange={() => setValue("1")}
+                    id="default-radio-2"
+                    type="radio"
+                    value="1"
+                    name="default-radio"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </Radio.Group>
+                <label
+                  htmlFor="default-radio-2"
+                  className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
+                  Lunch
+                </label>
+              </div>
+              <div className="flex items-center">
+                <Radio.Group
+                  onChange={(e) => setValue(e.target.value)}
+                  value={value}
+                >
+                  <Radio
+                    onClick={() => {
+                      setMeal("Diner")
+                    console.log("onClick",venueId)
+                    handleVenueName(venueId,"Diner")
+                  }}
+                    id="default-radio-3"
+                  
+                    type="radio"
+                    value="2"
+                    name="default-radio"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </Radio.Group>
+                <label
+                  htmlFor="default-radio-3"
+                  className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
+                  Diner
+                </label>
+              </div>
+              <div className="flex items-center space-x-3 font-roboto mt-5">
+                <div className="bg-[orange] h-3 w-3 rounded-full"></div>
+                <p>Lunch</p>
+                <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
+                <p>Diner</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
-        {open[item?.data?.id] && (
-          <DayPicker
-            className={`${
-              isLunch == `Lunch` ? `customClasses` : `customClasses2`
-            }`}
-            style={{ width: "100%" }}
-            mode="multiple"
-            min={1}
-            selected={days}
-            onSelect={setDays}
-          />
-        )}
-        {open[item?.data?.id] && (
-          <div className="w-full  p-5">
-            <Select
-              showSearch
-              style={{
-                width: 250,
-                marginBottom: 20,
-              }}
-              defaultValue={{
-                value: name[0].value,
-                label: name[0].label,
-              }}
-              placeholder="Search to Select"
-              size="large"
-              placement="bottomLeft"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? "").includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? "")
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? "").toLowerCase())
-              }
-              onChange={(e)=>{
-                console.log(e,"e")
-                handleVenueName(e,meal)
-              }}
-              options={name}
-            />
-            <div className="w-full mb-3">
-              <h1 className="text-xl flex items-center w-full font-vollkorn ">
-                Meal Selection
-              </h1>
-              <p className="my-3">Choose your preferred mealtime option.</p>
-            </div>
-            <div className="flex items-center mb-4">
-              <Radio.Group
-                onChange={(e) => {setValue(e.target.value)
-                console.log(e,"sdssddssrrrr")
-                }}
-                value={value}
-              >
-                <Radio
-                  onClick={() => {
-                    setMeal("Lunch");
-                  console.log("onClick",venueId)
-                  handleVenueName(venueId,"Lunch");
-                }}
-                  // onChange={() => setValue("1")}
-                  id="default-radio-2"
-                  type="radio"
-                  value="1"
-                  name="default-radio"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-              </Radio.Group>
-              <label
-                htmlFor="default-radio-2"
-                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Lunch
-              </label>
-            </div>
-            <div className="flex items-center">
-              <Radio.Group
-                onChange={(e) => setValue(e.target.value)}
-                value={value}
-              >
-                <Radio
-                  onClick={() => {
-                    setMeal("Diner")
-                  console.log("onClick",venueId)
-                  handleVenueName(venueId,"Diner")
-                }}
-                  id="default-radio-3"
-                
-                  type="radio"
-                  value="2"
-                  name="default-radio"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-              </Radio.Group>
-              <label
-                htmlFor="default-radio-3"
-                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Diner
-              </label>
-            </div>
-            <div className="flex items-center space-x-3 font-roboto mt-5">
-              <div className="bg-[orange] h-3 w-3 rounded-full"></div>
-              <p>Lunch</p>
-              <div className="bg-blue-600 h-3 w-3 rounded-full"></div>
-              <p>Diner</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+      
+    </>
+   
+   
   );
 }
 

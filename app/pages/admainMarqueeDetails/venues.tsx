@@ -4,6 +4,8 @@ import ImageLightbox from "react-image-lightbox";
 import { Button, Input, Popconfirm } from "antd";
 import DeleteItem from "../../component/DeleteItem";
 import { Image } from "antd";
+import { Checkbox } from 'antd';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import {
   collection,
   getDocs,
@@ -32,6 +34,7 @@ const initialFormState = {
   minCapacity: "",
   maxCapacity: "",
   price: "",
+  services:[]
 };
 function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   const [user, setUser] = useState(initialFormState);
@@ -125,6 +128,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
       venueId: VenueId,
       // availability: user.availability,
       price: user.price,
+      services:user.services
     };
     try {
       await setDoc(doc(db, "Venues", VenueId), venue);
@@ -217,6 +221,11 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     setOpenEditVenue(false);
     setLoading((pre) => !pre);
   };
+  const plainOptions = ['Heating', 'Cooling', 'MusicSystem'];
+  const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
+    setUser({ ...user, services: checkedValues });
+  }
+
   return (
     <>
       <div className="md:px-5">
@@ -298,7 +307,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
         centered
         open={modalOpen}
         width={700}
-        bodyStyle={{ height: 630 }}
+        bodyStyle={{ height: 670 }}
         onCancel={() => setModalOpen(false)}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
@@ -391,6 +400,17 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
                   onChange={handleChange}
                   className="rounded-none w-full py-2 lg:py-3"
                 />
+              </div>
+            </div>
+            <div className="md:flex md:justify-between flex flex-col ">
+              <label className="text-xl my-1">Services:</label>
+              <div className="flex flex-col  md:flex-row  md:justify-between">
+              {/* <Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={(checkedValues: CheckboxValueType[])=>  setUser({ ...user, services: checkedValues }) } /> */}
+              <Checkbox.Group
+                options={plainOptions}
+               value={user.services as CheckboxValueType[]}
+               onChange={handleCheckboxChange}
+               />
               </div>
             </div>
 
