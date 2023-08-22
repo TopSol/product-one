@@ -163,7 +163,6 @@ export const useStore = create(
         set({ hallInformation: data, hallIndex: item });
       },
       addMarqueeVenueNames: (data) => {
-        console.log(data, "marqueeVenueNamesdddd");
         set({ marqueeVenueNames: data });
       },
       addMarqueeVenueDates: (data) => {
@@ -171,12 +170,10 @@ export const useStore = create(
       },
 
       addRegistration: (userData) => {
-        console.log(userData, "Registration");
         set({ registration: userData });
       },
 
       addUser: (userData) => {
-        console.log(userData, "Registration");
         set({ userInformation: userData });
       },
       addBookedDates: (dishData) => {
@@ -212,12 +209,10 @@ export const useStore = create(
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
-            console.log(data, "datasdatae");
             set((state) => ({
               lunchDinner: data,
             }));
           } else {
-            console.log("No such document!");
           }
         } catch (error) {
           console.error("Error fetching document:", error);

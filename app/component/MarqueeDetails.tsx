@@ -11,8 +11,14 @@ import { collection, getDocs } from "firebase/firestore";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { useStore } from "@/store";
-function MarqueeDetails({ item,filterMarqueeWithPrice }) {
-  const { addDateKey, lunchDinner,addMarqueeVenueNames,marqueeVenueName,addMarqueeVenueDates } = useStore();
+function MarqueeDetails({ item, filterMarqueeWithPrice }) {
+  const {
+    addDateKey,
+    lunchDinner,
+    addMarqueeVenueNames,
+    marqueeVenueName,
+    addMarqueeVenueDates,
+  } = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
@@ -25,7 +31,7 @@ function MarqueeDetails({ item,filterMarqueeWithPrice }) {
   const [bookDates, setBookDates] = useState([]);
   const [meal, setMeal] = useState("Lunch");
   const [value, setValue] = useState("1");
-  const [venueId,setVenueId]=useState()
+  const [venueId, setVenueId] = useState();
 
   useEffect(() => {
     const getdata = async () => {
@@ -40,19 +46,17 @@ function MarqueeDetails({ item,filterMarqueeWithPrice }) {
     getdata();
     getDates(item.id);
   }, [item]);
-// const marqueeVenueNames ()=>marqueeVenueName?.map((item)=>item?.label)
-const venuesName =(id)=>{
-  const asd = venuesData?.filter((item) => {
-    console.log(item, "sadfasssfad");
-    return item?.data?.userId === id;
-  });
-  console.log(asd,"sdfadfasdfadfas")
-  const marqueeVenueName = asd?.map((item) => ({
-    value: item?.data?.venueId,
-    label: item?.data?.name,
-  }));
-  addMarqueeVenueNames(marqueeVenueName)
-}
+  // const marqueeVenueNames ()=>marqueeVenueName?.map((item)=>item?.label)
+  const venuesName = (id) => {
+    const asd = venuesData?.filter((item) => {
+      return item?.data?.userId === id;
+    });
+    const marqueeVenueName = asd?.map((item) => ({
+      value: item?.data?.venueId,
+      label: item?.data?.name,
+    }));
+    addMarqueeVenueNames(marqueeVenueName);
+  };
   const getVenueData = (id, arr) => {
     const asd = arr?.filter((item) => {
       return item?.data?.userId === id;
@@ -61,13 +65,11 @@ const venuesName =(id)=>{
       value: item?.data?.venueId,
       label: item?.data?.name,
     }));
-    console.log(marqueeVenueName, "marqueeVenueddddName",);
-    addMarqueeVenueNames(marqueeVenueName)
+    addMarqueeVenueNames(marqueeVenueName);
     setName(marqueeVenueName);
-    addMarqueeVenueNames(marqueeVenueName)
+    addMarqueeVenueNames(marqueeVenueName);
   };
-  
-console.log(marqueeVenueName,"namemarqueeVenueName")
+
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
@@ -89,13 +91,11 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
     const asdf = datesArr?.filter((item) => {
       return item?.id === id;
     });
-  
-    setSelectedDate(asdf);
-    addMarqueeVenueDates(asdf)
 
+    setSelectedDate(asdf);
+    addMarqueeVenueDates(asdf);
   };
   const handleClick = (id) => {
-    console.log(id, "abcdefabcdef");
     setOpen((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
@@ -103,9 +103,7 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
   };
 
   const handleCheck = (event, item) => {
-    console.log(event, "event", item);
     const selectedValue = event?.target?.value || event;
-    console.log(selectedValue, "selectedValue");
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
       setDays(item);
@@ -115,15 +113,13 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
       setIsLunch("Diner");
     }
   };
-  const handleVenueName = (id,propMeal = "Lunch") => {
+  const handleVenueName = (id, propMeal = "Lunch") => {
     setVenueId(id);
     const data = name.filter((item) => {
-      console.log(item, "itabcem");
-      
+
       return item?.value == id;
     });
-      console.log(selectedDate,"selectessssdDate")
-     const reserveDate = selectedDate.map((item) => {
+    const reserveDate = selectedDate.map((item) => {
       return {
         id,
         dates: {
@@ -132,12 +128,11 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
         },
       };
     });
-    console.log(reserveDate, "reserveDate");
     setBookDates(reserveDate);
-    
+
     propMeal == "Diner"
-        ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
-        : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch); 
+      ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
+      : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch);
   };
   return (
     <div className="mb-10 mx-5 ">
@@ -146,23 +141,23 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
           <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
             <img
               src={item?.data?.images?.[0]}
-              className="md:rounded-r-none rounded-lg w-72 h-48"
+              className="md:rounded-r-none rounded-lg w-full md:w-72 md:h-48"
               alt=""
-              onClick={()=>{
-                venuesName(item?.id)
+              onClick={() => {
+                venuesName(item?.id);
                 getDates(item?.id);
-                handleVenueName(name[0]?.value)
+                handleVenueName(name[0]?.value);
               }}
             />
           </NextLink>
         </div>
-        <div className="pt-6 px-6 md:w-[40%] ">
-          <h1 className="font-vollkorn text-2xl">{item?.data?.name}</h1>
+        <div className="pt-6 px-6 md:w-[40%] flex flex-col justify-center">
+          <h1 className="font-vollkorn text-2xl md:text-left text-center">{item?.data?.name}</h1>
 
-          <p className="font-roboto text-textColor mt-4">
+          <p className="font-roboto text-textColor text-center md:text-left mt-4">
             {item?.data?.description}
           </p>
-          <p className="font-roboto text-textColor mt-6">
+          <p className="font-roboto text-textColor text-center md:text-left mt-6">
             {item?.data?.address}
           </p>
         </div>
@@ -184,10 +179,10 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
             onClick={() => {
               handleClick(item?.data?.id);
               getDates(item?.id);
-              handleVenueName(name[0].value)
+              handleVenueName(name[0].value);
             }}
           >
-            <p className=" text-sm  text-textColor  flex justify-center items-center pt-[17px] font-roboto border-t-[1px]">
+            <p className=" text-sm  text-textColor  flex justify-center items-center py-3 md:pt-[17px]  font-roboto border-t-[1px]">
               Avalibility & Details
               <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
             </p>
@@ -231,9 +226,8 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
                   .toLowerCase()
                   .localeCompare((optionB?.label ?? "").toLowerCase())
               }
-              onChange={(e)=>{
-                console.log(e,"e")
-                handleVenueName(e,meal)
+              onChange={(e) => {
+                handleVenueName(e, meal);
               }}
               options={name}
             />
@@ -245,18 +239,16 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
             </div>
             <div className="flex items-center mb-4">
               <Radio.Group
-                onChange={(e) => {setValue(e.target.value)
-                console.log(e,"sdssddssrrrr")
+                onChange={(e) => {
+                  setValue(e.target.value);
                 }}
                 value={value}
               >
                 <Radio
                   onClick={() => {
                     setMeal("Lunch");
-                  console.log("onClick",venueId)
-                  handleVenueName(venueId,"Lunch");
-                }}
-                  // onChange={() => setValue("1")}
+                    handleVenueName(venueId, "Lunch");
+                  }}
                   id="default-radio-2"
                   type="radio"
                   value="1"
@@ -278,12 +270,10 @@ console.log(marqueeVenueName,"namemarqueeVenueName")
               >
                 <Radio
                   onClick={() => {
-                    setMeal("Diner")
-                  console.log("onClick",venueId)
-                  handleVenueName(venueId,"Diner")
-                }}
+                    setMeal("Diner");
+                    handleVenueName(venueId, "Diner");
+                  }}
                   id="default-radio-3"
-                
                   type="radio"
                   value="2"
                   name="default-radio"

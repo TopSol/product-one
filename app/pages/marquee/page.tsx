@@ -4,14 +4,15 @@ import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import { db } from "@/app/firebase";
 import "react-day-picker/dist/style.css";
-import { useStore } from "../../../store";
+import { message } from "antd";
 import { collection, getDocs } from "firebase/firestore";
 import "./style.css";
 import MarqueeDetails from "@/app/component/MarqueeDetails";
-import { Input } from "antd";
-
-import { format } from 'date-fns';
-import { DateRange, DayPicker } from 'react-day-picker';
+import { Input, Space } from "antd";
+const { Search } = Input;
+import axios from "axios";
+import { format } from "date-fns";
+import { DateRange, DayPicker } from "react-day-picker";
 import Modal from "antd/es/modal/Modal";
 import { getFormatDates } from "@/app/utils";
 const pastMonth = new Date();
@@ -22,9 +23,11 @@ function Marquee() {
   const [venuesPrice, setVenuesPrice] = useState([]);
   const [filterMarqueeWithPrice, setFilterMarqueeWithPrice] = useState([]); // [
   const [filteredVenuesPrice, setFilteredVenuesPrice] = useState([]);
-  const [controlPrice,setControlPrice]=useState([])
-  const [bookDate,setBookDate]=useState([])
+  const [controlPrice, setControlPrice] = useState([]);
+  const [bookDate, setBookDate] = useState([]);
   const [range, setRange] = useState<DateRange | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [coordinates, setCoordinates] = useState({ lat: null, lng: null });
   const handleSliderChange = async (event) => {
     const price = Number(event.target.value);
     setSliderValue(price);
@@ -35,7 +38,7 @@ function Marquee() {
       return item?.data?.price < value;
     });
     let arr = [];
-    const data=controlPrice.length?controlPrice:userData
+    const data = controlPrice.length ? controlPrice : userData;
     data.map((item) => {
       filteredVenues.map((item1) => {
         if (item.data.userId.includes(item1.data.userId)) {
@@ -49,27 +52,26 @@ function Marquee() {
     setFilterMarqueeWithPrice(arr);
     setFilteredVenuesPrice(arr);
   };
-  const handleSittingCapacity =(e)=>{
-  const capacity=Number(e.target.value)
-  const filteredVenues = venuesPrice.filter((item) => {
-    return capacity > item?.data?.minCapacity ;
-  });
-  let arr = [];
-  const data=filteredVenuesPrice.length ? filteredVenuesPrice : userData
-  data.map((item) => {
-    filteredVenues.map((item1) => {
-      if (item.data.userId.includes(item1.data.userId)) {
-        if (!arr.includes(item)) {
-          arr.push(item);
-        }
-      }
+  const handleSittingCapacity = (e) => {
+    const capacity = Number(e.target.value);
+    const filteredVenues = venuesPrice.filter((item) => {
+      return capacity > item?.data?.minCapacity;
     });
-  });
-  setFilterMarqueeWithPrice(arr);
-  setControlPrice(arr)
+    let arr = [];
+    const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
+    data.map((item) => {
+      filteredVenues.map((item1) => {
+        if (item.data.userId.includes(item1.data.userId)) {
+          if (!arr.includes(item)) {
+            arr.push(item);
+          }
+        }
+      });
+    });
+    setFilterMarqueeWithPrice(arr);
+    setControlPrice(arr);
+  };
 
-  }
-  console.log(userData, "userDatauserData");
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
@@ -89,45 +91,133 @@ function Marquee() {
       });
       setVenuesPrice(VenueArr);
       setUserData(dataArr);
-      setBookDate(bookDateArr)
+      setBookDate(bookDateArr);
     };
     getUser();
   }, []);
-  console.log(bookDate,"bookDatebookDate")
+  // console.log(bookDate, "bookDatebookDate");
   useEffect(() => {
     const dates = getFormatDates([range]);
     const startDate = new Date(dates[0]?.from);
     const endDate = new Date(dates[0]?.to);
     venuesPrice.map((item1) => {
-      console.log( item1?.data?.venueId,"sdfsdfsdfdsfsdf")
-      bookDate.map((item2)=>{
-        // item2?.data?.dates?.map((item3)=>{
-        //   const date=new Date(item3)
-        //   if(item1?.data?.venueId===item2?.data?.venueId){
-        //     if(date>=startDate && date<=endDate){
-        //       console.log(item1?.data?.venueId,"item1?.data?.venueId")
-        //     }
-        //   }
-        // })
-        console.log(item2?.data?.dates,"dfsdfsdfddddsddfsdf")
-      })
-      // console.log(item?.data?.venueId, "itemdatauserId");
+      // console.log(item1?.data?.venueId, "sdfsdfsdfdsfsdf");
+      bookDate.map((item2) => {
+        // console.log(item2?.data?.dates, "dfsdfsdfddddsddfsdf");
+      });
     });
-    console.log(startDate,"endDate", endDate,"endDate");
+    // console.log(startDate, "endDate", endDate, "endDate");
   }, [range]);
 
   let footer = <p>Select Date</p>;
   if (range?.from) {
     if (!range.to) {
-      footer = <p>{format(range.from, 'PPP')}</p>;
+      footer = <p>{format(range.from, "PPP")}</p>;
     } else if (range.to) {
       footer = (
         <p>
-          {format(range.from, 'PPP')}–{format(range.to, 'PPP')}
+          {format(range.from, "PPP")}–{format(range.to, "PPP")}
         </p>
       );
     }
   }
+  // const handleSearch = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://nominatim.openstreetmap.org/search`,
+  //       {
+  //         params: {
+  //           q: searchQuery,
+  //           format: "json",
+  //         },
+  //       }
+  //     );
+
+  //     const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
+  //     console.log(data, "datadata");
+
+  //     data.map((item) =>{
+  //       console.log(item.data.locations, "itemitemitem");
+  //       if (item.data.locations == coordinates) {
+  //         // return
+  //         // message.success("Found")
+  //       }
+  //     })
+
+  //     if (response.data.length > 0) {
+  //       const { lat, lng } = response.data[0];
+  //       filterMarqueeWithPrice.includes()
+  //       setCoordinates({ lat: parseFloat(lat), lng: parseFloat(lng) });
+  //       message.success("Found Successfully.");
+  //     } else {
+  //       setCoordinates({ lat: null, lng: null });
+  //       message.warning("Sorry, that address could not be found.");
+
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching coordinates:", error);
+  //   }
+  // };
+
+  const isWithinRange = (coord1, coord2, range) => {
+    const distance = Math.sqrt(
+      Math.pow(coord1.lat - coord2.lat, 2) +
+        Math.pow(coord1.lng - coord2.lng, 2)
+    );
+    console.log(distance, "distance", range)
+    return distance <= range;
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search`,
+        {
+          params: {
+            q: searchQuery,
+            format: "json",
+          },
+        }
+      );
+      const { lat, lon } = response.data[0];
+
+      const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
+      const userCoordinates = {
+        lat: Number(lat),
+        lng: Number(lon)
+      };      
+      
+      const asd = data.filter((item) => {
+        console.log(item.data.locations, "datadata", data);
+        if (
+          item.data.locations &&
+          item.data.locations.lat &&
+          item.data.locations.lng
+        ) {
+          const itemCoordinates = {
+            lat: item.data.locations.lat,
+            lng: item.data.locations.lng,
+          };
+
+          if (isWithinRange(userCoordinates, itemCoordinates, 0.5)) {
+            // alert(1)
+            return true
+            } else {
+              // alert(2)
+              return false
+            }
+          } else {
+            // alert(3)
+            return false
+          }
+        
+      });
+      setFilterMarqueeWithPrice(asd)
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+    }
+  };
+console.log("setFilterMarqueeWithPrice", filterMarqueeWithPrice)
   return (
     <>
       <div>
@@ -149,24 +239,30 @@ function Marquee() {
               >
                 {footer}
               </div>
-              <input
+              <Input
                 type="text"
                 placeholder="maximum capacity"
                 className="py-3 border-r-gray-200 mt-6 border-[1px] outline-none rounded-md px-3 w-full "
                 onChange={handleSittingCapacity}
               />
             </div>
+
             <div>
-              <h1 className="font-vollkorn text-xl my-6">Branch</h1>
-              <input
+              <Search
+                className="py-3  mt-6  outline-none rounded-md px-3 "
+                placeholder="input search text"
+                allowClear
                 type="text"
-                value={"Faisalabad"}
-                className="py-3 border-r-gray-200 mt-6 border-[1px] outline-none rounded-md px-3 w-full "
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                enterButton="Search"
+                size="large"
+                onSearch={handleSearch}
               />
             </div>
             <div>
               <h1 className="font-vollkorn text-xl my-6">Price</h1>
-              <input
+              <Input
                 type="range"
                 min="150"
                 max="100000"
@@ -249,8 +345,17 @@ function Marquee() {
             </div>
           </div>
           <div className="w-full  lg:w-[75%]">
-            {(filterMarqueeWithPrice.length || sliderValue > 300 ? filterMarqueeWithPrice : userData).map((item, index) => {
-              return <MarqueeDetails key={index} item={item} filterMarqueeWithPrice={filterMarqueeWithPrice} />;
+            {(filterMarqueeWithPrice.length || sliderValue > 300
+              ? filterMarqueeWithPrice
+              : userData
+            ).map((item, index) => {
+              return (
+                <MarqueeDetails
+                  key={index}
+                  item={item}
+                  filterMarqueeWithPrice={filterMarqueeWithPrice}
+                />
+              );
             })}
           </div>
         </div>
@@ -262,14 +367,14 @@ function Marquee() {
         onCancel={() => setIsModalOpen((pre) => !pre)}
         footer={null}
       >
-      <DayPicker
-      id="test"
-      mode="range"
-      defaultMonth={pastMonth}
-      selected={range}
-      footer={footer}
-      onSelect={setRange}
-    />
+        <DayPicker
+          id="test"
+          mode="range"
+          defaultMonth={pastMonth}
+          selected={range}
+          footer={footer}
+          onSelect={setRange}
+        />
       </Modal>
     </>
   );

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
@@ -38,7 +38,7 @@ const initialValue = {
   image: "",
 };
 
-const position = [30.3753, 69.3451];
+const position = [51.505, -0.09];
 
 const onFinish = (values) => {
   console.log("Success:", values);
@@ -48,58 +48,6 @@ const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
-// function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
-//   const map = useMap();
-//   const markerRef = useRef(null);
-
-//   useEffect(() => {
-//     const provider = new OpenStreetMapProvider();
-//     const searchControl = GeoSearchControl({
-//       notFoundMessage: "Sorry, that address could not be found.",
-//       provider,
-//       showMarker: false,
-//       style: "bar",
-//       marker: {
-//         icon,
-//         draggable: true,
-//       },
-//     });
-
-//     map.addControl(searchControl);
-
-//     const handleLocationChange = (result) => {
-//       const { y: lat, x: lng } = result.location;
-//       console.log("Updated Marker Position12:", { lat, lng });
-//       if (markerRef.current) {
-//         markerRef.current.setLatLng([lat, lng]);
-//       } else {
-//         markerRef.current = L.marker([lat, lng], {
-//           icon: customMarkerIcon,
-//           draggable: true,
-//         }).addTo(map);
-
-//         markerRef.current.on("dragend", function (event) {
-//           const { lat, lng } = event.target.getLatLng();
-//           console.log("Updated Marker Position:", { lat, lng });
-//           setLocation({ lat, lng });
-//         });
-//       }
-//     };
-
-//     map.on("geosearch/showlocation", handleLocationChange);
-
-//     return () => {
-//       map.removeControl(searchControl);
-//       if (markerRef.current) {
-//         markerRef.current.off("dragend");
-//         map.removeLayer(markerRef.current);
-//       }
-//     };
-//   }, [map]);
-
-//   return <div></div>;
-// }
-
 function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
   const map = useMap();
   const markerRef = useRef(null);
@@ -107,19 +55,22 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
   useEffect(() => {
     const provider = new OpenStreetMapProvider();
     const searchControl = GeoSearchControl({
+      notFoundMessage: "Sorry, that address could not be found.",
       provider,
-      style: "bar",
       showMarker: false,
-      autoComplete: true,
-      autoCompleteDelay: 250,
-      autoClose: true,
-    });
-
+      style: "bar",
+      marker: {
+        icon,
+        draggable: true,
+      },
+    })
     map.addControl(searchControl);
 
     const handleLocationChange = (result) => {
       const { y: lat, x: lng } = result.location;
-      console.log("Updated Marker Position:", { lat, lng });
+      // console.log(lat, lng, "locationlocation1");
+      setLocation({ lat, lng }); 
+      
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
       } else {
@@ -131,7 +82,7 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
         markerRef.current.on("dragend", function (event) {
           const { lat, lng } = event.target.getLatLng();
           console.log("Updated Marker Position:", { lat, lng });
-          setLocation({ lat, lng });
+          setLocation({ lat, lng });          
         });
       }
     };
@@ -145,10 +96,11 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
         map.removeLayer(markerRef.current);
       }
     };
-  }, [map, customMarkerIcon, setLocation]);
+  }, [map]);
 
-  return null; // You can return null since this component doesn't render anything
+  return <div></div>;
 }
+
 
 function details() {
   const [details, setDetails] = useState(initialValue);
@@ -156,7 +108,7 @@ function details() {
   const [modal1Open, setModal1Open] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
   const [map, setMap] = useState(null);
-  const [location, setLocation] = useState({ lat: 30.3753, lng: 69.3451 });
+  const [location, setLocation] = useState({});
   const [value, setValue] = useState();
   const [loading, setLoading] = useState(false);
   const [markerPos, setMarkerPos] = useState();
@@ -203,7 +155,7 @@ function details() {
     }),
     []
   );
-  console.log(cropImage, "cropImage");
+  console.log(location, "locationlocation");
 
   const router = useRouter();
   const handleRegistration = async () => {
@@ -536,7 +488,6 @@ function details() {
       </div>
       <Modal open={modalOpen} onCancel={closeModal} width={2000} centered>
         <MapContainer
-          // center={position}
           zoom={20}
           scrollWheelZoom={false}
           style={{ height: "85vh" }}
@@ -560,30 +511,23 @@ function details() {
                 setLocation={setLocation}
               />
             </div>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
           </Marker>
         </MapContainer>
       </Modal>
 
       <Modal
-      // className="h-[50vh]"
         open={modal1Open}
         footer={null}
         width={800}
         closable={false}
         centered
       >
-        <Demo 
-
+        <Demo
           image={image}
           setModal1Open={setModal1Open}
           setCropImage={setCropImage}
         />
       </Modal>
-
-      
     </div>
   );
 }
