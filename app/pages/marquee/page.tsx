@@ -1,126 +1,47 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Navbar from "@/app/component/Navbar";
-import Footer from "@/app/component/footer";
+import React from "react";
+import { useState, useEffect } from "react";
 import { db } from "@/app/firebase";
-import "react-day-picker/dist/style.css";
-import { message } from "antd";
 import { collection, getDocs } from "firebase/firestore";
-import "./style.css";
-import MarqueeDetails from "@/app/component/MarqueeDetails";
-import { Input, Space } from "antd";
-const { Search } = Input;
-import axios from "axios";
+import { Input, message } from "antd";
 import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
-import Modal from "antd/es/modal/Modal";
 import { getFormatDates } from "@/app/utils";
-import { Checkbox } from 'antd';
-import type { CheckboxValueType } from 'antd/es/checkbox/Group';
+import { Checkbox } from "antd";
+import type { CheckboxValueType } from "antd/es/checkbox/Group";
+import MarqueeDetails from "@/app/component/MarqueeDetails";
+import axios from "axios";
+import Modal from "antd/es/modal/Modal";
+import Navbar from "@/app/component/Navbar";
+import Footer from "@/app/component/footer";
+import "react-day-picker/dist/style.css";
+import "./style.css";
+
 const pastMonth = new Date();
+
 function Marquee() {
   const [sliderValue, setSliderValue] = useState(0);
   const [userData, setUserData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [venuesPrice, setVenuesPrice] = useState([]);
-  const [filterMarqueeWithPrice, setFilterMarqueeWithPrice] = useState([]); // [
+  const [filterMarqueeWithPrice, setFilterMarqueeWithPrice] = useState([]);
   const [filteredVenuesPrice, setFilteredVenuesPrice] = useState([]);
-  const [controlPrice,setControlPrice]=useState([])
-  const [bookDate,setBookDate]=useState([])
-  const [services, setServices] = useState([]); 
-  const [showMessage,setShowMessage]=useState(true)
+  const [controlPrice, setControlPrice] = useState([]);
+  const [bookDate, setBookDate] = useState([]);
+  const [services, setServices] = useState([]);
+  const [showMessage, setShowMessage] = useState(true);
   const [range, setRange] = useState<DateRange | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
-  const [coordinates, setCoordinates] = useState({ lat: null, lng: null });
+  const { Search } = Input;
+
   useEffect(() => {
     const dates = getFormatDates([range]);
     const startDate = new Date(dates[0]?.from);
     const endDate = new Date(dates[0]?.to);
     venuesPrice.map((item1) => {
-      bookDate.map((item2)=>{
-        console.log(item2?.data?.dates,"dfsdfsdfddddsddfsdf")
-      })
+      bookDate.map((item2) => { });
     });
-    console.log(startDate,"endDate", endDate,"endDate");
   }, [range]);
-  useEffect(() => {
-    const getUser = async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const venueSnapshot = await getDocs(collection(db, "Venues"));
-      const bookDateSnapshot = await getDocs(collection(db, "bookDate"));
-      const dataArr = [];
-      querySnapshot.forEach((doc) => {
-        dataArr.push({ id: doc.id, data: doc.data() });
-      });
-      const VenueArr = [];
-      venueSnapshot.forEach((doc) => {
-        VenueArr.push({ id: doc.id, data: doc.data() });
-      });
-      const bookDateArr = [];
-      bookDateSnapshot.forEach((doc) => {
-        bookDateArr.push({ id: doc.id, data: doc.data() });
-      });
-      setVenuesPrice(VenueArr);
-      setUserData(dataArr);
-      setBookDate(bookDateArr)
-    };
-    getUser();
-  }, []);
-  const handleSliderChange = async (event) => {
-    const price = Number(event.target.value);
-    setSliderValue(price);
-    calculatePrice(price);
-  };
-  const calculatePrice = (value) => {
-    const filteredVenues = venuesPrice.filter((item) => {
-      return value <= item?.data?.price ;
-    });
-    let arr = [];
-    const data = controlPrice.length ? controlPrice : userData;
-    data.map((item) => {
-      filteredVenues.map((item1) => {
-        if (item.data.userId.includes(item1.data.userId)) {
-          console.log(item, "itemi");
-          if (!arr.includes(item)) {
-            arr.push(item);
-          }
-        }
-      });
-    });
-    if(arr.length){
-      setFilterMarqueeWithPrice(arr);
-    setFilteredVenuesPrice(arr);
-    setServices(arr)
-    setShowMessage(true)
-    }else{
-     setShowMessage(false)
-    //  setServices([])
-    }
-
-  
-  };
-  const handleSittingCapacity =(e)=>{
-  const capacity=Number(e.target.value)
-  const filteredVenues = venuesPrice.filter((item) => {
-    // return capacity > item?.data?.minCapacity ;
-    return capacity > item?.data?.minCapacity && capacity < item?.data?.maxCapacity;
-
-  });
-
-  let arr = [];
-  const data=filteredVenuesPrice.length ? filteredVenuesPrice : userData
-  data.map((item) => {
-    filteredVenues.map((item1) => {
-      if (item.data.userId.includes(item1.data.userId)) {
-        if (!arr.includes(item)) {
-          arr.push(item);
-        }
-      }
-    });
-  });
-  setFilterMarqueeWithPrice(arr);
-  setControlPrice(arr)
-  setServices(arr)
 
   useEffect(() => {
     const getUser = async () => {
@@ -145,17 +66,65 @@ function Marquee() {
     };
     getUser();
   }, []);
-  useEffect(() => {
-    const dates = getFormatDates([range]);
-    const startDate = new Date(dates[0]?.from);
-    const endDate = new Date(dates[0]?.to);
-    venuesPrice.map((item1) => {
-      bookDate.map((item2) => {
+
+  const handleSliderChange = async (event) => {
+    const price = Number(event.target.value);
+    setSliderValue(price);
+    calculatePrice(price);
+  };
+
+  const calculatePrice = (value) => {
+    const filteredVenues = venuesPrice.filter((item) => {
+      return value <= item?.data?.price;
+    });
+    let arr = [];
+    const data = controlPrice.length ? controlPrice : userData;
+    data.map((item) => {
+      filteredVenues.map((item1) => {
+        if (item.data.userId.includes(item1.data.userId)) {
+          console.log(item, "itemi");
+          if (!arr.includes(item)) {
+            arr.push(item);
+          }
+        }
       });
     });
-  }, [range]);
-}
+    if (arr.length) {
+      setFilterMarqueeWithPrice(arr);
+      setFilteredVenuesPrice(arr);
+      setServices(arr);
+      setShowMessage(true);
+    } else {
+      setShowMessage(false);
+      //  setServices([])
+    }
+  };
+
+  const handleSittingCapacity = (e) => {
+    const capacity = Number(e.target.value);
+    const filteredVenues = venuesPrice.filter((item) => {
+      return (
+        capacity > item?.data?.minCapacity && capacity < item?.data?.maxCapacity
+      );
+    });
+
+    let arr = [];
+    const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
+    data.map((item) => {
+      filteredVenues.map((item1) => {
+        if (item.data.userId.includes(item1.data.userId)) {
+          if (!arr.includes(item)) {
+            arr.push(item);
+          }
+        }
+      });
+    });
+    setFilterMarqueeWithPrice(arr);
+    setControlPrice(arr);
+    setServices(arr);
+  }
   let footer = <p>Select Date</p>;
+
   if (range?.from) {
     if (!range.to) {
       footer = <p>{format(range.from, "PPP")}</p>;
@@ -167,8 +136,8 @@ function Marquee() {
       );
     }
   }
-  const plainOptions = ['Heating', 'Cooling', 'MusicSystem'];
- 
+  const plainOptions = ["Heating", "Cooling", "MusicSystem"];
+
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
     const filteredVenues = venuesPrice.filter((item) => {
       const result = [];
@@ -177,10 +146,10 @@ function Marquee() {
           result.push(true);
         }
       });
-     return result.length;
+      return result.length;
     });
     let arr = [];
-    const data=services.length ? services : userData
+    const data = services.length ? services : userData;
     data.map((item) => {
       filteredVenues.map((item1) => {
         if (item.data.userId.includes(item1.data.userId)) {
@@ -190,28 +159,25 @@ function Marquee() {
         }
       });
     });
-    if(arr.length){
-     setFilterMarqueeWithPrice(arr);
-    }
-    else if(!filterMarqueeWithPrice.length){
-      setShowMessage(true)
-    }
-    else if(!checkedValues.length){
+    if (arr.length) {
+      setFilterMarqueeWithPrice(arr);
+    } else if (!filterMarqueeWithPrice.length) {
+      setShowMessage(true);
+    } else if (!checkedValues.length) {
       setFilterMarqueeWithPrice(services);
-    }
-    else if(!arr.length){;
-      setShowMessage(true) 
-    }
-    else{
-      setShowMessage(true)
+    } else if (!arr.length) {
+      setShowMessage(true);
+    } else {
+      setShowMessage(true);
     }
   };
+
   const isWithinRange = (coord1, coord2, range) => {
     const distance = Math.sqrt(
       Math.pow(coord1.lat - coord2.lat, 2) +
-        Math.pow(coord1.lng - coord2.lng, 2)
+      Math.pow(coord1.lng - coord2.lng, 2)
     );
-    console.log(distance, "distance", range)
+    console.log(distance, "distance", range);
     return distance <= range;
   };
 
@@ -230,9 +196,9 @@ function Marquee() {
       const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
       const userCoordinates = {
         lat: Number(lat),
-        lng: Number(lon)
-      };      
-      
+        lng: Number(lon),
+      };
+
       const branch = data.filter((item) => {
         console.log(item.data.locations, "datadata", data);
         if (
@@ -246,22 +212,20 @@ function Marquee() {
           };
 
           if (isWithinRange(userCoordinates, itemCoordinates, 0.5)) {
-            return true
-            } else {
-              return false
-            }
+            return true;
           } else {
-            return false
+            return false;
           }
-        
+        } else {
+          return false;
+        }
       });
-      setFilterMarqueeWithPrice(branch)
+      setFilterMarqueeWithPrice(branch);
     } catch (error) {
       console.error("Error fetching coordinates:", error);
     }
   };
 
-console.log("setFilterMarqueeWithPrice", filterMarqueeWithPrice)
   return (
     <>
       <div>
@@ -293,14 +257,12 @@ console.log("setFilterMarqueeWithPrice", filterMarqueeWithPrice)
 
             <div>
               <Search
-                className="py-3  mt-6  outline-none rounded-md px-3 "
+                className="py-3  mt-6  outline-none rounded-md w-72"
                 placeholder="input search text"
-                allowClear
+                size="large"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                enterButton="Search"
-                size="large"
                 onSearch={handleSearch}
               />
             </div>
@@ -317,29 +279,34 @@ console.log("setFilterMarqueeWithPrice", filterMarqueeWithPrice)
               />
               <p className="mt-4">Slider Value: {sliderValue}</p>
             </div>
-     
+
             <div>
               <h1 className="ont-vollkorn text-xl my-9">Additional Services</h1>
               <Checkbox.Group
                 options={plainOptions}
-               onChange={handleCheckboxChange}
-               />
+                onChange={handleCheckboxChange}
+              />
             </div>
           </div>
           <div className="w-full  lg:w-[75%]">
-          {
-  showMessage ? (
-    (filterMarqueeWithPrice.length ? filterMarqueeWithPrice : userData).map((item, index) => (
-      <MarqueeDetails key={index} item={item} showMessage={showMessage} />
-    ))
-  ) : (
-    <div className="flex items-center justify-center">
-      <div className="bg-[#f5f5f5] w-[90%] h-[50px] flex items-center justify-center rounded-md">
-        <p className="text-sm text-textColor">Product not found</p>
-      </div>
-    </div>
-  )
-}
+            {showMessage ? (
+              (filterMarqueeWithPrice.length
+                ? filterMarqueeWithPrice
+                : userData
+              ).map((item, index) => (
+                <MarqueeDetails
+                  key={index}
+                  item={item}
+                  showMessage={showMessage}
+                />
+              ))
+            ) : (
+              <div className="flex items-center justify-center">
+                <div className="bg-[#f5f5f5] w-[90%] h-[50px] flex items-center justify-center rounded-md">
+                  <p className="text-sm text-textColor">Product not found</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <Footer />
@@ -361,7 +328,6 @@ console.log("setFilterMarqueeWithPrice", filterMarqueeWithPrice)
       </Modal>
     </>
   );
-
 }
 
 export default Marquee;

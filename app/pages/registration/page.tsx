@@ -16,16 +16,16 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { useStore } from "../../../store";
 import { Input, Form } from "antd";
 import { setDoc, doc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import L from "leaflet";
 import Loader from "@/app/component/Loader";
 import Demo from "@/app/component/ImageCropper";
 import icon from "./consonant";
-import L from "leaflet";
 import PhoneInput from "react-phone-number-input";
 import "./style.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 import "react-phone-number-input/style.css";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const initialValue = {
   name: "",
@@ -63,14 +63,13 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
         icon,
         draggable: true,
       },
-    })
+    });
     map.addControl(searchControl);
 
     const handleLocationChange = (result) => {
       const { y: lat, x: lng } = result.location;
-      // console.log(lat, lng, "locationlocation1");
-      setLocation({ lat, lng }); 
-      
+      setLocation({ lat, lng });
+
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
       } else {
@@ -82,7 +81,7 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
         markerRef.current.on("dragend", function (event) {
           const { lat, lng } = event.target.getLatLng();
           console.log("Updated Marker Position:", { lat, lng });
-          setLocation({ lat, lng });          
+          setLocation({ lat, lng });
         });
       }
     };
@@ -100,7 +99,6 @@ function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
 
   return <div></div>;
 }
-
 
 function details() {
   const [details, setDetails] = useState(initialValue);
