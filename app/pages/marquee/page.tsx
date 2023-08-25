@@ -331,3 +331,32 @@ function Marquee() {
 }
 
 export default Marquee;
+
+// "use client";
+// import React from "react";
+// import PlacesAutocomplete from "react-google-autocomplete";
+// import Autocomplete from "react-google-autocomplete";
+
+// function LocationAutocomplete() {
+//   const handlePlaceSelect = (place) => {
+//     const { geometry } = place;
+//     if (geometry && geometry.location) {
+//       const { lat, lng } = geometry.location;
+//       console.log("Selected coordinates:", lat, lng);
+//       // Use lat and lng directly as properties
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <h2>Location Autocomplete</h2>
+//       <PlacesAutocomplete
+//         apiKey="AIzaSyDuMElxFoN0vf7ps8ZvqG2ANcZiIYkyS2s"
+//         onSelect={handlePlaceSelect}
+//         inputAutocompleteValue="off"
+//       />
+//     </div>
+//   );
+// }
+
+// export default LocationAutocomplete;

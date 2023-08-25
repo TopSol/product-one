@@ -22,6 +22,8 @@ import Loader from "@/app/component/Loader";
 import Demo from "@/app/component/ImageCropper";
 import icon from "./consonant";
 import PhoneInput from "react-phone-number-input";
+import RegistrationImg from "@/app/assacts/images/RegistrationImg.png";
+import Image from "next/image";
 import "./style.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
@@ -250,238 +252,273 @@ function details() {
 
   return (
     <div>
-      <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row h-[100vh]">
-        <div className="w-full lg:w-[65%] px-10 relative md:block">
+      <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row">
+        <div className="w-full lg:w-[40%] md:ml-24 flex flex-col  my-3">
+          <h1 className=" mb-4 text-[28px] text-center pt-2 md:text-3xl font-vollkorn text-primary items-center md:-ml-32">
+            Registration Here
+          </h1>
+
+          <Form
+            className="w-full"
+            name="basic"
+            labelCol={{
+              span: 8,
+            }}
+            wrapperCol={{
+              span: 16,
+            }}
+            style={{
+              maxWidth: "100%",
+            }}
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+          >
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                  Full Name
+                </b>
+              </div>{" "}
+              <Form.Item
+                className="w-[100%]"
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fillout the name input!",
+                  },
+                ]}
+              >
+                <Input
+                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  placeholder="Enter Full Name Here"
+                  type="name"
+                  name="name"
+                  value={details.name}
+                  onChange={handleChange}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[79.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                  Email
+                </b>
+              </div>
+              <Form.Item
+                className="w-[100%]"
+                name="email"
+                rules={[
+                  {
+                    type: "email",
+                    required: true,
+                    message: "Please fillout the email input!",
+                  },
+                ]}
+              >
+                <Input
+                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  placeholder="Enter Email Here"
+                  type="email"
+                  name="email"
+                  value={details.email}
+                  onChange={handleChange}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                  Password
+                </b>
+              </div>{" "}
+              <Form.Item
+                className="w-[100%]"
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fillout the password input!",
+                  },
+                ]}
+              >
+                <Input
+                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  placeholder="Enter password Here"
+                  type="password"
+                  name="password"
+                  value={details.password}
+                  onChange={handleChange}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[129.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                  Phone Number
+                </b>
+              </div>
+
+              <Form.Item
+                name="phoneNumber"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fillout the phone input!",
+                  },
+                ]}
+              >
+                <PhoneInput
+                  international
+                  countryCallingCodeEditable={false}
+                  defaultCountry="PK"
+                  value={value}
+                  onChange={setValue}
+                  className=" outline-none rounded py-3"
+                />
+              </Form.Item>
+            </div>
+
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                  Capacity
+                </b>
+              </div>{" "}
+              <Form.Item
+                className="w-[100%]"
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fillout the capacity input!",
+                  },
+                ]}
+              >
+                <Input
+                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  placeholder="Enter Capacity Here"
+                  type="number"
+                  name="capacity"
+                  value={details.capacity}
+                  onChange={handleChange}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 ">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[79.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                  Image
+                </b>
+              </div>{" "}
+              <Form.Item
+              className="w-[100%]"
+                name="capacity"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fill out the capacity input!",
+                  },
+                ]}
+              >
+                <Input
+                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  placeholder="Please Select Image"
+                  type="file"
+                  name="image"
+                  onChange={(e) => handleImageDiemension(e)}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                  Address
+                </b>
+              </div>{" "}
+              <Form.Item
+                className="w-[100%]"
+                name="address"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fillout the address input!",
+                  },
+                ]}
+              >
+                <Input
+                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  placeholder="Enter Address Here"
+                  type="address"
+                  name="address"
+                  value={details.address}
+                  onChange={handleChange}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+              <div className="absolute top-[calc(50%_-_93.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[93.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Description</b>
+              </div>
+              <Form.Item
+              className="w-[100%]"
+                name="marqueeDetails"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fillout the marqueeDetails input!",
+                  },
+                ]}
+              >
+                <TextArea
+                  rows={5}
+                  maxLength={200}
+                  placeholder="Enter Description Here"
+                  name="marqueeDetails"
+                  value={details.marqueeDetails}
+                  onChange={handleChange}
+                  className="border outline-none md:w-[50vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                />
+              </Form.Item>
+            </div>
+            <div className="flex md:justify-start justify-center  w-full items-center  ">
+              <div className=" text-center">
+                <button
+                  className="flex justify-center border py-2 px-4 w-36 lg:px-7  text-white font-extrabold rounded-md bg-primary hover:bg-hoverPrimary"
+                  onClick={(e) => openModal(e)}
+                >
+                  Location
+                </button>
+              </div>
+              <div className=" text-center mx-2">
+                <button
+                  className="flex justify-center border border-primary py-2 w-36 lg:px-3 font-extrabold rounded-md text-primary hover:bg-primary hover:text-white"
+                  onClick={handleRegistration}
+                >
+                  {loading ? <Loader /> : "Register Now"}
+                </button>
+              </div>
+            </div>
+          </Form>
+        </div>
+        <div className="w-full lg:w-[60%] relative md:block">
           {modalOpen2 ? (
-            <img
-              src="https://images.pexels.com/photos/3887985/pexels-photo-3887985.jpeg?auto=compress&cs=tinysrgb&w=600"
+            <Image
               className=" lg:absolute inset-0 object-cover w-full h-full"
+              src={RegistrationImg}
+              alt="Image"
             />
           ) : null}
-        </div>
-
-        <div className="w-full lg:w-[35%] px-8 md:px-14  rounded-md shadow-xl overflow-y-auto  flex-col flex ">
-          <h1 className=" mb-2 text-[28px] pt-2 md:text-3xl font-vollkorn text-primaryColor items-center">
-            Marquee Registration
-          </h1>
-          <div className="flex flex-col justify-between w-full 2xl:h-[70vh] my-3">
-            <Form
-              className="w-full"
-              name="basic"
-              labelCol={{
-                span: 8,
-              }}
-              wrapperCol={{
-                span: 16,
-              }}
-              style={{
-                maxWidth: "100%",
-              }}
-              initialValues={{
-                remember: true,
-              }}
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
-              autoComplete="off"
-            >
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">Full Name</label>
-                <Form.Item
-                  className="w-[100%]"
-                  name="name"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please fillout the name input!",
-                    },
-                  ]}
-                >
-                  <Input
-                    className=" outline-none rounded md:w-[25vw] py-3 "
-                    placeholder="Enter Full Name Here"
-                    type="name"
-                    name="name"
-                    value={details.name}
-                    onChange={handleChange}
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">Email</label>
-                <Form.Item
-                  className="w-[100%]"
-                  name="email"
-                  rules={[
-                    {
-                      type: "email",
-                      required: true,
-                      message: "Please fillout the email input!",
-                    },
-                  ]}
-                >
-                  <Input
-                    className=" outline-none rounded md:w-[25vw] py-3 "
-                    placeholder="Enter Email Here"
-                    type="email"
-                    name="email"
-                    value={details.email}
-                    onChange={handleChange}
-                  />
-                </Form.Item>
-              </div>
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">Password</label>
-                <Form.Item
-                  className="w-[100%]"
-                  name="password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please fillout the password input!",
-                    },
-                  ]}
-                >
-                  <Input
-                    className=" outline-none rounded md:w-[25vw] py-3 "
-                    placeholder="Enter password Here"
-                    type="password"
-                    name="password"
-                    value={details.password}
-                    onChange={handleChange}
-                  />
-                </Form.Item>
-              </div>
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">
-                  Phone Number
-                </label>
-                <Form.Item
-                  name="phoneNumber"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please fillout the phone   input!",
-                    },
-                  ]}
-                >
-                  <PhoneInput
-                    international
-                    countryCallingCodeEditable={false}
-                    defaultCountry="PK"
-                    value={value}
-                    onChange={setValue}
-                    className=" outline-none rounded py-3"
-                  />
-                </Form.Item>
-              </div>
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">Capacity</label>
-                <Form.Item
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please fillout the capacity input!",
-                    },
-                  ]}
-                >
-                  <Input
-                    className=" outline-none rounded md:w-[25vw] py-3 "
-                    placeholder="Enter Capacity Here"
-                    type="number"
-                    name="capacity"
-                    value={details.capacity}
-                    onChange={handleChange}
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">Image</label>
-                <Form.Item
-                  name="capacity"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please fill out the capacity input!",
-                    },
-                  ]}
-                >
-                  <Input
-                    className="outline-none rounded md:w-[25vw] py-3"
-                    placeholder="Enter Capacity Here"
-                    type="file"
-                    name="image"
-                    onChange={(e) => handleImageDiemension(e)}
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">Address</label>
-                <Form.Item
-                  name="address"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please fillout the address input!",
-                    },
-                  ]}
-                >
-                  <Input
-                    className=" outline-none rounded md:w-[25vw] py-3 "
-                    placeholder="Enter Address Here"
-                    type="address"
-                    name="address"
-                    value={details.address}
-                    onChange={handleChange}
-                  />
-                </Form.Item>
-              </div>
-              <div className="w-[100%]">
-                <label className="font-roboto font-bold my-2">
-                  Description
-                </label>
-                <Form.Item
-                  name="marqueeDetails"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please fillout the marqueeDetails input!",
-                    },
-                  ]}
-                >
-                  <TextArea
-                    rows={1}
-                    maxLength={200}
-                    placeholder="Enter Description Here"
-                    name="marqueeDetails"
-                    value={details.marqueeDetails}
-                    onChange={handleChange}
-                    className="rounded-none w-full py-2 lg:py-3"
-                  />
-                </Form.Item>
-              </div>
-              <div className="flex justify-start w-full items-center  ">
-                <div className=" text-center">
-                  <button
-                    className="flex justify-center border py-2 px-4 lg:px-7 rounded-md bg-primaryColor"
-                    onClick={(e) => openModal(e)}
-                  >
-                    Location
-                  </button>
-                </div>
-                <div className=" text-center mx-2">
-                  <button
-                    className="flex justify-center border py-2 w-28 lg:px-3 rounded-md  bg-primaryColor"
-                    onClick={handleRegistration}
-                  >
-                    {loading ? <Loader /> : "Register Now"}
-                  </button>
-                </div>
-              </div>
-            </Form>
-          </div>
         </div>
       </div>
       <Modal open={modalOpen} onCancel={closeModal} width={2000} centered>
