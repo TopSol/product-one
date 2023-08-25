@@ -4,8 +4,8 @@
     color: #fff;
 }
 
-.myTable .ant-table-thead > tr > th{
-    background-color: #F7C815;
+.myTable .ant-table-thead > tr > th{ 
+    background-color: #F99832;
     color: white;
 }
 .myTable .ant-table-tbody > tr > td{

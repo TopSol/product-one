@@ -21,6 +21,7 @@ import {
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Modal } from "antd";
+import { Checkbox } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 const plainOptions = [{label:"Available",value:"Available"},{label: "Not Available",value:"NotAvailable"}];
@@ -32,7 +33,7 @@ const initialFormState = {
   description: "",
   status: plainOptions[0].value,
 };
-function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
+function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
   const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
@@ -257,17 +258,25 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
         break;
     }
   };
+  const onChange = (venueId) => {
+    console.log(venueId,"venueId")
+   
+  }
   console.log(user,"sdfsdffdsfsdfsdf")
   return (
     <div className="md:px-5">
       <Table dataSource={Menus} className="myTable">
+      <Column title="Check box" dataIndex="venueId" key="venueId" 
+          render={(venueId) => (
+            <div>
+              <Checkbox onClick={()=> onChange(venueId)}/>
+            </div>
+          )}
+          />
         <Column
           title="Name"
           dataIndex="name"
           key="name"
-          // className={`${
-          //   Menus.status === "NotAvailable" ? "bg-red-200" : "bg-green-200"
-          // }`}
         />
         <Column title="Type" dataIndex="type" key="type" />
         <Column title="Description" dataIndex="description" key="description" />
@@ -321,13 +330,13 @@ function Menus({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
                 cancelText="No"
                 onConfirm={() => deleteMenu(menuId)}
               >
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon={faTrashCan}
                   width={15}
                   // height={15}
                   className="text-red-500 cursor-pointer text-xl"
                   // onClick={() => deleteVenue(venueId)}
-                />
+                /> */}
               </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
