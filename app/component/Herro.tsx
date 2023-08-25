@@ -27,7 +27,7 @@ export default function Herro() {
   };
   return (
     <div>
-      <div className="bg-[url('./assacts/images/background.jpg')] h-[100vh] bg-cover ">
+      <div className="bg-[url('./assets/images/background.jpg')] h-[100vh] bg-cover ">
         <div className="flex justify-between lg:container mx-auto items-center py-7 px-6 lg:px-0  bg-transparent">
           <div>
             <p className=" text-primaryColor font-extrabold text-xl ">BOOKING NOW.</p>

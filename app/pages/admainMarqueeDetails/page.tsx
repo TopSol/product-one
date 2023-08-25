@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import AdminNavbar from "./adminNavbar";
 import "react-image-lightbox/style.css";
-import Venues from "./venues";
+import MarqueeVenues from "./venues";
 import Menus from "./menus";
 import Availability from "./availability";
 import Dish from "./dish";
@@ -12,6 +12,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useStore } from "@/store";
 import { redirect, useRouter } from "next/navigation";
 import Loader from "../../component/Loader";
+import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
+import { db } from "@/app/firebase";
+// import Image from "next/image";
 import {
   faBars,
   faBellConcierge,
@@ -20,6 +23,22 @@ import {
   faCalendar,
 } from "@fortawesome/free-solid-svg-icons";
 import BookedDate from "./bookedDate";
+
+import {
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import Image from "next/image";
+import addVenue from "@/app/assets/images/Group2.svg";
+import menuIcon from "@/app/assets/images/menuIcon.svg";
+import availabilityIcon from "@/app/assets/images/availabilityIcon.svg";
+import bookingIcon from "@/app/assets/images/bookingIcon.svg";
+import dishIcon from "@/app/assets/images/dishIcon.svg";
+import menuWIcon from "@/app/assets/images/menuWIcon.svg";
+import availabilityWIcon from "@/app/assets/images/availabilityWIcon.svg";
+import bookingWIcon from "@/app/assets/images/bookingWIcon.svg";
+import dishWIcon from "@/app/assets/images/dishWIcon.svg";
+
 function AdminMarqueeDetails() {
   const [component, setComponent] = React.useState("Venues");
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,31 +51,37 @@ function AdminMarqueeDetails() {
   const [dishModalOpen, setDishModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoader, setIsLoader] = useState(true);
-  const { userInformation,getDates } = useStore();
+  const { userInformation, getDates, addVenues,Venues } = useStore();
+  const [deleteVenues, setDeleteVenues] = useState([]);
   const sideBar = [
     {
       name: "Venues",
-      icon: faBellConcierge,
+      icon: dishIcon,
+      wIcon: dishWIcon,
       color: "gray",
     },
     {
       name: "Dishes",
-      icon: faUtensils,
+      icon: dishIcon,
+      wIcon: dishWIcon,
       color: "gray",
     },
     {
       name: "Menus",
-      icon: faBowlFood,
+      icon: menuIcon,
+      wIcon: menuWIcon,
       color: "gray",
     },
     {
       name: "Availability",
-      icon: faBars,
+      icon: availabilityIcon,
+      wIcon: availabilityWIcon,
       color: "gray",
     },
     {
       name: "Booking",
-      icon: faCalendar,
+      icon: bookingIcon,
+      wIcon: bookingWIcon,
       color: "gray",
     },
   ];
@@ -93,7 +118,22 @@ function AdminMarqueeDetails() {
     setPhotoIndex(index);
     setIsOpen(true);
   };
+  const handleDeleteVenues = async () => {
+    try {
+      await Promise.all(
+        deleteVenues.map(async (VenueId) => {
 
+          await deleteDoc(doc(db, "Venues", VenueId));
+        })
+      );
+      const newBlogs = Venues.filter((blog) => !deleteVenues.includes(blog.id));
+      addVenues(newBlogs);
+    } catch (error) {
+      console.error("Error removing document(s): ", error);
+    }
+  };
+  
+  
   return (
     <>
       {isLoader ? (
@@ -103,7 +143,7 @@ function AdminMarqueeDetails() {
       ) : (
         <div className=" h-[100vh]">
           <div className="mt-14">
-          <AdminNavbar setModalOpen2={setModalOpen2} />
+            <AdminNavbar setModalOpen2={setModalOpen2} />
             <div className="sidebar flex">
               <div className="hidden  p-2  absolute">
                 <FontAwesomeIcon
@@ -112,102 +152,146 @@ function AdminMarqueeDetails() {
                 />
               </div>
               {modalOpen2 ? (
-                <div className="w-[70%]  h-[100vh] md:w-[22%] border flex flex-col shadow-lg   z-20 lg:z-0 bg-white relative md:block">
-                  <p className="  flex justify-center items-center mx-auto text-xl font-extrabold pl-2 py-5">
-                    Marquee
-                  </p>
+                <div className="w-[70%]  h-[100vh] md:w-[15%] border flex flex-col shadow-lg   z-20 lg:z-0 bg-white relative md:block">
+                  <div className="flex justify-between">
+                    <p className="  flex  items-center  text-xl  pl-[30px] py-5">
+                      Marquee
+                    </p>
+                    <FontAwesomeIcon
+                      icon={faBarsStaggered}
+                      size="sm"
+                      className="h-7 text-primary  cursor-pointer py-5 pr-[30px]"
+                      onClick={() => setModalOpen2((prev) => !prev)}
+                    />
+                  </div>
                   {sideBar.map((item, index) => (
                     <div key={index}>
-                      <button
-                        className={`side w-full text-left py-2 ${
-                          component === item.name ? "bg-sidebarColor" : ""
+                      <div
+                        className={`side w-full text-left flex py-2 ${
+                          component === item.name ? "bg-primary" : ""
                         }`}
                         onClick={() => {
-                          console.log(item.name, "item.name");
                           setComponent(item.name);
                           setModalOpen1(!modalOpen1);
-                          if(item.name === "Availability"){
-                            getDates()
+                          if (item.name === "Availability") {
+                            getDates();
                           }
                           if (window.innerWidth <= 768) {
                             setModalOpen2(!modalOpen2);
                           }
                         }}
                       >
-                        {component === item.name ? (
-                          <span className="absolute bg-[#F7C815] px-[2px] py-[20px] -mt-2 "></span>
-                        ) : null}
-                        <span
-                          className={`pl-${
+                        <div
+                          className={`flex pl-${
                             component === item.name ? "8" : ""
                           } top-0 bottom-0 left-0 right-0  pl-[30px] text-${
-                            component !== item.name ? "sidebarColorText" : ""
+                            component !== item.name ? "sidebarColor" : "white"
                           }`}
                         >
-                          <FontAwesomeIcon
-                            icon={item.icon}
-                            className=" pr-3 text-[inherit] transition-colors duration-200"
-                            style={{ color: item.color }}
+                          <Image
+                            src={component !== item.name? item.icon :item.wIcon}
+                            width={50}
+                            alt="Picture of the author"
+                            className={` pr-5 text-${
+                              component !== item.name ? "sidebarColor" : "white"
+                            } transition-colors duration-200`}
                           />
                           {item.name}
-                        </span>
-                      </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : null}
 
               <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto">
-                <div className="md:px-5 ">
+                <div className="md:px-5 border my-3  rounded-md mx-5 mt-7 ">
                   {component === "Venues" ? (
-                    <div className="flex justify-between mx-1  items-center">
-                      <p className="text-2xl py-5">Venues</p>
-                      <button
-                        className="border rounded-md px-2 py-3 font-extrabold text-white bg-[#F7C815] my-4"
-                        onClick={() => openModal()}
-                      >
-                        Add venues
-                      </button>
+                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
+                      <p className="text-2xl">Venues</p>
+                      <div className="flex justify-center items-center">
+                        <button
+                          className="border rounded-md px-2 mr-2 pont-poppins text-primary border-primary py-2"
+                          onClick={() => openModal()}
+                        >
+                          <span className="flex">
+                            <Image
+                              src={addVenue}
+                              alt="Picture of the author"
+                              width={20}
+                              className="pr-1"
+                            />
+                            Add venues
+                          </span>
+                        </button>
+                        <button
+                          className="border rounded-md px-8 pont-poppins text-white bg-primary py-2"
+                          onClick={() => handleDeleteVenues()}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   ) : component === "Menus" ? (
                     <div className="flex justify-between mx-1  items-center">
                       <p className="text-2xl py-5">Menus</p>
+                        <div className="flex justify-center items-center">
+                        
                       <button
-                        className="border rounded-md px-3 py-3 font-extrabold text-white bg-[#F7C815] my-4"
+                        className="border rounded-md px-2 mr-2 pont-poppins text-primary border-primary py-2"
                         onClick={() => openModal()}
                       >
                         Add Menu
                       </button>
+                      <button
+                          className="border rounded-md px-8 pont-poppins text-white bg-primary py-2"
+                          onClick={() => handleDeleteVenues()}
+                        >
+                          Delete
+                        </button>
+                        </div>
                     </div>
                   ) : component === "Dishes" ? (
                     <div className="flex justify-between mx-1  items-center">
                       <p className="text-2xl py-5">Dishes</p>
+                      <div className="flex justify-center items-center">
                       <button
-                        className="border rounded-md px-3 py-3 font-extrabold text-white bg-[#F7C815] my-4"
+                        className="border rounded-md px-2 mr-2 pont-poppins text-primary border-primary py-2"
                         onClick={() => openModal()}
                       >
                         Add Dish
                       </button>
+                      <button
+                          className="border rounded-md px-8 pont-poppins text-white bg-primary py-2"
+                          onClick={() => handleDeleteVenues()}
+                        >
+                          Delete
+                        </button>
+                        </div>
                     </div>
                   ) : null}
                 </div>
 
                 <div>
                   {component === "Venues" ? (
-                    <Venues
+                    <MarqueeVenues
                       modalOpen={modalOpen}
                       setModalOpen={setModalOpen}
-                      handleClick={handleClick}
+                      // handleClick={handleClick}
                       loading={loading}
                       setLoading={setLoading}
+                      setDeleteVenues={setDeleteVenues}
+                      deleteVenues={deleteVenues}
                     />
                   ) : component === "Dishes" ? (
                     <Menus
                       modalOpen={modalOpen}
                       setModalOpen={setModalOpen}
-                      handleClick={handleClick}
+                      // handleClick={handleClick}
                       loading={loading}
                       setLoading={setLoading}
+                      setDeleteVenues={setDeleteVenues}
+                      deleteVenues={deleteVenues}
                     />
                   ) : component === "Menus" ? (
                     <Dish

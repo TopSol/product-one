@@ -32,6 +32,8 @@ function Marquee() {
   const [showMessage, setShowMessage] = useState(true);
   const [range, setRange] = useState<DateRange | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
+  const [checkedServices,setCheckedServices]=useState([])
+
   const { Search } = Input;
 
   useEffect(() => {
@@ -70,25 +72,37 @@ function Marquee() {
   const handleSliderChange = async (event) => {
     const price = Number(event.target.value);
     setSliderValue(price);
-    calculatePrice(price);
+    handlePrice(price);
   };
-
-  const calculatePrice = (value) => {
+  const handlePrice = (value) => {
     const filteredVenues = venuesPrice.filter((item) => {
-      return value <= item?.data?.price;
+      if(checkedServices.length){
+        const result = [];
+        checkedServices.forEach((value) => {
+          if (item?.data?.services?.includes(value)) {
+            result.push(value);
+          }
+        });
+        return result.length && value <= item?.data?.price;
+      }
+      else{
+        console.log(value ,"Wwsdfasdfas", item?.data?.price)
+        return value <= item?.data?.price;
+      }  
     });
+    console.log(filteredVenues,"filteredVenuesfilteredVenues")
     let arr = [];
-    const data = controlPrice.length ? controlPrice : userData;
+    const data =  controlPrice.length ? controlPrice : userData;
     data.map((item) => {
       filteredVenues.map((item1) => {
         if (item.data.userId.includes(item1.data.userId)) {
-          console.log(item, "itemi");
           if (!arr.includes(item)) {
             arr.push(item);
           }
         }
       });
     });
+
     if (arr.length) {
       setFilterMarqueeWithPrice(arr);
       setFilteredVenuesPrice(arr);
@@ -96,7 +110,9 @@ function Marquee() {
       setShowMessage(true);
     } else {
       setShowMessage(false);
-      //  setServices([])
+      setFilterMarqueeWithPrice(arr);
+      // setServices(arr);
+      setFilteredVenuesPrice(arr);
     }
   };
 
@@ -119,9 +135,19 @@ function Marquee() {
         }
       });
     });
-    setFilterMarqueeWithPrice(arr);
-    setControlPrice(arr);
-    setServices(arr);
+    console.log(arr, "arrrrrrrrr");
+    if(!arr.length){
+      setShowMessage(false)
+      setFilterMarqueeWithPrice(arr);
+      setControlPrice(arr);
+    }
+    else{
+      setShowMessage(true)
+      setFilterMarqueeWithPrice(arr);
+      // setControlPrice(arr);
+      setServices(arr);
+    }
+    
   }
   let footer = <p>Select Date</p>;
 
@@ -139,6 +165,7 @@ function Marquee() {
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
 
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
+    setCheckedServices(checkedValues)
     const filteredVenues = venuesPrice.filter((item) => {
       const result = [];
       checkedValues.forEach((value) => {
@@ -161,12 +188,13 @@ function Marquee() {
     });
     if (arr.length) {
       setFilterMarqueeWithPrice(arr);
+      setFilteredVenuesPrice(arr);
     } else if (!filterMarqueeWithPrice.length) {
       setShowMessage(true);
     } else if (!checkedValues.length) {
       setFilterMarqueeWithPrice(services);
     } else if (!arr.length) {
-      setShowMessage(true);
+      setShowMessage(false);
     } else {
       setShowMessage(true);
     }
@@ -182,6 +210,7 @@ function Marquee() {
   };
 
   const handleSearch = async () => {
+    console.log(filterMarqueeWithPrice,"filterMarqueeWithPricefilterMarqueeWithPrice")
     try {
       const response = await axios.get(
         `https://nominatim.openstreetmap.org/search`,
@@ -193,7 +222,8 @@ function Marquee() {
         }
       );
       const { lat, lon } = response.data[0];
-      const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
+      const data = filterMarqueeWithPrice.length ? filterMarqueeWithPrice : userData;
+      console.log(data, "dataffff");  
       const userCoordinates = {
         lat: Number(lat),
         lng: Number(lon),
@@ -220,17 +250,22 @@ function Marquee() {
           return false;
         }
       });
-      setFilterMarqueeWithPrice(branch);
+      console.log(branch, "branchbranch");
+      if(!branch.length){
+        setShowMessage(false)
+      }
+      else{
+        setFilterMarqueeWithPrice(branch);
+      }
     } catch (error) {
       console.error("Error fetching coordinates:", error);
     }
   };
-
+console.log(searchQuery,"searchQuerysearchQuery")
   return (
     <>
       <div>
         <Navbar />
-
         <div className="bg-bgColor mt-24">
           <div className="md:container md:mx-auto py-5 mx-5">
             <h1 className="font-vollkorn text-4xl text-gray-600">Hotel</h1>
@@ -257,7 +292,7 @@ function Marquee() {
 
             <div>
               <Search
-                className="py-3  mt-6  outline-none rounded-md w-72"
+                className="py-3  mt-6  outline-none rounded-md w-full"
                 placeholder="input search text"
                 size="large"
                 type="text"
@@ -271,7 +306,7 @@ function Marquee() {
               <Input
                 type="range"
                 min="0"
-                max="100000"
+                max="200000"
                 step="10"
                 value={sliderValue}
                 onChange={handleSliderChange}
@@ -303,7 +338,7 @@ function Marquee() {
             ) : (
               <div className="flex items-center justify-center">
                 <div className="bg-[#f5f5f5] w-[90%] h-[50px] flex items-center justify-center rounded-md">
-                  <p className="text-sm text-textColor">Product not found</p>
+                  <p className="text-sm text-textColor">Marquee not found</p>
                 </div>
               </div>
             )}

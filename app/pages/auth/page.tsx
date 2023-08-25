@@ -9,6 +9,8 @@ import { Input, Form } from "antd";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import Loader from "@/app/component/Loader";
+import Image from "next/image";
+import restaurantImage from "@/app/assets/images/restaurant.png";
 const initialFormState = {
   email: "",
   password: "",
@@ -24,8 +26,8 @@ const onFinishFailed = (errorInfo) => {
 
 function Login() {
   const [user, setUser] = useState(initialFormState);
-  const [loader, setLoader] = useState(false)
-  const [loading , setLoading] = useState(false)
+  const [loader, setLoader] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { userInformation, addUser } = useStore();
   const handleChange = (e) => {
@@ -55,8 +57,8 @@ function Login() {
         if (user) {
           registrationInformation(user.uid);
           router.push("/pages/admainMarqueeDetails");
-          setLoader(true)
-          setLoading(true)
+          setLoader(true);
+          setLoading(true);
         }
       })
       .catch((error) => {
@@ -66,15 +68,8 @@ function Login() {
   };
 
   return (
-    <div className=" mx-auto my-auto w-full h-[100vh] flex flex-col lg:flex lg:flex-row">
-      <div className="hidden md:flex md:flex-col md:justify-center md:h-[100vh] relative w-full lg:w-[42%] px-1 ">
-        <img
-          src="https://account.asus.com/img/login_img02.png"
-          className="inset-0 object-cover flex justify-center mx-auto mt-32 "
-        />
-      </div>
-
-      <div className="w-full flex justify-center items-center  lg:w-[60%] bg-bgColor  py-3   mx-auto    ">
+    <div className=" h-[100vh] flex flex-col justify-center items-center lg:flex lg:flex-row">
+      <div className="w-full flex justify-center items-center  md:w-[50%] bg-white py-3   mx-auto    ">
         <Form
           name="basic"
           labelCol={{
@@ -94,16 +89,15 @@ function Login() {
           autoComplete="off"
           className="w-full mx-auto"
         >
-          <div className="flex justify-center items-center mx-auto mt-2 mb-14">
-          </div>
+          <div className="flex justify-center items-center mx-auto mt-2 mb-14"></div>
           <div className="flex flex-col justify-center items-center mx-auto">
-            <h1 className=" flex justify-start items-start mb-5 text-2xl font-extrabold font-vollkorn  md:-ml-[205px] ">
-              Login to access your account
+            <h1 className=" flex justify-start items-start mb-10 text-2xl md:text-5xl font-Poppins text-primary">
+              Login Now
             </h1>
-            <div className="flex flex-col items-start">
-              <label className="font-roboto font-bold my-2">
-                EMAIL / PHONE
-              </label>
+            <div className="flex flex-col items-start relative mb-5">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Email</b>
+             </div>
               <Form.Item
                 name="username"
                 rules={[
@@ -115,7 +109,7 @@ function Login() {
                 ]}
               >
                 <Input
-                  className="border-[2px] md:border-[3px]   outline-none md:w-[500px] w-72  py-4 mb-3 flex justify-center text-xs"
+                  className="border outline-none md:w-[500px] z-10 w-72  py-4 mb-3 flex justify-center text-xs relative"
                   placeholder="Type Your Email / Phone"
                   type="email"
                   name="email"
@@ -124,8 +118,10 @@ function Login() {
                 />
               </Form.Item>
             </div>
-            <div>
-              <label className="font-roboto font-bold my-2">PASSWORD</label>
+            <div className="flex flex-col items-start relative">
+            <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px]  rounded-3xs bg-white w-[83.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Password</b>
+             </div>
               <Form.Item
                 name="password"
                 rules={[
@@ -136,7 +132,7 @@ function Login() {
                 ]}
               >
                 <Input
-                  className="border-[2px] md:border-[3px]   outline-none md:w-[500px] w-72  py-4 mb-3 flex justify-center text-xs"
+                  className="border  outline-none md:w-[500px] z-10 relative w-72  py-4 mb-3 flex justify-center text-xs"
                   placeholder="Type Your Password"
                   type="password"
                   name="password"
@@ -145,36 +141,36 @@ function Login() {
                 />
               </Form.Item>
             </div>
-            <p className="flex justify-end   md:ml-[360px] cursor-pointer font-bold items-end">
+            <p className="flex justify-end  text-xl  md:ml-[360px] cursor-pointer my-5 items-end text-primary">
               Forgot Password?
             </p>
           </div>
 
           <button
-            className="border md:w-[500px] w-72 flex justify-center mx-auto items-center rounded-md  my-5 py-4 px-10 font-extrabold cursor-pointer text-white bg-[#61ADFF] "
+            className="border md:w-[500px] w-72 md:text-2xl flex justify-center font-Poppins mx-auto items-center rounded-md  md:my-5 py-2 md:py-4 px-10  cursor-pointer text-white bg-primary "
             onClick={handleLogin}
           >
             {" "}
-            <>
-            {
-              loader? (<Loader/>) :("Login")
-            }
-            </>
+            <>{loader ? <Loader /> : "Log in"}</>
           </button>
-          <p className="flex justify-center font-extrabold items-center mx-auto md:-ml-[285px]">
+          <p className="flex justify-center md:text-2xl  items-center mx-auto font-Poppins mt-8">
             Don’t have an account?{" "}
             <Link
               className=" text-[#006CE1] ml-2 font-semibold"
               href="/pages/registration"
             >
-              <div>
-
-              Register
-              </div>
-              
+              <div className="text-primary md:text-2xl ">Register Now</div>
             </Link>
           </p>
         </Form>
+      </div>
+      <div className="hidden md:flex md:flex-col md:justify-center  md:w-[50%] md:h-[100vh] relative w-full  px-1 ">
+        <Image
+          className="object-cover object-center w-full h-full"
+          src={restaurantImage}
+          alt="Restaurant"
+          quality={100}
+        />
       </div>
     </div>
   );

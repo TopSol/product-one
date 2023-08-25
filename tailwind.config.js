@@ -10,10 +10,12 @@ module.exports = {
       fontFamily: {
         roboto: ["Roboto", "sans-serif"],
         vollkorn: ["Vollkorn", "serif"],
+        poppins: ["Poppins", "sans-serif"],
       },
       colors: {
         primaryColor: "#DEB666",
         primary:"#F99832",
+        sidebarColor: "#545454",
         hoverPrimary: "#FFC587",
         secondaryColor: "#32353C",
         bgColor: "#f5f5f5",

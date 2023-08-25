@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../../component/Loader";
 import ImageLightbox from "react-image-lightbox";
+import Lightbox from "react-image-lightbox";
 import { Button, Input, Popconfirm } from "antd";
 import DeleteItem from "../../component/DeleteItem";
 import { Image } from "antd";
-import { Checkbox } from 'antd';
-import type { CheckboxValueType } from 'antd/es/checkbox/Group';
+import Link from "next/link";
+import { Checkbox } from "antd";
+import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import {
   collection,
   getDocs,
@@ -28,32 +30,40 @@ import {
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { set } from "date-fns";
 const initialFormState = {
   name: "",
   image: "",
   minCapacity: "",
   maxCapacity: "",
   price: "",
-  services:[]
+  services: [],
 };
-function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
+function Venues({ modalOpen, setModalOpen, setDeleteVenues,deleteVenues, loading, setLoading, }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenue, setaddVenue] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const { Column } = Table;
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const [addVenueImage, setaddVenueImage] = useState([]);
-  const { userInformation, addUser, Venues, addVenues,dates } = useStore();
+  const [photoIndex, setPhotoIndex] = useState(0);
+  // const [deleteVenues, setDeleteVenues] = useState([]);
+  const { userInformation, addUser, Venues, addVenues, dates } = useStore();
   const storage = getStorage();
+  const [isOpen, setIsOpen] = useState(false);
   const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
       ...prevState,
-      [name]: name === "price" ? Number(value) :
-              name === "maxCapacity" ? Number(value) :
-              name === "minCapacity" ? Number(value) :
-              value,
+      [name]:
+        name === "price"
+          ? Number(value)
+          : name === "maxCapacity"
+          ? Number(value)
+          : name === "minCapacity"
+          ? Number(value)
+          : value,
     }));
     // setUser((prevState) => ({
     //   ...prevState,
@@ -61,8 +71,8 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     // }));
   };
   console.log(userInformation, "userInformation");
-  
-  console.log(userInformation.userId,"userInformaddtion",userInformation)
+
+  console.log(userInformation.userId, "userInformaddtion", userInformation);
   useEffect(() => {
     // listAll(ImageRef)
     //   .then((res) => {
@@ -118,7 +128,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
         return urls;
       })
     );
- const VenueId = Math.random().toString(36).substring(2);
+    const VenueId = Math.random().toString(36).substring(2);
     const venue = {
       name: user.name,
       image: imageUrls,
@@ -128,7 +138,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
       venueId: VenueId,
       // availability: user.availability,
       price: user.price,
-      services:user.services
+      services: user.services,
     };
     try {
       await setDoc(doc(db, "Venues", VenueId), venue);
@@ -141,16 +151,17 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     setLoading(false);
   };
   const deleteVenue = async (VenueId) => {
-    try {
-      await deleteDoc(doc(db, "Venues", VenueId));
-      const newBlogs = Venues.filter((blog) => blog.id !== VenueId);
-      console.log(newBlogs, "newBlogs")
-      addVenues(newBlogs);
-    } catch (error) {
-      console.error("Error removing document: ", error);
-    }
+    console.log(VenueId, "VenueId");
+    // try {
+    //   await deleteDoc(doc(db, "Venues", VenueId));
+    //   const newBlogs = Venues.filter((blog) => blog.id !== VenueId);
+    //   console.log(newBlogs, "newBlogs");
+    //   addVenues(newBlogs);
+    // } catch (error) {
+    //   console.error("Error removing document: ", error);
+    // }
   };
-  console.log(Venues, "Venues")
+  console.log(Venues, "Venues");
   const EditVenue = async (dishId) => {
     setOpenEditVenue(true);
     setModalOpen((prevState) => !prevState);
@@ -167,7 +178,7 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
   };
   const updateVenue = async (venueId) => {
     setLoading((pre) => !pre);
-      
+
     if (typeof user?.image[0] === "string") {
       try {
         await setDoc(doc(db, "Venues", venueId), user);
@@ -221,15 +232,31 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
     setOpenEditVenue(false);
     setLoading((pre) => !pre);
   };
-  const plainOptions = ['Heating', 'Cooling', 'MusicSystem'];
+  const plainOptions = ["Heating", "Cooling", "MusicSystem"];
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
     setUser({ ...user, services: checkedValues });
-  }
+  };
+  const onChange = (id) => {
+    if(deleteVenues.includes(id)){
+      const data = deleteVenues.filter((item)=> item !== id)
+      setDeleteVenues(data)
 
+    }else{
+      setDeleteVenues([...deleteVenues,id])
+    }
+  };
+  console.log(deleteVenues,"deleteVenuesdeleteVenues")
   return (
     <>
-      <div className="md:px-5">
+      <div className="md:px-10">
         <Table dataSource={Venues} className="myTable">
+          <Column title="Check box" dataIndex="venueId" key="venueId" 
+          render={(venueId) => (
+            <div>
+              <Checkbox onClick={()=> onChange(venueId)}/>
+            </div>
+          )}
+          />
           <Column title="Name" dataIndex="name" key="name" />
           <Column
             title="Minimum Capacity"
@@ -247,30 +274,49 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
             dataIndex="image"
             key="image"
             render={(image) => (
-              <div className="flex">
-                <Image.PreviewGroup>
-                  {image?.map((dish, index) => {
-                    return (
-                      <Image
-                        key={index}
-                        width={80}
-                        height={35}
-                        // visible={false}
-                        style={{ objectFit: "cover", paddingRight: 10 }}
-                        src={dish}
-                        onClick={() => {
-                          Image.previewGroup?.show({
-                            current: index,
-                          });
-                        }}
-                      />
-                    );
-                  })}
-                </Image.PreviewGroup>
+              <div className="flex items-center">
+                <Image
+                  width={80}
+                  src={image[0]}
+                  onClick={() => {
+                    setIsOpen(true);
+                    setPhotoIndex(0);
+                  }}
+                />
+                {
+                  <Link
+                    onClick={() => {
+                      setIsOpen(true);
+                      setPhotoIndex(0);
+                    }}
+                    className="text-blue-600 underline ml-2"
+                    href=""
+                  >
+                    
+                    {image?.length} more
+                  </Link>
+                }
+                {isOpen && (
+                  <Lightbox
+                    mainSrc={image[photoIndex]}
+                    nextSrc={image[(photoIndex + 1) % image.length]}
+                    prevSrc={
+                      image[(photoIndex + image.length - 1) % image.length]
+                    }
+                    onCloseRequest={() => setIsOpen(false)}
+                    onMovePrevRequest={() =>
+                      setPhotoIndex(
+                        (photoIndex + image.length - 1) % image.length
+                      )
+                    }
+                    onMoveNextRequest={() =>
+                      setPhotoIndex((photoIndex + 1) % image.length)
+                    }
+                  />
+                )}
               </div>
             )}
           />
-
           <Column
             title="Action"
             dataIndex="venueId"
@@ -284,16 +330,15 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
                   cancelText="No"
                   onConfirm={() => deleteVenue(venueId)}
                 >
-                  <FontAwesomeIcon
+                  {/* <FontAwesomeIcon
                     icon={faTrashCan}
                     width={15}
                     className="text-red-500 cursor-pointer text-xl"
-                  />
+                  /> */}
                 </Popconfirm>
                 <FontAwesomeIcon
                   icon={faPenToSquare}
                   width={15}
-                  // height={20}
                   className="ml-3 text-green-500 text-xl"
                   onClick={() => EditVenue(venueId)}
                 />
@@ -405,12 +450,12 @@ function Venues({ modalOpen, setModalOpen, handleClick, loading, setLoading }) {
             <div className="md:flex md:justify-between flex flex-col ">
               <label className="text-xl my-1">Services:</label>
               <div className="flex flex-col  md:flex-row  md:justify-between">
-              {/* <Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={(checkedValues: CheckboxValueType[])=>  setUser({ ...user, services: checkedValues }) } /> */}
-              <Checkbox.Group
-                options={plainOptions}
-               value={user.services as CheckboxValueType[]}
-               onChange={handleCheckboxChange}
-               />
+                {/* <Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={(checkedValues: CheckboxValueType[])=>  setUser({ ...user, services: checkedValues }) } /> */}
+                <Checkbox.Group
+                  options={plainOptions}
+                  value={user.services as CheckboxValueType[]}
+                  onChange={handleCheckboxChange}
+                />
               </div>
             </div>
 

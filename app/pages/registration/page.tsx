@@ -22,7 +22,7 @@ import Loader from "@/app/component/Loader";
 import Demo from "@/app/component/ImageCropper";
 import icon from "./consonant";
 import PhoneInput from "react-phone-number-input";
-import RegistrationImg from "@/app/assacts/images/RegistrationImg.png";
+import RegistrationImg from "../../assets/images/RegistrationImg.png";
 import Image from "next/image";
 import "./style.css";
 import "leaflet/dist/leaflet.css";
@@ -564,6 +564,46 @@ function details() {
         />
       </Modal>
     </div>
+  //   <div className="relative rounded-[20px] bg-white w-full h-[1187px] overflow-hidden text-left text-[20px] text-darkorange font-poppins">
+  //   <div className="absolute top-[666px] left-[357px] leading-[100%]">
+  //     Forgot password?
+  //   </div>
+  //   <div className="absolute top-[calc(50%_-_283.5px)] left-[calc(50%_-_647px)] w-[462px] h-[567px] text-lg text-color">
+  //     <div className="absolute top-[calc(50%_-_185.5px)] left-[calc(50%_-_231px)] w-[462px] h-[79.13px] font-manrope">
+  //       <div className="absolute top-[calc(50%_-_28.11px)] left-[calc(50%_-_231px)] rounded-3xs bg-white box-border w-[462px] h-[67.67px] border-[0.5px] border-solid border-dddddd" />
+  //       <div className="absolute top-[0px] left-[22px] rounded-3xs bg-white w-[67px] h-[23px] flex flex-row py-px px-1 box-border items-center justify-center">
+  //         <b className="relative leading-[100%]">Email</b>
+  //       </div>
+  //     </div>
+  //     <div className="absolute top-[0px] left-[91px] text-[48px] leading-[100%] font-semibold text-darkorange">
+  //       LOGIN NOW
+  //     </div>
+  //     <div className="absolute top-[426px] left-[0px] rounded-3xs bg-darkorange w-[462px] h-[67px] overflow-hidden text-5xl text-white">
+  //       <div className="absolute top-[calc(50%_-_11.5px)] left-[calc(50%_-_36px)] leading-[100%] font-semibold">
+  //         Log in
+  //       </div>
+  //     </div>
+  //     <div className="absolute top-[calc(50%_-_56.5px)] left-[calc(50%_-_231px)] w-[462px] h-[79.13px] font-manrope">
+  //       <div className="absolute top-[calc(50%_-_28.11px)] left-[calc(50%_-_231px)] rounded-3xs bg-white box-border w-[462px] h-[67.67px] border-[0.5px] border-solid border-silver" />
+  //       <div className="absolute top-[0px] left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+  //         <b className="relative leading-[100%]">Password</b>
+  //       </div>
+  //     </div>
+  //     <div className="absolute top-[543px] left-[4px] w-[454px] h-6 text-5xl text-black">
+  //       <div className="absolute top-[0px] left-[0px] leading-[100%]">
+  //         Don’t have an account?
+  //       </div>
+  //       <div className="absolute top-[0px] left-[295px] leading-[100%] font-semibold text-darkorange">
+  //         Register Now
+  //       </div>
+  //     </div>
+  //   </div>
+  //   <img
+  //     className="absolute top-[calc(50%_-_593.5px)] right-[0px] w-[765px] h-[1194px] object-cover"
+  //     alt=""
+  //     src="/restauranthallwithturquoisechairsfrenchwindowsnavycolouredceiling@2x.png"
+  //   />
+  // </div>
   );
 }
 export default details;
