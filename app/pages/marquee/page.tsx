@@ -1,22 +1,25 @@
+// @ts-nocheck
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
 import { db } from "@/app/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { Input, message } from "antd";
+import { Input } from "antd";
 import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
 import { getFormatDates } from "@/app/utils";
 import { Checkbox } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import MarqueeDetails from "@/app/component/MarqueeDetails";
-import axios from "axios";
+import calenderIcon from "../../assets/images/calender.svg";
+import PlacesAutocomplete from "react-google-autocomplete";
 import Modal from "antd/es/modal/Modal";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
+import Image from "next/image";
 import "react-day-picker/dist/style.css";
 import "./style.css";
-
 const pastMonth = new Date();
 
 function Marquee() {
@@ -31,17 +34,14 @@ function Marquee() {
   const [services, setServices] = useState([]);
   const [showMessage, setShowMessage] = useState(true);
   const [range, setRange] = useState<DateRange | undefined>();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [checkedServices,setCheckedServices]=useState([])
-
-  const { Search } = Input;
-
+  const [checkedServices, setCheckedServices] = useState([]);
+  const [coordinates, setCoordinates] = useState({});
   useEffect(() => {
     const dates = getFormatDates([range]);
     const startDate = new Date(dates[0]?.from);
     const endDate = new Date(dates[0]?.to);
     venuesPrice.map((item1) => {
-      bookDate.map((item2) => { });
+      bookDate.map((item2) => {});
     });
   }, [range]);
 
@@ -68,6 +68,7 @@ function Marquee() {
     };
     getUser();
   }, []);
+  console.log(userData, "userData");
 
   const handleSliderChange = async (event) => {
     const price = Number(event.target.value);
@@ -76,7 +77,7 @@ function Marquee() {
   };
   const handlePrice = (value) => {
     const filteredVenues = venuesPrice.filter((item) => {
-      if(checkedServices.length){
+      if (checkedServices.length) {
         const result = [];
         checkedServices.forEach((value) => {
           if (item?.data?.services?.includes(value)) {
@@ -84,15 +85,12 @@ function Marquee() {
           }
         });
         return result.length && value <= item?.data?.price;
-      }
-      else{
-        console.log(value ,"Wwsdfasdfas", item?.data?.price)
+      } else {
         return value <= item?.data?.price;
-      }  
+      }
     });
-    console.log(filteredVenues,"filteredVenuesfilteredVenues")
     let arr = [];
-    const data =  controlPrice.length ? controlPrice : userData;
+    const data = controlPrice.length ? controlPrice : userData;
     data.map((item) => {
       filteredVenues.map((item1) => {
         if (item.data.userId.includes(item1.data.userId)) {
@@ -111,12 +109,13 @@ function Marquee() {
     } else {
       setShowMessage(false);
       setFilterMarqueeWithPrice(arr);
-      // setServices(arr);
       setFilteredVenuesPrice(arr);
     }
   };
 
   const handleSittingCapacity = (e) => {
+    console.log(userData, "userDatauserData3");
+
     const capacity = Number(e.target.value);
     const filteredVenues = venuesPrice.filter((item) => {
       return (
@@ -135,20 +134,16 @@ function Marquee() {
         }
       });
     });
-    console.log(arr, "arrrrrrrrr");
-    if(!arr.length){
-      setShowMessage(false)
+    if (!arr.length) {
+      setShowMessage(false);
       setFilterMarqueeWithPrice(arr);
       setControlPrice(arr);
-    }
-    else{
-      setShowMessage(true)
+    } else {
+      setShowMessage(true);
       setFilterMarqueeWithPrice(arr);
-      // setControlPrice(arr);
       setServices(arr);
     }
-    
-  }
+  };
   let footer = <p>Select Date</p>;
 
   if (range?.from) {
@@ -165,7 +160,7 @@ function Marquee() {
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
 
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    setCheckedServices(checkedValues)
+    setCheckedServices(checkedValues);
     const filteredVenues = venuesPrice.filter((item) => {
       const result = [];
       checkedValues.forEach((value) => {
@@ -201,67 +196,64 @@ function Marquee() {
   };
 
   const isWithinRange = (coord1, coord2, range) => {
+    console.log(coord1, "distancecoord2", coord2, range);
+
     const distance = Math.sqrt(
       Math.pow(coord1.lat - coord2.lat, 2) +
-      Math.pow(coord1.lng - coord2.lng, 2)
+        Math.pow(coord1.lng - coord2.lng, 2)
     );
     console.log(distance, "distance", range);
     return distance <= range;
   };
 
-  const handleSearch = async () => {
-    console.log(filterMarqueeWithPrice,"filterMarqueeWithPricefilterMarqueeWithPrice")
-    try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search`,
-        {
-          params: {
-            q: searchQuery,
-            format: "json",
-          },
-        }
-      );
-      const { lat, lon } = response.data[0];
-      const data = filterMarqueeWithPrice.length ? filterMarqueeWithPrice : userData;
-      console.log(data, "dataffff");  
-      const userCoordinates = {
-        lat: Number(lat),
-        lng: Number(lon),
-      };
+  useEffect(() => {
+    const data = filterMarqueeWithPrice.length
+      ? filterMarqueeWithPrice
+      : userData;
+    const branch = data.filter((item) => {
+      console.log(item.data.locations, "datadata");
+      if (
+        item.data.locations &&
+        item.data.locations.lat &&
+        item.data.locations.lng
+      ) {
+        const itemCoordinates = {
+          lat: item.data.locations.lat,
+          lng: item.data.locations.lng,
+        };
 
-      const branch = data.filter((item) => {
-        console.log(item.data.locations, "datadata", data);
-        if (
-          item.data.locations &&
-          item.data.locations.lat &&
-          item.data.locations.lng
-        ) {
-          const itemCoordinates = {
-            lat: item.data.locations.lat,
-            lng: item.data.locations.lng,
-          };
-
-          if (isWithinRange(userCoordinates, itemCoordinates, 0.5)) {
-            return true;
-          } else {
-            return false;
-          }
+        if (isWithinRange(coordinates, itemCoordinates, 1)) {
+          return true;
         } else {
           return false;
         }
-      });
-      console.log(branch, "branchbranch");
-      if(!branch.length){
-        setShowMessage(false)
+      } else {
+        return false;
       }
-      else{
-        setFilterMarqueeWithPrice(branch);
-      }
-    } catch (error) {
-      console.error("Error fetching coordinates:", error);
+    });
+    console.log(branch, "branchbranch");
+    if (!branch.length) {
+      setShowMessage(false);
+    } else {
+      setShowMessage(true);
+      setFilterMarqueeWithPrice(branch);
+    }
+  }, [coordinates]);
+
+  const handlePlaceSelect = (place) => {
+    if (place.geometry) {
+      const userCoordinates = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+      setCoordinates(userCoordinates);
     }
   };
-console.log(searchQuery,"searchQuerysearchQuery")
+  console.log(
+    filterMarqueeWithPrice.length ? filterMarqueeWithPrice : userData,
+    "abcdef"
+  );
+
   return (
     <>
       <div>
@@ -276,31 +268,35 @@ console.log(searchQuery,"searchQuerysearchQuery")
           <div className="w-full mx-auto px-3 lg:w-[25%]  ">
             <div>
               <h1 className="font-vollkorn text-xl mb-6">Booking Details</h1>
-              <div
-                className="flex flex-col w-[100%] rounded-md flex-end border py-3 pl-2 justify-between"
-                onClick={() => setIsModalOpen((pre) => !pre)}
-              >
-                {footer}
+              <div className="flex items-center ">
+                <div className="text-xs flex flex-col w-[100%] rounded-tl-lg rounded-bl-lg flex-end border-none bg-bgColor py-4 pl-2 justify-between ">
+                  {footer}
+                </div>
+                <div className="bg-bgColor p-4 rounded-tr-lg rounded-br-lg cursor-pointer">
+                  <Image
+                    onClick={() => setIsModalOpen((pre) => !pre)}
+                    src={calenderIcon}
+                    alt="Image"
+                  />
+                </div>
               </div>
+
               <Input
                 type="text"
-                placeholder="maximum capacity"
-                className="py-3 border-r-gray-200 mt-6 border-[1px] outline-none rounded-md px-3 w-full "
+                placeholder="Maximum capacity"
+                className="py-3 mt-6 border-none bg-bgColor rounded-md px-3 w-full "
                 onChange={handleSittingCapacity}
               />
             </div>
 
             <div>
-              <Search
-                className="py-3  mt-6  outline-none rounded-md w-full"
-                placeholder="input search text"
-                size="large"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onSearch={handleSearch}
+              <PlacesAutocomplete
+                apiKey="AIzaSyBF_ycMAzFjvl1ERxmZUSpqla-RFukZWHw"
+                onPlaceSelected={handlePlaceSelect}
+                className="border-none bg-bgColor w-[295px] p-3 my-6 rounded-md"
               />
             </div>
+
             <div>
               <h1 className="font-vollkorn text-xl my-6">Price</h1>
               <Input
@@ -318,13 +314,14 @@ console.log(searchQuery,"searchQuerysearchQuery")
             <div>
               <h1 className="ont-vollkorn text-xl my-9">Additional Services</h1>
               <Checkbox.Group
+              className="flex flex-col"
                 options={plainOptions}
                 onChange={handleCheckboxChange}
               />
             </div>
           </div>
           <div className="w-full  lg:w-[75%]">
-            {showMessage ? (
+            {true ? (
               (filterMarqueeWithPrice.length
                 ? filterMarqueeWithPrice
                 : userData
@@ -366,32 +363,3 @@ console.log(searchQuery,"searchQuerysearchQuery")
 }
 
 export default Marquee;
-
-// "use client";
-// import React from "react";
-// import PlacesAutocomplete from "react-google-autocomplete";
-// import Autocomplete from "react-google-autocomplete";
-
-// function LocationAutocomplete() {
-//   const handlePlaceSelect = (place) => {
-//     const { geometry } = place;
-//     if (geometry && geometry.location) {
-//       const { lat, lng } = geometry.location;
-//       console.log("Selected coordinates:", lat, lng);
-//       // Use lat and lng directly as properties
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h2>Location Autocomplete</h2>
-//       <PlacesAutocomplete
-//         apiKey="AIzaSyDuMElxFoN0vf7ps8ZvqG2ANcZiIYkyS2s"
-//         onSelect={handlePlaceSelect}
-//         inputAutocompleteValue="off"
-//       />
-//     </div>
-//   );
-// }
-
-// export default LocationAutocomplete;
