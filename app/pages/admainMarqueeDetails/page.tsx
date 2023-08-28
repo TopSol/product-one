@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import AdminNavbar from "./adminNavbar";
 import "react-image-lightbox/style.css";
 import MarqueeVenues from "./venues";
-import Menus from "./menus";
+import MarqueeMenus from "./menus";
 import Availability from "./availability";
 import Dish from "./dish";
 import Lightbox from "react-image-lightbox";
@@ -24,10 +24,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import BookedDate from "./bookedDate";
 
-import {
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 import Image from "next/image";
 import addVenue from "@/app/assets/images/Group2.svg";
 import menuIcon from "@/app/assets/images/menuIcon.svg";
@@ -38,12 +35,16 @@ import menuWIcon from "@/app/assets/images/menuWIcon.svg";
 import availabilityWIcon from "@/app/assets/images/availabilityWIcon.svg";
 import bookingWIcon from "@/app/assets/images/bookingWIcon.svg";
 import dishWIcon from "@/app/assets/images/dishWIcon.svg";
+import venueIcon from "@/app/assets/images/venue.svg";
+import venueWIcon from "@/app/assets/images/venueIcon.svg";
 
 function AdminMarqueeDetails() {
   const [component, setComponent] = React.useState("Venues");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen1, setModalOpen1] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
+  const [removeMenuIcon, setRemoveMenuIcon] = useState(true);
+  const [showIcon, setShowIcon] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [selectImage, setSelectImage] = useState("");
@@ -51,13 +52,24 @@ function AdminMarqueeDetails() {
   const [dishModalOpen, setDishModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoader, setIsLoader] = useState(true);
-  const { userInformation, getDates, addVenues,Venues } = useStore();
+  const {
+    userInformation,
+    getDates,
+    addVenues,
+    Venues,
+    addMenus,
+    Menus,
+    Dishes,
+    addDishes,
+  } = useStore();
   const [deleteVenues, setDeleteVenues] = useState([]);
+  const [deleteMenus, setDeleteMenus] = useState([]);
+  const [deleteDishes, setDeleteDishes] = useState([]);
   const sideBar = [
     {
       name: "Venues",
-      icon: dishIcon,
-      wIcon: dishWIcon,
+      icon: venueIcon,
+      wIcon: venueWIcon,
       color: "gray",
     },
     {
@@ -122,18 +134,44 @@ function AdminMarqueeDetails() {
     try {
       await Promise.all(
         deleteVenues.map(async (VenueId) => {
-
           await deleteDoc(doc(db, "Venues", VenueId));
         })
       );
       const newBlogs = Venues.filter((blog) => !deleteVenues.includes(blog.id));
       addVenues(newBlogs);
+      setDeleteVenues([]);
     } catch (error) {
       console.error("Error removing document(s): ", error);
     }
   };
-  
-  
+  const handleDeleteMenus = async () => {
+    try {
+      await Promise.all(
+        deleteMenus.map(async (VenueId) => {
+          await deleteDoc(doc(db, "Menus", VenueId));
+        })
+      );
+      const newBlogs = Menus.filter((blog) => !deleteMenus.includes(blog.id));
+      addMenus(newBlogs);
+      setDeleteMenus([]);
+    } catch (error) {
+      console.error("Error removing document(s): ", error);
+    }
+  };
+  const handleDeleteDish = async () => {
+    try {
+      await Promise.all(
+        deleteDishes.map(async (VenueId) => {
+          await deleteDoc(doc(db, "Dish", VenueId));
+        })
+      );
+      const newBlogs = Dishes.filter((blog) => !deleteDishes.includes(blog.id));
+      addDishes(newBlogs);
+      setDeleteDishes([]);
+    } catch (error) {
+      console.error("Error removing document(s): ", error);
+    }
+  };
   return (
     <>
       {isLoader ? (
@@ -143,26 +181,36 @@ function AdminMarqueeDetails() {
       ) : (
         <div className=" h-[100vh]">
           <div className="mt-14">
-            <AdminNavbar setModalOpen2={setModalOpen2} />
+            <AdminNavbar setModalOpen2={setModalOpen2} setShowIcon={setShowIcon} setRemoveMenuIcon={setRemoveMenuIcon} />
             <div className="sidebar flex">
               <div className="hidden  p-2  absolute">
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon={faBars}
                   onClick={() => setModalOpen2(!modalOpen2)}
-                />
+                /> */}
               </div>
               {modalOpen2 ? (
-                <div className="w-[70%]  h-[100vh] md:w-[15%] border flex flex-col shadow-lg   z-20 lg:z-0 bg-white relative md:block">
+                <div
+                  className={`w-[70%] h-[100vh] ${
+                    showIcon ? "md:w-[15%]" : "md:w-[5%]"
+                  } border flex flex-col shadow-lg z-20 lg:z-0 bg-white relative md:block`}
+                >
                   <div className="flex justify-between">
                     <p className="  flex  items-center  text-xl  pl-[30px] py-5">
-                      Marquee
+                      {showIcon ? "Marquee" : null}
                     </p>
-                    <FontAwesomeIcon
-                      icon={faBarsStaggered}
-                      size="sm"
-                      className="h-7 text-primary  cursor-pointer py-5 pr-[30px]"
-                      onClick={() => setModalOpen2((prev) => !prev)}
-                    />
+                    {
+                      removeMenuIcon?(
+                       <FontAwesomeIcon
+                        icon={faBarsStaggered}
+                        size="sm"
+                        className="h-7 text-primary  cursor-pointer py-5 pr-[30px]"
+                        onClick={() => setShowIcon((prev) => !prev)}
+                        // onClick={() => setModalOpen2((prev) => !prev)}
+                      />
+                      ):null
+                    }
+                   
                   </div>
                   {sideBar.map((item, index) => (
                     <div key={index}>
@@ -189,14 +237,16 @@ function AdminMarqueeDetails() {
                           }`}
                         >
                           <Image
-                            src={component !== item.name? item.icon :item.wIcon}
+                            src={
+                              component !== item.name ? item.icon : item.wIcon
+                            }
                             width={50}
                             alt="Picture of the author"
                             className={` pr-5 text-${
                               component !== item.name ? "sidebarColor" : "white"
                             } transition-colors duration-200`}
                           />
-                          {item.name}
+                          {showIcon ? item.name : null}
                         </div>
                       </div>
                     </div>
@@ -208,10 +258,10 @@ function AdminMarqueeDetails() {
                 <div className="md:px-5 border my-3  rounded-md mx-5 mt-7 ">
                   {component === "Venues" ? (
                     <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
-                      <p className="text-2xl">Venues</p>
+                      <p className="md:text-2xl">Venues</p>
                       <div className="flex justify-center items-center">
                         <button
-                          className="border rounded-md px-2 mr-2 pont-poppins text-primary border-primary py-2"
+                          className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
                           onClick={() => openModal()}
                         >
                           <span className="flex">
@@ -221,11 +271,11 @@ function AdminMarqueeDetails() {
                               width={20}
                               className="pr-1"
                             />
-                            Add venues
+                            <p className=" text-xs md:text-base">Add venues</p>
                           </span>
                         </button>
                         <button
-                          className="border rounded-md px-8 pont-poppins text-white bg-primary py-2"
+                          className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
                           onClick={() => handleDeleteVenues()}
                         >
                           Delete
@@ -233,41 +283,56 @@ function AdminMarqueeDetails() {
                       </div>
                     </div>
                   ) : component === "Menus" ? (
-                    <div className="flex justify-between mx-1  items-center">
-                      <p className="text-2xl py-5">Menus</p>
-                        <div className="flex justify-center items-center">
-                        
-                      <button
-                        className="border rounded-md px-2 mr-2 pont-poppins text-primary border-primary py-2"
-                        onClick={() => openModal()}
-                      >
-                        Add Menu
-                      </button>
-                      <button
-                          className="border rounded-md px-8 pont-poppins text-white bg-primary py-2"
-                          onClick={() => handleDeleteVenues()}
+                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
+                      <p className="md:text-2xl">Menus</p>
+                      <div className="flex justify-center items-center">
+                        <button
+                          className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
+                          onClick={() => openModal()}
+                        >
+                          <span className="flex">
+                            <Image
+                              src={addVenue}
+                              alt="Picture of the author"
+                              width={20}
+                              className="pr-1"
+                            />
+                            <p className=" text-xs md:text-base">Add Menu</p>
+                          </span>
+                        </button>
+                        <button
+                          className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
+                          onClick={() => handleDeleteDish()}
                         >
                           Delete
                         </button>
-                        </div>
+                      </div>
                     </div>
                   ) : component === "Dishes" ? (
-                    <div className="flex justify-between mx-1  items-center">
-                      <p className="text-2xl py-5">Dishes</p>
+                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
+                      <p className="md:text-2xl">Dishes</p>
                       <div className="flex justify-center items-center">
-                      <button
-                        className="border rounded-md px-2 mr-2 pont-poppins text-primary border-primary py-2"
-                        onClick={() => openModal()}
-                      >
-                        Add Dish
-                      </button>
-                      <button
-                          className="border rounded-md px-8 pont-poppins text-white bg-primary py-2"
-                          onClick={() => handleDeleteVenues()}
+                        <button
+                          className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
+                          onClick={() => openModal()}
+                        >
+                          <span className="flex">
+                            <Image
+                              src={addVenue}
+                              alt="Picture of the author"
+                              width={20}
+                              className="pr-1"
+                            />
+                            <p className=" text-xs md:text-base">Add Dish</p>
+                          </span>
+                        </button>
+                        <button
+                          className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
+                          onClick={() => handleDeleteMenus()}
                         >
                           Delete
                         </button>
-                        </div>
+                      </div>
                     </div>
                   ) : null}
                 </div>
@@ -284,14 +349,14 @@ function AdminMarqueeDetails() {
                       deleteVenues={deleteVenues}
                     />
                   ) : component === "Dishes" ? (
-                    <Menus
+                    <MarqueeMenus
                       modalOpen={modalOpen}
                       setModalOpen={setModalOpen}
                       // handleClick={handleClick}
                       loading={loading}
                       setLoading={setLoading}
-                      setDeleteVenues={setDeleteVenues}
-                      deleteVenues={deleteVenues}
+                      setDeleteMenus={setDeleteMenus}
+                      deleteMenus={deleteMenus}
                     />
                   ) : component === "Menus" ? (
                     <Dish
@@ -301,6 +366,8 @@ function AdminMarqueeDetails() {
                       setLoading={setLoading}
                       dishModalOpen={dishModalOpen}
                       setDishModalOpen={setDishModalOpen}
+                      setDeleteDishes={setDeleteDishes}
+                      deleteDishes={deleteDishes}
                     />
                   ) : component === "Availability" ? (
                     <Availability />

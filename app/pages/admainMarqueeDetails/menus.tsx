@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
 import { Button, Input, Popconfirm, Select, Table } from "antd";
 import Loader from "../../component/Loader";
-import { Image, Radio } from "antd";
-
+import { Radio } from "antd";
+import Image from "next/image";
+import Lightbox from "react-image-lightbox";
+import dots from "@/app/assets/images/dots.svg";
 import {
   getStorage,
   ref,
@@ -11,6 +13,7 @@ import {
   getDownloadURL,
   listAll,
 } from "firebase/storage";
+import Link from "next/link";
 import {
   collection,
   getDocs,
@@ -24,7 +27,10 @@ import { Modal } from "antd";
 import { Checkbox } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-const plainOptions = [{label:"Available",value:"Available"},{label: "Not Available",value:"NotAvailable"}];
+const plainOptions = [
+  { label: "Available", value: "Available" },
+  { label: "Not Available", value: "NotAvailable" },
+];
 const initialFormState = {
   name: "",
   image: "",
@@ -33,7 +39,14 @@ const initialFormState = {
   description: "",
   status: plainOptions[0].value,
 };
-function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
+function Menus({
+  modalOpen,
+  setModalOpen,
+  loading,
+  setLoading,
+  setDeleteMenus,
+  deleteMenus,
+}) {
   const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
@@ -43,6 +56,9 @@ function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
   const [status, setStatus] = useState();
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState([]);
   const [lunchType, setLunchType] = useState("0");
   const [menu, setMenu] = useState([
     {
@@ -64,8 +80,8 @@ function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
   ]);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setStatus(value)
-    console.log(name, value , "value");
+    setStatus(value);
+    console.log(name, value, "value");
     setUser((prevState) => ({
       ...prevState,
       [name]: name == "price" ? Number(value) : value,
@@ -239,8 +255,8 @@ function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
     setLoading((prevState) => !prevState);
   };
   const handleMenuSelect = (e) => {
-    console.log(e,"eeeeeee")
-    switch (e) {  
+    console.log(e, "eeeeeee");
+    switch (e) {
       case "1":
         setUser({ ...user, type: "Venue Dish" });
         break;
@@ -254,30 +270,33 @@ function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
         setUser({ ...user, type: "food" });
         break;
       default:
-       
         break;
     }
   };
-  const onChange = (venueId) => {
-    console.log(venueId,"venueId")
-   
-  }
-  console.log(user,"sdfsdffdsfsdfsdf")
+  const onChange = (id) => {
+    console.log(id, "asdfasfa");
+    if (deleteMenus.includes(id)) {
+      const data = deleteMenus.filter((item) => item !== id);
+      setDeleteMenus(data);
+    } else {
+      setDeleteMenus([...deleteMenus, id]);
+    }
+  };
+  console.log(user, "sdfsdffdsfsdfsdf");
   return (
-    <div className="md:px-5">
+    <div className="md:px-10">
       <Table dataSource={Menus} className="myTable">
-      <Column title="Check box" dataIndex="venueId" key="venueId" 
-          render={(venueId) => (
+        <Column
+          title="Check box"
+          dataIndex="menuId"
+          key="menuId"
+          render={(menuId) => (
             <div>
-              <Checkbox onClick={()=> onChange(venueId)}/>
+              <Checkbox onClick={() => onChange(menuId)} />
             </div>
           )}
-          />
-        <Column
-          title="Name"
-          dataIndex="name"
-          key="name"
         />
+        <Column title="Name" dataIndex="name" key="name" />
         <Column title="Type" dataIndex="type" key="type" />
         <Column title="Description" dataIndex="description" key="description" />
         <Column title="Price" dataIndex="price" key="price" />
@@ -286,30 +305,51 @@ function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
           dataIndex="image"
           key="image"
           render={(image) => (
-            <div className="flex">
-              <Image.PreviewGroup>
-                {image?.map((dish, index) => {
-                  return (
-                    <Image
-                      key={index}
-                      width={80}
-                      height={35}
-                      // visible={false}
-                      style={{ objectFit: "cover", paddingRight: 10 }}
-                      src={dish}
-                      onClick={() => {
-                        Image.previewGroup?.show({
-                          current: index,
-                        });
-                      }}
-                    />
-                  );
-                })}
-              </Image.PreviewGroup>
+            <div className="flex items-center">
+              <img
+                width={80}
+                height={80}
+                src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
+                alt="Description of the image"
+              />
+              {
+                <Link
+                  onClick={() => {
+                    setPreviewImage(image);
+                    setIsOpen(true);
+                    setPhotoIndex(0);
+                  }}
+                  className="text-blue-600 underline ml-2"
+                  href=""
+                >
+                  {image?.length - 1} more
+                </Link>
+              }
             </div>
+            // <div className="flex">
+            //   <Image.PreviewGroup>
+            //     {image?.map((dish, index) => {
+            //       return (
+            //         <Image
+            //           key={index}
+            //           width={80}
+            //           height={35}
+            //           // visible={false}
+            //           style={{ objectFit: "cover", paddingRight: 10 }}
+            //           src={dish}
+            //           onClick={() => {
+            //             Image.previewGroup?.show({
+            //               current: index,
+            //             });
+            //           }}
+            //         />
+            //       );
+            //     })}
+            //   </Image.PreviewGroup>
+            // </div>
           )}
         />
-         <Column
+        <Column
           title="Status"
           dataIndex="status"
           key="status"
@@ -350,40 +390,73 @@ function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
       </Table>
 
       <Modal
-        className="text-center"
+        className=" modal  w-full text-center"
         centered
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
-        width={700}
-        bodyStyle={{ height: 800 }}
+        closeIcon={
+          <div className=" right-2 ">
+            <svg
+              onClick={() => setModalOpen(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width={20}
+              height={20}
+              // style={{marginTop:-30}}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>{" "}
+          </div>
+        }
+        width={600}
+        bodyStyle={{ height: 600, padding: 0 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
-          <Button key="cancel" onClick={() => setModalOpen(false)}>
-            Cancel
-          </Button>,
-          <Button
-            key="ok"
-            type="primary"
-            onClick={() =>
-              openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
-            }
-            className="bg-blue-500"
-          >
-            {loading ? <Loader /> : "Ok"}
-          </Button>,
+          <div className="pb-5 mr-3">
+            <Button
+              key="cancel"
+              onClick={() => setModalOpen(false)}
+              className=" border-primary text-primary "
+            >
+              Cancel
+            </Button>
+            <Button
+              key="ok"
+              type="primary"
+              onClick={() =>
+                openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+              }
+              className="AddVenue  bg-primary text-white"
+            >
+              {loading ? <Loader /> : "Add"}
+            </Button>
+          </div>,
         ]}
       >
         <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
-          <div className="mr-auto">
-            <p className="text-2xl">Dish</p>
+          <div className="mr-auto bg-primary w-full flex rounded-t-lg">
+            <Image
+              alt="sdf"
+              src={dots}
+              width={40}
+              height={40}
+              className="ml-3"
+            />
+            <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
           </div>
-          <hr className="w-full bg-black my-3" />
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[100%]  justify-center ">
-            <div className="md:justify-between flex flex-col">
-              <label className="text-xl my-1">
-                {" "}
-                <span className="text-red-600">*</span> Name
-              </label>
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Name</b>
+              </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Name"
@@ -391,97 +464,110 @@ function Menus({ modalOpen, setModalOpen, loading, setLoading }) {
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="rounded-none flex w-full py-2 lg:py-3"
-                />
-              </div>
-              <label className="text-xl my-1">
-                {" "}
-                <span className="text-red-600">*</span> Images
-              </label>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
-                <Input
-                  placeholder="Basic usage"
-                  type="file"
-                  name="image"
-                  multiple
-                  onChange={(e) => {
-                    setUser({ ...user, image: e.target.files });
-                  }}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
-            <div className="md:flex md:justify-between flex flex-col ">
-              <label className="text-xl my-1">Price</label>
-              <div className="mb-6 flex flex-col  md:flex-row md:justify-between">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Images</b>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
-                  placeholder="Minimum Capacity"
-                  type="number"
-                  name="price"
-                  value={user.price}
-                  onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
+                placeholder="Basic usage"
+                type="file"
+                name="image"
+                multiple
+                onChange={(e) => {
+                  setUser({ ...user, image: e.target.files });
+                }}
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
-              <label className="text-xl my-1">Type</label>
-              <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Price</b>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                 placeholder="Minimum Capacity"
+                 type="number"
+                 name="price"
+                 value={user.price}
+                 onChange={handleChange}
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Type</b>
+              </div>
+              <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
               <Select
-              showSearch
-              style={{
-                width: "100%",
-              }}
-              placeholder="Search to Select"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.label.toLowerCase().includes(input.toLowerCase())
-              }
-              filterSort={(optionA, optionB) =>
-                optionA.label
-                  .toLowerCase()
-                  .localeCompare(optionB.label.toLowerCase())
-              }
-              options={menu}
-              onChange={handleMenuSelect}
-              value={user.type} 
-              // className=" select my-3  ml-5 "
-            />
-                {/* <Input
-                  placeholder="Enter Type Here"
-                  type="text"
-                  name="type"
+              className="type"
+                  showSearch
+                  style={{
+                    width: "100%",
+                  }}
+                  placeholder="Search to Select"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
+                  filterSort={(optionA, optionB) =>
+                    optionA.label
+                      .toLowerCase()
+                      .localeCompare(optionB.label.toLowerCase())
+                  }
+                  options={menu}
+                  onChange={handleMenuSelect}
                   value={user.type}
-                  onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
-                /> */}
-              </div>
-            </div>
-            <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
-              <label className="text-xl my-1">Description</label>
-              <div className="flex flex-col  md:flex-row  md:justify-between">
-                <TextArea
-                  rows={4}
-                  maxLength={6}
-                  placeholder="Enter Description Here"
-                  name="description"
-                  typeof="text"
-                  value={user.description}
-                  onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
-              <label className="text-xl my-1">Status</label>
-              <div className="flex flex-col  md:flex-row  md:justify-between">
-                <Radio.Group
-                  options={plainOptions}
-                  onChange={handleChange}
-                  value={status}
-                  name="status"
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute z-20 left-[19.89px] -mt-3 rounded-3xs bg-white w-[104.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Description</b>
+              </div>
+              <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                rows={4}
+                maxLength={200}
+                placeholder="Enter Description Here"
+                name="description"
+                typeof="text"
+                value={user.description}
+                onChange={handleChange}
+                  className="border h-[90px] outline-none md:w-[700px] z-10 w-full  py-3 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
           </div>
         </div>
       </Modal>
+
+      {isOpen && (
+        <Lightbox
+          mainSrc={previewImage[photoIndex]}
+          nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
+          prevSrc={
+            previewImage[
+              (photoIndex + previewImage.length - 1) % previewImage.length
+            ]
+          }
+          onCloseRequest={() => setIsOpen(false)}
+          onMovePrevRequest={() =>
+            setPhotoIndex(
+              (photoIndex + previewImage.length - 1) % previewImage.length
+            )
+          }
+          onMoveNextRequest={() =>
+            setPhotoIndex((photoIndex + 1) % previewImage.length)
+          }
+        />
+      )}
     </div>
   );
 }

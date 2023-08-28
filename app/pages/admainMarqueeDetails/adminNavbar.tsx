@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { faBellConcierge, faUtensils } from "@fortawesome/free-solid-svg-icons";
 import {useStore} from "@/store"
 import { getAuth, signOut } from "firebase/auth";
-export default function AdminNavbar({setModalOpen2}) {
+export default function AdminNavbar({setModalOpen2,setShowIcon,setRemoveMenuIcon}) {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [isModelOpen, setIsModelOpen] = useState(false);
@@ -85,8 +85,11 @@ export default function AdminNavbar({setModalOpen2}) {
             <FontAwesomeIcon
               icon={faBarsStaggered}
               size="sm"
-              className="h-7 text-[#DEB666] absolute cursor-pointer"
-              onClick={() => setModalOpen2((prev => !prev))}
+              className="h-7 text-primary cursor-pointer"
+              onClick={() => {
+                setRemoveMenuIcon((pre =>!pre))
+                setModalOpen2((prev => !prev))
+              }}
             />
           </p>
         </div>
@@ -97,13 +100,6 @@ export default function AdminNavbar({setModalOpen2}) {
             width={50}
             alt="asdf"
           />
-            {/* <p>
-              <FontAwesomeIcon
-                icon={faBarsStaggered}
-                size="sm"
-                className="h-7 text-[#DEB666] cursor-pointer"
-              />
-            </p> */}
           </div>
           <div className="mr-0 md:ml-8">
             <p className=" text-primary font-poppins ">BOOKING MARQUEE</p>

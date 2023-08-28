@@ -518,7 +518,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DishModal from "./dishModal";
 import Loader from "../../component/Loader";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { Button, Popconfirm, Table, Tag } from "antd";
+import { Button, Checkbox, Popconfirm, Table, Tag } from "antd";
 import { Select, Space, List, Typography } from "antd";
 import { db } from "@/app/firebase";
 import {
@@ -552,6 +552,8 @@ function Dish({
   setDishModalOpen,
   loading,
   setLoading,
+  setDeleteDishes,
+  deleteDishes,
 }) {
   const [user, setUser] = useState(initialFormState);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -776,10 +778,29 @@ function Dish({
       setSelectDish(prices);
     }
   };
+  const onChange = (id) => {
+    console.log(id, "asdfasfa");
+    if (deleteDishes.includes(id)) {
+      const data = deleteDishes.filter((item) => item !== id);
+      setDeleteDishes(data);
+    } else {
+      setDeleteDishes([...deleteDishes, id]);
+    }
+  };
 console.log("selectDishsdddelectssssDish",Dishes)
   return (
-    <div className="md:px-5">
+    <div className="md:px-10">
       <Table dataSource={Dishes} className="myTable">
+      <Column
+          title="Check box"
+          dataIndex="dishId"
+          key="dishId"
+          render={(dishId) => (
+            <div>
+              <Checkbox onClick={() => onChange(dishId)} />
+            </div>
+          )}
+        />
         <Column title="Name" dataIndex="name" key="name" />
         <Column
           title="Dishes"
@@ -816,11 +837,11 @@ console.log("selectDishsdddelectssssDish",Dishes)
                 cancelText="No"
                 onConfirm={() => deleteDish(dishId)}
               >
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon={faTrashCan}
                   width={15}
                   className="text-red-500 cursor-pointer text-xl"
-                />
+                /> */}
               </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
