@@ -1,19 +1,20 @@
-.custom-ok-button{
+/* .custom-ok-button{
     background-color: #1890ff;
     border-color: #1890ff;
     color: #fff;
-}
+} */
 
 .myTable .ant-table-thead > tr > th{ 
     background-color: #F99832;
     color: white;
 }
+
 .myTable .ant-table-tbody > tr > td{
-    
-    /* background-color: #F8F8F8; */
     color: #000;
 }
-
+.modal .ant-modal-content{
+    padding: 0px !important;
+}
 .myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:first-child{
     border-top-left-radius: 10px !important;
     border-bottom-left-radius: 10px !important;
@@ -28,15 +29,20 @@
     height: 50px !important;
 }
 .ant-btn :hover{
-    background-color: #4096FF;
-    color: #fff;
-    /* font-weight: bolder; */
-}
-.ant-btn{
-    background-color: #4096FF;
+    background-color: #F99832;
     color: #fff;
     font-weight: bolder;
 }
+/* .ant-btn{
+    background-color: #4096FF;
+    color: #fff;
+    font-weight: bolder;
+} */
+/* .AddVenue .ant-btn{
+    background-color: #F99832;
+    color: #fff;
+    font-weight: bolder;
+} */
 .select .ant-select-selector{
     display: flex;
     justify-content: center;
@@ -51,3 +57,7 @@
 
     margin-bottom: 20px !important;
 } */
+
+.type .ant-select-selector{
+    border-radius: 5px !important;
+}

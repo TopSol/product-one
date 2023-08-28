@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import Loader from "../../component/Loader";
 import ImageLightbox from "react-image-lightbox";
 import Lightbox from "react-image-lightbox";
-import { Button, Input, Popconfirm } from "antd";
-import DeleteItem from "../../component/DeleteItem";
-import { Image } from "antd";
+import { Button, Popconfirm } from "antd";
+// import { Image } from "antd";
+import Image from "next/image";
 import Link from "next/link";
 import { Checkbox } from "antd";
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
@@ -31,6 +31,8 @@ import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { set } from "date-fns";
+import dots from "@/app/assets/images/dots.svg";
+import { Input, Form } from "antd";
 const initialFormState = {
   name: "",
   image: "",
@@ -39,7 +41,14 @@ const initialFormState = {
   price: "",
   services: [],
 };
-function Venues({ modalOpen, setModalOpen, setDeleteVenues,deleteVenues, loading, setLoading, }) {
+function Venues({
+  modalOpen,
+  setModalOpen,
+  setDeleteVenues,
+  deleteVenues,
+  loading,
+  setLoading,
+}) {
   const [user, setUser] = useState(initialFormState);
   const [addVenue, setaddVenue] = useState([]);
   const [blogs, setBlogs] = useState([]);
@@ -50,6 +59,7 @@ function Venues({ modalOpen, setModalOpen, setDeleteVenues,deleteVenues, loading
   // const [deleteVenues, setDeleteVenues] = useState([]);
   const { userInformation, addUser, Venues, addVenues, dates } = useStore();
   const storage = getStorage();
+  const [previewImage, setPreviewImage] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const ImageRef = ref(storage, "images/");
   const handleChange = (e) => {
@@ -237,25 +247,26 @@ function Venues({ modalOpen, setModalOpen, setDeleteVenues,deleteVenues, loading
     setUser({ ...user, services: checkedValues });
   };
   const onChange = (id) => {
-    if(deleteVenues.includes(id)){
-      const data = deleteVenues.filter((item)=> item !== id)
-      setDeleteVenues(data)
-
-    }else{
-      setDeleteVenues([...deleteVenues,id])
+    if (deleteVenues.includes(id)) {
+      const data = deleteVenues.filter((item) => item !== id);
+      setDeleteVenues(data);
+    } else {
+      setDeleteVenues([...deleteVenues, id]);
     }
   };
-  console.log(deleteVenues,"deleteVenuesdeleteVenues")
   return (
     <>
       <div className="md:px-10">
         <Table dataSource={Venues} className="myTable">
-          <Column title="Check box" dataIndex="venueId" key="venueId" 
-          render={(venueId) => (
-            <div>
-              <Checkbox onClick={()=> onChange(venueId)}/>
-            </div>
-          )}
+          <Column
+            title="Check box"
+            dataIndex="venueId"
+            key="venueId"
+            render={(venueId) => (
+              <div>
+                <Checkbox onClick={() => onChange(venueId)} />
+              </div>
+            )}
           />
           <Column title="Name" dataIndex="name" key="name" />
           <Column
@@ -275,45 +286,25 @@ function Venues({ modalOpen, setModalOpen, setDeleteVenues,deleteVenues, loading
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                <Image
+                <img
                   width={80}
-                  src={image[0]}
-                  onClick={() => {
-                    setIsOpen(true);
-                    setPhotoIndex(0);
-                  }}
+                  height={80}
+                  src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
+                  alt="Description of the image"
                 />
                 {
                   <Link
                     onClick={() => {
                       setIsOpen(true);
+                      setPreviewImage(image);
                       setPhotoIndex(0);
                     }}
                     className="text-blue-600 underline ml-2"
                     href=""
                   >
-                    
-                    {image?.length} more
+                    {image.length > 1 && `${image.length - 1} more`}
                   </Link>
                 }
-                {isOpen && (
-                  <Lightbox
-                    mainSrc={image[photoIndex]}
-                    nextSrc={image[(photoIndex + 1) % image.length]}
-                    prevSrc={
-                      image[(photoIndex + image.length - 1) % image.length]
-                    }
-                    onCloseRequest={() => setIsOpen(false)}
-                    onMovePrevRequest={() =>
-                      setPhotoIndex(
-                        (photoIndex + image.length - 1) % image.length
-                      )
-                    }
-                    onMoveNextRequest={() =>
-                      setPhotoIndex((photoIndex + 1) % image.length)
-                    }
-                  />
-                )}
               </div>
             )}
           />
@@ -348,40 +339,71 @@ function Venues({ modalOpen, setModalOpen, setDeleteVenues,deleteVenues, loading
         </Table>
       </div>
       <Modal
-        className="text-center w-full"
+        className=" modal text-center w-full md:height[620px]"
         centered
         open={modalOpen}
-        width={700}
-        bodyStyle={{ height: 670 }}
+        width={600}
+        bodyStyle={{ height: 630, padding: 0 }}
         onCancel={() => setModalOpen(false)}
         okButtonProps={{ className: "custom-ok-button" }}
+        closeIcon={
+          <div className=" right-2 ">
+            <svg
+              onClick={() => setModalOpen(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white cursor-pointer md:-mt-[30px]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width={20}
+              height={20}
+              // style={{marginTop:-30}}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>{" "}
+          </div>
+        }
         footer={[
-          <Button key="cancel" onClick={() => setModalOpen(false)}>
+          <div className=" pb-5 mr-3">
+          <Button key="cancel" onClick={() => setModalOpen(false)}
+           className=" border-primary text-primary "
+          >
             Cancel
-          </Button>,
+          </Button>
           <Button
             key="ok"
             type="primary"
             onClick={() =>
               openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
             }
-            className="bg-blue-500"
-          >
-            {loading ? <Loader /> : "Ok"}
-          </Button>,
+            className="AddVenue bg-primary text-white"
+            >
+            {loading ? <Loader /> : "Add"}
+          </Button>
+            </div>
         ]}
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
-          <div className="mr-auto">
-            <p className="text-2xl mt-5 ">Venues</p>
+          <div className="mr-auto bg-primary w-full flex rounded-t-lg">
+            <Image
+              alt="sdf"
+              src={dots}
+              width={40}
+              height={40}
+              className="ml-3"
+            />
+            <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
           </div>
-          <hr className="w-full bg-black my-3" />
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[100%]  justify-center ">
-            <div className="md:justify-between flex flex-col">
-              <label className="text-xl my-1">
-                {" "}
-                <span className="text-red-600">*</span> Name
-              </label>
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Name</b>
+              </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Name"
@@ -389,92 +411,111 @@ function Venues({ modalOpen, setModalOpen, setDeleteVenues,deleteVenues, loading
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="rounded-none flex w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
-              <label className="text-xl my-1">
-                {" "}
-                <span className="text-red-600">*</span> Image
-              </label>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
+            </div>
+            <div className="flex flex-col items-start relative">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">Email</b>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Basic usage"
                   type="file"
                   name="image"
-                  // value={user.image}
                   multiple
                   onChange={(e) => {
                     setUser({ ...user, image: e.target.files });
                   }}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
-            <div className="md:flex md:justify-between flex flex-col ">
-              <label className="text-xl my-1">Minimum Capacity:</label>
-              <div className="mb-6 flex flex-col  md:flex-row md:justify-between">
+            <div className="flex flex-col items-start relative">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[143.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">
+                  Minimum Capacity
+                </b>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Minimum Capacity"
                   type="number"
                   name="minCapacity"
                   value={user.minCapacity}
                   onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
-              <label className="text-xl my-1">Maximum Capacity:</label>
-              <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
+            </div>
+            <div className="flex flex-col items-start relative">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[143.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">
+                  Maximum Capacity
+                </b>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Maximum Capacity"
                   type="number"
                   name="maxCapacity"
                   value={user.maxCapacity}
                   onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
-            <div className="md:flex md:justify-between flex flex-col ">
-              <label className="text-xl my-1">price:</label>
-              <div className="flex flex-col  md:flex-row  md:justify-between">
+            <div className="flex flex-col items-start relative">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <b className="absolute leading-[100%] z-20 pt-1">price</b>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Number"
                   type="number"
                   name="price"
                   value={user.price}
                   onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] w-full z-10  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
-            <div className="md:flex md:justify-between flex flex-col ">
-              <label className="text-xl my-1">Services:</label>
-              <div className="flex flex-col  md:flex-row  md:justify-between">
-                {/* <Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={(checkedValues: CheckboxValueType[])=>  setUser({ ...user, services: checkedValues }) } /> */}
+            <div className="flex flex-col items-start relative">
+              <label className="text-xl">services</label>
+
+              <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Checkbox.Group
                   options={plainOptions}
                   value={user.services as CheckboxValueType[]}
                   onChange={handleCheckboxChange}
+                  className=" outline-none md:w-[700px] w-full  z-10   py-5  flex  text-xs "
                 />
               </div>
-            </div>
-
-            <div className="flex flex-wrap">
-              {/* {user.image &&
-                Object.values(user.image).map((img, index) => {
-                  return (
-                    <img
-                      src={URL.createObjectURL(img)}
-                      alt=""
-                      key={index}
-                      className="w-[25%]"
-                    />
-                  );
-                })} */}
             </div>
           </div>
         </div>
       </Modal>
+      {isOpen && (
+        <Lightbox
+          mainSrc={previewImage[photoIndex]}
+          nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
+          prevSrc={
+            previewImage[
+              (photoIndex + previewImage.length - 1) % previewImage.length
+            ]
+          }
+          onCloseRequest={() => setIsOpen(false)}
+          onMovePrevRequest={() =>
+            setPhotoIndex(
+              (photoIndex + previewImage.length - 1) % previewImage.length
+            )
+          }
+          onMoveNextRequest={() =>
+            setPhotoIndex((photoIndex + 1) % previewImage.length)
+          }
+        />
+      )}
     </>
   );
 }
