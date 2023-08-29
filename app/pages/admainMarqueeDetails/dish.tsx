@@ -130,7 +130,7 @@
 //                finalPrices[index].price = finalPrices[index].price-item1.Price
 //               }})
 //               finalPrices[index].discountAmount =finalPrices[index].price && finalPrices[index].discount ? (finalPrices[index].price * finalPrices[index].discount) / 100 : 0;
-//               finalPrices[index].totalDiscount = Math.floor(finalPrices[index].price - finalPrices[index].discountAmount) 
+//               finalPrices[index].totalDiscount = Math.floor(finalPrices[index].price - finalPrices[index].discountAmount)
 //               // updateMenuDishPrice(finalPrices[index].dishId,finalPrices[index].totalDiscount)
 //               updateMenuDishPrice(finalPrices[index].dishId,finalPrices[index])
 //           })
@@ -424,12 +424,11 @@
 //                     onChange={handleSelectionChange}
 //                     options={dishName.filter(
 //                       (item) =>
-//                       item?.status == "Available" 
+//                       item?.status == "Available"
 //                         // console.log(item,"itemddddditem")
 //                         // item?.status == "Available" &&
 //                         // item?.type == "Venue Dish"
-                      
-                        
+
 //                     )}
 //                   />
 //                   {/* <Select
@@ -511,7 +510,6 @@
 // }
 // export default Dish;
 
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -533,7 +531,8 @@ import {
 import { useStore } from "../../../store";
 import { Input, Modal } from "antd";
 import Link from "next/link";
-import { log } from "console";
+import Image from "next/image";
+import dots from "@/app/assets/images/dots.svg";
 const initialFormState = {
   name: "",
   price: 0,
@@ -615,8 +614,18 @@ function Dish({
   useEffect(() => {
     const dishes = [];
     const DishPrice = Menus.map((item, index) => {
-      const data = { Price: item.price, Dish: item.name, status: item.status, type:item.type };
-      dishes.push({ label: item.name, value: item.name, status: item.status ,type:item.type });
+      const data = {
+        Price: item.price,
+        Dish: item.name,
+        status: item.status,
+        type: item.type,
+      };
+      dishes.push({
+        label: item.name,
+        value: item.name,
+        status: item.status,
+        type: item.type,
+      });
       if (index === Menus.length - 1) setDishName(dishes);
       return data;
     });
@@ -630,7 +639,6 @@ function Dish({
     setTotalPrice(totalPrice);
     setDishPrice(DishPrice);
     const fetchBlogs = async () => {
-
       try {
         const response = await getDocs(collection(db, "Dish"));
         const tempArray = response.docs
@@ -639,19 +647,28 @@ function Dish({
             ...doc.data(),
             id: doc.id,
           }));
-          let finalPrices=JSON.parse(JSON.stringify(tempArray))
-          tempArray.map((item,index)=>{
-            finalPrices[index].price = 0 
-             DishPrice.map((item1)=>{
-              if(item.dishes.includes(item1.Dish)&&item1.status == "Available" ){
-                  finalPrices[index].price = finalPrices[index].price + item1.Price
-              }})
-              finalPrices[index].discountAmount =finalPrices[index].price && finalPrices[index].discount ? (finalPrices[index].price * finalPrices[index].discount) / 100 : 0;
-              finalPrices[index].totalDiscount = Math.floor(finalPrices[index].price - finalPrices[index].discountAmount) 
-              // updateMenuDishPrice(finalPrices[index].dishId,finalPrices[index].totalDiscount)
-              updateMenuDishPrice(finalPrices[index].dishId,finalPrices[index])
-          })
-          console.log(finalPrices,"finalPricesfinalPrices")
+        let finalPrices = JSON.parse(JSON.stringify(tempArray));
+        tempArray.map((item, index) => {
+          finalPrices[index].price = 0;
+          DishPrice.map((item1) => {
+            if (
+              item.dishes.includes(item1.Dish) &&
+              item1.status == "Available"
+            ) {
+              finalPrices[index].price = finalPrices[index].price + item1.Price;
+            }
+          });
+          finalPrices[index].discountAmount =
+            finalPrices[index].price && finalPrices[index].discount
+              ? (finalPrices[index].price * finalPrices[index].discount) / 100
+              : 0;
+          finalPrices[index].totalDiscount = Math.floor(
+            finalPrices[index].price - finalPrices[index].discountAmount
+          );
+          // updateMenuDishPrice(finalPrices[index].dishId,finalPrices[index].totalDiscount)
+          updateMenuDishPrice(finalPrices[index].dishId, finalPrices[index]);
+        });
+        console.log(finalPrices, "finalPricesfinalPrices");
         addDishes(finalPrices);
       } catch (error) {
         console.error("Error fetching blogs:", error);
@@ -659,10 +676,10 @@ function Dish({
     };
     fetchBlogs();
   }, [addVenues, Menus]);
-  const updateMenuDishPrice = async (dishId,price) => {
-    console.log(price,"sdfsdf")
+  const updateMenuDishPrice = async (dishId, price) => {
+    console.log(price, "sdfsdf");
     try {
-      await setDoc(doc(db, "Dish", dishId),price );
+      await setDoc(doc(db, "Dish", dishId), price);
       // await setDoc(doc(db, "Dish", dishId), {totalDiscount:price},{merge:true});
     } catch (error) {
       console.log(error, "error");
@@ -787,11 +804,11 @@ function Dish({
       setDeleteDishes([...deleteDishes, id]);
     }
   };
-console.log("selectDishsdddelectssssDish",Dishes)
+  console.log("selectDishsdddelectssssDish", Dishes);
   return (
     <div className="md:px-10">
       <Table dataSource={Dishes} className="myTable">
-      <Column
+        <Column
           title="Check box"
           dataIndex="dishId"
           key="dishId"
@@ -896,132 +913,164 @@ console.log("selectDishsdddelectssssDish",Dishes)
       </Modal>
 
       <Modal
-        className="text-center"
+        className=" modal w-full text-center"
         centered
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         width={600}
-        bodyStyle={{ height: 650 }}
+        bodyStyle={{ height: 670 }}
         okButtonProps={{ className: "custom-ok-button" }}
+        closeIcon={
+          <div className=" right-2 ">
+            <svg
+              onClick={() => setModalOpen(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width={20}
+              height={20}
+              // style={{marginTop:-30}}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>{" "}
+          </div>
+        }
         footer={[
+          <div className="pb-5 mr-3">
           <Button
             key="cancel"
             onClick={() => {
               setModalOpen(false);
               setUser(" ");
             }}
-          >
+             className=" border-primary text-primary "
+            >
             Cancel
-          </Button>,
+          </Button>
           <Button
             key="ok"
             type="primary"
             onClick={() => (updateDish ? update(user?.dishId) : AddDish())}
-            className="bg-blue-500"
-          >
-            {loading ? <Loader /> : "Ok"}
-          </Button>,
+            className="AddVenue  bg-primary text-white"
+            
+            >
+            {loading ? <Loader /> : "Add"}
+          </Button>
+          </div>
         ]}
       >
         <div className=" w-full h-full flex justify-start mt-12 md:mt-0 md:justify-center items-center flex-col">
-          <div>
-            <p className="text-2xl mb-2">Menus</p>
+          <div className="mr-auto bg-primary w-full flex rounded-t-lg">
+            <Image
+              alt="sdf"
+              src={dots}
+              width={40}
+              height={40}
+              className="ml-3"
+            />
+            <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
           </div>
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col w-[100%]  justify-center ">
-            <div className="md:flex md:justify-between flex flex-col ">
-              <label className="text-xl my-1">Name</label>
-              <div className="mb-6 flex flex-col  md:flex-row md:justify-between">
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col w-[80%]  justify-center ">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[61.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Name</p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Enter Name Here"
                   type="name"
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
-              <label className="text-xl my-1">Select Dish</label>
-              <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <Space
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[110.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Select Dish</p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+              <Space
                   style={{
                     width: "100%",
                   }}
                   direction="vertical"
                 >
                   <Select
+                     className="type"
                     mode="multiple"
                     allowClear
                     style={{
                       width: "100%",
-                      padding: "10px 0px", // Corrected padding values
+                      padding: "10px 0px", 
                     }}
                     value={user.dishes}
                     placeholder="Please select"
                     onChange={handleSelectionChange}
                     options={dishName.filter(
-                      (item) =>
-                      item?.status == "Available" 
-                        // console.log(item,"itemddddditem")
-                        // item?.status == "Available" &&
-                        // item?.type == "Venue Dish"
-                      
-                        
+                      (item) => item?.status == "Available"
                     )}
                   />
-                  {/* <Select
-                    mode="multiple"
-                    allowClear
-                    style={{
-                      width: "100%",
-                      padding: "10px,0px",
-                    }}
-                    value={user.dishes}
-                    placeholder="Please select"
-                    onChange={handleSelectionChange}
-                    options={dishName.filter(
-                      (item) => item.status === "Available" && item.type ==="Venue Dish"
-                    )}
-                  /> */}
                 </Space>
               </div>
             </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Price</p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                 placeholder="Enter Price Here"
+                 type="price"
+                 name="price"
+                 value={user.price}
+                 onChange={handleChange}
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[220.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Add Discount Percentage</p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                  placeholder="Enter Discount Here"
+                  type="number"
+                  name="discount"
+                  value={user.discount}
+                  onChange={handleChange}
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[100.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Total Price</p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                placeholder="Enter Discount Here"
+                type="number"
+                name="discount"
+                value={user.totalDiscount}
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
+            </div>
+
             <div className="mb-3 md:flex md:justify-between flex flex-col ">
-              <div className="flex rounded-md cursor-pointer  mb-2 md:mb-0  flex-col relative  ">
-                <label className="text-xl my-1">Price</label>
-                <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                  <Input
-                    placeholder="Enter Price Here"
-                    type="price"
-                    name="price"
-                    value={user.price}
-                    onChange={handleChange}
-                    className="rounded-none w-full py-2 lg:py-3"
-                  />
-                </div>
-                <label className="text-xl my-1">Add Discount Percentage</label>
-                <div>
-                  <Input
-                    placeholder="Enter Discount Here"
-                    type="number"
-                    name="discount"
-                    value={user.discount}
-                    onChange={handleChange}
-                    className="rounded-none w-full py-2 lg:py-3"
-                  />
-                </div>
-                <label className="text-xl my-1 mt-5">Total Price</label>
-                <div>
-                  <Input
-                    placeholder="Enter Discount Here"
-                    type="number"
-                    name="discount"
-                    value={user.totalDiscount}
-                    className="rounded-none w-full py-2 lg:py-3"
-                  />
-                </div>
-                <div className="flex justify-end mt-2">
+              <div className="flex items-start justify-center rounded-md cursor-pointer  mb-2 md:mb-0  w-[130px] bg-primary text-white">
                   <p
-                    className="text-lg"
+                    className="text-lg py-2 "
                     onClick={() => {
                       setModalOpen(!modalOpen);
                       setDishModalOpen(!dishModalOpen);
@@ -1029,7 +1078,6 @@ console.log("selectDishsdddelectssssDish",Dishes)
                   >
                     + Add Dish
                   </p>
-                </div>
               </div>
             </div>
           </div>
@@ -1046,5 +1094,3 @@ console.log("selectDishsdddelectssssDish",Dishes)
   );
 }
 export default Dish;
-
-

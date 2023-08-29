@@ -521,6 +521,7 @@ function Availability() {
               showSearch
               style={{
                 width: 200,
+                backgroundColor: "#F99832",
               }}
               placeholder="Search to Select"
               optionFilterProp="children"
@@ -535,7 +536,7 @@ function Availability() {
               options={selectedDates}
               onChange={handleVenueSelect}
               value={selectVenue}
-              className=" select my-3  ml-5 "
+              className=" select my-3  ml-5 bg-primary text-white"
             />
             <Select
               showSearch
