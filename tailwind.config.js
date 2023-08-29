@@ -14,6 +14,7 @@ module.exports = {
       },
       colors: {
         primaryColor: "#DEB666",
+        matteBlack : "#545454",
         primary:"#F99832",
         sidebarColor: "#545454",
         hoverPrimary: "#FFC587",

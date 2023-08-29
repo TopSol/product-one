@@ -148,7 +148,6 @@ function Slider() {
           <Navbar />
       <div className="mt-28">
         <div className="flex justify-center mb-6 ">
-        {/* <div className="flex justify-center mb-6 mx-auto fixed z-10  w-full  "> */}
           {steps.map((item, index) => (
             <div key={index} className="flex items-center">
               <div

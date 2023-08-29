@@ -2,7 +2,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 
-function Success() {
+function Success({setSuccessPage}) {
    const router = useRouter()
  
   return (

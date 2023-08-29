@@ -446,7 +446,7 @@ function Menus({
             <Image
               alt="sdf"
               src={dots}
-              width={40}
+              width={40} 
               height={40}
               className="ml-3"
             />

@@ -1,74 +1,106 @@
-import React, { useState } from "react";
-import data from "./data";
-import ImageLightbox from "react-image-lightbox";
-import {useStore} from "@/store"
+import React from "react";
+import chair from "../../assets/images/chair.svg";
+import dollor from "../../assets/images/dollor.svg";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { Image } from "antd";
-function MarqueeAvailability({ setSlider,setSelectedHall,setClickedIndex,clickedIndex, venus}) {
-  console.log(venus,"venusvenus");
-  // const {Venues,addHallInformation,hallIndex,hallInformation} = useStore()
-  const handleClick = (item,index) => {
-    // addHallInformation(item,index)
+
+function MarqueeAvailability({
+  setSlider,
+  setSelectedHall,
+  setClickedIndex,
+  clickedIndex,
+  venus,
+}) {
+  console.log(venus, "venusvenus");
+  const handleClick = (item, index) => {
     setClickedIndex(index);
-    setSelectedHall(item)
+    setSelectedHall(item);
   };
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const nextPage = () => { 
-    if(clickedIndex!==null){
-  setSlider(1);
+  const nextPage = () => {
+    if (clickedIndex !== null) {
+      setSlider(1);
     }
   };
+
   return (
-    <div className="md:container mx-auto ">
-      <div className="flex justify-center ">
-        <div className="border p-5 rounded-md mb-2 w-3/4 ">
-          <div className="hidden md:flex justify-between pl-28 pr-20 items-center bg-primaryColor py-2.5 rounded-md mb-4">
-            <p className=" text-center text-xl ">Images</p>
-            <p className=" text-center text-xl ">Venue Details</p>
-            <p className=" text-center text-xl ">Availability</p>
-          </div>
-          <div className="">
-          {/* <div className="h-[510px] overflow-y-auto scrollbar-thumb-blue-500 scrollbar-track-blue-200"> */}
-            {venus?.map((item, index) => {
-              return( 
-              <div
+    <div>
+      <div className="md:container mx-4 md:mx-auto grid gap-4 md:grid-cols-2">
+        {venus?.map((item, index) => {
+          console.log(item, "abvItem");
+          
+          return (
+            <div
               key={index}
-              className="flex flex-col justify-center  md:flex md:flex-row md:justify-around md:items-center pb-2 border  rounded-md mb-3 md:border-none "
-             >
-              <div className=" md:border md:rounded-md ">
-                <div>
-                  <img
-                    src={item.image}
-                    alt=""
-                    // width={250}
-                    className=" md:w-[300px] md:h-[175px] rounded-t-md  cursor-pointer object-cover "
-                  />
+              className="border rounded-lg mb-3 flex flex-col-reverse md:flex md:flex-row h-auto md:h-96"
+            >
+              <div className="w-full md:w-1/2 flex flex-col justify-evenly ">
+                <div className="mt-6 md:mt-0 md:text-xl font-bold mx-10">
+                  <p>{item.select}</p>
+                  <p>{item.name}</p>
                 </div>
-                <div className="px-2 items-center text-center py-3">
-                  <p> {item.select}</p>
-                  <p> $ {item.price}</p>
+
+                <div className="mx-6 my-6">
+                  <div className="flex items-center text-textColor">
+                    <div>
+                      <Image
+                        src={chair}
+                        alt="Chair"
+                        height={30}
+                        width={30}
+                        className="mr-3"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-bold md:text-xl">Siting Capacity</p>
+                      <p className="underline">
+                        {item.minCapacity} to {item.maxCapacity}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-textColor flex items-center mt-4">
+                    <div>
+                      <Image
+                        src={dollor}
+                        alt="dollor"
+                        height={30}
+                        width={30}
+                        className="mr-3"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-bold md:text-xl">Price</p>
+                      <p className="underline">{item.price}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={`w-32 py-2 my-6 rounded-md text-center flex justify-center mx-auto items-center text-white font-bold ${
+                    clickedIndex === index
+                      ? "bg-hoverPrimary"
+                      : "bg-primaryColor"
+                  }`}
+                  onClick={() => handleClick(item, index)}
+                >
+                  <p className="">Select</p>
                 </div>
               </div>
-              <div className=" flex flex-col justify-center mx-auto md:-mt-5 md:flex md:flex-col md:justify-center ">
-                <p className="flex items-center justify-center">Siting Capacity</p>
-                <p className="text-center border p-3 w-40 bg-primaryColor rounded-md">{item.minCapacity} to {item.maxCapacity}</p>
-              </div>
-              <div className={` border  p-3 rounded-md w-40 lg:w-28 text-center mt-3  md:mt-0 flex justify-center mx-auto md:block  ${
-                  clickedIndex === index ? "bg-[#4bc87f]" : "bg-primaryColor"
-                }`}
-                onClick={() => handleClick(item,index)}>
-               
-               <p>
-               Select
-                </p> 
+              <div className="w-full md:w-1/2">
+                <img
+                  src={item.image}
+                  alt=""
+                  className="w-[100%] h-[100%] object-cover rounded-tr-lg rounded-tl-lg md:rounded-tl-none md:rounded-br-lg cursor-pointer  "
+                />
               </div>
             </div>
-            )})}
-          </div>
-        </div>
+          );
+        })}
       </div>
-      <div className="flex justify-end w-3/4  mx-auto">
+
+      <div className="flex justify-end w-3/4 mx-auto">
         <button
           className="border px-7 py-2 my-3 bg-bgColor rounded-md"
           onClick={() => nextPage()}
