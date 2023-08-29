@@ -3,8 +3,8 @@ import { db } from "@/app/firebase";
 import { Button, Input, Popconfirm, Select, Table } from "antd";
 import Loader from "../../component/Loader";
 import { Radio } from "antd";
-import Image from "next/image";
 import Lightbox from "react-image-lightbox";
+import Image from "next/image";
 import dots from "@/app/assets/images/dots.svg";
 import {
   getStorage,
@@ -21,6 +21,7 @@ import {
   setDoc,
   doc,
   deleteDoc,
+  updateDoc
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Modal } from "antd";
@@ -123,8 +124,7 @@ function Menus({
       !user.image ||
       !user.price ||
       !user.type ||
-      !user.description ||
-      !user.status
+      !user.description
     ) {
       return;
     }
@@ -151,7 +151,8 @@ function Menus({
       menuId: MenuId,
       userId: userInformation.userId,
       price: user.price,
-      status: user.status,
+      status: "Available",
+      // status: user.status,
     };
 
     try {
@@ -282,7 +283,22 @@ function Menus({
       setDeleteMenus([...deleteMenus, id]);
     }
   };
-  console.log(user, "sdfsdffdsfsdfsdf");
+  const onChangeStatus = async (value,id) => {
+  const convertedString = value
+  .split('-') 
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join('');
+    const docRef = doc(db, "Menus", id);
+    await updateDoc(docRef , {
+      status: convertedString,
+   });
+   Menus.map((menu) => {
+      if(menu.menuId === id){
+        menu.status = convertedString
+      }
+      addMenus(Menus)
+    });
+  }
   return (
     <div className="md:px-10">
       <Table dataSource={Menus} className="myTable">
@@ -353,9 +369,35 @@ function Menus({
           title="Status"
           dataIndex="status"
           key="status"
-          // className={`${
-          //   Menus.status === "NotAvailable" ? "bg-red-200" : "bg-green-200"
-          // }`}
+          render={(status,record) => (
+            <Select
+              // showSearch
+              className="status"
+              placeholder="Select a status"
+              optionFilterProp="children"
+              onChange={(value) => onChangeStatus(value, record.menuId)}
+              style={{
+                width: 200,
+                // backgroundColor: status === "Available" ? "#4caf50" : "#f44336",
+                color: "white",
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              defaultValue={status}
+              value={status}
+            >
+               {
+                status === "Available" ? (
+                  <Select.Option value="not-available">Not Available</Select.Option>
+                  ) : (
+                  <Select.Option value="available">Available</Select.Option>
+                )
+               }
+            </Select>
+          )}
         />
         <Column
           title="Action"
@@ -417,7 +459,7 @@ function Menus({
           </div>
         }
         width={600}
-        bodyStyle={{ height: 600, padding: 0 }}
+        bodyStyle={{ height: 610, padding: 0 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
           <div className="pb-5 mr-3">
@@ -454,8 +496,10 @@ function Menus({
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Name</b>
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Name
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -469,44 +513,50 @@ function Menus({
               </div>
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Images</b>
+              <div className="absolute top-[calc(50%_-_61.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Images
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
-                placeholder="Basic usage"
-                type="file"
-                name="image"
-                multiple
-                onChange={(e) => {
-                  setUser({ ...user, image: e.target.files });
-                }}
+                  placeholder="Basic usage"
+                  type="file"
+                  name="image"
+                  multiple
+                  onChange={(e) => {
+                    setUser({ ...user, image: e.target.files });
+                  }}
                   className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Price</b>
+                <p className="absolute  text-lg leading-[100%] z-20 pt-1">
+                  Price
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
-                 placeholder="Minimum Capacity"
-                 type="number"
-                 name="price"
-                 value={user.price}
-                 onChange={handleChange}
+                  placeholder="Minimum Capacity"
+                  type="number"
+                  name="price"
+                  value={user.price}
+                  onChange={handleChange}
                   className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Type</b>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Type
+                </p>
               </div>
               <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-              <Select
-              className="type"
+                <Select
+                  className="type"
                   showSearch
                   style={{
                     width: "100%",
@@ -529,17 +579,19 @@ function Menus({
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute z-20 left-[19.89px] -mt-3 rounded-3xs bg-white w-[104.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Description</b>
+                <p className="absolute text-lg leading-[100%] z-20 ">
+                  Description
+                </p>
               </div>
               <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
-                rows={4}
-                maxLength={200}
-                placeholder="Enter Description Here"
-                name="description"
-                typeof="text"
-                value={user.description}
-                onChange={handleChange}
+                  rows={4}
+                  maxLength={200}
+                  placeholder="Enter Description Here"
+                  name="description"
+                  typeof="text"
+                  value={user.description}
+                  onChange={handleChange}
                   className="border h-[90px] outline-none md:w-[700px] z-10 w-full  py-3 mb-3 flex justify-center text-xs relative"
                 />
               </div>

@@ -343,7 +343,7 @@ function Venues({
         centered
         open={modalOpen}
         width={600}
-        bodyStyle={{ height: 630, padding: 0 }}
+        bodyStyle={{ height: 670, padding: 0 }}
         onCancel={() => setModalOpen(false)}
         okButtonProps={{ className: "custom-ok-button" }}
         closeIcon={
@@ -351,13 +351,12 @@ function Venues({
             <svg
               onClick={() => setModalOpen(false)}
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-white cursor-pointer md:-mt-[30px]"
+              className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               width={20}
               height={20}
-              // style={{marginTop:-30}}
             >
               <path
                 strokeLinecap="round"
@@ -401,8 +400,8 @@ function Venues({
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Name</b>
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Name</p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -416,8 +415,8 @@ function Venues({
               </div>
             </div>
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Email</b>
+              <div className="absolute top-[calc(50%_-_61.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Email</p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -433,10 +432,10 @@ function Venues({
               </div>
             </div>
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[143.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">
+              <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
                   Minimum Capacity
-                </b>
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -450,10 +449,10 @@ function Venues({
               </div>
             </div>
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[143.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
                   Maximum Capacity
-                </b>
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -467,8 +466,8 @@ function Venues({
               </div>
             </div>
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">price</b>
+              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">price</p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -482,7 +481,7 @@ function Venues({
               </div>
             </div>
             <div className="flex flex-col items-start relative">
-              <label className="text-xl">services</label>
+              <label className=" text-lg ">services</label>
 
               <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Checkbox.Group

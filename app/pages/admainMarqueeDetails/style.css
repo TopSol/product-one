@@ -28,26 +28,22 @@
     border-radius: 0px !important;
     height: 50px !important;
 }
-.ant-btn :hover{
+.AddVenue .ant-btn :hover{
     background-color: #F99832;
     color: #fff;
     font-weight: bolder;
 }
-/* .ant-btn{
-    background-color: #4096FF;
-    color: #fff;
-    font-weight: bolder;
-} */
-/* .AddVenue .ant-btn{
+.AddVenue .ant-btn{
     background-color: #F99832;
     color: #fff;
     font-weight: bolder;
-} */
+}
 .select .ant-select-selector{
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center
 }
+
 /* .myTable .ant-table-tbody > tr > td {
         border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -60,4 +56,10 @@
 
 .type .ant-select-selector{
     border-radius: 5px !important;
+    padding: 28px 0px !important;
+}
+.status .ant-select-selector{
+    border-radius: 5px !important;
+    padding: 10px 10px !important;
+    background-color: #F99832;
 }
