@@ -12,6 +12,7 @@ module.exports = {
         vollkorn: ["Vollkorn", "serif"],
         poppins: ["Poppins", "sans-serif"],
         sc:"'Source Code Pro',monospace"
+        
       },
       colors: {
         primaryColor: "#DDB667",
@@ -22,7 +23,8 @@ module.exports = {
         hoverPrimary: "#FFC587",
         secondaryColor: "#32353C",
         bgColor: "#f5f5f5",
-        textColor: "#747474",
+        textColor: "#878D8D",
+        textColor2: "##FDFDFD",
         headingColor: "#474747",
         blackColor: "#000",
         WhiteColor: "#ffff",

@@ -14,16 +14,7 @@ import { redirect, useRouter } from "next/navigation";
 import Loader from "../../component/Loader";
 import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
 import { db } from "@/app/firebase";
-// import Image from "next/image";
-import {
-  faBars,
-  faBellConcierge,
-  faUtensils,
-  faBowlFood,
-  faCalendar,
-} from "@fortawesome/free-solid-svg-icons";
 import BookedDate from "./bookedDate";
-
 import { doc, deleteDoc } from "firebase/firestore";
 import Image from "next/image";
 import addVenue from "@/app/assets/images/Group2.svg";
@@ -124,12 +115,7 @@ function AdminMarqueeDetails() {
   const openModal = () => {
     setModalOpen(true);
   };
-  const handleClick = (img, index) => {
-    setImage(img);
-    setSelectImage(img[index]);
-    setPhotoIndex(index);
-    setIsOpen(true);
-  };
+
   const handleDeleteVenues = async () => {
     try {
       await Promise.all(
@@ -184,40 +170,34 @@ function AdminMarqueeDetails() {
             <AdminNavbar setModalOpen2={setModalOpen2} setShowIcon={setShowIcon} setRemoveMenuIcon={setRemoveMenuIcon} />
             <div className="sidebar flex">
               <div className="hidden  p-2  absolute">
-                {/* <FontAwesomeIcon
-                  icon={faBars}
-                  onClick={() => setModalOpen2(!modalOpen2)}
-                /> */}
+
               </div>
               {modalOpen2 ? (
                 <div
-                  className={`w-[70%] h-[100vh] ${
-                    showIcon ? "md:w-[15%]" : "md:w-[5%]"
-                  } border flex flex-col shadow-lg z-20 lg:z-0 bg-white relative md:block`}
+                  className={`w-[70%] h-[100vh] ${showIcon ? "md:w-[15%]" : "md:w-[5%]"
+                    } border flex flex-col shadow-lg z-20 lg:z-0 bg-white relative md:block`}
                 >
                   <div className="flex justify-between">
                     <p className="  flex  items-center  text-xl  pl-[30px] py-5">
                       {showIcon ? "Marquee" : null}
                     </p>
                     {
-                      removeMenuIcon?(
-                       <FontAwesomeIcon
-                        icon={faBarsStaggered}
-                        size="sm"
-                        className="h-7 text-primary  cursor-pointer py-5 pr-[30px]"
-                        onClick={() => setShowIcon((prev) => !prev)}
-                        // onClick={() => setModalOpen2((prev) => !prev)}
-                      />
-                      ):null
+                      removeMenuIcon ? (
+                        <FontAwesomeIcon
+                          icon={faBarsStaggered}
+                          size="sm"
+                          className="h-7 text-primary  cursor-pointer py-5 pr-[30px]"
+                          onClick={() => setShowIcon((prev) => !prev)}
+                        />
+                      ) : null
                     }
-                   
+
                   </div>
                   {sideBar.map((item, index) => (
                     <div key={index}>
                       <div
-                        className={`side w-full text-left flex py-2 ${
-                          component === item.name ? "bg-primary" : ""
-                        }`}
+                        className={`side w-full text-left flex py-2 ${component === item.name ? "bg-primary" : ""
+                          }`}
                         onClick={() => {
                           setComponent(item.name);
                           setModalOpen1(!modalOpen1);
@@ -230,21 +210,18 @@ function AdminMarqueeDetails() {
                         }}
                       >
                         <div
-                          className={`flex pl-${
-                            component === item.name ? "8" : ""
-                          } top-0 bottom-0 left-0 right-0  pl-[30px] text-${
-                            component !== item.name ? "sidebarColor" : "white"
-                          }`}
+                          className={`flex pl-${component === item.name ? "8" : ""
+                            } top-0 bottom-0 left-0 right-0  pl-[30px] text-${component !== item.name ? "sidebarColor" : "white"
+                            }`}
                         >
                           <Image
                             src={
                               component !== item.name ? item.icon : item.wIcon
                             }
-                            width={50}
+                            width={40}
                             alt="Picture of the author"
-                            className={` pr-5 text-${
-                              component !== item.name ? "sidebarColor" : "white"
-                            } transition-colors duration-200`}
+                            className={` pr-5 text-${component !== item.name ? "sidebarColor" : "white"
+                              } transition-colors duration-200`}
                           />
                           {showIcon ? item.name : null}
                         </div>
@@ -255,94 +232,91 @@ function AdminMarqueeDetails() {
               ) : null}
 
               <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto">
-                <div className="md:px-5 border my-3  rounded-md mx-5 mt-7 ">
-                  {component === "Venues" ? (
-                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
-                      <p className="md:text-2xl">Venues</p>
-                      <div className="flex justify-center items-center">
-                        <button
-                          className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
-                          onClick={() => openModal()}
-                        >
-                          <span className="flex">
-                            <Image
-                              src={addVenue}
-                              alt="Picture of the author"
-                              width={20}
-                              className="pr-1"
-                            />
-                            <p className=" text-xs md:text-base">Add venues</p>
-                          </span>
-                        </button>
-                        <button
-                          className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
-                          onClick={() => handleDeleteVenues()}
-                        >
-                          Delete
-                        </button>
-                      </div>
+                {component === "Venues" ? (
+                  <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
+                    <p className="md:text-2xl py-3">Venues</p>
+                    <div className="flex justify-center items-center">
+                      <button
+                        className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
+                        onClick={() => openModal()}
+                      >
+                        <span className="flex">
+                          <Image
+                            src={addVenue}
+                            alt="Picture of the author"
+                            width={20}
+                            className="pr-1"
+                          />
+                          <p className=" text-xs md:text-base">Add venues</p>
+                        </span>
+                      </button>
+                      <button
+                        className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
+                        onClick={() => handleDeleteVenues()}
+                      >
+                        Delete
+                      </button>
                     </div>
-                  ) : component === "Menus" ? (
-                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
-                      <p className="md:text-2xl">Menus</p>
-                      <div className="flex justify-center items-center">
-                        <button
-                          className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
-                          onClick={() => openModal()}
-                        >
-                          <span className="flex">
-                            <Image
-                              src={addVenue}
-                              alt="Picture of the author"
-                              width={20}
-                              className="pr-1"
-                            />
-                            <p className=" text-xs md:text-base">Add Menu</p>
-                          </span>
-                        </button>
-                        <button
-                          className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
-                          onClick={() => handleDeleteDish()}
-                        >
-                          Delete
-                        </button>
-                      </div>
+                  </div>
+                ) : component === "Menus" ? (
+                  <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
+                    <p className="md:text-2xl py-3">Menus</p>
+                    <div className="flex justify-center items-center">
+                      <button
+                        className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
+                        onClick={() => openModal()}
+                      >
+                        <span className="flex">
+                          <Image
+                            src={addVenue}
+                            alt="Picture of the author"
+                            width={20}
+                            className="pr-1"
+                          />
+                          <p className=" text-xs md:text-base">Add Menu</p>
+                        </span>
+                      </button>
+                      <button
+                        className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
+                        onClick={() => handleDeleteDish()}
+                      >
+                        Delete
+                      </button>
                     </div>
-                  ) : component === "Dishes" ? (
-                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
-                      <p className="md:text-2xl">Dishes</p>
-                      <div className="flex justify-center items-center">
-                        <button
-                          className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
-                          onClick={() => openModal()}
-                        >
-                          <span className="flex">
-                            <Image
-                              src={addVenue}
-                              alt="Picture of the author"
-                              width={20}
-                              className="pr-1"
-                            />
-                            <p className=" text-xs md:text-base">Add Dish</p>
-                          </span>
-                        </button>
-                        <button
-                          className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
-                          onClick={() => handleDeleteMenus()}
-                        >
-                          Delete
-                        </button>
-                      </div>
+                  </div>
+                ) : component === "Dishes" ? (
+                  <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
+                    <p className="md:text-2xl py-3">Dishes</p>
+                    <div className="flex justify-center items-center">
+                      <button
+                        className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
+                        onClick={() => openModal()}
+                      >
+                        <span className="flex">
+                          <Image
+                            src={addVenue}
+                            alt="Picture of the author"
+                            width={20}
+                            className="pr-1"
+                          />
+                          <p className=" text-xs md:text-base">Add Dish</p>
+                        </span>
+                      </button>
+                      <button
+                        className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
+                        onClick={() => handleDeleteMenus()}
+                      >
+                        Delete
+                      </button>
                     </div>
-                  ) : null}
-                </div>
+                  </div>
+                ) : null}
 
                 <div>
                   {component === "Venues" ? (
                     <MarqueeVenues
                       modalOpen={modalOpen}
                       setModalOpen={setModalOpen}
-                      // handleClick={handleClick}
                       loading={loading}
                       setLoading={setLoading}
                       setDeleteVenues={setDeleteVenues}
@@ -352,7 +326,6 @@ function AdminMarqueeDetails() {
                     <MarqueeMenus
                       modalOpen={modalOpen}
                       setModalOpen={setModalOpen}
-                      // handleClick={handleClick}
                       loading={loading}
                       setLoading={setLoading}
                       setDeleteMenus={setDeleteMenus}

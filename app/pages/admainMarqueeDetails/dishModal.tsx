@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { db } from "@/app/firebase";
 import { Button, Input, Select, Table } from "antd";
 import dots from "@/app/assets/images/dots.svg";
 import Image from "next/image";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Radio } from "antd";
 import {
   collection,
   getDocs,
   getDoc,
   setDoc,
   doc,
-  deleteDoc,
 } from "firebase/firestore";
 import Loader from "../../component/Loader";
 
@@ -38,7 +36,6 @@ function DishModal({
 }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
-  const { TextArea } = Input;
   const storage = getStorage();
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
@@ -122,7 +119,6 @@ function DishModal({
     };
     try {
       await setDoc(doc(db, "Menus", MenuId), users);
-      console.log("close2");
     } catch (error) {
       console.log(error, "error");
     }
@@ -134,7 +130,6 @@ function DishModal({
     setLoading(false);
   };
   const handleMenuSelect = (e) => {
-    console.log(e, "eeeeeee");
     switch (e) {
       case "1":
         setUser({ ...user, type: "Venue Dish" });
@@ -149,7 +144,6 @@ function DishModal({
         setUser({ ...user, type: "food" });
         break;
       default:
-        // setUser({ ...user, type: "Venue Dish" });
         break;
     }
   };
@@ -194,29 +188,53 @@ function DishModal({
         className="text-center modal  w-full"
         centered
         open={dishModalOpen}
-        width={700}
-        bodyStyle={{ height: 700 }}
+        width={600}
+        bodyStyle={{ height: 640 }}
         okButtonProps={{ className: "custom-ok-button" }}
+        closeIcon={
+          <div className=" right-2 ">
+            <svg
+              onClick={() => setModalOpen(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width={20}
+              height={20}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>{" "}
+          </div>
+        }
         footer={[
-          <Button
-            key="cancel"
-            onClick={() => {
-              setDishModalOpen(false);
-              setModalOpen((prev) => !prev);
-            }}
-          >
-            Cancel
-          </Button>,
-          <Button
-            key="ok"
-            type="primary"
-            onClick={() =>
-              openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
-            }
-            className="bg-blue-500"
-          >
-            {loading ? <Loader /> : "Ok"}
-          </Button>,
+          <div className="pb-5 mr-3">
+            <Button
+              key="cancel"
+              className=" border-primary text-primary "
+              onClick={() => {
+                setDishModalOpen(false);
+                setModalOpen((prev) => !prev);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              key="ok"
+              type="primary"
+              onClick={() =>
+                openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+              }
+              className="AddVenue  bg-primary text-white"
+            >
+              {loading ? <Loader /> : "Add"}
+            </Button>
+          </div>,
         ]}
       >
         <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
@@ -231,31 +249,30 @@ function DishModal({
             <p className="text-xl pl-3 text-white py-4"> Add Dish</p>
           </div>
 
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[100%]  justify-center ">
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[80%]  justify-center ">
             <div className="md:justify-between flex flex-col">
-                <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Name</b>
+              <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">Name</p>
+                </div>
+                <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                  <Input
+                    placeholder="Name"
+                    type="text"
+                    name="name"
+                    value={user.name}
+                    onChange={handleChange}
+                    className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">Images</p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
-                  placeholder="Name"
-                  type="text"
-                  name="name"
-                  value={user.name}
-                  onChange={handleChange}
-                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
-                />
-              </div>
-            </div>
-         
-            </div>
-             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Images</b>
-              </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-              <Input
                   placeholder="Basic usage"
                   type="file"
                   name="image"
@@ -264,82 +281,75 @@ function DishModal({
                     setUser({ ...user, image: e.target.files });
                   }}
                   className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
-                  />
+                />
               </div>
             </div>
             <div className="md:flex md:justify-between flex flex-col ">
-                <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Price</b>
-              </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-              <Input
-                  placeholder="Minimum Capacity"
-                  type="number"
-                  name="price"
-                  value={user.price}
-                  onChange={handleChange}
-                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+              <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">Price</p>
+                </div>
+                <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                  <Input
+                    placeholder="Minimum Capacity"
+                    type="number"
+                    name="price"
+                    value={user.price}
+                    onChange={handleChange}
+                    className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                   />
+                </div>
               </div>
-            </div>
 
-            
-               <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Type</b>
+              <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">Type</p>
+                </div>
+                <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                  <Select
+                    showSearch
+                    style={{
+                      width: "100%",
+                    }}
+                    placeholder="Search to Select"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.label.toLowerCase().includes(input.toLowerCase())
+                    }
+                    filterSort={(optionA, optionB) =>
+                      optionA.label
+                        .toLowerCase()
+                        .localeCompare(optionB.label.toLowerCase())
+                    }
+                    options={menu}
+                    onChange={handleMenuSelect}
+                    value={user.type}
+                  />
+                </div>
               </div>
-              <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-              <Select
-                  showSearch
-                  style={{
-                    width: "100%",
-                  }}
-                  placeholder="Search to Select"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    option.label.toLowerCase().includes(input.toLowerCase())
-                  }
-                  filterSort={(optionA, optionB) =>
-                    optionA.label
-                      .toLowerCase()
-                      .localeCompare(optionB.label.toLowerCase())
-                  }
-                  options={menu}
-                  onChange={handleMenuSelect}
-                  value={user.type}
-                />
-              </div>
-            </div>
             </div>
 
             <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
-               <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute z-20 left-[19.89px] -mt-3 rounded-3xs bg-white w-[104.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1">Description</b>
+              <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                <div className="absolute z-20 left-[19.89px] -mt-3 rounded-3xs bg-white w-[104.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                    Description
+                  </p>
+                </div>
+                <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
+                  <Input
+                    rows={4}
+                    maxLength={200}
+                    placeholder="Enter Description Here"
+                    name="description"
+                    typeof="text"
+                    value={user.description}
+                    onChange={handleChange}
+                    className="border h-[90px] outline-none md:w-[700px] z-10 w-full  py-3 mb-3 flex justify-center text-xs relative"
+                  />
+                </div>
               </div>
-              <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <Input
-                rows={4}
-                maxLength={200}
-                placeholder="Enter Description Here"
-                name="description"
-                typeof="text"
-                value={user.description}
-                onChange={handleChange}
-                  className="border h-[90px] outline-none md:w-[700px] z-10 w-full  py-3 mb-3 flex justify-center text-xs relative"
-                />
-              </div>
-            </div>
-              <label className="text-xl my-1">Status</label>
-              <div className="flex flex-col  md:flex-row  md:justify-between">
-                <Radio.Group
-                  options={plainOptions}
-                  onChange={handleChange}
-                  value={status}
-                  name="status"
-                />
-              </div>
+
             </div>
           </div>
         </div>

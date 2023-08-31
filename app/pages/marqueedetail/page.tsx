@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DayPicker } from "react-day-picker";
@@ -36,6 +36,7 @@ function Marqueedetail() {
   const [marqueeDates, setMarqueeDates] = useState([]);
   const [venueId, setVenueId] = useState();
   const [loading, setLoading] = useState(false);
+  const [meal, setMeal] = useState("Lunch");
   const [lunchDinner, setLunchDinner] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },

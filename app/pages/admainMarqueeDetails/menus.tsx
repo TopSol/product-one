@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Input, Popconfirm, Select, Table } from "antd";
+import { Button, Input, List, Popconfirm, Row, Select, Table } from "antd";
 import Loader from "../../component/Loader";
-import { Radio } from "antd";
+import DishTable from "./dishTable";
 import Lightbox from "react-image-lightbox";
 import Image from "next/image";
 import dots from "@/app/assets/images/dots.svg";
@@ -13,7 +13,6 @@ import {
   getDownloadURL,
   listAll,
 } from "firebase/storage";
-import Link from "next/link";
 import {
   collection,
   getDocs,
@@ -25,9 +24,6 @@ import {
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Modal } from "antd";
-import { Checkbox } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 const plainOptions = [
   { label: "Available", value: "Available" },
   { label: "Not Available", value: "NotAvailable" },
@@ -60,7 +56,6 @@ function Menus({
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState([]);
-  const [lunchType, setLunchType] = useState("0");
   const [menu, setMenu] = useState([
     {
       label: "Venue Dish",
@@ -82,7 +77,6 @@ function Menus({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setStatus(value);
-    console.log(name, value, "value");
     setUser((prevState) => ({
       ...prevState,
       [name]: name == "price" ? Number(value) : value,
@@ -97,7 +91,7 @@ function Menus({
           });
         });
       })
-      .catch((error) => {});
+      .catch((error) => { });
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Menus"));
@@ -118,7 +112,6 @@ function Menus({
   }, [addVenues]);
 
   const HandleAddVenues = async () => {
-    console.log(user, "sdfsdfsdffds");
     if (
       !user.name ||
       !user.image ||
@@ -152,19 +145,16 @@ function Menus({
       userId: userInformation.userId,
       price: user.price,
       status: "Available",
-      // status: user.status,
     };
 
     try {
       await setDoc(doc(db, "Menus", MenuId), users);
-      console.log("close2");
     } catch (error) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
 
     setModalOpen(false);
-    console.log("close4");
     setUser(initialFormState);
     setLoading(false);
   };
@@ -185,14 +175,11 @@ function Menus({
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       setUser(docSnap.data());
-      // setSelectedItems(docSnap.data().dishes);
-      console.log("Document data:", docSnap.data());
     } else {
       console.log("No such document!");
     }
   };
   const updateVenue = async (venueId) => {
-    console.log(user, "usereeeeeee");
     setLoading((prevState) => !prevState);
     if (typeof user?.image[0] === "string") {
       try {
@@ -241,14 +228,6 @@ function Menus({
         console.log(error, "error");
       }
 
-      // try {
-      //   await setDoc(doc(db, "Menus", venueId), user);
-      //   const newBlogs = Menus.filter((blog) => blog.id !== venueId);
-      //   console.log(newBlogs,"newBlogs33",user)
-      //   addMenus([...newBlogs,{...user,id:venueId}])
-      // } catch (error) {
-      //   console.log(error, "error");
-      // }
     }
     setModalOpen(false);
     setUser(initialFormState);
@@ -256,7 +235,6 @@ function Menus({
     setLoading((prevState) => !prevState);
   };
   const handleMenuSelect = (e) => {
-    console.log(e, "eeeeeee");
     switch (e) {
       case "1":
         setUser({ ...user, type: "Venue Dish" });
@@ -275,7 +253,6 @@ function Menus({
     }
   };
   const onChange = (id) => {
-    console.log(id, "asdfasfa");
     if (deleteMenus.includes(id)) {
       const data = deleteMenus.filter((item) => item !== id);
       setDeleteMenus(data);
@@ -283,45 +260,95 @@ function Menus({
       setDeleteMenus([...deleteMenus, id]);
     }
   };
-  const onChangeStatus = async (value,id) => {
-  const convertedString = value
-  .split('-') 
-  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-  .join('');
+  const onChangeStatus = async (value, id) => {
+    const convertedString = value
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('');
     const docRef = doc(db, "Menus", id);
-    await updateDoc(docRef , {
+    await updateDoc(docRef, {
       status: convertedString,
-   });
-   Menus.map((menu) => {
-      if(menu.menuId === id){
+    });
+    Menus.map((menu) => {
+      if (menu.menuId === id) {
         menu.status = convertedString
       }
       addMenus(Menus)
     });
   }
+  const renderHeader = () => (
+    <div className="header-container flex justify-between text-center">
+      <div className="bg-primary py-4 text-white rounded-tl-lg w-[13%]"></div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white   w-[13%]">Name</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto w-[10%]"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Type</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Description</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Price</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Images</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Status</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%] rounded-tr-lg  flex justify-end pr-2">Action</div>
+    </div>
+  );
   return (
     <div className="md:px-10">
-      <Table dataSource={Menus} className="myTable">
-        <Column
+      {renderHeader()}
+      <List
+        dataSource={Menus}
+        renderItem={(Menus, index) => (
+          <DishTable
+            menus={Menus}
+            onChange={onChange}
+            EditVenue={EditVenue}
+            setIsOpen={setIsOpen}
+            setPreviewImage={setPreviewImage}
+            setPhotoIndex={setPhotoIndex}
+            onChangeStatus={onChangeStatus}
+          />
+        )}
+      />
+      {/* <Table dataSource={Menus} className="myTable" bordered = {false}  >
+          <Column
           title="Check box"
           dataIndex="menuId"
           key="menuId"
+          className="text-base"
           render={(menuId) => (
             <div>
               <Checkbox onClick={() => onChange(menuId)} />
             </div>
           )}
         />
-        <Column title="Name" dataIndex="name" key="name" />
-        <Column title="Type" dataIndex="type" key="type" />
-        <Column title="Description" dataIndex="description" key="description" />
-        <Column title="Price" dataIndex="price" key="price" />
+        <Column title="Name" dataIndex="name" key="name" className="text-base" />
+        <Column title="Type" dataIndex="type" key="type"  className="text-base"/>
+        <Column title="Description" dataIndex="description" key="description"  className="text-base "/>
+        <Column title="Price" dataIndex="price" key="price"  className="text-base"/>
         <Column
           title="Images"
           dataIndex="image"
           key="image"
           render={(image) => (
-            <div className="flex items-center">
+            <>
+             <div className="flex items-center">
               <img
                 width={80}
                 height={80}
@@ -342,44 +369,48 @@ function Menus({
                 </Link>
               }
             </div>
-            // <div className="flex">
-            //   <Image.PreviewGroup>
-            //     {image?.map((dish, index) => {
-            //       return (
-            //         <Image
-            //           key={index}
-            //           width={80}
-            //           height={35}
-            //           // visible={false}
-            //           style={{ objectFit: "cover", paddingRight: 10 }}
-            //           src={dish}
-            //           onClick={() => {
-            //             Image.previewGroup?.show({
-            //               current: index,
-            //             });
-            //           }}
-            //         />
-            //       );
-            //     })}
-            //   </Image.PreviewGroup>
-            // </div>
+            <div className="flex">
+              <Image.PreviewGroup>
+                {image?.map((dish, index) => {
+                  return (
+                    <Image
+                      key={index}
+                      width={80}
+                      height={35}
+                      // visible={false}
+                      style={{ objectFit: "cover", paddingRight: 10 }}
+                      src={dish}
+                      onClick={() => {
+                        Image.previewGroup?.show({
+                          current: index,
+                        });
+                      }}
+                    />
+                  );
+                })}
+              </Image.PreviewGroup>
+            </div>
+            </>
+           
           )}
         />
         <Column
           title="Status"
           dataIndex="status"
           key="status"
+          className="text-base"
           render={(status,record) => (
             <Select
               // showSearch
-              className="status"
+              className={"status" }
+              // className={`status .ant-select-arrow ${status === "Available" ? "text-red" : "text-#F9E1D7"}`}
               placeholder="Select a status"
               optionFilterProp="children"
               onChange={(value) => onChangeStatus(value, record.menuId)}
               style={{
                 width: 200,
-                // backgroundColor: status === "Available" ? "#4caf50" : "#f44336",
-                color: "white",
+                backgroundColor: status === "Available" ? "#D4EAD8" : "#F9E1D7",
+                borderRadius: 15,
               }}
               filterOption={(input, option) =>
                 (option?.label ?? "")
@@ -403,6 +434,7 @@ function Menus({
           title="Action"
           dataIndex="menuId"
           key="menuId"
+          className="text-base"
           render={(menuId) => (
             <div>
               <Popconfirm
@@ -412,24 +444,24 @@ function Menus({
                 cancelText="No"
                 onConfirm={() => deleteMenu(menuId)}
               >
-                {/* <FontAwesomeIcon
+                <FontAwesomeIcon
                   icon={faTrashCan}
                   width={15}
                   // height={15}
                   className="text-red-500 cursor-pointer text-xl"
                   // onClick={() => deleteVenue(venueId)}
-                /> */}
+                /> 
               </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 className="ml-3 text-green-500 text-xl"
-                width={15}
+                width={25}
                 onClick={() => EditVenue(menuId)}
               />
             </div>
           )}
-        />
-      </Table>
+        /> 
+     </Table>   */}
 
       <Modal
         className=" modal  w-full text-center"
@@ -447,7 +479,6 @@ function Menus({
               stroke="currentColor"
               width={20}
               height={20}
-              // style={{marginTop:-30}}
             >
               <path
                 strokeLinecap="round"
@@ -459,7 +490,7 @@ function Menus({
           </div>
         }
         width={600}
-        bodyStyle={{ height: 610, padding: 0 }}
+        bodyStyle={{ height: 620, padding: 0 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
           <div className="pb-5 mr-3">
@@ -488,7 +519,7 @@ function Menus({
             <Image
               alt="sdf"
               src={dots}
-              width={40} 
+              width={40}
               height={40}
               className="ml-3"
             />
@@ -556,7 +587,7 @@ function Menus({
               </div>
               <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Select
-                  className="type"
+                  className="type "
                   showSearch
                   style={{
                     width: "100%",
@@ -606,7 +637,7 @@ function Menus({
           nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
           prevSrc={
             previewImage[
-              (photoIndex + previewImage.length - 1) % previewImage.length
+            (photoIndex + previewImage.length - 1) % previewImage.length
             ]
           }
           onCloseRequest={() => setIsOpen(false)}

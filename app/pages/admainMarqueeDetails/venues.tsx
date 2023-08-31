@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import Loader from "../../component/Loader";
 import ImageLightbox from "react-image-lightbox";
 import Lightbox from "react-image-lightbox";
-import { Button, Popconfirm } from "antd";
-// import { Image } from "antd";
-import Image from "next/image";
+import { Image } from "antd";
+import { Checkbox, Button } from "antd";
 import Link from "next/link";
-import { Checkbox } from "antd";
+import dots from "../../assets/images/dots.svg"
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import {
   collection,
@@ -25,14 +24,11 @@ import {
   ref,
   uploadBytes,
   getDownloadURL,
-  listAll,
 } from "firebase/storage";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { set } from "date-fns";
-import dots from "@/app/assets/images/dots.svg";
-import { Input, Form } from "antd";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { Input } from "antd";
 const initialFormState = {
   name: "",
   image: "",
@@ -51,12 +47,9 @@ function Venues({
 }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenue, setaddVenue] = useState([]);
-  const [blogs, setBlogs] = useState([]);
   const { Column } = Table;
   const [openEditVenue, setOpenEditVenue] = useState(false);
-  const [addVenueImage, setaddVenueImage] = useState([]);
   const [photoIndex, setPhotoIndex] = useState(0);
-  // const [deleteVenues, setDeleteVenues] = useState([]);
   const { userInformation, addUser, Venues, addVenues, dates } = useStore();
   const storage = getStorage();
   const [previewImage, setPreviewImage] = useState([]);
@@ -70,29 +63,16 @@ function Venues({
         name === "price"
           ? Number(value)
           : name === "maxCapacity"
-          ? Number(value)
-          : name === "minCapacity"
-          ? Number(value)
-          : value,
+            ? Number(value)
+            : name === "minCapacity"
+              ? Number(value)
+              : value,
     }));
-    // setUser((prevState) => ({
-    //   ...prevState,
-    //   [name]: value,
-    // }));
-  };
-  console.log(userInformation, "userInformation");
 
-  console.log(userInformation.userId, "userInformaddtion", userInformation);
+  };
+
   useEffect(() => {
-    // listAll(ImageRef)
-    //   .then((res) => {
-    //     res.items.forEach((itemRef) => {
-    //       getDownloadURL(itemRef).then((url) => {
-    //         setaddVenueImage((prevState) => [...prevState, url]);
-    //       });
-    //     });
-    //   })
-    //   .catch((error) => {});
+
 
     const fetchBlogs = async () => {
       try {
@@ -105,7 +85,6 @@ function Venues({
           }));
 
         addVenues(tempArray);
-        console.log("tempArray", tempArray);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
@@ -115,7 +94,6 @@ function Venues({
   }, [addVenue]);
 
   const HandleaddVenue = async () => {
-    console.log("use333r", user);
     if (
       !user.name ||
       !user.image ||
@@ -134,7 +112,6 @@ function Venues({
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
-        console.log("imageUrls123", urls);
         return urls;
       })
     );
@@ -146,7 +123,6 @@ function Venues({
       maxCapacity: user.maxCapacity,
       userId: userInformation.userId,
       venueId: VenueId,
-      // availability: user.availability,
       price: user.price,
       services: user.services,
     };
@@ -160,28 +136,14 @@ function Venues({
     setUser(initialFormState);
     setLoading(false);
   };
-  const deleteVenue = async (VenueId) => {
-    console.log(VenueId, "VenueId");
-    // try {
-    //   await deleteDoc(doc(db, "Venues", VenueId));
-    //   const newBlogs = Venues.filter((blog) => blog.id !== VenueId);
-    //   console.log(newBlogs, "newBlogs");
-    //   addVenues(newBlogs);
-    // } catch (error) {
-    //   console.error("Error removing document: ", error);
-    // }
-  };
-  console.log(Venues, "Venues");
+
   const EditVenue = async (dishId) => {
     setOpenEditVenue(true);
     setModalOpen((prevState) => !prevState);
     const docRef = doc(db, "Venues", dishId);
     const docSnap = await getDoc(docRef);
-    console.log("sdfasdfafsda", docSnap.data());
     if (docSnap.exists()) {
       setUser(docSnap.data());
-      // setSelectedItems(docSnap.data().dishes);
-      console.log("Documentsss", docSnap.data());
     } else {
       console.log("No such document!");
     }
@@ -196,7 +158,6 @@ function Venues({
         if (updatedIndex !== -1) {
           const updatedVenues = [...Venues];
           updatedVenues[updatedIndex] = { ...user, id: venueId };
-          console.log(updatedVenues, "updatedVenues");
           addVenues(updatedVenues);
         } else {
           addVenues([...Venues, { ...user, id: venueId }]);
@@ -213,14 +174,12 @@ function Venues({
           const storageRef = ref(storage, fileName);
           await uploadBytes(storageRef, image);
           const urls = await getDownloadURL(storageRef);
-          console.log("imageUrls123", urls);
           return urls;
         })
       );
       try {
         const updatedUser = JSON.parse(JSON.stringify(user));
         updatedUser.image = imageUrls;
-        console.log("updatedUserdd", updatedUser, "venueId", venueId);
 
         await setDoc(doc(db, "Venues", venueId), updatedUser);
 
@@ -228,7 +187,6 @@ function Venues({
         if (updatedIndex !== -1) {
           const updatedVenues = [...Venues];
           updatedVenues[updatedIndex] = { ...updatedUser, id: venueId };
-          console.log(updatedVenues, "updatedVenues");
           addVenues(updatedVenues);
         } else {
           addVenues([...Venues, { ...updatedUser, id: venueId }]);
@@ -254,9 +212,60 @@ function Venues({
       setDeleteVenues([...deleteVenues, id]);
     }
   };
+  const renderHeader = () => (
+    <div className="header-container flex justify-between text-center">
+      <div className="bg-primary py-4 text-white rounded-tl-lg w-[15%]">
+        Check box
+      </div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%] ">Name</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">
+        Minimum Capacity
+      </div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">
+        Maximum Capacity
+      </div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Price</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Images</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white w-[15%] rounded-tr-lg  flex justify-end pr-2">
+        Action
+      </div>
+    </div>
+  );
   return (
     <>
       <div className="md:px-10">
+        {/* {renderHeader()}
+        <List
+          dataSource={Venues}
+          renderItem={(venue,index) => (
+            <VenueData
+               venue={venue}
+              onChange={onChange}
+              EditVenue={EditVenue}
+              setIsOpen={setIsOpen}
+              setPreviewImage={setPreviewImage}
+              setPhotoIndex={setPhotoIndex}
+            />
+          )}
+        /> */}
         <Table dataSource={Venues} className="myTable">
           <Column
             title="Check box"
@@ -286,9 +295,9 @@ function Venues({
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                <img
+                <Image
                   width={80}
-                  height={80}
+                  height={60}
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
                   alt="Description of the image"
                 />
@@ -314,19 +323,7 @@ function Venues({
             key="venueId"
             render={(venueId) => (
               <div>
-                <Popconfirm
-                  title="Delete Venues?"
-                  description="Are you sure to delete Venues?"
-                  okText="Yes"
-                  cancelText="No"
-                  onConfirm={() => deleteVenue(venueId)}
-                >
-                  {/* <FontAwesomeIcon
-                    icon={faTrashCan}
-                    width={15}
-                    className="text-red-500 cursor-pointer text-xl"
-                  /> */}
-                </Popconfirm>
+
                 <FontAwesomeIcon
                   icon={faPenToSquare}
                   width={15}
@@ -369,39 +366,43 @@ function Venues({
         }
         footer={[
           <div className=" pb-5 mr-3">
-          <Button key="cancel" onClick={() => setModalOpen(false)}
-           className=" border-primary text-primary "
-          >
-            Cancel
-          </Button>
-          <Button
-            key="ok"
-            type="primary"
-            onClick={() =>
-              openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
-            }
-            className="AddVenue bg-primary text-white"
+            <Button
+              key="cancel"
+              onClick={() => setModalOpen(false)}
+              className=" border-primary text-primary "
             >
-            {loading ? <Loader /> : "Add"}
-          </Button>
-            </div>
+              Cancel
+            </Button>
+            <Button
+              key="ok"
+              type="primary"
+              onClick={() =>
+                openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
+              }
+              className="AddVenue bg-primary text-white"
+            >
+              {loading ? <Loader /> : "Add"}
+            </Button>
+          </div>,
         ]}
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div className="mr-auto bg-primary w-full flex rounded-t-lg">
-            <Image
+            {/* <imge
               alt="sdf"
               src={dots}
               width={40}
               height={40}
               className="ml-3"
-            />
+            /> */}
             <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">Name</p>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1 ">
+                  Name
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -416,7 +417,9 @@ function Venues({
             </div>
             <div className="flex flex-col items-start relative">
               <div className="absolute top-[calc(50%_-_61.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">Email</p>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Email
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -467,7 +470,9 @@ function Venues({
             </div>
             <div className="flex flex-col items-start relative">
               <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">price</p>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  price
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -501,7 +506,7 @@ function Venues({
           nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
           prevSrc={
             previewImage[
-              (photoIndex + previewImage.length - 1) % previewImage.length
+            (photoIndex + previewImage.length - 1) % previewImage.length
             ]
           }
           onCloseRequest={() => setIsOpen(false)}

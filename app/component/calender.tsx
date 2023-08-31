@@ -10,11 +10,12 @@ const MultipleDaySelectCalendar = ({
   setVenueDates,
   allDate,
   venueDates,
+  setShowButton
 }) => {
   const { addDateKey, lunchDinner } = useStore();
   const [lunchDinnerDate, setLunchDinnerDate] = useState({});
   const handleSelectSlot = ({ start, end }) => {
-   
+    setShowButton(true)
     const selectedRange = getDatesInRange(start, end);
 
     const asd = lunchDinnerDate[selectedVenue]?.[lunchType] || [];
@@ -31,6 +32,7 @@ const MultipleDaySelectCalendar = ({
     console.log(lunchDinner, "lunchDinner");
   }, [lunchDinner]);
   const handleEventClick = (event) => {
+    setShowButton(true)
     const newDates = lunchDinnerDate[selectedVenue]?.[lunchType].filter(
       (date) => !isSameDay(date, event.start)
     );
@@ -59,13 +61,11 @@ const MultipleDaySelectCalendar = ({
       d1.getFullYear() === d2.getFullYear()
     );
   };
-  console.log(selectedVenue, "selectedVenue",lunchType)
    const eventStyleGetter = (event, start, end, isSelected) => {
-    console.log(event, "event");
-    var backgroundColor = event.title === "Diner" ? "#DEB666" :  "red";
+    var backgroundColor = event.title === "Diner" ? "#F99832" :  "#328EF9";
     var style = {
       backgroundColor: backgroundColor,
-      borderRadius: "0px",
+      borderRadius: "6px",
       opacity: 0.8,
       color: "black",
       border: "0px",
@@ -80,7 +80,8 @@ const MultipleDaySelectCalendar = ({
       <Calendar
         selectable
         style={{ height: 600 }}
-        views={[Views.MONTH, Views.WEEK, Views.DAY]}
+        views={[Views.MONTH]}
+        // views={[Views.MONTH, Views.WEEK, Views.DAY]}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleEventClick}
         localizer={localizer}
