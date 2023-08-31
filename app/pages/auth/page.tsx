@@ -1,20 +1,23 @@
 "use client";
-import React, { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import Link from "next/link";
+import React from "react";
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { useRouter } from "next/navigation";
 import { useStore } from "../../../store";
 import { Input, Form } from "antd";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
+import Link from "next/link";
 import Loader from "@/app/component/Loader";
 import Image from "next/image";
 import restaurantImage from "@/app/assets/images/restaurant.png";
+
 const initialFormState = {
   email: "",
   password: "",
 };
+
 const onFinish = (values) => {
   console.log("Success:", values);
 };
@@ -29,6 +32,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { userInformation, addUser } = useStore();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -36,6 +40,7 @@ function Login() {
       [name]: value,
     }));
   };
+
   const registrationInformation = async (item) => {
     const docRef = doc(db, "users", item);
     const docSnap = await getDoc(docRef);
@@ -46,7 +51,6 @@ function Login() {
       console.log("No document!");
     }
   };
-  console.log(userInformation, "userInformation");
 
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, user.email, user.password)
@@ -96,7 +100,7 @@ function Login() {
             <div className="flex flex-col items-start relative mb-5">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1">Email</b>
-             </div>
+              </div>
               <Form.Item
                 name="username"
                 rules={[
@@ -118,9 +122,9 @@ function Login() {
               </Form.Item>
             </div>
             <div className="flex flex-col items-start relative">
-            <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px]  rounded-3xs bg-white w-[83.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px]  rounded-3xs bg-white w-[83.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1">Password</b>
-             </div>
+              </div>
               <Form.Item
                 name="password"
                 rules={[

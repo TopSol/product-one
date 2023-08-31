@@ -1,72 +1,62 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Navbar from "@/app/component/Navbar";
-import Footer from "@/app/component/footer";
-import { BookedLunch, BookedDinner } from "./data";
-import ImageLightbox from "react-image-lightbox";
-import "react-image-lightbox/style.css";
-import NextLink from "next/link";
-import { collection, getDocs } from "firebase/firestore";
+import React from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "react-day-picker/dist/style.css";
-import {
-  faCalendarDays,
-  faPerson,
-  faBed,
-  faMap,
-  faStar,
-  faAngleDown,
-} from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
-import "./style.css";
 import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Select } from "antd";
 import { getFormatDates } from "@/app/utils";
+import { faCalendarDays, faPerson, faBed, faMap, faStar, } from "@fortawesome/free-solid-svg-icons";
+import Navbar from "@/app/component/Navbar";
+import Footer from "@/app/component/footer";
+import ImageLightbox from "react-image-lightbox";
+import NextLink from "next/link";
 import Loader from "@/app/component/Loader";
+import "react-day-picker/dist/style.css";
+import "react-day-picker/dist/style.css";
+import "react-image-lightbox/style.css";
+import "./style.css";
+
 function Marqueedetail() {
-  const { addBookedDates, marqueeVenueNames, marqueeVenueDates,bookedDates } = useStore();
-  const router = useRouter();
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates } = useStore();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isLunch, setIsLunch] = useState<any>();
-  const [range, setRange] = useState<any>([]);
   const [selectedOption, setSelectedOption] = useState("");
   const [data, setData] = useState();
   const [isShow, setIsShow] = useState(false);
   const [bookDates, setBookDates] = useState();
   const [dates, setDates] = useState([]);
-  const [meal, setMeal] = useState("Lunch");
   const [days, setDays] = useState<any>([]);
   const [marqueeDates, setMarqueeDates] = useState([]);
-  const [venueId,setVenueId] = useState();
+  const [venueId, setVenueId] = useState();
   const [loading, setLoading] = useState(false);
   const [lunchDinner, setLunchDinner] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
   ]);
+
   const handleClick = (index: any) => {
     setSelectImage(data?.images[index]);
     setPhotoIndex(index);
   };
-  console.log(data, "days", marqueeVenueNames, marqueeVenueDates);
+
   const closeLightbox = () => {
     setIsOpen(false);
   };
 
   const id = searchParams.get("id");
-  console.log(id, "iddsddsss");
 
   const handleButton = () => {
     addBookedDates(marqueeDates);
     setLoading(true);
   };
-console.log(bookedDates, "bookedDates")
+
   const getDocById = async (id) => {
     try {
       const docRef = doc(db, "users", id);
@@ -98,12 +88,14 @@ console.log(bookedDates, "bookedDates")
       console.error("Error :", error);
     }
   };
+
   useEffect(() => {
     if (id) {
       getCollection(id);
       handleVenueName(marqueeVenueNames[0]?.value);
     }
   }, [id]);
+
   const handleCheck = (event, item) => {
     console.log(event, "event", item);
     const selectedValue = event?.target?.value || event;
@@ -117,7 +109,8 @@ console.log(bookedDates, "bookedDates")
       setIsLunch("Diner");
     }
   };
-  const handleVenueName = (id ,lunchProps= "Lunch") => {
+
+  const handleVenueName = (id, lunchProps = "Lunch") => {
     setVenueId(id);
     console.log(marqueeVenueDates, "marqueeVenueDates");
     const reserveDate = marqueeVenueDates.map((item) => {
@@ -139,9 +132,9 @@ console.log(bookedDates, "bookedDates")
   };
 
   const handleVenueType = (e) => {
- 
-    e == "1" ? handleVenueName(venueId,"Lunch")  : handleVenueName(venueId,"Diner");
+    e == "1" ? handleVenueName(venueId, "Lunch") : handleVenueName(venueId, "Diner");
   };
+
   const datess = bookDates?.dates || [];
   useEffect(() => {
     if (!Array.isArray(datess)) {
@@ -153,15 +146,15 @@ console.log(bookedDates, "bookedDates")
       setDates(formattedDates);
     }
   }, [datess.length]);
-console.log(dates, "datesdates");
 
- 
+
+
   const disabledStyle = {
     backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
     color: "#aaa", // Set your desired text color for disabled dates
   };
-  console.log("datessssssss", marqueeVenueNames);
-  console.log(marqueeDates, "asdfasdfsdafasdfas");
+
+
   return (
     <div>
       <Navbar />
@@ -207,7 +200,7 @@ console.log(dates, "datesdates");
               nextSrc={data?.images[(photoIndex + 1) % data?.images.length]}
               prevSrc={
                 data?.images[
-                  (photoIndex + data?.images.length - 1) % data?.images.length
+                (photoIndex + data?.images.length - 1) % data?.images.length
                 ]
               }
               onCloseRequest={closeLightbox}
@@ -422,7 +415,7 @@ console.log(dates, "datesdates");
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? "").toLowerCase())
                 }
-                onChange={(e)=>handleVenueName(e)}
+                onChange={(e) => handleVenueName(e)}
                 options={marqueeVenueNames}
               />
               <Select
@@ -444,50 +437,26 @@ console.log(dates, "datesdates");
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? "").toLowerCase())
                 }
-                onChange={(e)=>handleVenueType(e)}
+                onChange={(e) => handleVenueType(e)}
                 options={lunchDinner}
                 value={meal}
               />
-              {/* <select
-                onClick={handleCheck}
-                className="w-[96%] outline-none p-2 rounded-md pl-2 appearance-none"
-              >
-                <option>Choose Here</option>
-                <option>Lunch</option>
-                <option>Dinner</option>
-              </select> */}
-              {/* <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center  text-gray-700">
-                <FontAwesomeIcon icon={faAngleDown} className="pr-8" />
-              </div> */}
+             
             </div>
             <div>
               <div onClick={() => setIsShow(true)}>
-              <DayPicker
-                className={`${
-                  isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
-                }`}
-                // mode="range"
-                mode="multiple"
-                disabled={days}
-                min={2}
-                // max={5}
-                selected={marqueeDates}
-                onSelect={setMarqueeDates}
-              />
+                <DayPicker
+                  className={`${isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
+                    }`}
+                  mode="multiple"
+                  disabled={days}
+                  min={2}
+                  // max={5}
+                  selected={marqueeDates}
+                  onSelect={setMarqueeDates}
+                />
               </div>
-              {/* <DayPicker
-                className={`${
-                  isLunch == `Lunch` ? `combinedClasses` : `combinedClasses2`
-                }`}
-                mode="range"
-                //  mode="multiple"
-                 disabled={days}
-                // min={2}
-                // max={5}
-                selected={venuesData}
-                // onSelect={setRange}
-                onSelect={setVenuesData}
-              /> */}
+             
             </div>
             <div className="flex items-center space-x-2">
               <div className="bg-[orange] p-1 w-1 rounded-full"></div>

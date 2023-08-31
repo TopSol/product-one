@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, createRef, useEffect } from "react";
+import React, {  createRef } from "react";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import "./cropStyle.css";

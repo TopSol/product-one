@@ -9,11 +9,10 @@ import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
 import { getFormatDates } from "@/app/utils";
 import { Checkbox } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import MarqueeDetails from "@/app/component/MarqueeDetails";
 import calenderIcon from "../../assets/images/calender.svg";
-import PlacesAutocomplete from "react-google-autocomplete";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import Modal from "antd/es/modal/Modal";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
@@ -36,12 +35,13 @@ function Marquee() {
   const [range, setRange] = useState<DateRange | undefined>();
   const [checkedServices, setCheckedServices] = useState([]);
   const [coordinates, setCoordinates] = useState({});
+
   useEffect(() => {
     const dates = getFormatDates([range]);
     const startDate = new Date(dates[0]?.from);
     const endDate = new Date(dates[0]?.to);
     venuesPrice.map((item1) => {
-      bookDate.map((item2) => {});
+      bookDate.map((item2) => { });
     });
   }, [range]);
 
@@ -144,7 +144,7 @@ function Marquee() {
       setServices(arr);
     }
   };
-  let footer = <p>Select Date</p>;
+  let footer = <p className="text-textColor font-poppins ">Select Date</p>;
 
   if (range?.from) {
     if (!range.to) {
@@ -200,18 +200,18 @@ function Marquee() {
 
     const distance = Math.sqrt(
       Math.pow(coord1.lat - coord2.lat, 2) +
-        Math.pow(coord1.lng - coord2.lng, 2)
+      Math.pow(coord1.lng - coord2.lng, 2)
     );
     console.log(distance, "distance", range);
     return distance <= range;
   };
 
   useEffect(() => {
-    const data = filterMarqueeWithPrice.length
-      ? filterMarqueeWithPrice
-      : userData;
+    const data = userData;
+    console.log(data, "abcData");
+
     const branch = data.filter((item) => {
-      console.log(item.data.locations, "datadata");
+      console.log(item.data.locations, coordinates, "datadata");
       if (
         item.data.locations &&
         item.data.locations.lat &&
@@ -234,40 +234,53 @@ function Marquee() {
     console.log(branch, "branchbranch");
     if (!branch.length) {
       setShowMessage(false);
+      setFilterMarqueeWithPrice([]);
     } else {
       setShowMessage(true);
       setFilterMarqueeWithPrice(branch);
     }
   }, [coordinates]);
 
-  const handlePlaceSelect = (place) => {
-    if (place.geometry) {
-      const userCoordinates = {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-      };
-      setCoordinates(userCoordinates);
+  const handleSelect = async (value) => {
+    console.log(value, "asdasdasdas");
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          value.label
+        )}&format=json`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        const coors = {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon),
+        };
+        console.log("Coordinates:asdasdasdas", coordinates);
+        setCoordinates(coors);
+      } else {
+        throw new Error("Place not found");
+      }
+    } catch (error) {
+      console.error("Error retrieving place details:", error);
     }
   };
-  console.log(
-    filterMarqueeWithPrice.length ? filterMarqueeWithPrice : userData,
-    "abcdef"
-  );
 
   return (
     <>
       <div>
         <Navbar />
-        <div className="bg-bgColor mt-24">
+        <div className="bg-bgColor mt-24 font-poppins text-textColor">
           <div className="md:container md:mx-auto py-5 mx-5">
-            <h1 className="font-vollkorn text-4xl text-gray-600">Hotel</h1>
+            <h1 className="font-poppins text-4xl text-gray-600">Hotel</h1>
             <p className="mt-2 text-xs font-roboto">Home / Hotel</p>
           </div>
         </div>
-        <div className="md:container mx-auto mt-32 flex flex-col lg:flex-row  ">
-          <div className="w-full mx-auto px-3 lg:w-[25%]  ">
+        <div className="md:container mx-auto mt-20 flex flex-col lg:flex-row  lg:space-x-5 font-poppins">
+          <div className="w-full mx-auto px-3 lg:w-[25%]  border lg:h-3/4 pb-5 rounded-[10px]">
             <div>
-              <h1 className="font-vollkorn text-xl mb-6">Booking Details</h1>
+              <h1 className="font-poppins text-xl my-5 flex justify-center mx-auto font-semibold text-textColor">
+                Booking Details
+              </h1>
               <div className="flex items-center ">
                 <div className="text-xs flex flex-col w-[100%] rounded-tl-lg rounded-bl-lg flex-end border-none bg-bgColor py-4 pl-2 justify-between ">
                   {footer}
@@ -289,16 +302,20 @@ function Marquee() {
               />
             </div>
 
-            <div>
-              <PlacesAutocomplete
+            <div className="my-6 bg-bgColor">
+              <GooglePlacesAutocomplete
                 apiKey="AIzaSyBF_ycMAzFjvl1ERxmZUSpqla-RFukZWHw"
-                onPlaceSelected={handlePlaceSelect}
                 className="border-none bg-bgColor w-[295px] p-3 my-6 rounded-md"
+                selectProps={{
+                  onChange: handleSelect,
+                }}
               />
             </div>
 
             <div>
-              <h1 className="font-vollkorn text-xl my-6">Price</h1>
+              <h1 className="font-poppins text-xl text-textColor font-semibold  my-6">
+                Price
+              </h1>
               <Input
                 type="range"
                 min="0"
@@ -308,18 +325,23 @@ function Marquee() {
                 onChange={handleSliderChange}
                 className="w-full"
               />
-              <p className="mt-4">Slider Value: {sliderValue}</p>
+              <p className="mt-4 text-textColor font-semibold">
+                Slider Value: {sliderValue}
+              </p>
             </div>
 
             <div>
-              <h1 className="ont-vollkorn text-xl my-9">Additional Services</h1>
+              <h1 className="font-poppins font-semibold text-xl my-9 text-textColor">
+                Additional Services
+              </h1>
               <Checkbox.Group
-              className="flex flex-col"
+                className="flex flex-col text-textColor"
                 options={plainOptions}
                 onChange={handleCheckboxChange}
               />
             </div>
           </div>
+
           <div className="w-full  lg:w-[75%]">
             {true ? (
               (filterMarqueeWithPrice.length

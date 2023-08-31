@@ -2,16 +2,17 @@
     margin-top: -15px;
 }
 
-.customClasses .rdp-day_selected{
+.customClasses .rdp-day_selected {
     background-color: orange !important;
     padding: 15px;
     border-radius: 0 !important;
 }
 
 .customClasses .rdp-button_reset {
-    margin: 3px  8px;
+    margin: 3px 8px;
 }
-.customClasses  .rdp-months{
+
+.customClasses .rdp-months {
     margin-top: -5px;
     padding-left: 10px;
     padding-right: 05px;
@@ -20,15 +21,17 @@
     display: flex;
     justify-content: start;
 }
-.customClasses .rdp-caption{
+
+.customClasses .rdp-caption {
     padding-left: 10px;
-        padding-top: 20px;}
+    padding-top: 20px;
+}
 
 @media (max-width: 500px) {
-    .customClasses .rdp-button_reset  {
-        margin: 5px  0px;
+    .customClasses .rdp-button_reset {
+        margin: 5px 0px;
     }
-  }
+}
 
 
 
@@ -37,16 +40,17 @@
     margin-top: -15px;
 }
 
-.customClasses2 .rdp-day_selected{
-    background-color: blue ;
+.customClasses2 .rdp-day_selected {
+    background-color: blue;
     padding: 15px;
     border-radius: 0 !important;
 }
 
 .customClasses2 .rdp-button_reset {
-    margin: 3px  8px;
+    margin: 3px 8px;
 }
-.customClasses2  .rdp-months{
+
+.customClasses2 .rdp-months {
     margin-top: -5px;
     padding-left: 10px;
     padding-right: 05px;
@@ -55,14 +59,21 @@
     display: flex;
     justify-content: start;
 }
-.customClasses2 .rdp-caption{
-        padding-left: 10px;
-        padding-top: 20px;
+
+.customClasses2 .rdp-caption {
+    padding-left: 10px;
+    padding-top: 20px;
 }
+
 @media (max-width: 500px) {
-    .customClasses2 .rdp-button_reset  {
-        margin: 5px  0px;
+    .customClasses2 .rdp-button_reset {
+        margin: 5px 0px;
         padding-right: 13px;
     }
-  
-  }
+
+}
+.css-13cymwt-control{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 5px !important;
+}

@@ -53,9 +53,9 @@ function MarqueeDetails({ item, showMessage }) {
   }, [item]);
   const venuesName = (id) => {
     console.log(id, "abcID");
-    
+
     const asd = venuesData?.filter((item) => {
-      // setIsLoader((pre)=> !pre)
+      setIsLoader((pre) => !pre);
       return item?.data?.userId === id;
     });
     const marqueeVenueName = asd?.map((item) => ({
@@ -143,13 +143,13 @@ function MarqueeDetails({ item, showMessage }) {
 
   return (
     <>
-      <div className="mb-10 border p-3 rounded-lg mt-5 md:mt-0">
-        <div className="md:container mx-auto flex flex-col md:flex-row items-center">
-          <div className="md:w-[40%] cursor-pointer rounded-md">
+      <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
+        <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
+          <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
             <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
               <img
                 src={item?.data?.images?.[0]}
-                className="rounded-lg w-72 h-52 bg-bgColor p-3"
+                className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
                 alt=""
                 onClick={() => {
                   venuesName(item?.id);
@@ -159,9 +159,10 @@ function MarqueeDetails({ item, showMessage }) {
               />
             </NextLink>
           </div>
-          <div className="flex flex-col md:flex-row w-[100%] justify-between bg-bgColor p-3 rounded-lg mx-3  mt-4 md:mt-0">
+
+          <div className="flex flex-col md:flex-row w-[100%] justify-between bg-bgColor p-3 rounded-2xl mx-3 mt-5 lg:mt-0">
             <div className="pt-2 px-6 md:w-[40%] flex flex-col items-center md:items-start">
-              <p className="font-vollkorn text-2xl">{item?.data?.name}</p>
+              <p className="font-poppins text-2xl font-semibold text-matteBlack">{item?.data?.name}</p>
               <p className="font-roboto text-textColor text-center md:text-start mt-4">
                 {item?.data?.description}
               </p>
@@ -173,16 +174,18 @@ function MarqueeDetails({ item, showMessage }) {
                 <FontAwesomeIcon icon={faStar} />
               </p>
               {isLoader ? (
-               <Loader/>
+                <Loader />
               ) : (
                 <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
-                <button
-                 onClick={() => {
-                  venuesName(item?.id);}}
-                className="bg-primaryColor px-5 py-2 rounded-lg font-roboto mt-6 text-white font-bold">
-                  Details
-                </button>
-              </NextLink>
+                  <button
+                    onClick={() => {
+                      venuesName(item?.id);
+                    }}
+                    className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto mt-6 text-white font-bold"
+                  >
+                    Details
+                  </button>
+                </NextLink>
               )}
             </div>
 
@@ -201,7 +204,7 @@ function MarqueeDetails({ item, showMessage }) {
                 />
                 {item?.data?.address}
               </p>
-              <button className=" bg-primaryColor px-5   py-2 rounded-lg font-roboto mt-6 text-white font-bold">
+              <button className=" bg-primaryColor px-5 hover:bg-hoverPrimary  py-2 rounded-lg font-roboto mt-6 text-white font-bold">
                 Avalibility & Details
                 <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
               </button>
@@ -264,7 +267,7 @@ function MarqueeDetails({ item, showMessage }) {
 
               <div className="bg-white rounded-lg px-3 py-5 text-textColor">
                 <div className="w-full mb-3">
-                  <h1 className="text-xl flex items-center w-full font-vollkorn text-textColor font-bold">
+                  <h1 className="text-xl flex items-center w-full font-poppins text-textColor font-bold">
                     Meal Selection
                   </h1>
                   <p className="my-3">Choose your preferred mealtime option.</p>

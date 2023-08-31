@@ -1,10 +1,9 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 
+function Success({ setSuccessPage }) {
+  const router = useRouter()
 
-function Success({setSuccessPage}) {
-   const router = useRouter()
- 
   return (
     <div className="h-[100vh] mx-auto flex flex-col justify-center items-center bg-[]">
       <div className="box1 w-[70%]  h-[70%] bg-white rounded-md border shadow-2xl justify-center items-start mx-auto">
@@ -17,14 +16,13 @@ function Success({setSuccessPage}) {
           Your request has been  <samp className="text-green-700 font-extrabold">{" "}successfully {" "}</samp>sent to the owner of the marquee.
           They will review your request and get back to you soon
         </p>
-        
         <button
           className="flex justify-end items-end mx-auto border-green-600 px-10 rounded-md py-2 bg-green-500 my-4 text-white font-extrabold hover:bg-green-900 hover:text-white"
           onClick={() => {
             router.push("/")
           }}
         >
-        ok
+          ok
         </button>
       </div>
     </div>
