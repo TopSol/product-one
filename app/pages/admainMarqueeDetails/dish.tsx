@@ -519,6 +519,7 @@ import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { Button, Checkbox, Popconfirm, Table, Tag } from "antd";
 import { Select, Space, List, Typography } from "antd";
 import { db } from "@/app/firebase";
+import MenuTable from "./menuTable"
 import {
   collection,
   getDocs,
@@ -804,25 +805,67 @@ function Dish({
       setDeleteDishes([...deleteDishes, id]);
     }
   };
-  console.log("selectDishsdddelectssssDish", Dishes);
+  const renderHeader = () => (
+    <div className="header-container flex justify-between text-center overflow-x-scroll w-500px">
+      <div className="bg-primary py-4 text-white rounded-tl-lg w-[13%] flex justify-start pl-2">Check box</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%] ">Name</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span> 
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Dish</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Price</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Discount Amount</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Total Price</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%] rounded-tr-lg  flex justify-end pr-2">Action</div>
+    </div>
+  );
   return (
     <div className="md:px-10">
-      <Table dataSource={Dishes} className="myTable">
+       {renderHeader()}
+        <List
+          dataSource={Dishes}
+          renderItem={(item,index) => (
+            <MenuTable
+            dishesData={item}
+            onChange={onChange}
+            EditDish={EditDish}
+            openModal={openModal}
+            />
+            )}
+            />
+      {/* <Table dataSource={Dishes} className="myTable">
         <Column
           title="Check box"
           dataIndex="dishId"
           key="dishId"
+          className="text-base"
           render={(dishId) => (
             <div>
               <Checkbox onClick={() => onChange(dishId)} />
             </div>
           )}
         />
-        <Column title="Name" dataIndex="name" key="name" />
+        <Column title="Name" dataIndex="name" key="name"  className="text-base"/>
         <Column
           title="Dishes"
           dataIndex="dishes"
           key="dishes"
+          className="text-base"
           render={(dishes) => (
             <ul>
               <li className="cursor-pointer" onClick={() => openModal(dishes)}>
@@ -834,17 +877,19 @@ function Dish({
             </ul>
           )}
         />
-        <Column title="Price" dataIndex="price" key="price" />
-        <Column title="Discount Amount" dataIndex="discount" key="discount" />
+        <Column title="Price" dataIndex="price" key="price"  className="text-base"/>
+        <Column title="Discount Amount" dataIndex="discount" key="discount" className="text-base" />
         <Column
           title="Total Price"
           dataIndex="totalDiscount"
           key="totalDiscount"
+          className="text-base"
         />
         <Column
           title="Action"
           dataIndex="dishId"
           key="dishId"
+          className="text-base"
           render={(dishId) => (
             <div>
               <Popconfirm
@@ -854,30 +899,61 @@ function Dish({
                 cancelText="No"
                 onConfirm={() => deleteDish(dishId)}
               >
-                {/* <FontAwesomeIcon
+                <FontAwesomeIcon
                   icon={faTrashCan}
                   width={15}
                   className="text-red-500 cursor-pointer text-xl"
-                /> */}
+                />
               </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
-                width={15}
+                width={20}
                 className="ml-3 text-green-500 text-xl"
                 onClick={() => EditDish(dishId)}
               />
             </div>
           )}
         />
-      </Table>
+      </Table> */}
       <Modal
-        title="Dishes Content"
+        className="modal w-full text-center"
+        footer={null}
         open={open}
-        onOk={hideModal}
         onCancel={hideModal}
-        okText="ok"
-        cancelText="cancel"
+        closeIcon={
+          <div className=" right-2 ">
+            <svg
+              onClick={() => setModalOpen(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white cursor-pointer"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width={20}
+              height={20}
+              // style={{marginTop:-30}}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>{" "}
+          </div>
+        }
       >
+        <>
+        <div className="mr-auto bg-primary w-full flex rounded-t-lg">
+            <Image
+              alt="sdf"
+              src={dots}
+              width={40}
+              height={40}
+              className="ml-3"
+            />
+            <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
+          </div>
         <List
           bordered
           header={
@@ -894,22 +970,23 @@ function Dish({
                   dish.status === "Available"
                     ? "flex justify-bet"
                     : "text-red-400 flex justify-around"
-                }
-              >
+                  }
+                  >
                 {dish.Dish}
               </p>
               <p
                 className={
                   dish.status === "Available"
-                    ? "flex justify-bet"
-                    : "text-red-400 flex justify-around"
+                  ? "flex justify-bet"
+                  : "text-red-400 flex justify-around"
                 }
-              >
+                >
                 {dish.Price}
               </p>
             </List.Item>
           )}
-        />
+          />
+          </>
       </Modal>
 
       <Modal

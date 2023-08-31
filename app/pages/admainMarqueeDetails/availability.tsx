@@ -403,7 +403,7 @@ import { db } from "@/app/firebase";
 import { getDoc, doc, updateDoc, setDoc } from "firebase/firestore";
 import UserInformation from "../details/userInformation";
 function Availability() {
-  const { Venues, dates, lunchDinner,userInformation } = useStore();
+  const { Venues, dates, lunchDinner, userInformation } = useStore();
   const [selectedDates, setSelectedDates] = useState([]);
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectVenue, setSelectVenue] = useState("");
@@ -411,6 +411,7 @@ function Availability() {
   const [lunchType, setLunchType] = useState("Diner");
   const [venueDates, setVenueDates] = useState({});
   const [allDate, SetAllDate] = useState([]);
+  const [showButton,setShowButton]=useState(false)
   const [menu, setMenu] = useState([
     {
       label: "Lunch",
@@ -441,14 +442,14 @@ function Availability() {
     const data = selectedDates.filter((item) => {
       if (item?.value === value) {
         setSelectVenue(item?.label);
-       
+
         setSelectedVenue(item?.value);
         return item;
       }
     });
   };
   console.log(selectedVenue, "selectedVenue");
-  
+
   const update = async (id, venueDate, venueDates) => {
     console.log(venueDate, "venueDate");
     const NotAvailableDate = {
@@ -463,7 +464,7 @@ function Availability() {
     }
   };
   const SendDateInFirebase = async (item) => {
-    console.log(dates,"sdfsdfdsf")
+    console.log(dates, "sdfsdfdsf");
     const data = dates?.[item] || {};
     try {
       const docRef = doc(db, "Venues", item);
@@ -483,6 +484,7 @@ function Availability() {
     } catch (error) {
       console.error("Error fetching document:", error);
     }
+    setShowButton(false)
   };
   const handleMenuSelect = (e) => {
     let data = [];
@@ -511,17 +513,19 @@ function Availability() {
         break;
     }
   };
-  console.log(userInformation.userId,"asdfasdfasdf")
+  console.log(userInformation.userId, "asdfasdfasdf");
   return (
     <div>
-      <div className="flex ">
-        <div className="w-[80%] pr-0">
+      <div className="flex mt-5">
+        <div className="w-[100%] pr-0">
           <div className="flex">
             <Select
-              showSearch
+             className=" select my-3  ml-5"
+              showSearch={false}
               style={{
                 width: 200,
                 backgroundColor: "#F99832",
+                borderRadius: "10px",
               }}
               placeholder="Search to Select"
               optionFilterProp="children"
@@ -536,12 +540,15 @@ function Availability() {
               options={selectedDates}
               onChange={handleVenueSelect}
               value={selectVenue}
-              className=" select my-3  ml-5 bg-primary text-white"
+             
             />
             <Select
-              showSearch
+            className=" select my-3  ml-5 "
+              showSearch={false}
               style={{
                 width: 200,
+                backgroundColor: "#F99832",
+                borderRadius: "10px",
               }}
               placeholder="Search to Select"
               optionFilterProp="children"
@@ -556,9 +563,27 @@ function Availability() {
               options={menu}
               onChange={handleMenuSelect}
               value={lunchType}
-              className=" select my-3  ml-5 "
+              
             />
+            {
+              showButton && <div className=" ml-auto mr-2 flex justify-center items-center">
+              <Button
+                onClick={() => SendDateInFirebase(selectedVenue)}
+                className="bg-primary text-white mr-3 px-6"
+              >
+                Add Dates
+              </Button>
+              <Button
+                onClick={() => SendDateInFirebase(selectedVenue)}
+                className="bg-primary text-white "
+              >
+                Delete Dates
+              </Button>
+            </div>
+             }
+            
           </div>
+
           <div className="md:px-5">
             <MultipleDaySelectCalendar
               selectedVenue={selectedVenue}
@@ -566,14 +591,15 @@ function Availability() {
               setVenueDates={setVenueDates}
               venueDates={venueDates}
               allDate={allDate}
+              setShowButton={setShowButton}
             />
           </div>
         </div>
-        <div className="w-[20%] border shadow-lg h-[100vh]">
+        {/* <div className="w-[20%] border shadow-lg h-[100vh]">
           <Button onClick={() => SendDateInFirebase(selectedVenue)}>
             Not Available
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

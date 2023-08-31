@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import Loader from "../../component/Loader";
 import ImageLightbox from "react-image-lightbox";
 import Lightbox from "react-image-lightbox";
-import { Button, Popconfirm } from "antd";
-// import { Image } from "antd";
-import Image from "next/image";
+import { Image } from "antd";
+import VenueData from "./VenueTable";
+import { List, Checkbox, Popconfirm, Button } from "antd";
+// import Image from "next/image";
 import Link from "next/link";
-import { Checkbox } from "antd";
+
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import {
   collection,
@@ -173,6 +174,7 @@ function Venues({
   };
   console.log(Venues, "Venues");
   const EditVenue = async (dishId) => {
+    console.log("sdfsdfdsfsdfsdffsdfdfs");
     setOpenEditVenue(true);
     setModalOpen((prevState) => !prevState);
     const docRef = doc(db, "Venues", dishId);
@@ -254,9 +256,60 @@ function Venues({
       setDeleteVenues([...deleteVenues, id]);
     }
   };
+  const renderHeader = () => (
+    <div className="header-container flex justify-between text-center">
+      <div className="bg-primary py-4 text-white rounded-tl-lg w-[15%]">
+        Check box
+      </div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%] ">Name</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">
+        Minimum Capacity
+      </div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">
+        Maximum Capacity
+      </div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Price</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[15%]">Images</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white w-[15%] rounded-tr-lg  flex justify-end pr-2">
+        Action
+      </div>
+    </div>
+  );
   return (
     <>
       <div className="md:px-10">
+        {/* {renderHeader()}
+        <List
+          dataSource={Venues}
+          renderItem={(venue,index) => (
+            <VenueData
+               venue={venue}
+              onChange={onChange}
+              EditVenue={EditVenue}
+              setIsOpen={setIsOpen}
+              setPreviewImage={setPreviewImage}
+              setPhotoIndex={setPhotoIndex}
+            />
+          )}
+        /> */}
         <Table dataSource={Venues} className="myTable">
           <Column
             title="Check box"
@@ -286,9 +339,9 @@ function Venues({
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                <img
+                <Image
                   width={80}
-                  height={80}
+                  height={60}
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
                   alt="Description of the image"
                 />
@@ -314,19 +367,19 @@ function Venues({
             key="venueId"
             render={(venueId) => (
               <div>
-                <Popconfirm
+                {/* <Popconfirm
                   title="Delete Venues?"
                   description="Are you sure to delete Venues?"
                   okText="Yes"
                   cancelText="No"
                   onConfirm={() => deleteVenue(venueId)}
                 >
-                  {/* <FontAwesomeIcon
+                  <FontAwesomeIcon
                     icon={faTrashCan}
                     width={15}
                     className="text-red-500 cursor-pointer text-xl"
-                  /> */}
-                </Popconfirm>
+                  />
+                </Popconfirm> */}
                 <FontAwesomeIcon
                   icon={faPenToSquare}
                   width={15}
@@ -369,39 +422,43 @@ function Venues({
         }
         footer={[
           <div className=" pb-5 mr-3">
-          <Button key="cancel" onClick={() => setModalOpen(false)}
-           className=" border-primary text-primary "
-          >
-            Cancel
-          </Button>
-          <Button
-            key="ok"
-            type="primary"
-            onClick={() =>
-              openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
-            }
-            className="AddVenue bg-primary text-white"
+            <Button
+              key="cancel"
+              onClick={() => setModalOpen(false)}
+              className=" border-primary text-primary "
             >
-            {loading ? <Loader /> : "Add"}
-          </Button>
-            </div>
+              Cancel
+            </Button>
+            <Button
+              key="ok"
+              type="primary"
+              onClick={() =>
+                openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
+              }
+              className="AddVenue bg-primary text-white"
+            >
+              {loading ? <Loader /> : "Add"}
+            </Button>
+          </div>,
         ]}
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div className="mr-auto bg-primary w-full flex rounded-t-lg">
-            <Image
+            {/* <imge
               alt="sdf"
               src={dots}
               width={40}
               height={40}
               className="ml-3"
-            />
+            /> */}
             <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">Name</p>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1 ">
+                  Name
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -416,7 +473,9 @@ function Venues({
             </div>
             <div className="flex flex-col items-start relative">
               <div className="absolute top-[calc(50%_-_61.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">Email</p>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Email
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -467,7 +526,9 @@ function Venues({
             </div>
             <div className="flex flex-col items-start relative">
               <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">price</p>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  price
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input

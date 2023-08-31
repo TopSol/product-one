@@ -240,7 +240,7 @@ function AdminMarqueeDetails() {
                             src={
                               component !== item.name ? item.icon : item.wIcon
                             }
-                            width={50}
+                            width={40}
                             alt="Picture of the author"
                             className={` pr-5 text-${
                               component !== item.name ? "sidebarColor" : "white"
@@ -255,10 +255,10 @@ function AdminMarqueeDetails() {
               ) : null}
 
               <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto">
-                <div className="md:px-5 border my-3  rounded-md mx-5 mt-7 ">
+                {/* <div className="md:px-5 border my-3  rounded-md mx-5 mt-7 "> */}
                   {component === "Venues" ? (
-                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
-                      <p className="md:text-2xl">Venues</p>
+                    <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
+                      <p className="md:text-2xl py-3">Venues</p>
                       <div className="flex justify-center items-center">
                         <button
                           className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
@@ -283,8 +283,8 @@ function AdminMarqueeDetails() {
                       </div>
                     </div>
                   ) : component === "Menus" ? (
-                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
-                      <p className="md:text-2xl">Menus</p>
+                    <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
+                      <p className="md:text-2xl py-3">Menus</p>
                       <div className="flex justify-center items-center">
                         <button
                           className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
@@ -309,8 +309,8 @@ function AdminMarqueeDetails() {
                       </div>
                     </div>
                   ) : component === "Dishes" ? (
-                    <div className="flex  justify-between mx-1 items-center px-4 my-2 ">
-                      <p className="md:text-2xl">Dishes</p>
+                    <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
+                      <p className="md:text-2xl py-3">Dishes</p>
                       <div className="flex justify-center items-center">
                         <button
                           className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
@@ -335,7 +335,7 @@ function AdminMarqueeDetails() {
                       </div>
                     </div>
                   ) : null}
-                </div>
+                {/* </div> */}
 
                 <div>
                   {component === "Venues" ? (

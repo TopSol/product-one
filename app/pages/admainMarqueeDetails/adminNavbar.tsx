@@ -1,13 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faGear } from "@fortawesome/free-solid-svg-icons";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
-import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
 import { Dropdown } from "antd";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { faHotel } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import { faBellConcierge, faUtensils } from "@fortawesome/free-solid-svg-icons";
@@ -15,9 +13,6 @@ import {useStore} from "@/store"
 import { getAuth, signOut } from "firebase/auth";
 export default function AdminNavbar({setModalOpen2,setShowIcon,setRemoveMenuIcon}) {
   const router = useRouter();
-  const [show, setShow] = useState(false);
-  const [isModelOpen, setIsModelOpen] = useState(false);
-  const [component, setComponent] = React.useState("Venues");
   const {userInformation, addUser} = useStore()
   console.log(userInformation, "dfadsfasf");
   

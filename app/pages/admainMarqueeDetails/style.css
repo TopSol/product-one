@@ -1,48 +1,69 @@
-/* .custom-ok-button{
-    background-color: #1890ff;
-    border-color: #1890ff;
-    color: #fff;
-} */
-
-.myTable .ant-table-thead > tr > th{ 
+.myTable .ant-table-thead>tr>th {
     background-color: #F99832;
     color: white;
 }
 
-.myTable .ant-table-tbody > tr > td{
+.myTable .ant-table-tbody>tr>td {
     color: #000;
 }
-.modal .ant-modal-content{
+
+.modal .ant-modal-content {
     padding: 0px !important;
 }
-.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:first-child{
+
+.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:first-child {
     border-top-left-radius: 10px !important;
     border-bottom-left-radius: 10px !important;
 }
-.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:last-child{
+
+.myTable .ant-table-container .ant-table-content table .ant-table-thead tr th:last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     margin-bottom: 10px !important;
 }
-.ant-select-selector{
+
+/* .ant-select-selector {
     border-radius: 0px !important;
-    height: 50px !important;
-}
-.AddVenue .ant-btn :hover{
+    height: 30px !important;
+} */
+
+.AddVenue .ant-btn :hover {
     background-color: #F99832;
     color: #fff;
     font-weight: bolder;
 }
-.AddVenue .ant-btn{
+
+.AddVenue .ant-btn {
     background-color: #F99832;
     color: #fff;
     font-weight: bolder;
 }
-.select .ant-select-selector{
+
+.select .ant-select-selector {
     display: flex;
+    border-radius: 10px !important;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    background-color: transparent !important;
+    color: white !important;
 }
+
+.select .ant-select-arrow {
+    color: white !important;
+    
+}
+.last-child-style:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  
+  
+  .myTable .ant-table-tbody .ant-table-row {
+    margin-top: 50px !important ; 
+  }
+  
+  
+  
 
 /* .myTable .ant-table-tbody > tr > td {
         border-top-right-radius: 10px;
@@ -53,13 +74,28 @@
 
     margin-bottom: 20px !important;
 } */
-
-.type .ant-select-selector{
-    border-radius: 5px !important;
-    padding: 28px 0px !important;
+/* .ant-table-tbody .ant-table-row:nth-child(even) {
+    background-color: gray;
+  } */
+.ant-table-tbody .ant-table-row{
+    background-color: #FDFDFD;
 }
-.status .ant-select-selector{
+.ant-table-tbody .ant-table-row .ant-table-cell{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    /* background-color: red; */
+}
+.type .ant-select-selector {
     border-radius: 5px !important;
-    padding: 10px 10px !important;
-    background-color: #F99832;
+    padding-top: 15px !important;
+    height: 60px !important;
+}
+.myTable th{
+    margin-right: 10px;
+}
+.status .ant-select-selector {
+    border-radius: 15px !important;
+    /* padding: 10px 10px !important; */
+    background-color: transparent !important;
+    color: black !important;
 }
