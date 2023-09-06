@@ -52,6 +52,7 @@ function Venues({
   const [photoIndex, setPhotoIndex] = useState(0);
   const { userInformation, addUser, Venues, addVenues, dates } = useStore();
   const storage = getStorage();
+  const storage2 = getStorage();
   const [previewImage, setPreviewImage] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const ImageRef = ref(storage, "images/");
@@ -109,7 +110,8 @@ function Venues({
     const imageUrls = await Promise.all(
       images.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
-        const storageRef = ref(storage, fileName);
+        const storageRef = ref(storage2, fileName);
+        // const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
         return urls;
@@ -148,6 +150,8 @@ function Venues({
       console.log("No such document!");
     }
   };
+  console.log(user.image,"userimage");
+  
   const updateVenue = async (venueId) => {
     setLoading((pre) => !pre);
 
@@ -171,7 +175,8 @@ function Venues({
       const imageUrls = await Promise.all(
         images.map(async (image) => {
           const fileName = `${folderName}/${image.name}`;
-          const storageRef = ref(storage, fileName);
+          const storageRef = ref(storage2, fileName);
+          // const storageRef = ref(storage, fileName);
           await uploadBytes(storageRef, image);
           const urls = await getDownloadURL(storageRef);
           return urls;

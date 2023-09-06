@@ -1,68 +1,37 @@
-.customGeoSearch  .leaflet-marker-shadow  {
+.customGeoSearch .leaflet-marker-shadow {
     display: none;
 }
 
-@media (min-width: 1536px) { 
+@media (min-width: 1536px) {
     .customGeoSearch .leaflet-control-zoom {
         margin-top: 20px;
     }
- }
+}
 
-/* .PhoneInput{
- outline: none;
- border-radius: 5px;
- padding-top: 12px;
- padding-bottom: 12px;
- margin-bottom: 12px;
- max-width: 410px !important;
- display: flex;
- align-items: center;
- border: 1px solid #cdcdcd;
-} */
 
-  .PhoneInputInput{
-         width: 50vw;
-     outline: none;
-     }
-     .PhoneInput:hover {
-         border-color: #4096FF;
-     }
-     /* @media (min-width: 300px) { 
-        .PhoneInput {
-            width: 280px ;
-        }
-     }
-     @media (min-width: 760px) { 
-        .PhoneInput {
-        width: 230px ;
-        }
-     } */
-     .PhoneInput {
-        outline: none;
-        border-radius: 5px;
-        padding-top: 12px;
-        padding-bottom: 12px;
-        padding-left: 10px;
-        margin-bottom: 12px;
-        width: 410px;
-        display: flex;
-        align-items: center;
-        border: 1px solid #cdcdcd;
+.PhoneInputInput {
+    width: 41vw;
+    outline: none;
+}
+
+.PhoneInput:hover {
+    border-color: #4096FF;
+}
+
+.PhoneInput {
+    outline: none;
+    border-radius: 5px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 10px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #cdcdcd;
+}
+
+@media (max-width: 760) {
+    .PhoneInputInput {
+        width: 100vw !important;
     }
-    
-    /* @media (max-width: 300px) {
-        .PhoneInput {
-            width: 280px;
-        }
-    } */
-    
-    @media (min-width: 301px) and (max-width: 760px) {
-        .PhoneInput {
-            width: 280px;
-        }
-    }
-    @media (min-width: 761px) and (max-width: 1030px) {
-        .PhoneInput {
-            width: 230px;
-        }
-    }
+}

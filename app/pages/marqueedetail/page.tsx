@@ -57,7 +57,8 @@ function Marqueedetail() {
     addBookedDates(marqueeDates);
     setLoading(true);
   };
-
+  console.log(marqueeDates,"vmarqueeDates");
+  
   const getDocById = async (id) => {
     try {
       const docRef = doc(db, "users", id);
@@ -449,10 +450,10 @@ function Marqueedetail() {
                 <DayPicker
                   className={`${isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
                     }`}
-                  mode="multiple"
+                  mode="range"
                   disabled={days}
                   min={2}
-                  // max={5}
+                  max={5}
                   selected={marqueeDates}
                   onSelect={setMarqueeDates}
                 />

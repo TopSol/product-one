@@ -4,7 +4,7 @@
 @import 'react-big-calendar/lib/css/react-big-calendar.css';
 @import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Manrope&family=Manrope&display=swap');
 
 :root {
   --foreground-rgb: 0, 0, 0;

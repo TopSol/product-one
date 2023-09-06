@@ -22,21 +22,18 @@ const MultipleDaySelectCalendar = ({
     const uniqueSelectedRange = selectedRange.filter(
       (date) => !asd.some((existingDate) => isSameDay(existingDate, date))
     );
-    console.log(uniqueSelectedRange, "uniqueSelectedRange",selectedVenue);
     if (uniqueSelectedRange.length > 0) {
       addDateKey(selectedVenue, lunchType, [...asd, ...uniqueSelectedRange]);
     }
   };
   useEffect(() => {
     setLunchDinnerDate(lunchDinner);
-    console.log(lunchDinner, "lunchDinner");
   }, [lunchDinner]);
   const handleEventClick = (event) => {
     setShowButton(true)
     const newDates = lunchDinnerDate[selectedVenue]?.[lunchType].filter(
       (date) => !isSameDay(date, event.start)
     );
-    console.log(newDates, "newDassstes");
     addDateKey(selectedVenue, lunchType, newDates);
   };
   useEffect(() => {
@@ -61,8 +58,8 @@ const MultipleDaySelectCalendar = ({
       d1.getFullYear() === d2.getFullYear()
     );
   };
-   const eventStyleGetter = (event, start, end, isSelected) => {
-    var backgroundColor = event.title === "Diner" ? "#F99832" :  "#328EF9";
+  const eventStyleGetter = (event, start, end, isSelected) => {
+    var backgroundColor = event.title === "Diner" ? "#F99832" : "#328EF9";
     var style = {
       backgroundColor: backgroundColor,
       borderRadius: "6px",
@@ -81,18 +78,17 @@ const MultipleDaySelectCalendar = ({
         selectable
         style={{ height: 600 }}
         views={[Views.MONTH]}
-        // views={[Views.MONTH, Views.WEEK, Views.DAY]}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleEventClick}
         localizer={localizer}
-        events={ lunchType === "All" ? allDate?.map(
+        events={lunchType === "All" ? allDate?.map(
           (data) => (data)
-        ): lunchDinnerDate?.[selectedVenue]?.[lunchType]?.map(
+        ) : lunchDinnerDate?.[selectedVenue]?.[lunchType]?.map(
           (date) => ({
             start: date,
             end: date,
             title: lunchType,
-            
+
           })
         )}
         eventPropGetter={eventStyleGetter}

@@ -1,36 +1,24 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
 import { Radio, Select } from "antd";
-import {
-  faAngleDown,
-  faLocationDot,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
-import Loader from "../component/Loader";
+import { faAngleDown, faLocationDot, faStar, } from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
 import { getFormatDates } from "@/app/utils";
 import { collection, getDocs } from "firebase/firestore";
-import { useRouter } from "next/router";
-import NextLink from "next/link";
 import { useStore } from "@/store";
+import NextLink from "next/link";
+import "react-day-picker/dist/style.css";
 function MarqueeDetails({ item, showMessage }) {
-  const {
-    addDateKey,
-    lunchDinner,
-    addMarqueeVenueNames,
-    marqueeVenueName,
-    addMarqueeVenueDates,
-  } = useStore();
+  const { addMarqueeVenueNames, addMarqueeVenueDates } = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
   const [selectedOption, setSelectedOption] = useState("Lunch");
   const [venuesData, setVenuesData] = useState([]);
   const [userData, setUserData] = useState([]);
-  const [isLoader, setIsLoader] = useState(false);
   const [name, setName] = useState([]);
   const [selectedDate, setSelectedDate] = useState([]);
   const [bookDates, setBookDates] = useState([]);
@@ -52,10 +40,7 @@ function MarqueeDetails({ item, showMessage }) {
     getDates(item.id);
   }, [item]);
   const venuesName = (id) => {
-    console.log(id, "abcID");
-
     const asd = venuesData?.filter((item) => {
-      setIsLoader((pre) => !pre);
       return item?.data?.userId === id;
     });
     const marqueeVenueName = asd?.map((item) => ({
@@ -161,8 +146,10 @@ function MarqueeDetails({ item, showMessage }) {
           </div>
 
           <div className="flex flex-col md:flex-row w-[100%] justify-between bg-bgColor p-3 rounded-2xl mx-3 mt-5 lg:mt-0">
-            <div className="pt-2 px-6 md:w-[40%] flex flex-col items-center md:items-start">
-              <p className="font-poppins text-2xl font-semibold text-matteBlack">{item?.data?.name}</p>
+            <div className="pt-2 px-6  flex flex-col items-center md:items-start">
+              <p className="font-poppins text-2xl font-semibold text-matteBlack">
+                {item?.data?.name}
+              </p>
               <p className="font-roboto text-textColor text-center md:text-start mt-4">
                 {item?.data?.description}
               </p>
@@ -173,20 +160,17 @@ function MarqueeDetails({ item, showMessage }) {
                 <FontAwesomeIcon icon={faStar} />
                 <FontAwesomeIcon icon={faStar} />
               </p>
-              {isLoader ? (
-                <Loader />
-              ) : (
-                <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
-                  <button
-                    onClick={() => {
-                      venuesName(item?.id);
-                    }}
-                    className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto mt-6 text-white font-bold"
-                  >
-                    Details
-                  </button>
-                </NextLink>
-              )}
+              <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
+                <button
+                  onClick={() => {
+                    venuesName(item?.id);
+                  }}
+                  className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto mt-6 text-white font-bold"
+                >
+                  Details
+                </button>
+              </NextLink>
+
             </div>
 
             <div
@@ -214,9 +198,8 @@ function MarqueeDetails({ item, showMessage }) {
         <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
           {open[item?.data?.id] && (
             <DayPicker
-              className={`${
-                isLunch == `Lunch` ? `customClasses` : `customClasses2`
-              }`}
+              className={`${isLunch == `Lunch` ? `customClasses` : `customClasses2`
+                }`}
               style={{ width: "100%" }}
               mode="multiple"
               min={1}
@@ -251,7 +234,6 @@ function MarqueeDetails({ item, showMessage }) {
                         .localeCompare((optionB?.label ?? "").toLowerCase())
                     }
                     onChange={(e) => {
-                      console.log(e, "e");
                       handleVenueName(e, meal);
                     }}
                     options={name}
@@ -276,14 +258,12 @@ function MarqueeDetails({ item, showMessage }) {
                   <Radio.Group
                     onChange={(e) => {
                       setValue(e.target.value);
-                      console.log(e, "sdssddssrrrr");
                     }}
                     value={value}
                   >
                     <Radio
                       onClick={() => {
                         setMeal("Lunch");
-                        console.log("onClick", venueId);
                         handleVenueName(venueId, "Lunch");
                       }}
                       id="default-radio-2"
@@ -308,7 +288,6 @@ function MarqueeDetails({ item, showMessage }) {
                     <Radio
                       onClick={() => {
                         setMeal("Diner");
-                        console.log("onClick", venueId);
                         handleVenueName(venueId, "Diner");
                       }}
                       id="default-radio-3"

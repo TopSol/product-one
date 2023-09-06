@@ -11,8 +11,8 @@ module.exports = {
         roboto: ["Roboto", "sans-serif"],
         vollkorn: ["Vollkorn", "serif"],
         poppins: ["Poppins", "sans-serif"],
-        sc:"'Source Code Pro',monospace"
-        
+        sc:"'Source Code Pro',monospace",
+        Manrope : "'Manrope', sans-serif",
       },
       colors: {
         primaryColor: "#DDB667",

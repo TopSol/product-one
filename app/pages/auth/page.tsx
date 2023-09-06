@@ -53,15 +53,17 @@ function Login() {
   };
 
   const handleLogin = () => {
+    console.log("consile");
+    
     signInWithEmailAndPassword(auth, user.email, user.password)
       .then((userCredential) => {
         const user = userCredential.user;
         console.log(user, "signin", user.uid);
         if (user) {
+          console.log("abc");
           registrationInformation(user.uid);
           router.push("/pages/admainMarqueeDetails");
           setLoader(true);
-          setLoading(true);
         }
       })
       .catch((error) => {

@@ -28,9 +28,9 @@ function ChooseMenu({
 
   const nextPage = () => {
     console.log(menuIndex, "menuIndex");
+    preview();
+    setSlider(3);
     if (menuIndex !== null) {
-      preview();
-      setSlider(3);
     }
   };
 
@@ -90,20 +90,13 @@ function ChooseMenu({
                   onMouseEnter={() => setIsHover(true)}
                   onMouseLeave={() => setIsHover(false)}
                   key={index}
-                  className={`
-                border border-primary p-3 rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer
-                hover:bg-primaryColor hover:border-primaryColor hover:text-white h-64
-                ${selectedMenuIndex === index
-                      ? "bg-primaryColor border-primaryColor text-white"
-                      : ""
-                    }
-              `}
+                  className="
+                border border-primary p-3 rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer h-64 hover:border-4 hover:border-primaryColor"
                   onClick={() => handleClick(item, index)}
                 >
                   <div
-                    className={`flex items-center justify-between mb-3  ${isHover ? "text-white" : "text-black"
-                      }  ${selectedMenuIndex === index ? "text-white" : "text-black"
-                      }  `}
+                    className={`flex items-center justify-between mb-3  
+                        `}
                   >
                     <p className="text-center text-xl">{item.name}</p>
                     <p className="text-xl flex flex-col justify-end my-auto">
@@ -123,11 +116,8 @@ function ChooseMenu({
                           return (
                             <div className="flex items-center" key={i}>
                               <div
-                                className={`${isHover ? "bg-white" : "bg-primaryColor"
-                                  }  ${selectedMenuIndex === index
-                                    ? "bg-white"
-                                    : "bg-primaryColor"
-                                  }  h-3 w-3 rounded-full mr-3 `}
+                                className={`bg-primaryColor
+                                  h-3 w-3 rounded-full mr-3 `}
                               ></div>
                               <li className="">{dish}</li>
                             </div>

@@ -59,17 +59,17 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
 
   return (
     <div className="md:container md:mx-auto mx-3">
-      <div className="border md:w-[850px] p-3 md:p-10  flex flex-col justify-center mx-auto rounded-xl">
-        <div className="flex md:justify-center justify-start">
+      <div className="border w-auto md:w-[700px]  p-3 md:p-8  flex flex-col justify-center mx-auto rounded-xl">
+        <div className="flex justify-center object-cover">
           <img
             src={`${hallInformation[0]?.selectedHall?.image}`}
             alt=""
-            className=" md:w-[800px] rounded-xl cursor-pointer object-none "
+            className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
           />
         </div>
         <div className=" flex justify-center ">
           <div className="w-[100%] md:flex  md:justify-between mx-auto items-center justify-center">
-            <div className="">
+            <div className="font-Manrope">
               <div className="flex items-center my-5 ">
                 <div>
                   <Image src={nameImg} alt="Image" />
@@ -119,7 +119,7 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
               </div>
             </div>
 
-            <div className="">
+            <div className="font-Manrope">
               <div className="flex items-center my-5">
                 <div>
                   <Image src={email} alt="Image" />

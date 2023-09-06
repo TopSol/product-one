@@ -92,8 +92,8 @@ function UserInformation({
         <div className="mx-3 md:mx-0 font-semibold">
           <div className=" lg:flex lg:justify-between md:mx-10">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+              <div className="absolute top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
                   F/Name
                 </p>
               </div>
@@ -116,7 +116,7 @@ function UserInformation({
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
                   L/Nmae
                 </p>
               </div>
@@ -142,7 +142,7 @@ function UserInformation({
           <div className="lg:flex lg:justify-between md:mx-10">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
                   Email
                 </p>
               </div>
@@ -165,7 +165,7 @@ function UserInformation({
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
                   Phone
                 </p>
               </div>
@@ -191,7 +191,7 @@ function UserInformation({
           <div className="lg:flex lg:justify-between md:mx-10">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
                   Notes
                 </p>
               </div>
@@ -214,7 +214,7 @@ function UserInformation({
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[80.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
                   Address
                 </p>
               </div>
@@ -240,7 +240,7 @@ function UserInformation({
 
         <div className="flex flex-col  md:flex md:flex-row items-center justify-between my-4 md:mx-5">
           <div className="border p-5 rounded-xl mb-2 w-[95%] mx-4 md:w-96">
-            <p className="font-extrabold mb-3">All available services</p>
+            <p className="font-semibold mb-3">All available services</p>
             <div className="flex flex-col justify-evenly">
               <Checkbox
                 type="checkbox"
@@ -271,7 +271,7 @@ function UserInformation({
           </div>
 
           <div className="border p-5 rounded-xl  mb-2 w-[95%] mx-4 md:w-96 ">
-            <p className="font-extrabold mb-3">Setting Arrangement</p>
+            <p className="font-semibold mb-3">Setting Arrangement</p>
             <div className="flex flex-col text-textColor">
               <Radio
                 type="radio"

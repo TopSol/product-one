@@ -15,7 +15,6 @@ const Modal = ({ isOpen, onClose, children }) => {
           onClick={onClose}
         >
             <FontAwesomeIcon icon={faXmark} className="text-2xl"/>
-          {/* <FontAwesomeIcon icon={faXmark} className="text-4xl"/> */}
         </button>
         {children}
       </div>

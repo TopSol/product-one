@@ -19,11 +19,11 @@ import { setDoc, doc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import L from "leaflet";
 import Loader from "@/app/component/Loader";
-import Demo from "@/app/component/ImageCropper";
+import ImageCroper from "@/app/component/ImageCropper";
+import Image from "next/image";
 import icon from "./consonant";
 import PhoneInput from "react-phone-number-input";
 import RegistrationImg from "../../assets/images/RegistrationImg.png";
-import Image from "next/image";
 import "./style.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
@@ -37,7 +37,7 @@ const initialValue = {
   capacity: "",
   address: "",
   marqueeDetails: "",
-  image: "",
+  image: [],
 };
 
 const position = [51.505, -0.09];
@@ -113,7 +113,10 @@ function details() {
   const [loading, setLoading] = useState(false);
   const [markerPos, setMarkerPos] = useState();
   const [cropImage, setCropImage] = useState({});
-  const [image, setImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [image, setImage] = useState([]);
+  const [multipleImage, setMultipleImage] = useState([]);
+  const [prevImages, setPrevImages] = useState([]); // Define the state variable here
   const { TextArea } = Input;
   const { addUser, addRegistration } = useStore();
   const storage = getStorage();
@@ -155,28 +158,91 @@ function details() {
     }),
     []
   );
-  console.log(location, "locationlocation");
 
   const router = useRouter();
+
+  // const handleRegistration = async () => {
+  //   if (!multipleImage) {
+  //     message.warning("Please select a valid image");
+  //     return;
+  //   }
+  //   setLoading((pre) => !pre);
+  //   try {
+  //     const userCredential = await createUserWithEmailAndPassword(
+  //       auth,
+  //       details.email,
+  //       details.password
+  //     );
+  //     const user = userCredential.user;
+  //     if (Array.isArray(multipleImage)) {
+  //       Object.values(multipleImage).map(async (image) => {
+  //         console.log(image, "imageimageimageimage");
+  //         const imgFile = image?.file;
+  //         const fileName = `Marquee/Marquee`;
+  //         const storageRef = ref(storage, fileName);
+  //         await uploadBytes(storageRef, imgFile);
+  //         const urls = await getDownloadURL(storageRef);
+  //         console.log(urls, "urlsurls");
+
+  //         const VenueId = Math.random().toString(36).substring(2);
+  //       });
+  //     } else {
+  //       console.error('multipleImage is not an array.');
+  //     }
+  //     const userInfo = {
+  //       userId: user.uid,
+  //       name: details.name,
+  //       email: details.email,
+  //       address: details.address,
+  //       phoneNumber: value,
+  //       capacity: details.capacity,
+  //       locations: location,
+  //       images: urls,
+  //       description: details.marqueeDetails,
+  //       id: VenueId,
+  //     };
+
+  //     await setDoc(doc(db, "users", user.uid), userInfo);
+  //     if (userInfo) {
+  //       addRegistration(userInfo);
+  //       addUser(user.uid);
+  //       router.push("/pages/auth");
+  //       setLoading(true);
+  //     }
+  //   } catch (error) {
+  //     console.log(error, "error");
+  //   }
+  // };
+  // console.log(cropImage, "cropImageeeeeeeeeeeeee");
+
   const handleRegistration = async () => {
-    if (!cropImage) {
-      message.warning("Please select a valid image");
+    if (!multipleImage?.length) {
+      message.warning("Please select atleast one image");
       return;
     }
     setLoading((pre) => !pre);
+    console.log("hhhhh");
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         details.email,
         details.password
       );
-
       const user = userCredential.user;
-      const fileName = `Marquee/Marquee`;
-      const storageRef = ref(storage, fileName);
-      await uploadBytes(storageRef, cropImage);
-      const urls = await getDownloadURL(storageRef);
-      console.log("imageUrls123", urls);
+      const folderName = `marqueeImages`;
+      console.log(multipleImage, "multipleImagemultipleImage");
+      const imageUrls = await Promise.all(
+        multipleImage.map(async (image) => {
+          console.log(image?.file?.name, "imagrimagrsdfasdfasdfasgasda");
+          const fileName = `${folderName}/${image?.file?.name}`;
+          const storageRef = ref(storage, fileName);
+          await uploadBytes(storageRef, image?.file);
+          const urls = await getDownloadURL(storageRef);
+          return urls;
+        })
+      );
+      console.log(imageUrls, "imageURLS");
+
       const VenueId = Math.random().toString(36).substring(2);
       const userInfo = {
         userId: user.uid,
@@ -186,7 +252,7 @@ function details() {
         phoneNumber: value,
         capacity: details.capacity,
         locations: location,
-        images: [urls],
+        images: imageUrls,
         description: details.marqueeDetails,
         id: VenueId,
       };
@@ -230,33 +296,113 @@ function details() {
     };
   }, []);
 
+  // const handleImageDiemension = async (e) => {
+  //   let images = e.target.files;
+  //   await Promise.all(Object.values(images).map(async (image, index) => {
+  //     console.log(image, "image");
+
+  //     const img = new window.Image();
+  //     img.src = URL.createObjectURL(image);
+
+  //     try {
+  //       await new Promise((resolve) => {
+  //         img.onload = function () {
+  //           if (img.width > 2000 && img.height > 1300) {
+  //             setModal1Open(true);
+  //             setImage(img.src);
+  //             setMultipleImage((prevImages) => [
+  //               ...prevImages,
+  //               {
+  //                 id: index,
+  //                 file: image,
+  //               },
+  //             ]);
+  //             message.success("Image dimensions are valid.");
+  //           } else {
+  //             message.warning("Image dimensions are not valid.");
+  //           }
+  //           resolve();
+  //         };
+  //       });
+  //     } catch (error) {
+  //       console.error("Error loading image:", error);
+  //       message.error("Error loading image.");
+  //     }
+  //   }));
+  // };
+
   const handleImageDiemension = async (e) => {
     let images = e.target.files;
-    for (const image of images) {
-      const img = new Image();
-      img.src = URL.createObjectURL(image);
-      await new Promise((resolve) => {
-        img.onload = function () {
-          if (img.width > 2000 && img.height > 1300) {
-            setModal1Open(true);
-            setImage(img.src);
-            message.success("Image dimensions are valid.");
-          } else {
-            message.warning("Image dimensions are not valid.");
-          }
-          resolve("");
-        };
-      });
+    const validImages = [];
+    try {
+      await Promise.all(
+        Object.values(images).map(async (image, index) => {
+          console.log(image, "image");
+          const img = new window.Image();
+          img.src = URL.createObjectURL(image);
+          await new Promise((resolve) => {
+            img.onload = function () {
+              if (img.width > 2000 && img.height > 1300) {
+                validImages.push({
+                  id: index,
+                  file: image,
+                });
+              } else {
+                message.warning("Image dimensions are not valid.");
+              }
+              resolve();
+            };
+          });
+        })
+      );
+
+      if (validImages.length > 0) {
+        setModal1Open(true);
+        const updatedImages = [...prevImages, ...validImages];
+        console.log(updatedImages, "updateImage");
+
+        setMultipleImage(updatedImages);
+        message.success("Image dimensions are valid.");
+      } else {
+        message.warning("No valid images selected.");
+      }
+    } catch (error) {
+      console.error("Error loading image:", error);
+      message.error("Error loading image.");
     }
   };
+
+  const handleDiemension = async (id) => {
+    const selectedImage = multipleImage.find((image) => image.id === id);
+    console.log(image, "immmmmmage");
+
+    if (selectedImage) {
+      setSelectedImage(selectedImage);
+      const objectURL = URL.createObjectURL(selectedImage.file);
+      console.log(
+        selectedImage.file,
+        "imageeeeeeeeeeee",
+        selectedImage.id,
+        "id"
+      );
+
+      setImage({
+        id: selectedImage.id,
+        img: objectURL,
+      });
+    } else {
+      console.error("Image not found with id:", id);
+    }
+  };
+
 
   return (
     <div>
       <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row">
         <div className="w-full lg:w-[40%] md:ml-24 flex flex-col  my-3">
-          <h1 className=" mb-4 text-[28px] text-center pt-2 md:text-3xl font-vollkorn text-primary items-center md:-ml-32">
-            Registration Here
-          </h1>
+          <p className=" mb-5 mt-7 text-5xl text-center md:text-[28px] font-semibold font-poppins text-primary items-center md:-ml-32">
+            REGISTER HERE
+          </p>
 
           <Form
             className="w-full"
@@ -279,13 +425,13 @@ function details() {
           >
             <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Full Name
                 </b>
               </div>{" "}
               <Form.Item
                 className="w-[100%]"
-                name="name"
+                // name="name"
                 rules={[
                   {
                     required: true,
@@ -296,7 +442,7 @@ function details() {
                 <Input
                   className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
                   placeholder="Enter Full Name Here"
-                  type="name"
+                  type="text"
                   name="name"
                   value={details.name}
                   onChange={handleChange}
@@ -306,7 +452,7 @@ function details() {
 
             <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[79.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Email
                 </b>
               </div>
@@ -334,7 +480,7 @@ function details() {
 
             <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Password
                 </b>
               </div>{" "}
@@ -359,9 +505,9 @@ function details() {
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
+            <div className="w-[100%] flex flex-col md:items-start relative px-5 md:px-0">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[129.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Phone Number
                 </b>
               </div>
@@ -388,13 +534,13 @@ function details() {
 
             <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Capacity
                 </b>
               </div>{" "}
               <Form.Item
                 className="w-[100%]"
-                name="name"
+                // name="capacity"
                 rules={[
                   {
                     required: true,
@@ -403,19 +549,20 @@ function details() {
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
-                  placeholder="Enter Capacity Here"
-                  type="number"
-                  name="capacity"
-                  value={details.capacity}
-                  onChange={handleChange}
-                />
+  className="border outline-none md:w-[30vw] z-10 py-4 mb-3 flex justify-center text-xs relative"
+  placeholder="Enter Capacity Here"
+  type="number"
+  name="capacity"
+  value={details.capacity || ''} // Ensure it's either a valid number or an empty string
+  onChange={handleChange}
+/>
+
               </Form.Item>
             </div>
 
             <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 ">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[79.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Image
                 </b>
               </div>{" "}
@@ -430,18 +577,21 @@ function details() {
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10 py-4 mb-3 flex justify-center text-xs relative"
                   placeholder="Please Select Image"
                   type="file"
                   name="image"
-                  onChange={(e) => handleImageDiemension(e)}
+                  multiple
+                  onChange={(e) => {
+                    handleImageDiemension(e);
+                  }}
                 />
               </Form.Item>
             </div>
 
             <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <b className="absolute leading-[100%] z-20 pt-1 font-roboto font-bold my-2">
+                <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Address
                 </b>
               </div>{" "}
@@ -467,7 +617,7 @@ function details() {
             </div>
 
             <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_93.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[93.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_53.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[93.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1">Description</b>
               </div>
               <Form.Item
@@ -480,14 +630,14 @@ function details() {
                   },
                 ]}
               >
-                <TextArea
+                <Input
                   rows={5}
                   maxLength={200}
                   placeholder="Enter Description Here"
                   name="marqueeDetails"
                   value={details.marqueeDetails}
                   onChange={handleChange}
-                  className="border outline-none md:w-[50vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
                 />
               </Form.Item>
             </div>
@@ -514,7 +664,7 @@ function details() {
         <div className="w-full lg:w-[60%] relative md:block">
           {modalOpen2 ? (
             <Image
-              className=" lg:absolute inset-0 object-cover w-full h-full"
+              className=" lg:absolute inset-0 object-cover w-full h-full rounded-tr-xl rounded-br-xl"
               src={RegistrationImg}
               alt="Image"
             />
@@ -549,21 +699,117 @@ function details() {
           </Marker>
         </MapContainer>
       </Modal>
-
       <Modal
         open={modal1Open}
         footer={null}
-        width={800}
+        width={1000}
         closable={false}
         centered
       >
-        <Demo
+        <ImageCroper
           image={image}
           setModal1Open={setModal1Open}
           setCropImage={setCropImage}
+          multipleImage={multipleImage}
+          setMultipleImage={setMultipleImage}
         />
+        <div className="flex flex-wrap px-3">
+          {Object.values(multipleImage).map((item, index) => {
+            // Check if item and item.file are valid before calling createObjectURL
+            if (item && item.file instanceof Blob) {
+              const objectURL = URL.createObjectURL(item.file);
+
+              return (
+                <img
+                  src={objectURL}
+                  alt=""
+                  key={index}
+                  onClick={() => handleDiemension(item.id)}
+                  className="w-[15%] rounded-lg m-2"
+                />
+              );
+            } else {
+              // Handle the case where item or item.file is invalid
+              return (
+                <span key={index} className="text-red-500">
+                  Invalid image data
+                </span>
+              );
+            }
+          })}
+        </div>
       </Modal>
     </div>
   );
 }
 export default details;
+
+//   const handleDiemension = async (index) => {
+//     setSelectedImage(details.image[index]);
+//     // Set the selected smaller image in the ImageCropper
+//     setImage(URL.createObjectURL(details.image[index]));
+//   };
+
+//   useEffect(() => {
+//     // Initialize selectedImage with the image at index 0
+//     if (details.image && details.image.length > 0) {
+//       setSelectedImage(details.image[0]);
+//       // Set the image in the ImageCropper with the image at index 0
+//       setImage(URL.createObjectURL(details.image[0]));
+//     }
+//   }, [details.image]);
+
+//   return (
+//     <div>
+//       <Input
+//         className="border outline-none md:w-[30vw] z-10 py-4 mb-3 flex justify-center text-xs relative"
+//         placeholder="Please Select Image"
+//         type="file"
+//         name="image"
+//         multiple
+//         onChange={(e) => {
+//           handleImageDiemension(e);
+//           setDetails({ ...details, image: e.target.files });
+//         }}
+//       />
+//       <Modal
+//         open={modal1Open}
+//         footer={null}
+//         width={1000}
+//         closable={false}
+//         centered
+//       >
+//         <ImageCroper
+//           image={image}
+//           setModal1Open={setModal1Open}
+//           setCropImage={setCropImage}
+//         />
+//         <div className="flex flex-wrap px-3">
+//           {details.image &&
+//             Object.values(details.image).map((img, index) => (
+//               <img
+//                 src={URL.createObjectURL(img)}
+//                 alt=""
+//                 key={index}
+//                 className="w-[25%]"
+//                 onClick={() => handleDiemension(index)}
+//               />
+//             ))}
+//         </div>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default Details;
+
+// const user = userCredential.user;
+//   multipleImage.map(async (image) =>{
+//   console.log(image, "imageimageimageimage");
+//   const imgFile = image?.file
+//   const fileName = `Marquee/Marquee`;
+//   const storageRef = ref(storage, fileName);
+//   await uploadBytes(storageRef , imgFile);
+//   const urls = await getDownloadURL(storageRef);
+//   const VenueId = Math.random().toString(36).substring(2);
+// })

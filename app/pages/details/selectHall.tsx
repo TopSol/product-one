@@ -20,9 +20,7 @@ function MarqueeAvailability({
   const id = searchParams.get("id");
 
   const nextPage = () => {
-    if (clickedIndex !== null) {
-      setSlider(1);
-    }
+    setSlider(1);
   };
 
   return (
@@ -81,7 +79,10 @@ function MarqueeAvailability({
                       ? "bg-hoverPrimary"
                       : "bg-primaryColor"
                   }`}
-                  onClick={() => handleClick(item, index)}
+                  onClick={() => {
+                    handleClick(item, index)
+                    nextPage()
+                  }}
                 >
                   <p className="">Select</p>
                 </div>
@@ -98,12 +99,12 @@ function MarqueeAvailability({
         })}
       </div>
       <div className="flex justify-end w-3/4 mx-auto">
-        <button
+        {/* <button
           className="border px-8 py-2 my-3 bg-bgColor rounded-md"
           onClick={() => nextPage()}
         >
           Next
-        </button>
+        </button> */}
       </div>
     </div>
   );
