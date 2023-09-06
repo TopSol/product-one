@@ -169,12 +169,12 @@ function AdminMarqueeDetails() {
           <div className="mt-14">
             <AdminNavbar setModalOpen2={setModalOpen2} setShowIcon={setShowIcon} setRemoveMenuIcon={setRemoveMenuIcon} />
             <div className="sidebar flex">
-              <div className="hidden  p-2  absolute">
+              <div className="hidden p-2  absolute">
 
               </div>
               {modalOpen2 ? (
                 <div
-                  className={`w-[70%] h-[100vh] ${showIcon ? "md:w-[15%]" : "md:w-[5%]"
+                  className={` h-[100vh] min-[640px]:w-[40%] max-[1536px]:w-[150px] ${showIcon ? "lg:w-[15%]" : "lg:w-[5%]  "
                     } border flex flex-col shadow-lg z-20 lg:z-0 bg-white relative md:block`}
                 >
                   <div className="flex justify-between">
@@ -231,7 +231,7 @@ function AdminMarqueeDetails() {
                 </div>
               ) : null}
 
-              <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto">
+              <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto absolute md:relative">
                 {component === "Venues" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
                     <p className="md:text-2xl py-3">Venues</p>

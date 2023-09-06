@@ -71,7 +71,7 @@ function Login() {
   };
 
   return (
-    <div className=" h-[100vh] flex flex-col justify-center items-center lg:flex lg:flex-row">
+    <div className=" h-[100vh] flex  justify-center items-center lg:flex lg:flex-row">
       <div className="w-full flex justify-center items-center  md:w-[50%] bg-white py-3   mx-auto    ">
         <Form
           name="basic"
@@ -112,7 +112,7 @@ function Login() {
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[500px] z-10 w-72  py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:max-lg:w-[400px] lg:w-[500px] z-10 w-72  py-4 mb-3 flex justify-center text-xs relative"
                   placeholder="Type Your Email / Phone"
                   type="email"
                   name="email"
@@ -135,7 +135,7 @@ function Login() {
                 ]}
               >
                 <Input
-                  className="border  outline-none md:w-[500px] z-10 relative w-72  py-4 mb-3 flex justify-center text-xs"
+                 className="border outline-none md:max-lg:w-[400px] lg:w-[500px] z-10 w-72  py-4 mb-3 flex justify-center text-xs relative"
                   placeholder="Type Your Password"
                   type="password"
                   name="password"
@@ -144,25 +144,25 @@ function Login() {
                 />
               </Form.Item>
             </div>
-            <p className="flex justify-end  text-xl  md:ml-[360px] cursor-pointer my-5 items-end text-primary">
+            <p className="flex justify-end  sm:text-lg md:max-lg:w-[380px] w-[300px] lg:w-[500px]      cursor-pointer my-5 items-end text-primary">
               Forgot Password?
             </p>
           </div>
 
           <button
-            className="border md:w-[500px] w-72 md:text-2xl flex justify-center font-Poppins mx-auto items-center rounded-md  md:my-5 py-2 md:py-4 px-10  cursor-pointer text-white bg-primary "
+            className="border md:max-lg:w-[400px] lg:w-[500px] w-72 md:text-2xl flex justify-center font-Poppins mx-auto items-center rounded-md  md:my-5 py-2 md:py-4 px-10  cursor-pointer text-white bg-primary "
             onClick={handleLogin}
           >
             {" "}
             <>{loader ? <Loader /> : "Log in"}</>
           </button>
-          <p className="flex justify-center md:text-2xl  items-center mx-auto font-Poppins mt-8">
+          <p className="flex justify-center sm:text-base  lg:text-sm  items-center mx-auto font-Poppins mt-8">
             Don’t have an account?{" "}
             <Link
               className=" text-[#006CE1] ml-2 font-semibold"
               href="/pages/registration"
             >
-              <div className="text-primary md:text-2xl ">Register Now</div>
+              <div className="text-primary sm:text-xl sm:text-primary">Register Now</div>
             </Link>
           </p>
         </Form>

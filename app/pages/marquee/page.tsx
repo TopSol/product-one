@@ -3,7 +3,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { db } from "@/app/firebase";
-import { collection, getDocs } from "firebase/firestore";
+// import { collection, getDocs } from "firebase/firestore";
 import { Input } from "antd";
 import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
@@ -19,6 +19,10 @@ import Footer from "@/app/component/footer";
 import Image from "next/image";
 import "react-day-picker/dist/style.css";
 import "./style.css";
+import { collection, query, where, getDocs, or, and } from "firebase/firestore";
+import { Filter } from "firebase";
+
+import setSeconds from "date-fns/esm/setSeconds";
 const pastMonth = new Date();
 
 function Marquee() {
@@ -36,12 +40,19 @@ function Marquee() {
   const [checkedServices, setCheckedServices] = useState([]);
   const [coordinates, setCoordinates] = useState({});
 
+  const [filterData, setFilterData] = useState({
+    capacity: "",
+    location: "",
+    price: "",
+    services: [],
+  });
+
   useEffect(() => {
     const dates = getFormatDates([range]);
     const startDate = new Date(dates[0]?.from);
     const endDate = new Date(dates[0]?.to);
     venuesPrice.map((item1) => {
-      bookDate.map((item2) => { });
+      bookDate.map((item2) => {});
     });
   }, [range]);
 
@@ -68,12 +79,142 @@ function Marquee() {
     };
     getUser();
   }, []);
-  console.log(userData, "userData");
 
+  const handleFilterData = async () => {
+    let data = venuesPrice;
+    const minCapacity =
+      filterData.capacity !== "" ? Number(filterData.capacity) : 0;
+    const maxPrice = filterData.price !== "" ? Number(filterData.price) : 0;
+    const requiredServices = filterData.services;
+    if (filterData.capacity != "") {
+      data = data.filter((item) => minCapacity >= item?.data?.maxCapacity);
+    }
+    if (filterData.price != "") {
+      data = data.filter((item) => maxPrice <= item?.data?.price);
+    }
+    if (filterData.services?.length > 0) {
+      data = data.filter((item) =>
+        requiredServices.every((service) =>
+          item?.data?.services?.includes(service)
+        )
+      );
+    }
+    let arr = [];
+    userData.map((item) => {
+      console.log(item, "pppp", data);
+      data.map((item1) => {
+        if (item.data.userId.includes(item1.data.userId)) {
+          if (!arr.includes(item)) {
+            arr.push(item);
+          }
+        }
+      });
+    });
+
+    const datas = arr.length ? arr : userData;
+    const branch = datas.filter((item) => {
+      if (
+        item.data.locations &&
+        item.data.locations.lat &&
+        item.data.locations.lng
+      ) {
+        const itemCoordinates = {
+          lat: item.data.locations.lat,
+          lng: item.data.locations.lng,
+        };
+        if (isWithinRange(coordinates, itemCoordinates, 1)) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    });
+    if (filterData.capacity || filterData.price || filterData.services.length) {
+      if (arr.length) {
+        setFilterMarqueeWithPrice(arr);
+        setShowMessage(true);
+      } else {
+        setShowMessage(false);
+        setFilterMarqueeWithPrice([]);
+      }
+    } else {
+      console.log("bbb");
+      setFilterMarqueeWithPrice([]);
+    }
+    if (branch.length) {
+      setShowMessage(true)
+      setFilterMarqueeWithPrice(branch);
+    }
+  };
+  console.log(filterMarqueeWithPrice, "filterMarqueeWithPrice");
+  const handleSittingCapacity = (e) => {
+    const capacity = Number(e.target.value);
+    setFilterData({ ...filterData, capacity: capacity });
+    // const filteredVenues = venuesPrice.filter((item) => {
+    //   return (
+    //     capacity > item?.data?.minCapacity
+    //   );
+    // });
+
+    // let arr = [];
+    // const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
+    // data.map((item) => {
+    //   filteredVenues.map((item1) => {
+    //     if (item.data.userId.includes(item1.data.userId)) {
+    //       if (!arr.includes(item)) {
+    //         arr.push(item);
+    //       }
+    //     }
+    //   });
+    // });
+    // if (!arr.length) {
+    //   setShowMessage(false);
+    //   setFilterMarqueeWithPrice(arr);
+    //   setControlPrice(arr);
+    // } else {
+    //   setShowMessage(true);
+    //   setFilterMarqueeWithPrice(arr);
+    //   setServices(arr);
+    // }
+  };
+  // const handleSittingCapacity = (e) => {
+  //   console.log(userData, "userDatauserData3");
+
+  //   const capacity = Number(e.target.value);
+  //   const filteredVenues = venuesPrice.filter((item) => {
+  //     return (
+  //       capacity > item?.data?.minCapacity && capacity < item?.data?.maxCapacity
+  //     );
+  //   });
+
+  //   let arr = [];
+  //   const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
+  //   data.map((item) => {
+  //     filteredVenues.map((item1) => {
+  //       if (item.data.userId.includes(item1.data.userId)) {
+  //         if (!arr.includes(item)) {
+  //           arr.push(item);
+  //         }
+  //       }
+  //     });
+  //   });
+  //   if (!arr.length) {
+  //     setShowMessage(false);
+  //     setFilterMarqueeWithPrice(arr);
+  //     setControlPrice(arr);
+  //   } else {
+  //     setShowMessage(true);
+  //     setFilterMarqueeWithPrice(arr);
+  //     setServices(arr);
+  //   }
+  // };
   const handleSliderChange = async (event) => {
     const price = Number(event.target.value);
-    setSliderValue(price);
-    handlePrice(price);
+    setFilterData({ ...filterData, price: price });
+    // setSliderValue(price);
+    // handlePrice(price);
   };
   const handlePrice = (value) => {
     const filteredVenues = venuesPrice.filter((item) => {
@@ -113,37 +254,6 @@ function Marquee() {
     }
   };
 
-  const handleSittingCapacity = (e) => {
-    console.log(userData, "userDatauserData3");
-
-    const capacity = Number(e.target.value);
-    const filteredVenues = venuesPrice.filter((item) => {
-      return (
-        capacity > item?.data?.minCapacity && capacity < item?.data?.maxCapacity
-      );
-    });
-
-    let arr = [];
-    const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
-    data.map((item) => {
-      filteredVenues.map((item1) => {
-        if (item.data.userId.includes(item1.data.userId)) {
-          if (!arr.includes(item)) {
-            arr.push(item);
-          }
-        }
-      });
-    });
-    if (!arr.length) {
-      setShowMessage(false);
-      setFilterMarqueeWithPrice(arr);
-      setControlPrice(arr);
-    } else {
-      setShowMessage(true);
-      setFilterMarqueeWithPrice(arr);
-      setServices(arr);
-    }
-  };
   let footer = <p className="text-textColor font-poppins ">Select Date</p>;
 
   if (range?.from) {
@@ -158,88 +268,90 @@ function Marquee() {
     }
   }
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
-
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    setCheckedServices(checkedValues);
-    const filteredVenues = venuesPrice.filter((item) => {
-      const result = [];
-      checkedValues.forEach((value) => {
-        if (item?.data?.services?.includes(value)) {
-          result.push(true);
-        }
-      });
-      return result.length;
-    });
-    let arr = [];
-    const data = services.length ? services : userData;
-    data.map((item) => {
-      filteredVenues.map((item1) => {
-        if (item.data.userId.includes(item1.data.userId)) {
-          if (!arr.includes(item)) {
-            arr.push(item);
-          }
-        }
-      });
-    });
-    if (arr.length) {
-      setFilterMarqueeWithPrice(arr);
-      setFilteredVenuesPrice(arr);
-    } else if (!filterMarqueeWithPrice.length) {
-      setShowMessage(true);
-    } else if (!checkedValues.length) {
-      setFilterMarqueeWithPrice(services);
-    } else if (!arr.length) {
-      setShowMessage(false);
-    } else {
-      setShowMessage(true);
-    }
+    setFilterData({ ...filterData, services: checkedValues });
   };
+  // const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
+  //   setCheckedServices(checkedValues);
+  //   const filteredVenues = venuesPrice.filter((item) => {
+  //     const result = [];
+  //     checkedValues.forEach((value) => {
+  //       if (item?.data?.services?.includes(value)) {
+  //         result.push(true);
+  //       }
+  //     });
+  //     return result.length;
+  //   });
+  //   let arr = [];
+  //   const data = services.length ? services : userData;
+  //   data.map((item) => {
+  //     filteredVenues.map((item1) => {
+  //       if (item.data.userId.includes(item1.data.userId)) {
+  //         if (!arr.includes(item)) {
+  //           arr.push(item);
+  //         }
+  //       }
+  //     });
+  //   });
+  //   if (arr.length) {
+  //     setFilterMarqueeWithPrice(arr);
+  //     setFilteredVenuesPrice(arr);
+  //   } else if (!filterMarqueeWithPrice.length) {
+  //     setShowMessage(true);
+  //   } else if (!checkedValues.length) {
+  //     setFilterMarqueeWithPrice(services);
+  //   } else if (!arr.length) {
+  //     setShowMessage(false);
+  //   } else {
+  //     setShowMessage(true);
+  //   }
+  // };
 
   const isWithinRange = (coord1, coord2, range) => {
     console.log(coord1, "distancecoord2", coord2, range);
 
     const distance = Math.sqrt(
       Math.pow(coord1.lat - coord2.lat, 2) +
-      Math.pow(coord1.lng - coord2.lng, 2)
+        Math.pow(coord1.lng - coord2.lng, 2)
     );
     console.log(distance, "distance", range);
     return distance <= range;
   };
+  console.log("dfsdfsdfsdff", filterMarqueeWithPrice);
+  // useEffect(() => {
+  //   const data = userData;
 
-  useEffect(() => {
-    const data = userData;
-    console.log(data, "abcData");
-
-    const branch = data.filter((item) => {
-      console.log(item.data.locations, coordinates, "datadata");
-      if (
-        item.data.locations &&
-        item.data.locations.lat &&
-        item.data.locations.lng
-      ) {
-        const itemCoordinates = {
-          lat: item.data.locations.lat,
-          lng: item.data.locations.lng,
-        };
-
-        if (isWithinRange(coordinates, itemCoordinates, 1)) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    });
-    console.log(branch, "branchbranch");
-    if (!branch.length) {
-      setShowMessage(false);
-      setFilterMarqueeWithPrice([]);
-    } else {
-      setShowMessage(true);
-      setFilterMarqueeWithPrice(branch);
-    }
-  }, [coordinates]);
+  //   const branch = data.filter((item) => {
+  //     console.log(item,"ccccc")
+  //     if (
+  //       item.data.locations &&
+  //       item.data.locations.lat &&
+  //       item.data.locations.lng
+  //     ) {
+  //       const itemCoordinates = {
+  //         lat: item.data.locations.lat,
+  //         lng: item.data.locations.lng,
+  //       };
+  //       if (isWithinRange(coordinates, itemCoordinates, 1)) {
+  //         console.log(coordinates,itemCoordinates,"www")
+  //         console.log("hhhhhhhhhhh")
+  //         return true;
+  //       } else {
+  //         return false;
+  //       }
+  //     } else {
+  //       return false;
+  //     }
+  //   });
+  //   console.log(branch, "branchbranch");
+  //   if (!branch.length) {
+  //     setShowMessage(false);
+  //     setFilterMarqueeWithPrice([]);
+  //   } else {
+  //     setShowMessage(true);
+  //     setFilterMarqueeWithPrice(branch);
+  //   }
+  // }, [coordinates]);
 
   const handleSelect = async (value) => {
     console.log(value, "asdasdasdas");
@@ -256,6 +368,7 @@ function Marquee() {
           lng: parseFloat(data[0].lon),
         };
         console.log("Coordinates:asdasdasdas", coordinates);
+        setFilterData({ ...filterData, location: coors });
         setCoordinates(coors);
       } else {
         throw new Error("Place not found");
@@ -264,7 +377,16 @@ function Marquee() {
       console.error("Error retrieving place details:", error);
     }
   };
-
+const clearFilter=()=>{
+  setFilterData({
+    capacity: "",
+    location: "",
+    price: "",
+    services: [],
+  })
+  setFilterMarqueeWithPrice([])
+}
+console.log(filterData,"ffffffffffffff")
   return (
     <>
       <div>
@@ -297,6 +419,7 @@ function Marquee() {
               <Input
                 type="text"
                 placeholder="Maximum capacity"
+                value={filterData?.capacity}
                 className="py-3 mt-6 border-none bg-bgColor rounded-md px-3 w-full "
                 onChange={handleSittingCapacity}
               />
@@ -319,14 +442,14 @@ function Marquee() {
               <Input
                 type="range"
                 min="0"
-                max="200000"
+                max="60000"
                 step="10"
-                value={sliderValue}
+                value={filterData?.price}
                 onChange={handleSliderChange}
                 className="w-full"
               />
               <p className="mt-4 text-textColor font-semibold">
-                Slider Value: {sliderValue}
+                Slider Value: {filterData?.price}
               </p>
             </div>
 
@@ -338,12 +461,27 @@ function Marquee() {
                 className="flex flex-col text-textColor"
                 options={plainOptions}
                 onChange={handleCheckboxChange}
+                value={filterData?.services}
               />
+            </div>
+            <div className=" mx-auto w-full flex  justify-around items-center">
+              <button
+                className="bg-primaryColor hover:bg-hoverPrimary px-10 py-2 rounded-lg mt-6 text-white font-bold"
+                onClick={() => handleFilterData()}
+              >
+                Filter
+              </button>
+              <button
+                className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg mt-6 text-white font-bold"
+                onClick={() => clearFilter()}
+              >
+                Clear Filter
+              </button>
             </div>
           </div>
 
           <div className="w-full  lg:w-[75%]">
-            {true ? (
+            {showMessage ? (
               (filterMarqueeWithPrice.length
                 ? filterMarqueeWithPrice
                 : userData

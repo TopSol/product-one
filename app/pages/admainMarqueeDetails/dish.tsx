@@ -443,7 +443,7 @@ function Dish({
                   className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
-            </div>
+            </div> 
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[110.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">Select Dish</p>
