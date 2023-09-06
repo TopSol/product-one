@@ -47,7 +47,7 @@ function Slider() {
   const [selectedMenu, setSelectedMenu] = useState("");
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([]);
-  const [marqueeData, setMarqueeData] = useState("")
+  const [marqueeData, setMarqueeData] = useState([])
   const [successPage, setSuccessPage] = useState(false)
 
   const params = useSearchParams();
@@ -104,7 +104,9 @@ function Slider() {
 
       let menuDataArr = [];
       menusSnapshot.forEach((doc) => {
-        menuDataArr.push(doc.data());
+        const items = doc.data()
+        console.log(items,"doc")
+        menuDataArr.push({...items,selected:false});
       });
       let withoutVenueDish = [];
       dishSnapshot.forEach((doc) => {
@@ -193,7 +195,9 @@ function Slider() {
                 />
               ) : slider === 2 ? (
                 <ChooseMenu
-                  dish={marqueeData.dish}
+                  // dish={marqueeData.dish}
+                  marqueeData={marqueeData}
+                  setMarqueeData={setMarqueeData}
                   setSlider={setSlider}
                   setSelectedMenu={setSelectedMenu}
                   preview={preview}

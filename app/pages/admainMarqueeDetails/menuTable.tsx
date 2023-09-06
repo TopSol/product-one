@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 function MenuTable({ dishesData, onChange, EditDish, openModal }) {
   return (
-    <List.Item>
+    <List.Item className="last-child-style bg-gray-100 my-2 flex justify-between"> 
       <div className="flex items-center pl-3 w-[10%]">
         <Checkbox onClick={() => onChange(dishesData.dishId)} />
       </div>

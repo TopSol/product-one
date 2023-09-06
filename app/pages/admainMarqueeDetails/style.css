@@ -21,9 +21,6 @@
     border-bottom-right-radius: 10px;
     margin-bottom: 10px !important;
 }
-
-
-
 .AddVenue .ant-btn :hover {
     background-color: #F99832;
     color: #fff;

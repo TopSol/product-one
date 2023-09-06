@@ -171,6 +171,7 @@ function Venues({
       }
     } else {
       const images = Object.values(user.image);
+      console.log(images,"sdfdsfdsfdsf")
       const folderName = `images`;
       const imageUrls = await Promise.all(
         images.map(async (image) => {
@@ -254,6 +255,7 @@ function Venues({
       </div>
     </div>
   );
+  console.log(user.image,"sfddsfsdfdsfsdfsfd")
   return (
     <>
       <div className="md:px-10">
@@ -503,6 +505,19 @@ function Venues({
               </div>
             </div>
           </div>
+          {/* <div className="flex flex-wrap">
+              {user.image &&
+                Object.values(user.image).map((img, index) => {         
+                  return (
+                    <img
+                      // src={URL.createObjectURL(img)}
+                      alt=""
+                      key={index}
+                      className="w-[25%]"
+                    />
+                  );
+                })}
+            </div> */}
         </div>
       </Modal>
       {isOpen && (
