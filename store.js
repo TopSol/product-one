@@ -202,7 +202,15 @@ export const useStore = create(
           },
         }));
       },
-
+      addDates:(dates)=>{
+        set({lunchDinner:dates?.dates})
+      },
+      deleteDates:() => {
+        set((state) => ({
+          lunchDinner: {
+          },
+        }));
+      },
       getDates: async () => {
         try {
           const docRef = doc(db, "bookDate", userInformation.userId);

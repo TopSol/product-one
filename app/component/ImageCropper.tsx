@@ -227,7 +227,7 @@ function ImageCroper({ image, setModal1Open, setCropImage, multipleImage, setMul
         >
           <h1>
             <button
-              className=" sflex justify-center border py-2 w-28 lg:px-3 rounded-md  bg-blue-600 -mt-8"
+              className=" flex justify-center border py-2 w-28 lg:px-3 rounded-md  bg-blue-600 -mt-8"
               style={{ float: "right" }}
               onClick={getCropData}
             >

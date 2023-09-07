@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import dots from "../../assets/images/dots.svg";
 import userIcon from "../../assets/images/user.svg";
 import email from "../../assets/images/email-1-svgrepo-com.svg";
@@ -8,6 +8,7 @@ import notes from "../../assets/images/notes.svg";
 import Image from "next/image";
 import { Input, Checkbox, Radio } from "antd";
 import { useStore } from "@/store";
+import { CheckboxValueType } from "antd/es/checkbox/Group";
 
 function UserInformation({
   setSlider,
@@ -22,13 +23,15 @@ function UserInformation({
 }) {
   const { addUserInformation } = useStore();
   const [value, setValue] = useState(1);
+  const plainOptions = ["Heating", "Cooling", "MusicSystem"];
   console.log(selectedHall, "selectedHallselectedHall");
-  const handleInputChange = (event) => {
-    const { name, checked } = event.target;
-    setInputs((prevState) => ({
-      ...prevState,
-      [name]: checked,
-    }));
+  const handleInputChange = (checkedValues: CheckboxValueType[]) => {
+    setUser({ ...user, services: checkedValues });
+    // const { name, checked } = event.target;
+    // setInputs((prevState) => ({
+    //   ...prevState,
+    //   [name]: checked,
+    // }));
   };
 
   const handleChange = (e, type) => {
@@ -54,7 +57,8 @@ function UserInformation({
       !user.address ||
       !user.notes ||
       !user.PhoneNumber ||
-      !user.tableShape
+      !user.tableShape||
+      !user.services
     ) {
       alert("Please fill all the fields");
       return;
@@ -68,9 +72,10 @@ function UserInformation({
       address: user.address,
       notes: user.notes,
       PhoneNumber: convertedPhoneNumber,
-      Heating: inputs.Heating,
-      Cooling: inputs.Cooling,
-      MusicSystem: inputs.MusicSystem,
+      services:user.services,
+      // Heating: inputs.Heating,
+      // Cooling: inputs.Cooling,
+      // MusicSystem: inputs.MusicSystem,
       tableShape: user.tableShape,
     };
     setUserInformation(users);
@@ -242,7 +247,13 @@ function UserInformation({
           <div className="border p-5 rounded-xl mb-2 w-[95%] mx-4 md:w-96">
             <p className="font-semibold mb-3">All available services</p>
             <div className="flex flex-col justify-evenly">
-              <Checkbox
+                <Checkbox.Group
+                  options={plainOptions}
+                  value={user.services as CheckboxValueType[]}
+                  onChange={handleInputChange}
+                  className=" outline-none md:w-[700px] w-full flex-col  z-10   py-5  flex  text-xs "
+                />
+              {/* <Checkbox
                 type="checkbox"
                 name="Heating"
                 checked={inputs.Heating}
@@ -266,7 +277,7 @@ function UserInformation({
                 onChange={handleInputChange}
               >
                 Music System
-              </Checkbox>
+              </Checkbox> */}
             </div>
           </div>
 

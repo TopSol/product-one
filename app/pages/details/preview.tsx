@@ -16,11 +16,14 @@ import capacity from "../../assets/images/chair.svg";
 import price from "../../assets/images/dollor.svg";
 import facilites from "../../assets/images/facilites.svg";
 import dish from "../../assets/images/menuIcon.svg";
+import dots from "@/app/assets/images/dots.svg";
+import "./style.css";
 
 function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showFacilities, setShowFacilities] = useState(false);
   const [blogs, setBlogs] = useState([]);
-
+  console.log(hallInformation, "hallInformation");
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));

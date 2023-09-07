@@ -311,6 +311,7 @@ function DishModal({
                     style={{
                       width: "100%",
                     }}
+                    className="type"
                     placeholder="Search to Select"
                     optionFilterProp="children"
                     filterOption={(input, option) =>

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Input, List, Popconfirm, Row, Select, Table } from "antd";
+import { Button, Checkbox, Input, List, Popconfirm, Row, Select, Table } from "antd";
 import Loader from "../../component/Loader";
 import DishTable from "./dishTable";
 import Lightbox from "react-image-lightbox";
-import Image from "next/image";
+// import Image from "next/image";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { Image } from "antd";
 import dots from "@/app/assets/images/dots.svg";
+import Link from "next/link";
 import {
   getStorage,
   ref,
@@ -24,6 +27,7 @@ import {
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Modal } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const plainOptions = [
   { label: "Available", value: "Available" },
   { label: "Not Available", value: "NotAvailable" },
@@ -311,7 +315,7 @@ function Menus({
   );
   return (
     <div className="md:px-10">
-      {renderHeader()}
+      {/* {renderHeader()}
       <List
         dataSource={Menus}
         renderItem={(Menus, index) => (
@@ -325,8 +329,8 @@ function Menus({
             onChangeStatus={onChangeStatus}
           />
         )}
-      />
-      {/* <Table dataSource={Menus} className="myTable" bordered = {false}  >
+      /> */}
+      <Table dataSource={Menus} className="myTable" bordered = {false}  >
           <Column
           title="Check box"
           dataIndex="menuId"
@@ -347,8 +351,30 @@ function Menus({
           dataIndex="image"
           key="image"
           render={(image) => (
+            
             <>
-             <div className="flex items-center">
+            <div className="flex items-center">
+                <Image 
+                  width={80}
+                  height={60}
+                  src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
+                  alt="Description of the image"
+                />
+                {
+                  <Link
+                    onClick={() => {
+                      setIsOpen(true);
+                      setPreviewImage(image);
+                      setPhotoIndex(0);
+                    }}
+                    className="text-blue-600 underline ml-2"
+                    href=""
+                  >
+                    {image.length > 1 && `${image.length - 1} more`}
+                  </Link>
+                }
+              </div>
+             {/* <div className="flex items-center">
               <img
                 width={80}
                 height={80}
@@ -388,8 +414,8 @@ function Menus({
                     />
                   );
                 })}
-              </Image.PreviewGroup>
-            </div>
+              </Image.PreviewGroup> */}
+            {/* </div> */}
             </>
            
           )}
@@ -444,13 +470,13 @@ function Menus({
                 cancelText="No"
                 onConfirm={() => deleteMenu(menuId)}
               >
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon={faTrashCan}
                   width={15}
                   // height={15}
                   className="text-red-500 cursor-pointer text-xl"
                   // onClick={() => deleteVenue(venueId)}
-                /> 
+                />  */}
               </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
@@ -461,7 +487,7 @@ function Menus({
             </div>
           )}
         /> 
-     </Table>   */}
+     </Table>  
 
       <Modal
         className=" modal  w-full text-center"
@@ -523,7 +549,7 @@ function Menus({
               height={40}
               className="ml-3"
             />
-            <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
+            <p className="text-xl pl-3 text-white py-4"> Add Dish</p> 
           </div>
           <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
@@ -577,7 +603,7 @@ function Menus({
                   onChange={handleChange}
                   className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
-              </div>
+              </div> 
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">

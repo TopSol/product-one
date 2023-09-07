@@ -5,10 +5,10 @@ import Select from "antd/es/select";
 import "./style.css";
 import { Button } from "antd";
 import { db } from "@/app/firebase";
-import { getDoc, doc, setDoc } from "firebase/firestore";
-
+import { getDoc, doc, setDoc,getDocs,collection} from "firebase/firestore";
+import { getFormatDates } from "@/app/utils";
 function Availability() {
-  const { Venues, dates, lunchDinner, userInformation } = useStore();
+  const { Venues, dates, lunchDinner, userInformation,addDates } = useStore();
   const [selectedDates, setSelectedDates] = useState([]);
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectVenue, setSelectVenue] = useState("");
@@ -31,6 +31,68 @@ function Availability() {
       value: 3,
     },
   ]);
+  console.log(lunchDinner,"lunchDinner",)
+  function convertTimestampsToDate(data) {
+    // Loop through the top-level dates object keys
+    Object.keys(data.dates).forEach((venueId) => {
+      // Loop through the meal types (e.g., "Diner", "Lunch")
+      Object.keys(data.dates[venueId]).forEach((mealType) => {
+        // Map each timestamp object to JavaScript Date objects
+        data.dates[venueId][mealType] = data.dates[venueId][mealType].map((timestamp) => {
+          const seconds = timestamp.seconds;
+          const nanoseconds = timestamp.nanoseconds;
+          return new Date(seconds * 1000 + nanoseconds / 1000000);
+        });
+      });
+    });
+  
+    return data;
+  }
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await getDocs(collection(db, "bookDate"));
+        const tempArray = response.docs
+          .filter((doc) => userInformation.userId === doc.data().id)
+          .map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }));
+          const convertedData = convertTimestampsToDate(tempArray[0]);
+          addDates(convertedData)
+           console.log("convertedData",convertedData?.dates);
+        //   console.log(tempArray,"tempArray")
+        //   tempArray.map((item) => {
+        //     console.log(item,"nnnnnn")
+        //     Venues.map((item2) => {
+        //       const venueId = item2.id;
+        //       console.log(venueId, "venueId");
+        //       Object.values(item).map((item1) => {
+        //         const lunch = ["Diner", "Lunch"];
+        //         lunch.map((val) => {
+        //         let convertedData = {
+        //         }
+        //         // Check if the date is available for the specific venue and meal type
+        //         if (item1 && item1[venueId] && item1[venueId][val]) {
+        //           // Assuming getFormatDates is a function that formats dates
+        //           const formattedDates = getFormatDates(item1[venueId][val]);
+        //           convertedData[venueId] = formattedDates
+        //           console.log(formattedDates, "formattedDates");
+        //         }
+        //       });
+        //     });
+        //   });
+        // });
+        // console.log("convertedData",convertedData)
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+  
+    // Call the fetchBlogs function inside the useEffect with an empty dependency array
+    fetchBlogs();
+  }, []);
+  
   useEffect(() => {
     const VenueName = Venues.map((item) => ({
       value: item.id,
@@ -61,6 +123,7 @@ function Availability() {
       id: venueDate.userId,
       dates: venueDates,
     };
+    console.log(venueDates,"venueDatesvenueDates")
     try {
       await setDoc(doc(db, "bookDate", venueDate.userId), NotAvailableDate);
       console.log("Document successfully updated!");
@@ -170,8 +233,7 @@ function Availability() {
               value={lunchType}
 
             />
-            {
-              showButton && <div className=" ml-auto mr-2 flex justify-center items-center">
+            <div className=" ml-auto mr-2 flex justify-center items-center">
                 <Button
                   onClick={() => SendDateInFirebase(selectedVenue)}
                   className="bg-primary text-white mr-3 px-6"
@@ -185,7 +247,7 @@ function Availability() {
                   Delete Dates
                 </Button>
               </div>
-            }
+            
 
           </div>
 

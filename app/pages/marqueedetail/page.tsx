@@ -155,7 +155,7 @@ function Marqueedetail() {
     backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
     color: "#aaa", // Set your desired text color for disabled dates
   };
-
+console.log(data,"data")
 
   return (
     <div>
@@ -216,8 +216,10 @@ function Marqueedetail() {
               }
             />
           )}
-
-          <div className="mx-3 sm:grid-cols-2 md:flex justify-between items-center mt-7 mb-10 text-textColor font-roboto">
+          <div>
+            <p>{data?.description}</p>
+          </div>
+          {/* <div className="mx-3 sm:grid-cols-2 md:flex justify-between items-center mt-7 mb-10 text-textColor font-roboto">
             <div className="flex items-center text-[14px] sm:w-full md:w-auto md:flex-none mb-4 md:mb-0">
               <FontAwesomeIcon
                 className="bg-bgColor p-3 text-textColor rounded-lg"
@@ -261,9 +263,9 @@ function Marqueedetail() {
                 <p className="font-bold">100 m²</p>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <p className=" font-roboto text-textColor text-justify ">
+          {/* <p className=" font-roboto text-textColor text-justify ">
             Aliquam erat volutpat. Morbi semper tempus quam. Aenean quis porta
             velit. Aliquam dictum neque lobortis ipsum hendrerit facilisis.
             Curabitur vel sapien convallis, convallis metus id, facilisis metus.
@@ -303,9 +305,9 @@ function Marqueedetail() {
             elementum magna. Interdum et malesuada fames ac ante ipsum primis in
             faucibus. Ut viverra arcu a metus interdum, at laoreet elit
             accumsan.
-          </p>
+          </p> */}
 
-          <div className="font-roboto mt-24">
+          {/* <div className="font-roboto mt-24">
             <p className="font-bold m-3">Room Reviews</p>
             <div className="m-3">
               <div className="flex items-start">
@@ -389,7 +391,7 @@ function Marqueedetail() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="lg:w-[30%] ml-5">
           <div className="-ml-6 lg:ml-0">

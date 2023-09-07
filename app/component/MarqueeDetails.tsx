@@ -178,7 +178,7 @@ function MarqueeDetails({ item, showMessage }) {
               onClick={() => {
                 handleClick(item?.data?.id);
                 getDates(item?.id);
-                handleVenueName(name[0].value);
+                handleVenueName(name[0]?.value);
               }}
             >
               <p className="font-roboto text-xl items-center">
@@ -218,8 +218,8 @@ function MarqueeDetails({ item, showMessage }) {
                       marginBottom: 20,
                     }}
                     defaultValue={{
-                      value: name[0].value,
-                      label: name[0].label,
+                      value: name[0]?.value,
+                      label: name[0]?.label,
                     }}
                     placeholder="Search to Select"
                     size="large"

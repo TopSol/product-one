@@ -10,7 +10,7 @@ function MarqueeAvailability({
   setClickedIndex,
   clickedIndex,
   venus,
-}) {
+}) {  
   const handleClick = (item, index) => {
     setClickedIndex(index);
     setSelectedHall(item);

@@ -3,6 +3,7 @@ import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useStore } from "@/store";
+import { getFormatDates } from "@/app/utils";
 const localizer = momentLocalizer(moment);
 const MultipleDaySelectCalendar = ({
   selectedVenue,
@@ -72,6 +73,9 @@ const MultipleDaySelectCalendar = ({
       style: style,
     };
   };
+  const originalDates=lunchDinnerDate?.[selectedVenue]?.[lunchType]
+  const dadta=getFormatDates(originalDates)
+  console.log(dadta,"originalDates")
   return (
     <div>
       <Calendar
@@ -83,7 +87,8 @@ const MultipleDaySelectCalendar = ({
         localizer={localizer}
         events={lunchType === "All" ? allDate?.map(
           (data) => (data)
-        ) : lunchDinnerDate?.[selectedVenue]?.[lunchType]?.map(
+        ): getFormatDates(lunchDinnerDate?.[selectedVenue]?.[lunchType])?.map(
+          // ): lunchDinnerDate?.[selectedVenue]?.[lunchType]?.map(
           (date) => ({
             start: date,
             end: date,

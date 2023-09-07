@@ -73,9 +73,7 @@ function Venues({
   };
 
   useEffect(() => {
-
-
-    const fetchBlogs = async () => {
+   const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Venues"));
         const tempArray = response.docs
@@ -198,7 +196,7 @@ function Venues({
           addVenues([...Venues, { ...updatedUser, id: venueId }]);
         }
       } catch (error) {
-        console.log(error, "error");
+        console.log(error, "error"); 
       }
     }
     setModalOpen(false);
@@ -302,7 +300,7 @@ function Venues({
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                <Image
+                <Image 
                   width={80}
                   height={60}
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}

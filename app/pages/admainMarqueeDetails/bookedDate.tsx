@@ -278,7 +278,20 @@ function BookedDate() {
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Dishes</p>
           <div className="flex flex-col ">
-            {detailsData?.dates?.map((item) => {
+          {detailsData?.dates &&
+              typeof detailsData?.dates === "object" &&
+              Object.values(detailsData.dates).map((item) => {
+                const dates = getFormatDates([item]);
+                const date = new Date(dates);
+                const formattedDate = `${(date.getMonth() + 1)
+                  .toString()
+                  .padStart(2, "0")}-${date
+                  .getDate()
+                  .toString()
+                  .padStart(2, "0")}-${date.getFullYear()}`;
+                return <p className="w-[100%]">{formattedDate}</p>;
+              })}
+            {/* {detailsData?.dates?.map((item) => {
               const dates = getFormatDates([item]);
               const date = new Date(dates);
               const formattedDate = `${(date.getMonth() + 1)
@@ -288,7 +301,7 @@ function BookedDate() {
                 .toString()
                 .padStart(2, "0")}-${date.getFullYear()}`;
               return <p className="w-[100%]">{formattedDate}</p>;
-            })}
+            })} */}
           </div>
         </div>
       </Modal>

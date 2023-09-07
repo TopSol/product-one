@@ -67,7 +67,8 @@ function Slider() {
       UserInformation: userInformation,
       dates: bookedDates,
       id: fieldId,
-      marqueeId: id
+      marqueeId: id,
+      services: [],
     };
     console.log("usersdfsdfsdfdsff", users);
     try {
