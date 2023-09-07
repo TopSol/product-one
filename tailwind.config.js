@@ -10,13 +10,21 @@ module.exports = {
       fontFamily: {
         roboto: ["Roboto", "sans-serif"],
         vollkorn: ["Vollkorn", "serif"],
+        poppins: ["Poppins", "sans-serif"],
+        sc:"'Source Code Pro',monospace",
+        Manrope : "'Manrope', sans-serif",
       },
       colors: {
-        primaryColor: "#DEB666",
-
+        primaryColor: "#DDB667",
+        matteBlack : "#545454",
+        primary:"#F59832",
+        lightPrimary: "#F5BE4F",
+        sidebarColor: "#545454",
+        hoverPrimary: "#FFC587",
         secondaryColor: "#32353C",
         bgColor: "#f5f5f5",
         textColor: "#878D8D",
+        textColor2: "##FDFDFD",
         headingColor: "#474747",
         blackColor: "#000",
         WhiteColor: "#ffff",

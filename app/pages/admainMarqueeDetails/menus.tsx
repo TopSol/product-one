@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Input, Popconfirm, Table } from "antd";
-import Loader from "../../component/Loader"; 
+import { Button, Checkbox, Input, List, Popconfirm, Row, Select, Table } from "antd";
+import Loader from "../../component/Loader";
+import DishTable from "./dishTable";
+import Lightbox from "react-image-lightbox";
+// import Image from "next/image";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { Image } from "antd";
+import dots from "@/app/assets/images/dots.svg";
+import Link from "next/link";
 import {
   getStorage,
   ref,
@@ -17,21 +23,32 @@ import {
   setDoc,
   doc,
   deleteDoc,
+  updateDoc
 } from "firebase/firestore";
 import { useStore } from "../../../store";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+const plainOptions = [
+  { label: "Available", value: "Available" },
+  { label: "Not Available", value: "NotAvailable" },
+];
 const initialFormState = {
   name: "",
   image: "",
   price: 0,
   type: "",
   description: "",
- 
+  status: plainOptions[0].value,
 };
-function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
-  const { userInformation, addUser, addMenus, Menus,Dishes } = useStore();
+function Menus({
+  modalOpen,
+  setModalOpen,
+  loading,
+  setLoading,
+  setDeleteMenus,
+  deleteMenus,
+}) {
+  const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
   const { Column } = Table;
@@ -39,14 +56,34 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
   const [addVenuesImage, setAddVenuesImage] = useState([]);
   const storage = getStorage();
   const ImageRef = ref(storage, "images/");
-  const [blogs, setBlogs] = useState([]);
-
+  const [status, setStatus] = useState();
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState([]);
+  const [menu, setMenu] = useState([
+    {
+      label: "Venue Dish",
+      value: "1",
+    },
+    {
+      label: "Drink",
+      value: "2",
+    },
+    {
+      label: "Dessert",
+      value: "3",
+    },
+    {
+      label: "food",
+      value: "4",
+    },
+  ]);
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    setStatus(value);
     setUser((prevState) => ({
       ...prevState,
-      [name]: name == 'price' ? Number(value) : value,
+      [name]: name == "price" ? Number(value) : value,
     }));
   };
   useEffect(() => {
@@ -58,7 +95,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
           });
         });
       })
-      .catch((error) => {});
+      .catch((error) => { });
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Menus"));
@@ -77,6 +114,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
 
     fetchBlogs();
   }, [addVenues]);
+
   const HandleAddVenues = async () => {
     if (
       !user.name ||
@@ -100,7 +138,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
         return utls;
       })
     );
-   
+
     const MenuId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
@@ -110,18 +148,17 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
       menuId: MenuId,
       userId: userInformation.userId,
       price: user.price,
+      status: "Available",
     };
 
     try {
       await setDoc(doc(db, "Menus", MenuId), users);
-      console.log("close2");
     } catch (error) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
 
     setModalOpen(false);
-    console.log("close4");
     setUser(initialFormState);
     setLoading(false);
   };
@@ -142,18 +179,16 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       setUser(docSnap.data());
-      // setSelectedItems(docSnap.data().dishes);
-      console.log("Document data:", docSnap.data());
     } else {
       console.log("No such document!");
     }
   };
   const updateVenue = async (venueId) => {
     setLoading((prevState) => !prevState);
-     if( typeof user?.image[0]==="string"){
+    if (typeof user?.image[0] === "string") {
       try {
         await setDoc(doc(db, "Menus", venueId), user);
-  
+
         const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
         if (updatedIndex !== -1) {
           const updatedMenus = [...Menus];
@@ -168,7 +203,7 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
       setModalOpen(false);
       setUser(initialFormState);
       setOpenEditVenue(false);
-    }else{
+    } else {
       const images = Object.values(user.image);
       const folderName = `images`;
       const urls = await Promise.all(
@@ -178,12 +213,13 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
           await uploadBytes(storageRef, image);
           const url = await getDownloadURL(storageRef);
           return url;
-        }))
-       try {
+        })
+      );
+      try {
         const updatedUser = JSON.parse(JSON.stringify(user));
         updatedUser.image = urls;
         await setDoc(doc(db, "Menus", venueId), updatedUser);
-  
+
         const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
         if (updatedIndex !== -1) {
           const updatedMenus = [...Menus];
@@ -195,155 +231,333 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
       } catch (error) {
         console.log(error, "error");
       }
-  
-      // try {
-      //   await setDoc(doc(db, "Menus", venueId), user);
-      //   const newBlogs = Menus.filter((blog) => blog.id !== venueId);
-      //   console.log(newBlogs,"newBlogs33",user)
-      //   addMenus([...newBlogs,{...user,id:venueId}])
-      // } catch (error) {
-      //   console.log(error, "error");
-      // }
-     
+
     }
     setModalOpen(false);
-      setUser(initialFormState);
-      setOpenEditVenue(false);
-      setLoading((prevState) => !prevState);
+    setUser(initialFormState);
+    setOpenEditVenue(false);
+    setLoading((prevState) => !prevState);
   };
-  console.log(user, "usdddder")
+  const handleMenuSelect = (e) => {
+    switch (e) {
+      case "1":
+        setUser({ ...user, type: "Venue Dish" });
+        break;
+      case "2":
+        setUser({ ...user, type: "Drink" });
+        break;
+      case "3":
+        setUser({ ...user, type: "Dessert" });
+        break;
+      case "4":
+        setUser({ ...user, type: "food" });
+        break;
+      default:
+        break;
+    }
+  };
+  const onChange = (id) => {
+    if (deleteMenus.includes(id)) {
+      const data = deleteMenus.filter((item) => item !== id);
+      setDeleteMenus(data);
+    } else {
+      setDeleteMenus([...deleteMenus, id]);
+    }
+  };
+  const onChangeStatus = async (value, id) => {
+    const convertedString = value
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('');
+    const docRef = doc(db, "Menus", id);
+    await updateDoc(docRef, {
+      status: convertedString,
+    });
+    Menus.map((menu) => {
+      if (menu.menuId === id) {
+        menu.status = convertedString
+      }
+      addMenus(Menus)
+    });
+  }
+  const renderHeader = () => (
+    <div className="header-container flex justify-between text-center">
+      <div className="bg-primary py-4 text-white rounded-tl-lg w-[13%]"></div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white   w-[13%]">Name</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto w-[10%]"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Type</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Description</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Price</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Images</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%]">Status</div>
+      <div className=" flex justify-center bg-primary">
+        <span className="h-6 border-l-2 border-white my-auto"></span>
+      </div>
+      <div className="bg-primary py-4 text-white  w-[13%] rounded-tr-lg  flex justify-end pr-2">Action</div>
+    </div>
+  );
   return (
-    <div className="">
-      <Table dataSource={Menus} className="myTable">
-        <Column title="Name" dataIndex="name" key="name" />
-        <Column title="Type" dataIndex="type" key="type" />
-        <Column title="Description" dataIndex="description" key="description" />
-        <Column title="Price" dataIndex="price" key="price" />
-        <Column
-            title="Images"
-            dataIndex="image"
-            key="image"
-            render={(image) => (
-              <div className="flex">
-                <Image.PreviewGroup
-                >
-                  {image?.map((dish, index) => {
-                    return (
-                      <Image
-                        key={index}
-                        width={80}
-                        height={35}
-                        // visible={false}
-                        style={{ objectFit: "cover", paddingRight: 10 }}
-                        src={dish}
-                        onClick={() => {
-                          Image.previewGroup?.show({
-                            current: index,
-                          });
-                        }}
-                      />
-                    );
-                  })}
-                </Image.PreviewGroup>
-              </div>
-            )}
+    <div className="md:px-10">
+      {/* {renderHeader()}
+      <List
+        dataSource={Menus}
+        renderItem={(Menus, index) => (
+          <DishTable
+            menus={Menus}
+            onChange={onChange}
+            EditVenue={EditVenue}
+            setIsOpen={setIsOpen}
+            setPreviewImage={setPreviewImage}
+            setPhotoIndex={setPhotoIndex}
+            onChangeStatus={onChangeStatus}
           />
-
-        {/* <Column
+        )}
+      /> */}
+      <Table dataSource={Menus} className="myTable" bordered = {false}  >
+          <Column
+          title="Check box"
+          dataIndex="menuId"
+          key="menuId"
+          className="text-base"
+          render={(menuId) => (
+            <div>
+              <Checkbox onClick={() => onChange(menuId)} />
+            </div>
+          )}
+        />
+        <Column title="Name" dataIndex="name" key="name" className="text-base" />
+        <Column title="Type" dataIndex="type" key="type"  className="text-base"/>
+        <Column title="Description" dataIndex="description" key="description"  className="text-base "/>
+        <Column title="Price" dataIndex="price" key="price"  className="text-base"/>
+        <Column
           title="Images"
           dataIndex="image"
           key="image"
           render={(image) => (
-            <div className="flex">
-              {image?.map((dish, index) => {
-                console.log(dish, "dishee");
-                return (
-                  <img
-                    key={index}
-                    src={dish}
-                    alt="img"
-                    width={60}
-                    height={60}
-                    className="mr-2"
-                    onClick={() => handleClick(image, index)}
-                  />
-                );
-              })}
+            
+            <>
+            <div className="flex items-center">
+                <Image 
+                  width={80}
+                  height={60}
+                  src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
+                  alt="Description of the image"
+                />
+                {
+                  <Link
+                    onClick={() => {
+                      setIsOpen(true);
+                      setPreviewImage(image);
+                      setPhotoIndex(0);
+                    }}
+                    className="text-blue-600 underline ml-2"
+                    href=""
+                  >
+                    {image.length > 1 && `${image.length - 1} more`}
+                  </Link>
+                }
+              </div>
+             {/* <div className="flex items-center">
+              <img
+                width={80}
+                height={80}
+                src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
+                alt="Description of the image"
+              />
+              {
+                <Link
+                  onClick={() => {
+                    setPreviewImage(image);
+                    setIsOpen(true);
+                    setPhotoIndex(0);
+                  }}
+                  className="text-blue-600 underline ml-2"
+                  href=""
+                >
+                  {image?.length - 1} more
+                </Link>
+              }
             </div>
+            <div className="flex">
+              <Image.PreviewGroup>
+                {image?.map((dish, index) => {
+                  return (
+                    <Image
+                      key={index}
+                      width={80}
+                      height={35}
+                      // visible={false}
+                      style={{ objectFit: "cover", paddingRight: 10 }}
+                      src={dish}
+                      onClick={() => {
+                        Image.previewGroup?.show({
+                          current: index,
+                        });
+                      }}
+                    />
+                  );
+                })}
+              </Image.PreviewGroup> */}
+            {/* </div> */}
+            </>
+           
           )}
-        /> */}
+        />
+        <Column
+          title="Status"
+          dataIndex="status"
+          key="status"
+          className="text-base"
+          render={(status,record) => (
+            <Select
+              // showSearch
+              className={"status" }
+              // className={`status .ant-select-arrow ${status === "Available" ? "text-red" : "text-#F9E1D7"}`}
+              placeholder="Select a status"
+              optionFilterProp="children"
+              onChange={(value) => onChangeStatus(value, record.menuId)}
+              style={{
+                width: 200,
+                backgroundColor: status === "Available" ? "#D4EAD8" : "#F9E1D7",
+                borderRadius: 15,
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              defaultValue={status}
+              value={status}
+            >
+               {
+                status === "Available" ? (
+                  <Select.Option value="not-available">Not Available</Select.Option>
+                  ) : (
+                  <Select.Option value="available">Available</Select.Option>
+                )
+               }
+            </Select>
+          )}
+        />
         <Column
           title="Action"
           dataIndex="menuId"
           key="menuId"
+          className="text-base"
           render={(menuId) => (
             <div>
-               <Popconfirm
-                  title="Delete Dish?"
-                  description="Are you sure to delete Dish?"
-                  okText="Yes"
-                  cancelText="No"
-                  onConfirm={() => deleteMenu(menuId)} 
-                >
-                  <FontAwesomeIcon
-                    icon={faTrashCan} 
-                    width={15}
-                    // height={15}
-                    className="text-red-500 cursor-pointer text-xl"
-                    // onClick={() => deleteVenue(venueId)}
-                  />
-                </Popconfirm>
+              <Popconfirm
+                title="Delete Dish?"
+                description="Are you sure to delete Dish?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={() => deleteMenu(menuId)}
+              >
+                {/* <FontAwesomeIcon
+                  icon={faTrashCan}
+                  width={15}
+                  // height={15}
+                  className="text-red-500 cursor-pointer text-xl"
+                  // onClick={() => deleteVenue(venueId)}
+                />  */}
+              </Popconfirm>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 className="ml-3 text-green-500 text-xl"
-                width={15}
-                // height={30}
+                width={25}
                 onClick={() => EditVenue(menuId)}
               />
             </div>
           )}
-        />
-      </Table>
-      
+        /> 
+     </Table>  
+
       <Modal
-        className="text-center"
+        className=" modal  w-full text-center"
         centered
         open={modalOpen}
-        // onOk={() =>
-        //   openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
-        // }
         onCancel={() => setModalOpen(false)}
-        width={700}
-        bodyStyle={{ height: 800 }}
+        closeIcon={
+          <div className=" right-2 ">
+            <svg
+              onClick={() => setModalOpen(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width={20}
+              height={20}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>{" "}
+          </div>
+        }
+        width={600}
+        bodyStyle={{ height: 620, padding: 0 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
-          <Button key="cancel" onClick={() => setModalOpen(false)}>
-            Cancel
-          </Button>,
-          <Button key="ok" type="primary" onClick={() =>
-            openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()} className="bg-blue-500">
-            {
-                  loading ? (
-                    <Loader />
-                  ) : (
-                    "Ok"
-                  ) 
-            }
-            
-          </Button>,
+          <div className="pb-5 mr-3">
+            <Button
+              key="cancel"
+              onClick={() => setModalOpen(false)}
+              className=" border-primary text-primary "
+            >
+              Cancel
+            </Button>
+            <Button
+              key="ok"
+              type="primary"
+              onClick={() =>
+                openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+              }
+              className="AddVenue  bg-primary text-white"
+            >
+              {loading ? <Loader /> : "Add"}
+            </Button>
+          </div>,
         ]}
       >
         <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
-          <div className="mr-auto">
-            <p className="text-2xl">Dish</p>
+          <div className="mr-auto bg-primary w-full flex rounded-t-lg">
+            <Image
+              alt="sdf"
+              src={dots}
+              width={40}
+              height={40}
+              className="ml-3"
+            />
+            <p className="text-xl pl-3 text-white py-4"> Add Dish</p> 
           </div>
-          <hr className="w-full bg-black my-3" />
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[100%]  justify-center ">
-            <div className="md:justify-between flex flex-col">
-              <label className="text-xl my-1">
-                {" "}
-                <span className="text-red-600">*</span> Name
-              </label>
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Name
+                </p>
+              </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Name"
@@ -351,14 +565,17 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="rounded-none flex w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
-              <label className="text-xl my-1">
-                {" "}
-                <span className="text-red-600">*</span> Images
-              </label>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between">
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_61.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Images
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Basic usage"
                   type="file"
@@ -367,52 +584,99 @@ function Menus({ modalOpen, setModalOpen, handleClick,loading,setLoading }) {
                   onChange={(e) => {
                     setUser({ ...user, image: e.target.files });
                   }}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
-            <div className="md:flex md:justify-between flex flex-col ">
-              <label className="text-xl my-1">Price</label>
-              <div className="mb-6 flex flex-col  md:flex-row md:justify-between">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute  text-lg leading-[100%] z-20 pt-1">
+                  Price
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Minimum Capacity"
                   type="number"
                   name="price"
                   value={user.price}
                   onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
+              </div> 
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Type
+                </p>
               </div>
-              <label className="text-xl my-1">Type</label>
-              <div className="mb-6 flex flex-col  md:flex-row  md:justify-between ">
-                <Input
-                  placeholder="Enter Type Here"
-                  type="text"
-                  name="type"
+              <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Select
+                  className="type "
+                  showSearch
+                  style={{
+                    width: "100%",
+                  }}
+                  placeholder="Search to Select"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
+                  filterSort={(optionA, optionB) =>
+                    optionA.label
+                      .toLowerCase()
+                      .localeCompare(optionB.label.toLowerCase())
+                  }
+                  options={menu}
+                  onChange={handleMenuSelect}
                   value={user.type}
-                  onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
                 />
               </div>
             </div>
-            <div className="mb-6 flex flex-col  md:flex-col  md:justify-between ">
-              <label className="text-xl my-1">Description</label>
-              <div className="flex flex-col  md:flex-row  md:justify-between">
-                <TextArea
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute z-20 left-[19.89px] -mt-3 rounded-3xs bg-white w-[104.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 ">
+                  Description
+                </p>
+              </div>
+              <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
                   rows={4}
-                  maxLength={6}
+                  maxLength={200}
                   placeholder="Enter Description Here"
                   name="description"
                   typeof="text"
                   value={user.description}
                   onChange={handleChange}
-                  className="rounded-none w-full py-2 lg:py-3"
+                  className="border h-[90px] outline-none md:w-[700px] z-10 w-full  py-3 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
           </div>
         </div>
       </Modal>
+
+      {isOpen && (
+        <Lightbox
+          mainSrc={previewImage[photoIndex]}
+          nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
+          prevSrc={
+            previewImage[
+            (photoIndex + previewImage.length - 1) % previewImage.length
+            ]
+          }
+          onCloseRequest={() => setIsOpen(false)}
+          onMovePrevRequest={() =>
+            setPhotoIndex(
+              (photoIndex + previewImage.length - 1) % previewImage.length
+            )
+          }
+          onMoveNextRequest={() =>
+            setPhotoIndex((photoIndex + 1) % previewImage.length)
+          }
+        />
+      )}
     </div>
   );
 }

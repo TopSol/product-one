@@ -1,94 +1,110 @@
-import React, { useState } from "react";
-import data from "./data";
-import ImageLightbox from "react-image-lightbox";
-function MarqueeAvailability({ setSlider,setSelectedHall,selectedHall }) {
-  const [clickedIndex, setClickedIndex] = useState(null);
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [selectImage, setSelectImage] = useState("");
-  // const[selectedHall,setSelectedHall]=useState('')
-  const [isOpen, setIsOpen] = useState(false);
-  const handleClick = (item,index) => {
+import React from "react";
+import chair from "../../assets/images/chair.svg";
+import dollor from "../../assets/images/dollor.svg";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+
+function MarqueeAvailability({
+  setSlider,
+  setSelectedHall,
+  setClickedIndex,
+  clickedIndex,
+  venus,
+}) {  
+  const handleClick = (item, index) => {
     setClickedIndex(index);
-    setSelectedHall(item)
+    setSelectedHall(item);
   };
-  const handleImageModal = (index) => {
-    setSelectImage(data[index].image);
-    setPhotoIndex(index);
-    setIsOpen(true);
-  };
-  const closeLightbox = () => {
-    setIsOpen(false);
-  };
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
   const nextPage = () => {
-  setSlider(1);
+    setSlider(1);
   };
+
   return (
-    <div className="md:container mx-auto ">
-      <div className="flex justify-center">
-        <div className="border p-5 rounded-md mb-2 w-3/4 ">
-          <div className="hidden md:flex justify-around items-center bg-primaryColor py-2.5 rounded-md mb-4">
-            <p className="w-56 text-center text-xl ">Images</p>
-            <p className="w-29 text-center text-xl ">Venue Details</p>
-            <p className="w-28 text-center text-xl ">Availability</p>
-          </div>
-          <div className="h-[510px] overflow-scroll">
-            {data.map((item, index) => ( 
-              <div
-                key={index}
-                className="flex flex-col justify-center  md:flex md:flex-row md:justify-around md:items-center pb-2 border  rounded-md mb-3 md:border-none "
-               >
-                <div className=" md:border md:rounded-md  ">
-                  <div onClick={() => handleImageModal(index)}>
-                    <img
-                      src={item.image}
-                      alt=""
-                      className=" md:w-[200px] md:h-[175px] rounded-t-md  cursor-pointer object-cover "
-                    />
+    <div>
+      <div className="md:container mx-4 md:mx-auto px-32 mt-20 grid gap-16 md:grid-cols-2 font-poppins text-textColor">
+        {venus?.map((item, index) => {
+          return (
+            <div
+              key={index}
+              className="border rounded-xl  flex flex-col-reverse md:flex md:flex-row h-auto md:h-96"
+            >
+              <div className="w-full md:w-[55%] flex flex-col justify-evenly ">
+                <div className="mt-6 md:mt-0 md:text-2xl text-black font-bold mx-8">
+                  <p>{item.select}</p>
+                  <p>{item.name}</p>
+                </div>
+
+                <div className="mx-7 my-6">
+                  <div className="flex items-center text-textColor">
+                    <div>
+                      <Image
+                        src={chair}
+                        alt="Chair"
+                        height={30}
+                        width={30}
+                        className="mr-3"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-bold md:text-xl">Siting Capacity</p>
+                      <p className="underline">
+                        {item.minCapacity} to {item.maxCapacity}
+                      </p>
+                    </div>
                   </div>
-                  <div className="px-2 items-center text-center py-3">
-                    <p> {item.select}</p>
-                    <p> $ {item.price}</p>
+
+                  <div className="text-textColor flex items-center mt-4">
+                    <div>
+                      <Image
+                        src={dollor}
+                        alt="dollor"
+                        height={30}
+                        width={30}
+                        className="mr-3"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-bold md:text-xl">Price</p>
+                      <p className="underline">{item.price}</p>
+                    </div>
                   </div>
                 </div>
-                <div className=" flex flex-col justify-center mx-auto md:-mt-5 md:flex md:flex-col md:justify-center ">
-                  <p className="">Siting Capacity</p>
-                  <p className="text-center border p-3 w-28 bg-slate-300 rounded-md">{item.capacity}</p>
-                </div>
-                <div className={` border p-3 rounded-md w-28 text-center mt-3  md:mt-0 flex justify-center mx-auto md:block  ${
-                    clickedIndex === index ? "bg-red-500" : "bg-primaryColor"
+                <div
+                  className={`w-32 py-2 my-6 rounded-md text-center flex justify-center mx-auto items-center text-white font-bold cursor-pointer hover:bg-hoverPrimary ${
+                    clickedIndex === index
+                      ? "bg-hoverPrimary"
+                      : "bg-primaryColor"
                   }`}
-                  onClick={() => handleClick(item,index)}>
-                 <p>
-                 {item.availability}
-                  </p> 
+                  onClick={() => {
+                    handleClick(item, index)
+                    nextPage()
+                  }}
+                >
+                  <p className="">Select</p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="w-full md:w-[45%]">
+                <img
+                  src={item.image}
+                  alt=""
+                  className="w-[100%] h-[100%] object-cover rounded-tr-xl rounded-tl-xl md:rounded-tl-none md:rounded-br-lg cursor-pointer  "
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
-
-      {isOpen && (
-        <ImageLightbox
-          mainSrc={selectImage}
-          nextSrc={data[(photoIndex + 1) % data.length].image}
-          prevSrc={data[(photoIndex + data.length - 1) % data.length].image}
-          onCloseRequest={closeLightbox}
-          onMovePrevRequest={() =>
-            setPhotoIndex((photoIndex + data.length - 1) % data.length)
-          }
-          onMoveNextRequest={() =>
-            setPhotoIndex((photoIndex + 1) % data.length)
-          }
-        />
-      )}
-      <div className="flex justify-end ">
-        <button
-          className="border px-7 py-2 bg-bgColor rounded-md"
+      <div className="flex justify-end w-3/4 mx-auto">
+        {/* <button
+          className="border px-8 py-2 my-3 bg-bgColor rounded-md"
           onClick={() => nextPage()}
         >
           Next
-        </button>
+        </button> */}
       </div>
     </div>
   );

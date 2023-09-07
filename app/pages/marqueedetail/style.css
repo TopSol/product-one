@@ -1,4 +1,4 @@
-.combinedClasses  .rdp-months {
+.combinedClasses .rdp-months {
     background-color: #f5f5f5;
     margin-top: -5px;
     padding-left: 10px;
@@ -9,19 +9,32 @@
     justify-content: center;
 }
 
-.combinedClasses .rdp-day_selected{
+.rdp {
+    width: 96%;
+}
+
+/* .rdp .combinedClasses2 {
+    width: 96%;
+} */
+
+.combinedClasses .rdp-day_selected {
     background-color: orange;
-    border-radius: 0 ;
+    border-radius: 0;
 }
 
 
 .combinedClasses .rdp-button_reset {
-    margin: 2px  6px ;
+    margin: 2px 6px;
 }
-.combinedClasses  .rdp-caption{
+
+.combinedClasses .rdp-caption {
     padding-top: 10px;
 }
 
+.DayPicker-Day--disabled {
+    background-color: red;
+    color: #aaa;
+}
 
 
 .combinedClasses2 .rdp-months {
@@ -34,14 +47,52 @@
     display: flex;
     justify-content: center;
 }
-.combinedClasses2 .rdp-day_selected{
+
+.combinedClasses2 .rdp-day_selected {
     background-color: blue;
-    border-radius: 0 ;
+    border-radius: 0;
 }
 
 .combinedClasses2 .rdp-button_reset {
-    margin: 2px  6px ;
+    margin: 2px 6px;
 }
-.combinedClasses-custom2  .rdp-caption{
+
+.combinedClasses-custom2 .rdp-caption {
     padding-top: 10px;
+}
+
+@media only screen and (max-width: 380px) {
+
+    .combinedClasses .rdp-months {
+        width: 295px;
+        margin-left: -15px;
+        background: #f5f5f5;
+        margin-top: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        display: block;
+    }
+
+    .combinedClasses .rdp-button_reset {
+        margin: 0px 0px;
+
+    }
+
+    .combinedClasses2 .rdp-months {
+        width: 295px;
+        margin-left: -15px;
+        background: #f5f5f5;
+        margin-top: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        display: block;
+
+    }
+
+    .combinedClasses2 .rdp-button_reset {
+        margin: 0px 0px;
+
+    }
 }

@@ -1,27 +1,26 @@
 "use client";
-import React, { useState } from "react";
-import Herro from "@/app/component/Herro";
-import GalleryCard from "../../component/galleryItem/galleryCard";
-import { Data, ReviewData, Images } from "./Data";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { useState } from "react";
+import { Data, ReviewData } from "./Data";
+import { useRouter } from "next/navigation";
+import { useStore } from "@/store";
 import Review from "../../component/review";
 import Footer from "@/app/component/footer";
-import { useRouter } from "next/navigation";
+import Herro from "@/app/component/Herro";
+import GalleryCard from "../../component/galleryItem/galleryCard";
 
 export default function landingPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const currentPost = Data.slice(0, 8);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = useRouter();
 
   const handleImage = (index: any) => {
     setSelectedImage(index);
   };
+
   return (
     <div>
-      {/* <Navbar /> */}
       <Herro />
       <div className="bg-bgColor pb-24 pt-24">
         <div className="md:container mx-auto ">
@@ -188,7 +187,6 @@ export default function landingPage() {
           </div>
         </div>
       </div>
-      {/* footer */}
       <Footer />
     </div>
   );

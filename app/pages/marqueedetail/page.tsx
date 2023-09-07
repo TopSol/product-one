@@ -1,59 +1,161 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DayPicker } from "react-day-picker";
+import { doc, getDoc, query } from "firebase/firestore";
+import { db } from "@/app/firebase";
+import { useStore } from "@/store";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Select } from "antd";
+import { getFormatDates } from "@/app/utils";
+import { faCalendarDays, faPerson, faBed, faMap, faStar, } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
-import { faPerson } from "@fortawesome/free-solid-svg-icons";
-import { faBed } from "@fortawesome/free-solid-svg-icons";
-import { faMap } from "@fortawesome/free-solid-svg-icons";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
 import ImageLightbox from "react-image-lightbox";
-import Link from 'next/link';
-import "react-image-lightbox/style.css";
-import { DayPicker } from "react-day-picker";
+import NextLink from "next/link";
+import Loader from "@/app/component/Loader";
 import "react-day-picker/dist/style.css";
-import { BookedLunch, BookedDinner } from "./data";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import "react-day-picker/dist/style.css";
+import "react-image-lightbox/style.css";
 import "./style.css";
+
 function Marqueedetail() {
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates } = useStore();
+  let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isLunch, setIsLunch] = useState<any>();
-  const [days, setDays] = useState<any>([]);
   const [selectedOption, setSelectedOption] = useState("");
+  const [data, setData] = useState();
+  const [isShow, setIsShow] = useState(false);
+  const [bookDates, setBookDates] = useState();
+  const [dates, setDates] = useState([]);
+  const [days, setDays] = useState<any>([]);
+  const [marqueeDates, setMarqueeDates] = useState([]);
+  const [venueId, setVenueId] = useState();
+  const [loading, setLoading] = useState(false);
+  const [meal, setMeal] = useState("Lunch");
+  const [lunchDinner, setLunchDinner] = useState<any>([
+    { value: "1", label: "Lunch" },
+    { value: "2", label: "Diner" },
+  ]);
 
-  const images = [
-    "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg",
-    "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6480202-scaled.jpg",
-    "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6198654-scaled.jpg",
-    "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271614-scaled.jpg",
-    "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-max-vakhtbovych-6538894-scaled.jpg",
-  ];
-   
   const handleClick = (index: any) => {
-    setSelectImage(images[index]);
+    setSelectImage(data?.images[index]);
     setPhotoIndex(index);
   };
 
   const closeLightbox = () => {
     setIsOpen(false);
   };
-  const handleCheck = (event: any) => {
-    const selectedValue = event.target.value;
-    setSelectedOption(selectedValue);
-    if (selectedValue == "Lunch") {
-      setDays(BookedLunch);
-      setIsLunch('Lunch');
-    } else if (selectedValue == "Dinner") {
-      setDays(BookedDinner);
-      setIsLunch('Dinner');
+
+  const id = searchParams.get("id");
+
+  const handleButton = () => {
+    addBookedDates(marqueeDates);
+    setLoading(true);
+  };
+  console.log(marqueeDates,"vmarqueeDates");
+  
+  const getDocById = async (id) => {
+    try {
+      const docRef = doc(db, "users", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setData(docSnap.data());
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error :", error);
     }
   };
 
-  
+  useEffect(() => {
+    getDocById(id);
+  }, [id]);
 
+  const getCollection = async (id) => {
+    try {
+      const docRef = doc(db, "BookDate", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setBookDates(docSnap.data());
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error :", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      getCollection(id);
+      handleVenueName(marqueeVenueNames[0]?.value);
+    }
+  }, [id]);
+
+  const handleCheck = (event, item) => {
+    console.log(event, "event", item);
+    const selectedValue = event?.target?.value || event;
+    console.log(selectedValue, "selectedValue");
+    setSelectedOption(selectedValue);
+    if (selectedValue == "Lunch") {
+      setDays(item);
+      setIsLunch("Lunch");
+    } else if (selectedValue == "Diner") {
+      setDays(item);
+      setIsLunch("Diner");
+    }
+  };
+
+  const handleVenueName = (id, lunchProps = "Lunch") => {
+    setVenueId(id);
+    console.log(marqueeVenueDates, "marqueeVenueDates");
+    const reserveDate = marqueeVenueDates.map((item) => {
+      return {
+        id,
+        dates: {
+          Diner: getFormatDates(item.dates[id]?.Diner),
+          Lunch: getFormatDates(item.dates[id]?.Lunch),
+        },
+      };
+    });
+    console.log(reserveDate, "reserveDate");
+    setBookDates(reserveDate);
+    {
+      lunchProps == "Diner"
+        ? handleCheck(lunchProps, reserveDate[0]?.dates?.Diner)
+        : handleCheck(lunchProps, reserveDate[0]?.dates?.Lunch);
+    }
+  };
+
+  const handleVenueType = (e) => {
+    e == "1" ? handleVenueName(venueId, "Lunch") : handleVenueName(venueId, "Diner");
+  };
+
+  const datess = bookDates?.dates || [];
+  useEffect(() => {
+    if (!Array.isArray(datess)) {
+      console.error("datess is not a valid array");
+    } else {
+      const formattedDates = datess.map((v, i) => v.toDate());
+      console.log(formattedDates, "format");
+
+      setDates(formattedDates);
+    }
+  }, [datess.length]);
+
+
+
+  const disabledStyle = {
+    backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
+    color: "#aaa", // Set your desired text color for disabled dates
+  };
+console.log(data,"data")
 
   return (
     <div>
@@ -77,20 +179,16 @@ function Marqueedetail() {
           <div className="">
             <img
               onClick={() => setIsOpen(true)}
-              src={
-                selectImage
-                  ? `${selectImage}`
-                  : "https://demo.himaratheme.com/wp-content/uploads/2022/04/pexels-pixabay-271639-scaled.jpg"
-              }
+              src={selectImage ? `${selectImage}` : `${data?.images?.[0]}`}
               className="rounded  h-[508px] w-full object-cover"
             />
           </div>
-          <div className="  flex justify-between space-x-3 my-3 ">
-            {images.map((src, index) => (
+          <div className="  flex space-x-3 my-3 ">
+            {data?.images?.map((data, index) => (
               <div key={index}>
                 <div onClick={() => handleClick(index)}>
                   <img
-                    src={src}
+                    src={data}
                     alt=""
                     className="w-[170px] h-[100px] rounded-lg cursor-pointer object-cover"
                   />
@@ -98,23 +196,30 @@ function Marqueedetail() {
               </div>
             ))}
           </div>
-
           {isOpen && (
             <ImageLightbox
-              mainSrc={images[photoIndex]}
-              nextSrc={images[(photoIndex + 1) % images.length]}
-              prevSrc={images[(photoIndex + images.length - 1) % images.length]}
+              mainSrc={data?.images[photoIndex]}
+              nextSrc={data?.images[(photoIndex + 1) % data?.images.length]}
+              prevSrc={
+                data?.images[
+                (photoIndex + data?.images.length - 1) % data?.images.length
+                ]
+              }
               onCloseRequest={closeLightbox}
               onMovePrevRequest={() =>
-                setPhotoIndex((photoIndex + images.length - 1) % images.length)
+                setPhotoIndex(
+                  (photoIndex + data?.images.length - 1) % data?.images.length
+                )
               }
               onMoveNextRequest={() =>
-                setPhotoIndex((photoIndex + 1) % images.length)
+                setPhotoIndex((photoIndex + 1) % data?.images.length)
               }
             />
           )}
-
-          <div className="mx-3 sm:grid-cols-2 md:flex justify-between items-center mt-7 mb-10 text-textColor font-roboto">
+          <div>
+            <p>{data?.description}</p>
+          </div>
+          {/* <div className="mx-3 sm:grid-cols-2 md:flex justify-between items-center mt-7 mb-10 text-textColor font-roboto">
             <div className="flex items-center text-[14px] sm:w-full md:w-auto md:flex-none mb-4 md:mb-0">
               <FontAwesomeIcon
                 className="bg-bgColor p-3 text-textColor rounded-lg"
@@ -158,9 +263,9 @@ function Marqueedetail() {
                 <p className="font-bold">100 m²</p>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <p className=" font-roboto text-textColor text-justify ">
+          {/* <p className=" font-roboto text-textColor text-justify ">
             Aliquam erat volutpat. Morbi semper tempus quam. Aenean quis porta
             velit. Aliquam dictum neque lobortis ipsum hendrerit facilisis.
             Curabitur vel sapien convallis, convallis metus id, facilisis metus.
@@ -200,9 +305,9 @@ function Marqueedetail() {
             elementum magna. Interdum et malesuada fames ac ante ipsum primis in
             faucibus. Ut viverra arcu a metus interdum, at laoreet elit
             accumsan.
-          </p>
+          </p> */}
 
-          <div className="font-roboto mt-24">
+          {/* <div className="font-roboto mt-24">
             <p className="font-bold m-3">Room Reviews</p>
             <div className="m-3">
               <div className="flex items-start">
@@ -286,28 +391,76 @@ function Marqueedetail() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="lg:w-[30%] ml-5">
           <div className="-ml-6 lg:ml-0">
-            <div className="w-full  relative">
-              <select onClick={handleCheck} className="w-[96%] outline-none p-2 rounded-md pl-2 appearance-none">
-                <option >Choose Here</option>
-                <option >Lunch</option>
-                <option >Dinner</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center  text-gray-700">
-              <FontAwesomeIcon icon={faAngleDown} className="pr-8"/>
-              </div>
+            <div className="w-[100%]  relative flex justify-between ">
+              <Select
+                showSearch
+                defaultValue={{
+                  value: marqueeVenueNames?.[0]?.value,
+                  label: marqueeVenueNames?.[0]?.label,
+                }}
+                style={{
+                  width: 210,
+                  marginBottom: 20,
+                  borderRadius: 10,
+                }}
+                placeholder="Search to Select"
+                size="large"
+                placement="bottomLeft"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                onChange={(e) => handleVenueName(e)}
+                options={marqueeVenueNames}
+              />
+              <Select
+                showSearch
+                style={{
+                  width: 210,
+                  marginBottom: 20,
+                  borderRadius: 10,
+                }}
+                placeholder="Search to Select"
+                size="large"
+                placement="bottomLeft"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                onChange={(e) => handleVenueType(e)}
+                options={lunchDinner}
+                value={meal}
+              />
+             
             </div>
             <div>
-              <DayPicker
-                className={`${isLunch == `Lunch`? `combinedClasses` : `combinedClasses2`}`}
-                mode="multiple"
-                min={1}
-                selected={days}
-                onSelect={setDays}
-              />
+              <div onClick={() => setIsShow(true)}>
+                <DayPicker
+                  className={`${isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
+                    }`}
+                  mode="range"
+                  disabled={days}
+                  min={2}
+                  max={5}
+                  selected={marqueeDates}
+                  onSelect={setMarqueeDates}
+                />
+              </div>
+             
             </div>
             <div className="flex items-center space-x-2">
               <div className="bg-[orange] p-1 w-1 rounded-full"></div>
@@ -316,11 +469,23 @@ function Marqueedetail() {
               <p>Dinner</p>
             </div>
           </div>
-          <div className="flex bg-gray-50 rounded-lg justify-center p-3">
-          <Link href="/pages/details">Book Now</Link>
-            
-          </div>
-          <img src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg" alt="" className="w-full mt-8" />
+          {isShow && (
+            <div
+              onClick={handleButton}
+              className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer"
+            >
+              <NextLink href={`/pages/details?id=${data?.userId}`} passHref>
+                <div onClick={handleButton}>
+                  {loading ? <Loader /> : " Book Now"}
+                </div>
+              </NextLink>
+            </div>
+          )}
+          <img
+            src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg"
+            alt=""
+            className="w-full mt-8"
+          />
         </div>
       </div>
       <div className="mt-24">
@@ -329,4 +494,5 @@ function Marqueedetail() {
     </div>
   );
 }
+
 export default Marqueedetail;

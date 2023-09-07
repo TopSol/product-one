@@ -1,232 +1,329 @@
-import React, { useState } from "react";
-// import { collection, getDocs, addDoc } from "firebase/firestore";
-// import { db } from "@/app/firebase";
-import { Input } from "antd";
-import { Radio } from "antd";
-import { Checkbox } from "antd";
-const initialFormState = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  address: "",
-  notes: "",
-  PhoneNumber: "",
-};
+import React, { use, useState } from "react";
+import dots from "../../assets/images/dots.svg";
+import userIcon from "../../assets/images/user.svg";
+import email from "../../assets/images/email-1-svgrepo-com.svg";
+import call from "../../assets/images/call.svg";
+import address from "../../assets/images/address-location-map-svgrepo-com 1.svg";
+import notes from "../../assets/images/notes.svg";
+import Image from "next/image";
+import { Input, Checkbox, Radio } from "antd";
+import { useStore } from "@/store";
+import { CheckboxValueType } from "antd/es/checkbox/Group";
+
 function UserInformation({
   setSlider,
   selectedHall,
-  selectedMenu,
+  setUser,
+  user,
+  setSelectedOption,
+  selectedOption,
   setUserInformation,
+  setInputs,
+  inputs,
 }) {
-  const [user, setUser] = useState(initialFormState);
-  const [inputs, setInputs] = useState({
-    Heating: false,
-    Cooling: false,
-    MusicSystem: false,
-  });
-
-  const [selectedOption, setSelectedOption] = useState("");
+  const { addUserInformation } = useStore();
+  const [value, setValue] = useState(1);
+  const plainOptions = ["Heating", "Cooling", "MusicSystem"];
   console.log(selectedHall, "selectedHallselectedHall");
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+  const handleInputChange = (checkedValues: CheckboxValueType[]) => {
+    setUser({ ...user, services: checkedValues });
+    // const { name, checked } = event.target;
+    // setInputs((prevState) => ({
+    //   ...prevState,
+    //   [name]: checked,
+    // }));
   };
 
-  const handleInputChange = (event) => {
-    const { name, checked } = event.target;
-    setInputs((prevState) => ({
-      ...prevState,
-      [name]: checked,
-    }));
+  const handleChange = (e, type) => {
+    if (e.target?.value && !type) {
+      setUser((prevState) => ({
+        ...prevState,
+        [e.target.name]: e.target.value,
+      }));
+    } else {
+      setSelectedOption(type);
+      setUser((prevState) => ({
+        ...prevState,
+        [e.target.name]: type,
+      }));
+    }
   };
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUser((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-  const onChange = (e) => {
-    console.log(`checked = ${e.target.checked}`);
-  };
-  const { TextArea } = Input;
-  // const sendData = async (e) => {
-  //   e.preventDefault();
-  //   const users = {
-  //     firstName: user.firstName,
-  //     lastName: user.lastName,
-  //     email: user.email,
-  //     address: user.address,
-  //     notes: user.notes,
-  //     PhoneNumber: user.PhoneNumber,
-  //     Heating: inputs.Heating,
-  //     Cooling: inputs.Cooling,
-  //     MusicSystem: inputs.MusicSystem,
-  //     selectedOption: selectedOption,
-  //     selectedHall: selectedHall,
-  //     Menu:selectedMenu
-  //   };
-  //   try {
-  //     await addDoc(collection(db, "ContactUs"), users);
-  //     setUser(initialFormState);
-  //   } catch {
-  //     console.log("error");
-  //   }
-  // };
+
   const nextPage = () => {
+    if (
+      !user.firstName ||
+      !user.lastName ||
+      !user.email ||
+      !user.address ||
+      !user.notes ||
+      !user.PhoneNumber ||
+      !user.tableShape||
+      !user.services
+    ) {
+      alert("Please fill all the fields");
+      return;
+    }
+    const phone = user.PhoneNumber;
+    const convertedPhoneNumber = "92" + phone.replace(/^0/, "");
     const users = {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       address: user.address,
       notes: user.notes,
-      PhoneNumber: user.PhoneNumber,
-      Heating: inputs.Heating,
-      Cooling: inputs.Cooling,
-      MusicSystem: inputs.MusicSystem,
+      PhoneNumber: convertedPhoneNumber,
+      services:user.services,
+      // Heating: inputs.Heating,
+      // Cooling: inputs.Cooling,
+      // MusicSystem: inputs.MusicSystem,
+      tableShape: user.tableShape,
     };
     setUserInformation(users);
     setSlider(2);
   };
+
   return (
-    <div className="md:container mx-auto">
-      <div className="border p-5 rounded-md mb-2 flex justify-center items-center  flex-col w-full">
-        <div className="border p-5 rounded-md mb-2 md:w-[74%]">
-          <div className="md:flex md:justify-between">
-              <label className="text-xl">F/Name:</label>
-            <div className="mb-6 flex flex-col md:flex-row md:w-80 md:justify-between">
-              <Input
-                type="firstName"
-                name="firstName"
-                value={user.firstName}
-                onChange={handleChange}
-                className="border lg:-ml-3 rounded-md outline-none"
-              />
+    <div className="md:container mx-auto text-textColor ">
+      <div className="md:w-[70%] mx-4 md:mx-auto border rounded-lg ">
+        <div className="flex w-full bg-primaryColor py-3 rounded-t-lg mx-auto text-white font-semibold text-lg">
+          <Image src={dots} alt="IMage" className="mx-6" />
+          <p>Details</p>
+        </div>
+        <div className="flex items-center justify-center mt-6 mb-8">
+          <hr className="hidden md:block px-8 py-[1px] rounded-lg bg-matteBlack" />
+          <p className="md:mx-16 text-black font-bold">More Details</p>
+          <hr className="hidden md:block px-8 py-[1px] rounded-lg bg-matteBlack" />
+        </div>
+        <div className="mx-3 md:mx-0 font-semibold">
+          <div className=" lg:flex lg:justify-between md:mx-10">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
+                  F/Name
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                  type="firstName"
+                  name="firstName"
+                  value={user.firstName}
+                  onChange={handleChange}
+                  suffix={
+                    <Image
+                      src={userIcon}
+                      alt="User Icon"
+                      className="inline-block h-6 w-6"
+                    />
+                  }
+                  className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
             </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
+                  L/Nmae
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                  type="lastName"
+                  name="lastName"
+                  value={user.lastName}
+                  onChange={handleChange}
+                  suffix={
+                    <Image
+                      src={userIcon}
+                      alt="User Icon"
+                      className="inline-block h-6 w-6"
+                    />
+                  }
+                  className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
+            </div>
+          </div>
 
-              <label className="text-xl">L/Name:</label>
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              <Input
-                type="lastName"
-                name="lastName"
-                value={user.lastName}
-                onChange={handleChange}
-                className="border  rounded-md outline-none"
-              />
+          <div className="lg:flex lg:justify-between md:mx-10">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
+                  Email
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                  type="email"
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
+                  suffix={
+                    <Image
+                      src={email}
+                      alt="User Icon"
+                      className="inline-block h-6 w-6"
+                    />
+                  }
+                  className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
+                  Phone
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                  type="PhoneNumber"
+                  name="PhoneNumber"
+                  value={user.PhoneNumber}
+                  onChange={handleChange}
+                  suffix={
+                    <Image
+                      src={call}
+                      alt="User Icon"
+                      className="inline-block h-6 w-6"
+                    />
+                  }
+                  className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
             </div>
           </div>
-          <div className="md:flex md:justify-between  ">
-              <label className="text-xl">Email:</label>
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              <Input
-                type="email"
-                name="email"
-                value={user.email}
-                onChange={handleChange}
-                className="border  rounded-md outline-none"
-              />
-            </div>
-              <label className="text-xl">Phone:</label>
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              <Input
-                type="PhoneNumber"
-                name="PhoneNumber"
-                value={user.PhoneNumber}
-                onChange={handleChange}
-                className="border rounded-md outline-none"
-              />
-            </div>
-          </div>
-          <div className="md:flex md:justify-between  ">
-              <label className="text-xl">Notes:</label>
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-               <TextArea rows={4} 
-                name="notes"
-                value={user.notes}
-                onChange={handleChange}
-                className="border rounded-md outline-none"
-              />
-            </div>
 
-              <label className="text-xl">Address:</label>
-            <div className="mb-6 flex flex-col  md:flex-row md:w-80 md:justify-between">
-              < TextArea rows={4} 
-                name="address"
-                value={user.address}
-                onChange={handleChange}
-                className="border  rounded-md outline-none"
-              />
+          <div className="lg:flex lg:justify-between md:mx-10">
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
+                  Notes
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                  rows={4}
+                  name="notes"
+                  value={user.notes}
+                  onChange={handleChange}
+                  suffix={
+                    <Image
+                      src={notes}
+                      alt="User Icon"
+                      className="inline-block h-6 w-6"
+                    />
+                  }
+                  className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col items-start relative md:mt-3 mt-4">
+              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[80.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
+                  Address
+                </p>
+              </div>
+              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+                <Input
+                  rows={4}
+                  name="address"
+                  value={user.address}
+                  onChange={handleChange}
+                  suffix={
+                    <Image
+                      src={address}
+                      alt="User Icon"
+                      className="inline-block h-6 w-6"
+                    />
+                  }
+                  className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              </div>
             </div>
           </div>
         </div>
-        <div className="border p-5 rounded-md mb-2 md:w-2/4">
-          <p>All available services</p>
-          <div className="flex flex-col">
-            <Checkbox
-              onChange={onChange}
-              type="checkbox"
-              name="Heating"
-              checked={inputs.Heating}
-              onChange={handleInputChange}
-            >
-              Heating
-            </Checkbox>
-            <Checkbox
-              onChange={onChange}
-              type="checkbox"
-              name="Cooling"
-              checked={inputs.Cooling}
-              onChange={handleInputChange}
-            >
-              Cooling
-            </Checkbox>
-            <Checkbox
-              onChange={onChange}
-              type="checkbox"
-              name="MusicSystem"
-              checked={inputs.MusicSystem}
-              onChange={handleInputChange}
-            >
-              Music System
-            </Checkbox>
+
+        <div className="flex flex-col  md:flex md:flex-row items-center justify-between my-4 md:mx-5">
+          <div className="border p-5 rounded-xl mb-2 w-[95%] mx-4 md:w-96">
+            <p className="font-semibold mb-3">All available services</p>
+            <div className="flex flex-col justify-evenly">
+                <Checkbox.Group
+                  options={plainOptions}
+                  value={user.services as CheckboxValueType[]}
+                  onChange={handleInputChange}
+                  className=" outline-none md:w-[700px] w-full flex-col  z-10   py-5  flex  text-xs "
+                />
+              {/* <Checkbox
+                type="checkbox"
+                name="Heating"
+                checked={inputs.Heating}
+                onChange={handleInputChange}
+              >
+                Heating
+              </Checkbox>
+              <Checkbox
+                type="checkbox"
+                name="Cooling"
+                checked={inputs.Cooling}
+                onChange={handleInputChange}
+                className="my-2"
+              >
+                Cooling
+              </Checkbox>
+              <Checkbox
+                type="checkbox"
+                name="MusicSystem"
+                checked={inputs.MusicSystem}
+                onChange={handleInputChange}
+              >
+                Music System
+              </Checkbox> */}
+            </div>
+          </div>
+
+          <div className="border p-5 rounded-xl  mb-2 w-[95%] mx-4 md:w-96 ">
+            <p className="font-semibold mb-3">Setting Arrangement</p>
+            <div className="flex flex-col text-textColor">
+              <Radio
+                type="radio"
+                value="roundTable"
+                name="tableShape"
+                checked={selectedOption === "roundTable" ? true : false}
+                onChange={(e) => handleChange(e, "roundTable")}
+              >
+                Round Table
+              </Radio>
+              <Radio
+                type="radio"
+                value="straitTable"
+                name="tableShape"
+                checked={selectedOption === "straitTable" ? true : false}
+                onChange={(e) => handleChange(e, "straitTable")}
+                className="my-2"
+              >
+                Strait Table
+              </Radio>
+              <Radio
+                type="radio"
+                value="squareTable"
+                name="tableShape"
+                checked={selectedOption === "squareTable" ? true : false}
+                onChange={(e) => handleChange(e, "squareTable")}
+              >
+                Square Table
+              </Radio>
+            </div>
           </div>
         </div>
-        <div className="border p-5 rounded-md mb-2 md:w-2/4">
-          <p>Setting Arrangement</p>
-          <div className="flex flex-col">
-            <Radio
-              type="radio"
-              value="roundTable"
-              checked={selectedOption === "roundTable"}
-              onChange={handleOptionChange}
-            >
-              Round Table
-            </Radio>
-            <Radio
-              type="radio"
-              value="straitTable"
-              checked={selectedOption === "straitTable"}
-              onChange={handleOptionChange}
-            >
-              Strait Table
-            </Radio>
-            <Radio
-              type="radio"
-              value="squareTable"
-              checked={selectedOption === "squareTable"}
-              onChange={handleOptionChange}
-            >
-              Square Table
-            </Radio>
-          </div>
+
+        <div className="flex justify-center ">
+          <button
+            className="border px-9 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
+            onClick={() => nextPage()}
+          >
+            Next
+          </button>
         </div>
-      </div>
-      <div className="flex justify-end ">
-        <button
-          className="border px-7 py-3 bg-bgColor rounded-md"
-          onClick={() => nextPage()}
-        >
-          Next
-        </button>
       </div>
     </div>
   );
