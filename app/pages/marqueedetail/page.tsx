@@ -21,7 +21,7 @@ import "react-image-lightbox/style.css";
 import "./style.css";
 
 function Marqueedetail() {
-  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates } = useStore();
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates, getMarqueeImage } = useStore();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -57,14 +57,15 @@ function Marqueedetail() {
     addBookedDates(marqueeDates);
     setLoading(true);
   };
-  console.log(marqueeDates,"vmarqueeDates");
   
   const getDocById = async (id) => {
     try {
       const docRef = doc(db, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setData(docSnap.data());
+        const abc = docSnap.data()
+        setData(abc);
+        getMarqueeImage(abc?.images?.[0])
       } else {
         console.log("No such document!");
       }
@@ -75,6 +76,7 @@ function Marqueedetail() {
 
   useEffect(() => {
     getDocById(id);
+
   }, [id]);
 
   const getCollection = async (id) => {
@@ -155,13 +157,12 @@ function Marqueedetail() {
     backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
     color: "#aaa", // Set your desired text color for disabled dates
   };
-console.log(data,"data")
 
   return (
     <div>
       <Navbar />
       <div className="bg-bgColor mt-24">
-        <div className="md:container mx-auto py-5 flex justify-between items-center">
+        <div className="md:container md:mx-auto py-5 flex justify-between items-center mx-3">
           <div>
             <h1 className="font-vollkorn text-4xl text-gray-600">
               Hotel Detail
@@ -175,12 +176,12 @@ console.log(data,"data")
       </div>
 
       <div className="md:container mx-auto flex flex-col lg:flex-row mt-16 ">
-        <div className="lg:w-[70%] ">
+        <div className="lg:w-[70%] mx-3 lg:mx-0">
           <div className="">
             <img
               onClick={() => setIsOpen(true)}
               src={selectImage ? `${selectImage}` : `${data?.images?.[0]}`}
-              className="rounded  h-[508px] w-full object-cover"
+              className="rounded-lg  h-[508px] w-full object-cover"
             />
           </div>
           <div className="  flex space-x-3 my-3 ">
@@ -216,186 +217,13 @@ console.log(data,"data")
               }
             />
           )}
-          <div>
+          <div className="mb-5 mt-2 lg:mb-0 lg:mt-0">
             <p>{data?.description}</p>
           </div>
-          {/* <div className="mx-3 sm:grid-cols-2 md:flex justify-between items-center mt-7 mb-10 text-textColor font-roboto">
-            <div className="flex items-center text-[14px] sm:w-full md:w-auto md:flex-none mb-4 md:mb-0">
-              <FontAwesomeIcon
-                className="bg-bgColor p-3 text-textColor rounded-lg"
-                icon={faPerson}
-              />
-              <div className="ml-2">
-                <p>Max. Guests</p>
-                <p className="font-bold">2 Adults/3 Children</p>
-              </div>
-            </div>
-
-            <div className="flex items-center text-[14px] sm:w-full md:w-auto md:flex-none mb-4 md:mb-0">
-              <FontAwesomeIcon
-                className="bg-bgColor p-3 text-textColor rounded-lg"
-                icon={faCalendarDays}
-              />
-              <div className="ml-2 text-[#878D8D]">
-                <p>Booking Nights</p>
-                <p className="font-bold">5 min.</p>
-              </div>
-            </div>
-
-            <div className="flex items-center text-[14px] sm:w-full md:w-auto md:flex-none mb-4 md:mb-0">
-              <FontAwesomeIcon
-                className="bg-bgColor p-3 text-textColor rounded-lg"
-                icon={faBed}
-              />
-              <div className="ml-2 text-[#878D8D]">
-                <p>Bed Type</p>
-                <p className="font-bold">King Size</p>
-              </div>
-            </div>
-
-            <div className="flex items-center text-[14px] sm:w-full md:w-auto md:flex-none">
-              <FontAwesomeIcon
-                className="bg-bgColor p-3 text-textColor rounded-lg"
-                icon={faMap}
-              />
-              <div className="ml-2 text-[#878D8D]">
-                <p>Area</p>
-                <p className="font-bold">100 m²</p>
-              </div>
-            </div>
-          </div> */}
-
-          {/* <p className=" font-roboto text-textColor text-justify ">
-            Aliquam erat volutpat. Morbi semper tempus quam. Aenean quis porta
-            velit. Aliquam dictum neque lobortis ipsum hendrerit facilisis.
-            Curabitur vel sapien convallis, convallis metus id, facilisis metus.
-            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-            posuere cubilia curae; Morbi aliquet a lacus ut maximus.
-            Pellentesque a vestibulum risus. Proin non placerat metus, sed
-            molestie nisi. Nulla ornare diam ornare odio varius, sit amet
-            placerat enim Aliquam erat volutpat. Morbi semper tempus quam.
-            Aenean quis porta velit. Aliquam dictum neque lobortis ipsum
-            hendrerit facilisis. Curabitur vel sapien convallis, convallis metus
-            id, facilisis metus. Vestibulum ante ipsum primis in faucibus orci
-            luctus et ultrices posuere cubilia curae; Morbi aliquet a lacus ut
-            maximus. Pellentesque a vestibulum risus. Proin non placerat metus,
-            sed molestie nisi. Nulla ornare diam ornare odio varius, sit amet
-            placerat enim facilisis. Phasellus vel purus quis lorem volutpat
-            lacinia eu a eros, maecenas at erat purus.Etiam vel lectus eu lorem
-            mattis sollicitudin quis at lectus. Donec dignissim nisi sed
-            vestibulum ornare, interdum et malesuada fames ac ante ipsum primis
-            in faucibus. Ut viverra arcu a metus interdum, at laoreet elit
-            accumsan.
-          </p>
-          <p className="font-roboto mt-8 text-textColor text-justify ">
-            Nulla elementum enim quis nisi elementum, a placerat eros accumsan.
-            Mauris aliquet tincidunt erat, at dignissim neque bibendum vel.
-            Donec scelerisque odio at malesuada venenatis. Etiam vel lectus eu
-            lorem mattis sollicitudin quis at lectus. Donec dignissim nisi sed
-            vestibulum ornare. Maecenas volutpat, erat vitae ultricies
-            consequat, augue nisi Aliquam erat volutpat. Morbi semper tempus
-            quam. Aenean quis porta velit. Aliquam dictum neque lobortis ipsum
-            hendrerit facilisis. Curabitur vel sapien convallis, convallis metus
-            id, facilisis metus. Vestibulum ante ipsum primis in faucibus orci
-            luctus et ultrices posuere cubilia curae; Morbi aliquet a lacus ut
-            maximus. Pellentesque a vestibulum risus. Proin non placerat metus,
-            sed molestie nisi. Nulla ornare diam ornare odio varius, sit amet
-            placerat enim varius nulla, facilisis tincidunt ligula tellus vitae
-            tortor. Aenean felis orci, venenatis vel lectus sit amet, maximus
-            elementum magna. Interdum et malesuada fames ac ante ipsum primis in
-            faucibus. Ut viverra arcu a metus interdum, at laoreet elit
-            accumsan.
-          </p> */}
-
-          {/* <div className="font-roboto mt-24">
-            <p className="font-bold m-3">Room Reviews</p>
-            <div className="m-3">
-              <div className="flex items-start">
-                <img
-                  className=" rounded-md  w-[80px] h-[80px]"
-                  src="https://demo.himaratheme.com/wp-content/uploads/2022/05/user7.jpg"
-                  alt=""
-                />
-                <div className=" border-[1px] border-l-8 py-6 pl-7 pr-[55px] ml-4 text-textColor">
-                  <div className="text-yellow-500 my-2 space-x-1">
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                  </div>
-
-                  <p className="text-sm italic">
-                    {" "}
-                    Mabel Hicks - Moscow / Russia
-                  </p>
-                  <p className="my-4">
-                    There's no better way to spend your vacations than at a
-                    stunning, luxurious and world-class hotel! I can't tell you
-                    how many times I've been to a hotel and had an amazing time.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="m-3">
-              <div className="flex items-start">
-                <img
-                  className=" rounded-md  w-[80px] h-[80px]"
-                  src="https://demo.himaratheme.com/wp-content/uploads/2022/05/pexels-sindre-strom-1040881-150x150.jpg"
-                  alt=""
-                />
-                <div className=" border-[1px] border-l-8 py-6 pl-7 pr-[55px] ml-4 text-textColor">
-                  <div className="text-yellow-500 my-2 space-x-1">
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                  </div>
-
-                  <p className="text-sm italic">Ciaran Mccray - Lion / Paris</p>
-                  <p className="my-4">
-                    There's no better way to spend your vacations than at a
-                    stunning, luxurious and world-class hotel! I can't tell you
-                    how many times I've been to a hotel and had an amazing time.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="m-3">
-              <div className="flex items-start">
-                <img
-                  className=" rounded-md  w-[80px] h-[80px]"
-                  src="https://demo.himaratheme.com/wp-content/uploads/2022/05/user9.jpg"
-                  alt=""
-                />
-                <div className=" border-[1px] border-l-8 py-6 pl-7 pr-[55px] ml-4 text-textColor">
-                  <div className="text-yellow-500 my-2 space-x-1">
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                  </div>
-
-                  <p className="text-sm italic">
-                    Gerald Schmidt - Zagreb / Croatia
-                  </p>
-                  <p className="my-4">
-                    There's no better way to spend your vacations than at a
-                    stunning, luxurious and world-class hotel! I can't tell you
-                    how many times I've been to a hotel and had an amazing time.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div> */}
         </div>
-        <div className="lg:w-[30%] ml-5">
-          <div className="-ml-6 lg:ml-0">
-            <div className="w-[100%]  relative flex justify-between ">
+        <div className="lg:w-[30%] mx-3 lg:mx-5">
+          <div className="">
+            <div className=" flex justify-between ">
               <Select
                 showSearch
                 defaultValue={{
@@ -429,6 +257,7 @@ console.log(data,"data")
                   marginBottom: 20,
                   borderRadius: 10,
                 }}
+                className="mr-[6px] lg:mr-0"
                 placeholder="Search to Select"
                 size="large"
                 placement="bottomLeft"
@@ -445,13 +274,13 @@ console.log(data,"data")
                 options={lunchDinner}
                 value={meal}
               />
-             
             </div>
+
             <div>
               <div onClick={() => setIsShow(true)}>
                 <DayPicker
                   className={`${isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
-                    }`}
+                    } w-[100%]`}
                   mode="range"
                   disabled={days}
                   min={2}
@@ -462,7 +291,7 @@ console.log(data,"data")
               </div>
              
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2  lg:mt-0 lg:mb-0">
               <div className="bg-[orange] p-1 w-1 rounded-full"></div>
               <p>Lunch</p>
               <div className="bg-blue-600 p-1 w-1 rounded-full"></div>
@@ -472,7 +301,7 @@ console.log(data,"data")
           {isShow && (
             <div
               onClick={handleButton}
-              className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer"
+              className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor"
             >
               <NextLink href={`/pages/details?id=${data?.userId}`} passHref>
                 <div onClick={handleButton}>
@@ -484,7 +313,7 @@ console.log(data,"data")
           <img
             src="https://demo.himaratheme.com/wp-content/uploads/2022/10/widget_banner-1.jpg"
             alt=""
-            className="w-full mt-8"
+            className="w-full mt-5"
           />
         </div>
       </div>

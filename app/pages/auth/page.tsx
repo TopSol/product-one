@@ -60,7 +60,6 @@ function Login() {
         const user = userCredential.user;
         console.log(user, "signin", user.uid);
         if (user) {
-          console.log("abc");
           registrationInformation(user.uid);
           router.push("/pages/admainMarqueeDetails");
           setLoader(true);

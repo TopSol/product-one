@@ -18,20 +18,16 @@ function UserInformation({
   setSelectedOption,
   selectedOption,
   setUserInformation,
+  checkData,
+  preview,
   setInputs,
   inputs,
 }) {
-  const { addUserInformation } = useStore();
   const [value, setValue] = useState(1);
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
   console.log(selectedHall, "selectedHallselectedHall");
   const handleInputChange = (checkedValues: CheckboxValueType[]) => {
     setUser({ ...user, services: checkedValues });
-    // const { name, checked } = event.target;
-    // setInputs((prevState) => ({
-    //   ...prevState,
-    //   [name]: checked,
-    // }));
   };
 
   const handleChange = (e, type) => {
@@ -57,7 +53,7 @@ function UserInformation({
       !user.address ||
       !user.notes ||
       !user.PhoneNumber ||
-      !user.tableShape||
+      !user.tableShape ||
       !user.services
     ) {
       alert("Please fill all the fields");
@@ -72,14 +68,19 @@ function UserInformation({
       address: user.address,
       notes: user.notes,
       PhoneNumber: convertedPhoneNumber,
-      services:user.services,
-      // Heating: inputs.Heating,
-      // Cooling: inputs.Cooling,
-      // MusicSystem: inputs.MusicSystem,
+      services: user.services,
       tableShape: user.tableShape,
     };
     setUserInformation(users);
-    setSlider(2);
+      if(checkData)
+          {
+            setSlider(1);
+            preview();
+          }
+     else{
+        setSlider(2)
+     }
+    
   };
 
   return (
@@ -247,12 +248,12 @@ function UserInformation({
           <div className="border p-5 rounded-xl mb-2 w-[95%] mx-4 md:w-96">
             <p className="font-semibold mb-3">All available services</p>
             <div className="flex flex-col justify-evenly">
-                <Checkbox.Group
-                  options={plainOptions}
-                  value={user.services as CheckboxValueType[]}
-                  onChange={handleInputChange}
-                  className=" outline-none md:w-[700px] w-full flex-col  z-10   py-5  flex  text-xs "
-                />
+              <Checkbox.Group
+                options={plainOptions}
+                value={user.services as CheckboxValueType[]}
+                onChange={handleInputChange}
+                className=" outline-none md:w-[700px] w-full flex-col  z-10   py-5  flex  text-xs "
+              />
               {/* <Checkbox
                 type="checkbox"
                 name="Heating"

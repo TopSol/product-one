@@ -81,7 +81,7 @@ function MarqueeAvailability({
                   }`}
                   onClick={() => {
                     handleClick(item, index)
-                    nextPage()
+                    nextPage() 
                   }}
                 >
                   <p className="">Select</p>

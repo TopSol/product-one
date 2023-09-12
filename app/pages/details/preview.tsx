@@ -16,14 +16,24 @@ import capacity from "../../assets/images/chair.svg";
 import price from "../../assets/images/dollor.svg";
 import facilites from "../../assets/images/facilites.svg";
 import dish from "../../assets/images/menuIcon.svg";
+import menus from "./data";
 import dots from "@/app/assets/images/dots.svg";
+import { useStore } from "@/store";
 import "./style.css";
 
-function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
+function Preview({
+  hallInformation,
+  sendData,
+  setSuccessPage,
+  openMessage,
+  marqueeImage,
+  userInformation,
+  checkData,
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showFacilities, setShowFacilities] = useState(false);
+  // const [showFacilities, setShowFacilities] = useState(false);
   const [blogs, setBlogs] = useState([]);
-  console.log(hallInformation, "hallInformation");
+  console.log("hallInformation", hallInformation);
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
@@ -33,6 +43,7 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
       console.error("Error fetching blogs:", error);
     }
   };
+  console.log("userInformationnnnnnn", userInformation);
 
   useEffect(() => {
     fetchBlogs();
@@ -44,7 +55,7 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
     openMessage();
   };
 
-  let a = parseInt(hallInformation[0]?.UserInformation?.Heating);
+  let a = parseInt(hallInformation[0]?.userInformation?.Heating);
   let b = parseInt(hallInformation[0]?.Menu?.Heating);
 
   const total = `${hallInformation[0]?.selectedHall?.price} + ${hallInformation[0]?.Menu?.price}`;
@@ -59,16 +70,26 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  console.log(menus.menus[0]?.dish, "Dishes");
+  
 
   return (
     <div className="md:container md:mx-auto mx-3">
       <div className="border w-auto md:w-[700px]  p-3 md:p-8  flex flex-col justify-center mx-auto rounded-xl">
         <div className="flex justify-center object-cover">
-          <img
-            src={`${hallInformation[0]?.selectedHall?.image}`}
-            alt=""
-            className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
-          />
+          {checkData ? (
+            <img
+              src={marqueeImage}
+              alt=""
+              className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
+            />
+          ) : (
+            <img
+              src={hallInformation[0]?.selectedHall?.image}
+              alt=""
+              className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
+            />
+          )}
         </div>
         <div className=" flex justify-center ">
           <div className="w-[100%] md:flex  md:justify-between mx-auto items-center justify-center">
@@ -79,7 +100,16 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Name</p>
-                  <p>{`${hallInformation[0]?.UserInformation?.firstName} ${hallInformation[0]?.UserInformation?.lastName}`}</p>
+                  {checkData ? (
+                    <p>
+                      {userInformation?.firstName} {userInformation?.lastName}
+                    </p>
+                  ) : (
+                    <p>
+                      {hallInformation[0]?.userInformation?.firstName}{" "}
+                      {hallInformation[0]?.userInformation?.lastName}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -88,7 +118,11 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Phone</p>
-                  <p>{`${hallInformation[0]?.UserInformation?.PhoneNumber}`}</p>
+                  {checkData ? (
+                    <p>{userInformation?.PhoneNumber}</p>
+                  ) : (
+                    <p>{hallInformation[0]?.userInformation?.PhoneNumber}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -97,7 +131,11 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Notes</p>
-                  <p>{`${hallInformation[0]?.UserInformation?.notes}`}</p>
+                  {checkData ? (
+                    <p>{userInformation?.notes}</p>
+                  ) : (
+                    <p>{hallInformation[0]?.userInformation?.notes}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -106,7 +144,11 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Capacity</p>
-                  <p> {`${hallInformation[0]?.selectedHall?.maxCapacity}`}</p>
+                  {checkData ? (
+                    <p> {menus.menus[0]?.capacity}</p>
+                  ) : (
+                    <p>{hallInformation[0]?.selectedHall?.maxCapacity}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -114,9 +156,15 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                   <Image src={facilites} alt="Image" />
                 </div>
                 <div className="ml-3">
-                  <p className="font-semibold">Facilites</p>
-                  {hallInformation[0]?.UserInformation?.Heating && (
-                    <p>Heating</p>
+                  <p className="font-semibold">Facilities</p>
+                  {checkData ? (
+                   <p>Heating</p>
+                  ) : (
+                    <div>
+                      {hallInformation[0]?.selectedHall?.services[0] && (
+                        <p>Heating</p>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -129,7 +177,11 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Email</p>
-                  <p>{`${hallInformation[0]?.UserInformation?.email}`}</p>
+                  {checkData ? (
+                    <p>{userInformation?.email}</p>
+                  ) : (
+                    <p>{hallInformation[0]?.userInformation?.email}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -138,7 +190,11 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Address</p>
-                  <p>{`${hallInformation[0]?.UserInformation?.address}`}</p>
+                  {checkData ? (
+                    <p>{userInformation?.address}</p>
+                  ) : (
+                    <p>{hallInformation[0]?.userInformation?.address}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -147,7 +203,11 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Hall Name</p>
-                  <p>{`${hallInformation[0]?.selectedHall?.name}`}</p>
+                  {checkData ? (
+                    <p>{menus.menus[0]?.hall}</p>
+                  ) : (
+                    <p>{hallInformation[0]?.selectedHall?.name}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -156,7 +216,11 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Price</p>
-                  <p> {`${hallInformation[0]?.selectedHall?.price}`}</p>
+                  {checkData ? (
+                    <p> {menus.menus[0]?.price}</p>
+                  ) : (
+                    <p>{hallInformation[0]?.selectedHall?.price}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -172,7 +236,9 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                         className="text-blue-600 underline"
                         href=""
                       >
-                        {hallInformation[0]?.Menu?.dishes.length} Dishes
+                        {checkData
+                          ? `${menus.menus[0]?.dish.length} Dishes `
+                          : `${hallInformation[0]?.Menu?.dishes?.length} Dishes`}
                       </Link>
                     }
 
@@ -183,9 +249,13 @@ function Preview({ hallInformation, sendData, setSuccessPage, openMessage }) {
                       onCancel={handleCancel}
                     >
                       {" "}
-                      {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
+                      {checkData
+                          ? menus.menus[0]?.dish.map(
+                            (item, index) => <li key={index}>{item}</li>
+                          )
+                        :  hallInformation[0]?.Menu?.dishes?.map((item, index) => (
+                            <li key={index}>{item}</li>
+                          ))}
                     </Modal>
                   </div>
                 </div>

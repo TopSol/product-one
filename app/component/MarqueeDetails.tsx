@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
 import { Radio, Select } from "antd";
-import { faAngleDown, faLocationDot, faStar, } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDown,
+  faLocationDot,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import { getFormatDates } from "@/app/utils";
 import { collection, getDocs } from "firebase/firestore";
@@ -43,12 +47,16 @@ function MarqueeDetails({ item, showMessage }) {
     const asd = venuesData?.filter((item) => {
       return item?.data?.userId === id;
     });
+    console.log(asd, "asdasd");
+
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
     }));
+    console.log(marqueeVenueName, "marqueeVenueName");
     addMarqueeVenueNames(marqueeVenueName);
   };
+
   const getVenueData = (id, arr) => {
     const asd = arr?.filter((item) => {
       return item?.data?.userId === id;
@@ -145,42 +153,11 @@ function MarqueeDetails({ item, showMessage }) {
             </NextLink>
           </div>
 
-          <div className="flex flex-col md:flex-row w-[100%] justify-between bg-bgColor p-3 rounded-2xl mx-3 mt-5 lg:mt-0">
-            <div className="pt-2 px-6  flex flex-col items-center md:items-start">
+          <div className="w-[100%] bg-bgColor p-3 rounded-2xl mx-3 mt-5 lg:mt-0">
+            <div className="flex flex-col md:flex md:flex-row justify-between items-center ">
               <p className="font-poppins text-2xl font-semibold text-matteBlack">
                 {item?.data?.name}
               </p>
-              <p className="font-roboto text-textColor text-center md:text-start mt-4">
-                {item?.data?.description}
-              </p>
-              <p className="text-primaryColor space-x-2 mt-4">
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-              </p>
-              <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
-                <button
-                  onClick={() => {
-                    venuesName(item?.id);
-                  }}
-                  className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto mt-6 text-white font-bold"
-                >
-                  Details
-                </button>
-              </NextLink>
-
-            </div>
-
-            <div
-              className="flex flex-col items-center justify-between pt-5 md:pt-2"
-              onClick={() => {
-                handleClick(item?.data?.id);
-                getDates(item?.id);
-                handleVenueName(name[0]?.value);
-              }}
-            >
               <p className="font-roboto text-xl items-center">
                 <FontAwesomeIcon
                   icon={faLocationDot}
@@ -188,18 +165,63 @@ function MarqueeDetails({ item, showMessage }) {
                 />
                 {item?.data?.address}
               </p>
-              <button className=" bg-primaryColor px-5 hover:bg-hoverPrimary  py-2 rounded-lg font-roboto mt-6 text-white font-bold">
-                Avalibility & Details
-                <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
-              </button>
+            </div>
+            <div className="font-roboto text-textColor text-center md:text-start lg:w-96 lg:h-14 mt-2">
+              <p>
+                {item?.data?.description && (
+                  <>
+                    <span className="your-custom-class">
+                      {item.data.description.slice(0, 100)}
+                    </span>
+                    {item.data.description.length > 100 && " ..."}
+                  </>
+                )}
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex md:flex-row justify-between items-center md:items-end ">
+              <div className="flex flex-col ">
+                <p className="text-primaryColor mt-2 mb-4">
+                  <FontAwesomeIcon icon={faStar} />
+                  <FontAwesomeIcon icon={faStar} />
+                  <FontAwesomeIcon icon={faStar} />
+                  <FontAwesomeIcon icon={faStar} />
+                  <FontAwesomeIcon icon={faStar} />
+                </p>
+                <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
+                  <button
+                    onClick={() => {
+                      venuesName(item?.id);
+                    }}
+                    className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
+                  >
+                    Details
+                  </button>
+                </NextLink>
+              </div>
+
+              <div
+                className="flex flex-col items-center justify-between pt-5 md:pt-2"
+                onClick={() => {
+                  handleClick(item?.data?.id);
+                  getDates(item?.id);
+                  handleVenueName(name[0]?.value);
+                }}
+              >
+                <button className=" bg-primaryColor px-5 hover:bg-hoverPrimary  py-2 rounded-lg font-roboto mt-6 text-white font-bold">
+                  Avalibility & Details
+                  <FontAwesomeIcon icon={faAngleDown} className="ml-2" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
         <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
           {open[item?.data?.id] && (
             <DayPicker
-              className={`${isLunch == `Lunch` ? `customClasses` : `customClasses2`
-                }`}
+              className={`${
+                isLunch == `Lunch` ? `customClasses` : `customClasses2`
+              }`}
               style={{ width: "100%" }}
               mode="multiple"
               min={1}

@@ -144,7 +144,7 @@ function Marquee() {
       setFilterMarqueeWithPrice([]);
     }
     if (branch.length) {
-      setShowMessage(true)
+      setShowMessage(true);
       setFilterMarqueeWithPrice(branch);
     }
   };
@@ -152,69 +152,10 @@ function Marquee() {
   const handleSittingCapacity = (e) => {
     const capacity = Number(e.target.value);
     setFilterData({ ...filterData, capacity: capacity });
-    // const filteredVenues = venuesPrice.filter((item) => {
-    //   return (
-    //     capacity > item?.data?.minCapacity
-    //   );
-    // });
-
-    // let arr = [];
-    // const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
-    // data.map((item) => {
-    //   filteredVenues.map((item1) => {
-    //     if (item.data.userId.includes(item1.data.userId)) {
-    //       if (!arr.includes(item)) {
-    //         arr.push(item);
-    //       }
-    //     }
-    //   });
-    // });
-    // if (!arr.length) {
-    //   setShowMessage(false);
-    //   setFilterMarqueeWithPrice(arr);
-    //   setControlPrice(arr);
-    // } else {
-    //   setShowMessage(true);
-    //   setFilterMarqueeWithPrice(arr);
-    //   setServices(arr);
-    // }
   };
-  // const handleSittingCapacity = (e) => {
-  //   console.log(userData, "userDatauserData3");
-
-  //   const capacity = Number(e.target.value);
-  //   const filteredVenues = venuesPrice.filter((item) => {
-  //     return (
-  //       capacity > item?.data?.minCapacity && capacity < item?.data?.maxCapacity
-  //     );
-  //   });
-
-  //   let arr = [];
-  //   const data = filteredVenuesPrice.length ? filteredVenuesPrice : userData;
-  //   data.map((item) => {
-  //     filteredVenues.map((item1) => {
-  //       if (item.data.userId.includes(item1.data.userId)) {
-  //         if (!arr.includes(item)) {
-  //           arr.push(item);
-  //         }
-  //       }
-  //     });
-  //   });
-  //   if (!arr.length) {
-  //     setShowMessage(false);
-  //     setFilterMarqueeWithPrice(arr);
-  //     setControlPrice(arr);
-  //   } else {
-  //     setShowMessage(true);
-  //     setFilterMarqueeWithPrice(arr);
-  //     setServices(arr);
-  //   }
-  // };
   const handleSliderChange = async (event) => {
     const price = Number(event.target.value);
     setFilterData({ ...filterData, price: price });
-    // setSliderValue(price);
-    // handlePrice(price);
   };
   const handlePrice = (value) => {
     const filteredVenues = venuesPrice.filter((item) => {
@@ -271,41 +212,6 @@ function Marquee() {
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
     setFilterData({ ...filterData, services: checkedValues });
   };
-  // const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-  //   setCheckedServices(checkedValues);
-  //   const filteredVenues = venuesPrice.filter((item) => {
-  //     const result = [];
-  //     checkedValues.forEach((value) => {
-  //       if (item?.data?.services?.includes(value)) {
-  //         result.push(true);
-  //       }
-  //     });
-  //     return result.length;
-  //   });
-  //   let arr = [];
-  //   const data = services.length ? services : userData;
-  //   data.map((item) => {
-  //     filteredVenues.map((item1) => {
-  //       if (item.data.userId.includes(item1.data.userId)) {
-  //         if (!arr.includes(item)) {
-  //           arr.push(item);
-  //         }
-  //       }
-  //     });
-  //   });
-  //   if (arr.length) {
-  //     setFilterMarqueeWithPrice(arr);
-  //     setFilteredVenuesPrice(arr);
-  //   } else if (!filterMarqueeWithPrice.length) {
-  //     setShowMessage(true);
-  //   } else if (!checkedValues.length) {
-  //     setFilterMarqueeWithPrice(services);
-  //   } else if (!arr.length) {
-  //     setShowMessage(false);
-  //   } else {
-  //     setShowMessage(true);
-  //   }
-  // };
 
   const isWithinRange = (coord1, coord2, range) => {
     console.log(coord1, "distancecoord2", coord2, range);
@@ -314,44 +220,8 @@ function Marquee() {
       Math.pow(coord1.lat - coord2.lat, 2) +
         Math.pow(coord1.lng - coord2.lng, 2)
     );
-    console.log(distance, "distance", range);
     return distance <= range;
   };
-  console.log("dfsdfsdfsdff", filterMarqueeWithPrice);
-  // useEffect(() => {
-  //   const data = userData;
-
-  //   const branch = data.filter((item) => {
-  //     console.log(item,"ccccc")
-  //     if (
-  //       item.data.locations &&
-  //       item.data.locations.lat &&
-  //       item.data.locations.lng
-  //     ) {
-  //       const itemCoordinates = {
-  //         lat: item.data.locations.lat,
-  //         lng: item.data.locations.lng,
-  //       };
-  //       if (isWithinRange(coordinates, itemCoordinates, 1)) {
-  //         console.log(coordinates,itemCoordinates,"www")
-  //         console.log("hhhhhhhhhhh")
-  //         return true;
-  //       } else {
-  //         return false;
-  //       }
-  //     } else {
-  //       return false;
-  //     }
-  //   });
-  //   console.log(branch, "branchbranch");
-  //   if (!branch.length) {
-  //     setShowMessage(false);
-  //     setFilterMarqueeWithPrice([]);
-  //   } else {
-  //     setShowMessage(true);
-  //     setFilterMarqueeWithPrice(branch);
-  //   }
-  // }, [coordinates]);
 
   const handleSelect = async (value) => {
     console.log(value, "asdasdasdas");
@@ -377,16 +247,15 @@ function Marquee() {
       console.error("Error retrieving place details:", error);
     }
   };
-const clearFilter=()=>{
-  setFilterData({
-    capacity: "",
-    location: "",
-    price: "",
-    services: [],
-  })
-  setFilterMarqueeWithPrice([])
-}
-console.log(filterData,"ffffffffffffff")
+  const clearFilter = () => {
+    setFilterData({
+      capacity: "",
+      location: "",
+      price: "",
+      services: [],
+    });
+    setFilterMarqueeWithPrice([]);
+  };
   return (
     <>
       <div>
@@ -466,13 +335,13 @@ console.log(filterData,"ffffffffffffff")
             </div>
             <div className=" mx-auto w-full flex  justify-around items-center">
               <button
-                className="bg-primaryColor hover:bg-hoverPrimary px-10 py-2 rounded-lg mt-6 text-white font-bold"
+                className="bg-bgColor hover:bg-hoverBgColor  px-10 py-2 rounded-lg mt-6 font-semibold "
                 onClick={() => handleFilterData()}
               >
                 Filter
               </button>
               <button
-                className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg mt-6 text-white font-bold"
+                className="border-hoverBgColor hover:border-bgColor hover:bg-bgColor border px-5 py-2 rounded-lg mt-6  font-semibold"
                 onClick={() => clearFilter()}
               >
                 Clear Filter

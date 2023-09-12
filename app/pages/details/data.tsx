@@ -32,22 +32,17 @@ const data = [
     select: "Brat/Walima 28",
   },
 ];
-const menu = [
+
+const menus = [
   {
-    dish: ["chicken", "biryani", "kabab"],
-    price:  2000,
-  },
-  {
-    dish: ["chicken", "biryani", "kabab"],
-    price: 20000,
-  },
-  {
-    dish: ["chicken", "biryani", "kabab"],
-    price: 20000,
-  },
-  {
-    dish: ["chicken", "biryani", "kabab"],
-    price:20000,
+    name:["Menu 1"],
+    dish: ["Chicken", "Biryani", "kabab", "Pepsi", "Kheer"],
+    price:  50000,
+    hall:["Grand Atrium"],
+    capacity:2000,
   },
 ];
-export default data;
+
+export default { data, menus };
+
+
