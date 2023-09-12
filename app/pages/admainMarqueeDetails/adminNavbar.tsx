@@ -88,14 +88,7 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
               src={logo}
               width={40}
               alt="Picture of the author"
-              // className={` pr-5 text-${component !== item.name ? "sidebarColor" : "white"
-              //   } transition-colors duration-200`}
             />
-            {/* <img
-              src="https://s3-alpha-sig.figma.com/img/0b47/a03b/e5082a7595b855a6a8c8b90a0925dea2?Expires=1693785600&Signature=mNqYYtI7J~ue78715PwVjXvryQwuTKOerTYqVxbkWh47y8T3fPtQtdpcnRsxJdlnxVoIG609OUvB0Sc2Vb8A-58R4gtpq1gsWv06UZCK4GyTLLQgHmt~2HgajqEFH1JWwAuPFpCIcnbxBU-B9cBjsBb9PuKGd-5QRZgbYnDdGl8nZ9UW~OhWepkdsbkno8MicbMb2fo5mpTuj-b51vpx7clsaVk5QWxSjeYUC3KZylP8JjxQhrmdPbAVCmlAQvW0tegcFeutNAdrRNNrynhUxK62dwC7ENiRXHyPdSKvBv9TjgN~hnmcpPxdXQtKLQOfCcuhD7~ows9~~xyxcwPPzA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
-              width={50}
-              alt="asdf"
-            /> */}
           </div>
           <div className="mr-0 md:ml-8">
             <p className=" text-primary font-poppins ">BOOKING MARQUEE</p>

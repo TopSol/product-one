@@ -3,12 +3,12 @@ import { useStore } from "../../../store";
 import React, { useState, useEffect } from "react";
 import Select from "antd/es/select";
 import "./style.css";
-import { Button } from "antd";
+import { Button, message, Popconfirm } from "antd";
 import { db } from "@/app/firebase";
-import { getDoc, doc, setDoc,getDocs,collection} from "firebase/firestore";
-import { getFormatDates } from "@/app/utils";
+import { getDoc, doc, setDoc, getDocs, collection } from "firebase/firestore";
 function Availability() {
-  const { Venues, dates, lunchDinner, userInformation,addDates } = useStore();
+  const { Venues, dates, addDateKey, lunchDinner, userInformation, addDates } =
+    useStore();
   const [selectedDates, setSelectedDates] = useState([]);
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectVenue, setSelectVenue] = useState("");
@@ -16,7 +16,9 @@ function Availability() {
   const [lunchType, setLunchType] = useState("Diner");
   const [venueDates, setVenueDates] = useState({});
   const [allDate, SetAllDate] = useState([]);
-  const [showButton, setShowButton] = useState(false)
+  const [showButton, setShowButton] = useState(false);
+  const [selectedDate, setSelectedDate] = useState([]);
+  const [deleteDates, setDeleteDates] = useState([]);
   const [menu, setMenu] = useState([
     {
       label: "Lunch",
@@ -31,21 +33,19 @@ function Availability() {
       value: 3,
     },
   ]);
-  console.log(lunchDinner,"lunchDinner",)
   function convertTimestampsToDate(data) {
-    // Loop through the top-level dates object keys
     Object.keys(data.dates).forEach((venueId) => {
-      // Loop through the meal types (e.g., "Diner", "Lunch")
       Object.keys(data.dates[venueId]).forEach((mealType) => {
-        // Map each timestamp object to JavaScript Date objects
-        data.dates[venueId][mealType] = data.dates[venueId][mealType].map((timestamp) => {
-          const seconds = timestamp.seconds;
-          const nanoseconds = timestamp.nanoseconds;
-          return new Date(seconds * 1000 + nanoseconds / 1000000);
-        });
+        data.dates[venueId][mealType] = data.dates[venueId][mealType].map(
+          (timestamp) => {
+            const seconds = timestamp.seconds;
+            const nanoseconds = timestamp.nanoseconds;
+            return new Date(seconds * 1000 + nanoseconds / 1000000);
+          }
+        );
       });
     });
-  
+
     return data;
   }
   useEffect(() => {
@@ -58,41 +58,15 @@ function Availability() {
             ...doc.data(),
             id: doc.id,
           }));
-          const convertedData = convertTimestampsToDate(tempArray[0]);
-          addDates(convertedData)
-           console.log("convertedData",convertedData?.dates);
-        //   console.log(tempArray,"tempArray")
-        //   tempArray.map((item) => {
-        //     console.log(item,"nnnnnn")
-        //     Venues.map((item2) => {
-        //       const venueId = item2.id;
-        //       console.log(venueId, "venueId");
-        //       Object.values(item).map((item1) => {
-        //         const lunch = ["Diner", "Lunch"];
-        //         lunch.map((val) => {
-        //         let convertedData = {
-        //         }
-        //         // Check if the date is available for the specific venue and meal type
-        //         if (item1 && item1[venueId] && item1[venueId][val]) {
-        //           // Assuming getFormatDates is a function that formats dates
-        //           const formattedDates = getFormatDates(item1[venueId][val]);
-        //           convertedData[venueId] = formattedDates
-        //           console.log(formattedDates, "formattedDates");
-        //         }
-        //       });
-        //     });
-        //   });
-        // });
-        // console.log("convertedData",convertedData)
+        const convertedData = convertTimestampsToDate(tempArray[0]);
+        addDates(convertedData);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
     };
-  
-    // Call the fetchBlogs function inside the useEffect with an empty dependency array
     fetchBlogs();
   }, []);
-  
+
   useEffect(() => {
     const VenueName = Venues.map((item) => ({
       value: item.id,
@@ -115,35 +89,33 @@ function Availability() {
       }
     });
   };
-  console.log(selectedVenue, "selectedVenue");
-
+  console.log(lunchDinner, "deleteDates");
   const update = async (id, venueDate, venueDates) => {
-    console.log(venueDate, "venueDate");
+    console.log(venueDate.userId, "venueDatesss");
     const NotAvailableDate = {
       id: venueDate.userId,
       dates: venueDates,
     };
-    console.log(venueDates,"venueDatesvenueDates")
     try {
       await setDoc(doc(db, "bookDate", venueDate.userId), NotAvailableDate);
-      console.log("Document successfully updated!");
+      message.success("Date is successfully added");
     } catch (error) {
       console.log(error, "error");
     }
   };
+  console.log(lunchDinner, "lunchDinner");
   const SendDateInFirebase = async (item) => {
-    console.log(dates, "sdfsdfdsf");
+    setSelectedDate([]);
     const data = dates?.[item] || {};
     try {
       const docRef = doc(db, "Venues", item);
       const docSnap = await getDoc(docRef);
-      console.log(docSnap, "docSnap");
       if (docSnap.exists()) {
-        console.log("Document data", docSnap.data());
         const user = {
           ...docSnap.data(),
           dates: data,
         };
+        console.log(user, "useruseruser");
         setVenueDate(user);
         update(item, user, venueDates);
       } else {
@@ -152,7 +124,42 @@ function Availability() {
     } catch (error) {
       console.error("Error fetching document:", error);
     }
-    setShowButton(false)
+    setShowButton(false);
+  };
+  const DeleteSendDateInFirebase = async (item) => {
+    const data = dates?.[item] || {};
+    const docRef = doc(db, "Venues", item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const user = {
+        ...docSnap.data(),
+        dates: data,
+      };
+      const result = lunchDinner[selectedVenue]?.[lunchType]?.filter(
+        (value) => {
+          return !deleteDates.some((item) => value === item.date);
+        }
+      );
+      console.log(
+        user.userId,
+        "Id",
+        result,
+        "resultresult",
+        selectedVenue,
+        lunchType
+      );
+      addDateKey(selectedVenue, lunchType, result);
+      const NotAvailableDate = {
+        id: user.userId,
+        dates: result,
+      };
+      try {
+        await setDoc(doc(db, "bookDate", user.userId), NotAvailableDate);
+        message.success("Date is successfully deleted");
+      } catch (error) {
+        console.log(error, "error");
+      }
+    }
   };
   const handleMenuSelect = (e) => {
     let data = [];
@@ -181,7 +188,10 @@ function Availability() {
         break;
     }
   };
-  console.log(userInformation.userId, "asdfasdfasdf");
+  const cancel = (e) => {
+    console.log(e);
+    message.error("Click on No");
+  };
   return (
     <div>
       <div className="flex mt-5">
@@ -208,7 +218,6 @@ function Availability() {
               options={selectedDates}
               onChange={handleVenueSelect}
               value={selectVenue}
-
             />
             <Select
               className=" select my-3  ml-5 "
@@ -231,24 +240,30 @@ function Availability() {
               options={menu}
               onChange={handleMenuSelect}
               value={lunchType}
-
             />
             <div className=" ml-auto mr-2 flex justify-center items-center">
+              <Button
+                onClick={() => SendDateInFirebase(selectedVenue)}
+                className="bg-primary text-white mr-3 px-6"
+              >
+                Add Dates
+              </Button>
+              <Popconfirm
+                title="Delete the task"
+                description="Are you sure to delete this task?"
+                onConfirm={() => DeleteSendDateInFirebase(selectedVenue)}
+                onCancel={cancel}
+                okText="Yes"
+                cancelText="No"
+              >
                 <Button
-                  onClick={() => SendDateInFirebase(selectedVenue)}
-                  className="bg-primary text-white mr-3 px-6"
-                >
-                  Add Dates
-                </Button>
-                <Button
-                  onClick={() => SendDateInFirebase(selectedVenue)}
+                  // onClick={() => DeleteSendDateInFirebase(selectedVenue)}
                   className="bg-primary text-white "
                 >
                   Delete Dates
                 </Button>
-              </div>
-            
-
+              </Popconfirm>
+            </div>
           </div>
 
           <div className="md:px-5">
@@ -259,10 +274,13 @@ function Availability() {
               venueDates={venueDates}
               allDate={allDate}
               setShowButton={setShowButton}
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+              setDeleteDates={setDeleteDates}
+              deleteDates={deleteDates}
             />
           </div>
         </div>
-
       </div>
     </div>
   );

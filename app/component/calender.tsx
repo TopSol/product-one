@@ -4,6 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useStore } from "@/store";
 import { getFormatDates } from "@/app/utils";
+import EventTitle from "@/app/pages/admainMarqueeDetails/eventTitle";
 const localizer = momentLocalizer(moment);
 const MultipleDaySelectCalendar = ({
   selectedVenue,
@@ -11,31 +12,68 @@ const MultipleDaySelectCalendar = ({
   setVenueDates,
   allDate,
   venueDates,
-  setShowButton
+  setShowButton,
+  setSelectedDate,
+  selectedDate,
+  setDeleteDates,
+  deleteDates,
 }) => {
   const { addDateKey, lunchDinner } = useStore();
   const [lunchDinnerDate, setLunchDinnerDate] = useState({});
+  const [isDateSelected, setIsDateSelected] = useState(false);
+  // const [selectedDate,setSelectedDate]=useState([])
+
   const handleSelectSlot = ({ start, end }) => {
-    setShowButton(true)
+    setShowButton(true);
     const selectedRange = getDatesInRange(start, end);
 
     const asd = lunchDinnerDate[selectedVenue]?.[lunchType] || [];
     const uniqueSelectedRange = selectedRange.filter(
       (date) => !asd.some((existingDate) => isSameDay(existingDate, date))
     );
+    console.log(uniqueSelectedRange, "newDates");
+
     if (uniqueSelectedRange.length > 0) {
+      setSelectedDate([
+        ...selectedDate,
+        ...uniqueSelectedRange?.map((item) => ({ date: item, selected: true })),
+      ]);
       addDateKey(selectedVenue, lunchType, [...asd, ...uniqueSelectedRange]);
     }
   };
+  console.log(deleteDates, "DeleteDatesDeleteDates");
   useEffect(() => {
     setLunchDinnerDate(lunchDinner);
   }, [lunchDinner]);
   const handleEventClick = (event) => {
-    setShowButton(true)
+    setShowButton(true);
     const newDates = lunchDinnerDate[selectedVenue]?.[lunchType].filter(
       (date) => !isSameDay(date, event.start)
     );
-    addDateKey(selectedVenue, lunchType, newDates);
+    console.log(newDates,"newDatesnewDates")
+    const newDate = lunchDinnerDate[selectedVenue]?.[lunchType].filter((date) =>
+      isSameDay(date, event.start)
+    );
+    const dateExists = deleteDates.some(
+      (dateObj) => dateObj.date === newDate[0]
+    );
+    if (dateExists) {
+      const updatedDeleteDates = deleteDates.filter(
+        (dateObj) => dateObj.date !== newDate[0]
+      );
+      setDeleteDates(updatedDeleteDates);
+    } else {
+      setDeleteDates([...deleteDates, { date: newDate[0], selected: true }]);
+    }
+    const deleteSelectedDate = selectedDate.filter(
+      (date) => !isSameDay(date?.date, event.start)
+    );
+    setSelectedDate(deleteSelectedDate);
+    selectedDate.map((item) => {
+      if (item?.date === newDate[0]) {
+        addDateKey(selectedVenue, lunchType, newDates);
+      }
+    });
   };
   useEffect(() => {
     setVenueDates(lunchDinnerDate);
@@ -49,7 +87,6 @@ const MultipleDaySelectCalendar = ({
     }
     return dates;
   };
-
   const isSameDay = (date1, date2) => {
     const d1 = new Date(date1);
     const d2 = new Date(date2);
@@ -60,7 +97,8 @@ const MultipleDaySelectCalendar = ({
     );
   };
   const eventStyleGetter = (event, start, end, isSelected) => {
-    var backgroundColor = event.title === "Diner" ? "#F99832" : "#328EF9";
+    var backgroundColor = event.title === "Diner" ? "#ffff" : "#ffff";
+    // var backgroundColor = event.title === "Diner" ? "#F99832" : "#328EF9";
     var style = {
       backgroundColor: backgroundColor,
       borderRadius: "6px",
@@ -73,29 +111,41 @@ const MultipleDaySelectCalendar = ({
       style: style,
     };
   };
-  const originalDates=lunchDinnerDate?.[selectedVenue]?.[lunchType]
-  const dadta=getFormatDates(originalDates)
-  console.log(dadta,"originalDates")
+  const originalDates = lunchDinnerDate?.[selectedVenue]?.[lunchType];
+  const dadta = getFormatDates(originalDates);
+  // console.log(dadta,"originalDates")
   return (
     <div>
       <Calendar
-        selectable
         style={{ height: 600 }}
         views={[Views.MONTH]}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleEventClick}
         localizer={localizer}
-        events={lunchType === "All" ? allDate?.map(
-          (data) => (data)
-        ): getFormatDates(lunchDinnerDate?.[selectedVenue]?.[lunchType])?.map(
-          // ): lunchDinnerDate?.[selectedVenue]?.[lunchType]?.map(
-          (date) => ({
-            start: date,
-            end: date,
-            title: lunchType,
-
-          })
-        )}
+        selectable={true}
+        events={
+          lunchType === "All"
+            ? allDate?.map((data) => data)
+            : getFormatDates(
+                lunchDinnerDate?.[selectedVenue]?.[lunchType]
+              )?.map(
+                // ): lunchDinnerDate?.[selectedVenue]?.[lunchType]?.map(
+                (date) => ({
+                  start: date,
+                  end: date,
+                  // title:lunchType,
+                  title: (
+                    <EventTitle
+                      lunchType={lunchType}
+                      selectedDate={selectedDate}
+                      date={date}
+                      selectedVenue={selectedVenue}
+                      deleteDates={deleteDates}
+                    />
+                  ),
+                })
+              )
+        }
         eventPropGetter={eventStyleGetter}
       />
     </div>

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import Loader from "../../component/Loader";
 import ImageLightbox from "react-image-lightbox";
 import Lightbox from "react-image-lightbox";
-import { Image } from "antd";
+// import { Image } from "antd";
+import Image from "next/image";
 import { Checkbox, Button } from "antd";
 import Link from "next/link";
-import dots from "../../assets/images/dots.svg"
+import dots from "../../assets/images/dots.svg";
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import {
   collection,
@@ -19,12 +20,7 @@ import { db } from "@/app/firebase";
 import "./style.css";
 import { Table } from "antd";
 import { useStore } from "../../../store";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -64,16 +60,15 @@ function Venues({
         name === "price"
           ? Number(value)
           : name === "maxCapacity"
-            ? Number(value)
-            : name === "minCapacity"
-              ? Number(value)
-              : value,
+          ? Number(value)
+          : name === "minCapacity"
+          ? Number(value)
+          : value,
     }));
-
   };
 
   useEffect(() => {
-   const fetchBlogs = async () => {
+    const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Venues"));
         const tempArray = response.docs
@@ -148,8 +143,8 @@ function Venues({
       console.log("No such document!");
     }
   };
-  console.log(user.image,"userimage");
-  
+  console.log(user.image, "userimage");
+
   const updateVenue = async (venueId) => {
     setLoading((pre) => !pre);
 
@@ -169,7 +164,7 @@ function Venues({
       }
     } else {
       const images = Object.values(user.image);
-      console.log(images,"sdfdsfdsfdsf")
+      console.log(images, "sdfdsfdsfdsf");
       const folderName = `images`;
       const imageUrls = await Promise.all(
         images.map(async (image) => {
@@ -196,7 +191,7 @@ function Venues({
           addVenues([...Venues, { ...updatedUser, id: venueId }]);
         }
       } catch (error) {
-        console.log(error, "error"); 
+        console.log(error, "error");
       }
     }
     setModalOpen(false);
@@ -253,7 +248,7 @@ function Venues({
       </div>
     </div>
   );
-  console.log(user.image,"sfddsfsdfdsfsdfsfd")
+  console.log(user.image, "sfddsfsdfdsfsdfsfd");
   return (
     <>
       <div className="md:px-10">
@@ -300,11 +295,19 @@ function Venues({
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                <Image 
+                {/* <Image
                   width={80}
                   height={60}
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
                   alt="Description of the image"
+                /> */}
+                <img
+                  alt="sdf"
+                  src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
+
+                  // width={80}
+                  // height={80}
+                  className="ml-3 w-[80px]"
                 />
                 {
                   <Link
@@ -328,7 +331,6 @@ function Venues({
             key="venueId"
             render={(venueId) => (
               <div>
-
                 <FontAwesomeIcon
                   icon={faPenToSquare}
                   width={15}
@@ -400,9 +402,16 @@ function Venues({
               height={40}
               className="ml-3"
             /> */}
+            <Image
+                  alt="sdf"
+              src={dots}
+              width={40}
+              height={40}
+              className="ml-3"
+                />
             <p className="text-xl pl-3 text-white py-4"> Add Venues</p>
           </div>
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
+          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[80%]  justify-center ">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1 ">
@@ -524,7 +533,7 @@ function Venues({
           nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
           prevSrc={
             previewImage[
-            (photoIndex + previewImage.length - 1) % previewImage.length
+              (photoIndex + previewImage.length - 1) % previewImage.length
             ]
           }
           onCloseRequest={() => setIsOpen(false)}
