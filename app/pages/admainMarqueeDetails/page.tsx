@@ -28,7 +28,7 @@ import bookingWIcon from "@/app/assets/images/bookingWIcon.svg";
 import dishWIcon from "@/app/assets/images/dishWIcon.svg";
 import venueIcon from "@/app/assets/images/venue.svg";
 import venueWIcon from "@/app/assets/images/venueIcon.svg";
-
+import { Button, message, Popconfirm } from "antd";
 function AdminMarqueeDetails() {
   const [component, setComponent] = React.useState("Venues");
   const [modalOpen, setModalOpen] = useState(false);
@@ -158,6 +158,14 @@ function AdminMarqueeDetails() {
       console.error("Error removing document(s): ", error);
     }
   };
+  const confirm = (e) => {
+    console.log(e);
+    message.success('Click on Yes');
+  };
+  const cancel = (e) => {
+    console.log(e);
+    message.error('Click on No');
+  };
   return (
     <>
       {isLoader ? (
@@ -167,37 +175,38 @@ function AdminMarqueeDetails() {
       ) : (
         <div className=" h-[100vh]">
           <div className="mt-14">
-            <AdminNavbar setModalOpen2={setModalOpen2} setShowIcon={setShowIcon} setRemoveMenuIcon={setRemoveMenuIcon} />
+            <AdminNavbar
+              setModalOpen2={setModalOpen2}
+              setShowIcon={setShowIcon}
+              setRemoveMenuIcon={setRemoveMenuIcon}
+            />
             <div className="sidebar flex">
-              <div className="hidden p-2  absolute">
-
-              </div>
+              <div className="hidden p-2  absolute"></div>
               {modalOpen2 ? (
                 <div
-                  className={` h-[100vh] min-[640px]:w-[40%] max-[1536px]:w-[150px] ${showIcon ? "lg:w-[15%]" : "lg:w-[5%]  "
-                    } border flex flex-col shadow-lg z-20 lg:z-0 bg-white relative md:block`}
+                  className={` h-[100vh] min-[640px]:w-[40%] max-[1536px]:w-[150px] ${
+                    showIcon ? "lg:w-[15%]" : "lg:w-[5%]  "
+                  } border flex flex-col shadow-lg z-20 lg:z-0 bg-white relative md:block`}
                 >
                   <div className="flex justify-between">
                     <p className="  flex  items-center  text-xl  pl-[30px] py-5">
                       {showIcon ? "Marquee" : null}
                     </p>
-                    {
-                      removeMenuIcon ? (
-                        <FontAwesomeIcon
-                          icon={faBarsStaggered}
-                          size="sm"
-                          className="h-7 text-primary  cursor-pointer py-5 pr-[30px]"
-                          onClick={() => setShowIcon((prev) => !prev)}
-                        />
-                      ) : null
-                    }
-
+                    {removeMenuIcon ? (
+                      <FontAwesomeIcon
+                        icon={faBarsStaggered}
+                        size="sm"
+                        className="h-7 text-primary  cursor-pointer py-5 pr-[30px]"
+                        onClick={() => setShowIcon((prev) => !prev)}
+                      />
+                    ) : null}
                   </div>
                   {sideBar.map((item, index) => (
                     <div key={index}>
                       <div
-                        className={`side w-full text-left flex py-2 ${component === item.name ? "bg-primary" : ""
-                          }`}
+                        className={`side w-full text-left flex py-2 ${
+                          component === item.name ? "bg-primary" : ""
+                        }`}
                         onClick={() => {
                           setComponent(item.name);
                           setModalOpen1(!modalOpen1);
@@ -210,9 +219,11 @@ function AdminMarqueeDetails() {
                         }}
                       >
                         <div
-                          className={`flex pl-${component === item.name ? "8" : ""
-                            } top-0 bottom-0 left-0 right-0  pl-[30px] text-${component !== item.name ? "sidebarColor" : "white"
-                            }`}
+                          className={`flex pl-${
+                            component === item.name ? "8" : ""
+                          } top-0 bottom-0 left-0 right-0  pl-[30px] text-${
+                            component !== item.name ? "sidebarColor" : "white"
+                          }`}
                         >
                           <Image
                             src={
@@ -220,8 +231,9 @@ function AdminMarqueeDetails() {
                             }
                             width={40}
                             alt="Picture of the author"
-                            className={` pr-5 text-${component !== item.name ? "sidebarColor" : "white"
-                              } transition-colors duration-200`}
+                            className={` pr-5 text-${
+                              component !== item.name ? "sidebarColor" : "white"
+                            } transition-colors duration-200`}
                           />
                           {showIcon ? item.name : null}
                         </div>
@@ -250,12 +262,21 @@ function AdminMarqueeDetails() {
                           <p className=" text-xs md:text-base">Add venues</p>
                         </span>
                       </button>
-                      <button
-                        className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
-                        onClick={() => handleDeleteVenues()}
+                      <Popconfirm
+                        title="Delete the task"
+                        description="Are you sure to delete this task?"
+                        onConfirm={() => handleDeleteVenues()}
+                        onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
                       >
-                        Delete
-                      </button>
+                        <button
+                          className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
+                      
+                        >
+                          Delete
+                        </button>
+                      </Popconfirm>
                     </div>
                   </div>
                 ) : component === "Menus" ? (
@@ -276,12 +297,21 @@ function AdminMarqueeDetails() {
                           <p className=" text-xs md:text-base">Add Menu</p>
                         </span>
                       </button>
-                      <button
+                      <Popconfirm
+                        title="Delete the task"
+                        description="Are you sure to delete this task?"
+                        onConfirm={() => handleDeleteDish()}
+                        onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <button
                         className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
-                        onClick={() => handleDeleteDish()}
                       >
                         Delete
                       </button>
+                      </Popconfirm>
+                      
                     </div>
                   </div>
                 ) : component === "Dishes" ? (
@@ -302,12 +332,20 @@ function AdminMarqueeDetails() {
                           <p className=" text-xs md:text-base">Add Dish</p>
                         </span>
                       </button>
+                      <Popconfirm
+                        title="Delete the task"
+                        description="Are you sure to delete this task?"
+                        onConfirm={() => handleDeleteMenus()}
+                        onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
+                      >
                       <button
                         className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
-                        onClick={() => handleDeleteMenus()}
                       >
                         Delete
                       </button>
+                      </Popconfirm>
                     </div>
                   </div>
                 ) : null}

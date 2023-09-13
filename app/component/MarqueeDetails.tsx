@@ -3,7 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
-import { Radio, Select } from "antd";
+import { Radio, Select, Space } from "antd";
 import {
   faAngleDown,
   faLocationDot,
@@ -201,7 +201,7 @@ function MarqueeDetails({ item, showMessage }) {
               </div>
 
               <div
-                className="flex flex-col items-center justify-between pt-5 md:pt-2"
+                className="flex flex-col items-center justify-between pt-2"
                 onClick={() => {
                   handleClick(item?.data?.id);
                   getDates(item?.id);
@@ -326,6 +326,17 @@ function MarqueeDetails({ item, showMessage }) {
                     Diner
                   </label>
                 </div>
+                {/* <Radio.Group name="radiogroup" defaultValue={1}>
+                  <Space direction="vertical">
+                    <Radio
+                    onChange={(e) => {
+                      setValue(e.target.value);
+                    }}
+                    value={value}
+                  >A</Radio>
+                    <Radio value={2}>B</Radio>
+                  </Space>
+                </Radio.Group> */}
               </div>
             </div>
           )}

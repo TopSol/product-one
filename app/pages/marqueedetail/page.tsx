@@ -7,9 +7,15 @@ import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Select } from "antd";
+import { Select,message } from "antd";
 import { getFormatDates } from "@/app/utils";
-import { faCalendarDays, faPerson, faBed, faMap, faStar, } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendarDays,
+  faPerson,
+  faBed,
+  faMap,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import ImageLightbox from "react-image-lightbox";
@@ -21,7 +27,8 @@ import "react-image-lightbox/style.css";
 import "./style.css";
 
 function Marqueedetail() {
-  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates, getMarqueeImage } = useStore();
+  const { addBookedDates, marqueeVenueNames, marqueeVenueDates, bookedDates } =
+    useStore();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -34,14 +41,16 @@ function Marqueedetail() {
   const [dates, setDates] = useState([]);
   const [days, setDays] = useState<any>([]);
   const [marqueeDates, setMarqueeDates] = useState([]);
+  const [otherDates,setOtherDates]=useState([])
   const [venueId, setVenueId] = useState();
   const [loading, setLoading] = useState(false);
   const [meal, setMeal] = useState("Lunch");
+  const [isRangeComplete, setIsRangeComplete] = useState(false);
   const [lunchDinner, setLunchDinner] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
   ]);
-
+ const router = useRouter()
   const handleClick = (index: any) => {
     setSelectImage(data?.images[index]);
     setPhotoIndex(index);
@@ -55,9 +64,11 @@ function Marqueedetail() {
 
   const handleButton = () => {
     addBookedDates(marqueeDates);
-    setLoading(true);
+    router.push(`/pages/details?id=${data?.userId}`)
+    // setLoading(true);
   };
-  
+  // console.log(marqueeDates, "vmarqueeDates");
+
   const getDocById = async (id) => {
     try {
       const docRef = doc(db, "users", id);
@@ -136,7 +147,9 @@ function Marqueedetail() {
   };
 
   const handleVenueType = (e) => {
-    e == "1" ? handleVenueName(venueId, "Lunch") : handleVenueName(venueId, "Diner");
+    e == "1"
+      ? handleVenueName(venueId, "Lunch")
+      : handleVenueName(venueId, "Diner");
   };
 
   const datess = bookDates?.dates || [];
@@ -151,13 +164,19 @@ function Marqueedetail() {
     }
   }, [datess.length]);
 
-
-
   const disabledStyle = {
     backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
     color: "#aaa", // Set your desired text color for disabled dates
   };
+  const handleDateRangeSelect = (newRange) => {
+       setMarqueeDates(newRange)
+       if(marqueeDates?.to){
+        setMarqueeDates([])
+        setMarqueeDates({from:newRange?.to})
+       }
 
+  };
+console.log(marqueeDates,"marqueedddDates")
   return (
     <div>
       <Navbar />
@@ -203,7 +222,7 @@ function Marqueedetail() {
               nextSrc={data?.images[(photoIndex + 1) % data?.images.length]}
               prevSrc={
                 data?.images[
-                (photoIndex + data?.images.length - 1) % data?.images.length
+                  (photoIndex + data?.images.length - 1) % data?.images.length
                 ]
               }
               onCloseRequest={closeLightbox}
@@ -283,13 +302,12 @@ function Marqueedetail() {
                     } w-[100%]`}
                   mode="range"
                   disabled={days}
-                  min={2}
-                  max={5}
+                  // min={2}
+                  // max={5}
                   selected={marqueeDates}
-                  onSelect={setMarqueeDates}
+                  onSelect={handleDateRangeSelect}
                 />
               </div>
-             
             </div>
             <div className="flex items-center space-x-2  lg:mt-0 lg:mb-0">
               <div className="bg-[orange] p-1 w-1 rounded-full"></div>
@@ -303,11 +321,11 @@ function Marqueedetail() {
               onClick={handleButton}
               className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor"
             >
-              <NextLink href={`/pages/details?id=${data?.userId}`} passHref>
-                <div onClick={handleButton}>
+              {/* <NextLink href={`/pages/details?id=${data?.userId}`} passHref> */}
+                <div>
                   {loading ? <Loader /> : " Book Now"}
                 </div>
-              </NextLink>
+              {/* </NextLink> */}
             </div>
           )}
           <img
