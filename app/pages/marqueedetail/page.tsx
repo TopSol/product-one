@@ -72,10 +72,10 @@ function Marqueedetail() {
 
   const handleButton = () => {
     addBookedDates(marqueeDates);
-    router.push(`/pages/details?id=${data?.userId}`);
+    router.push(`/pages/details?id=${data?.userId}&name=${Object.values(data)}`);
     // setLoading(true);
   };
-  console.log(marqueeVenueNames, "marqueeVenueNames");
+  console.log(data, "data");
 
   // const getDocById = async (id) => {
   //   try {
@@ -142,7 +142,6 @@ function Marqueedetail() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const abc = docSnap.data();
-        console.log(abc, "hhhhhhhhh");
         setData(abc);
         getMarqueeImage(abc?.images?.[0]);
       } else {

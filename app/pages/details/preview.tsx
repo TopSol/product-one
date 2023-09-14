@@ -29,6 +29,8 @@ function Preview({
   marqueeImage,
   userInformation,
   checkData,
+  selectedMenu,
+  
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const [showFacilities, setShowFacilities] = useState(false);
@@ -43,7 +45,7 @@ function Preview({
       console.error("Error fetching blogs:", error);
     }
   };
-  console.log("userInformationnnnnnn", userInformation);
+  // console.log("userInformationnnnnnn", userInformation);
 
   useEffect(() => {
     fetchBlogs();
@@ -55,10 +57,10 @@ function Preview({
     openMessage();
   };
 
-  let a = parseInt(hallInformation[0]?.userInformation?.Heating);
-  let b = parseInt(hallInformation[0]?.Menu?.Heating);
+  let a = parseInt(userInformation?.Heating);
+  // let b = parseInt(Menu?.Heating);
 
-  const total = `${hallInformation[0]?.selectedHall?.price} + ${hallInformation[0]?.Menu?.price}`;
+  // const total = `${hallInformation[0]?.selectedHall?.price} + ${hallInformation[0]?.Menu?.price}`;
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -70,14 +72,17 @@ function Preview({
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  console.log(menus.menus[0]?.dish, "Dishes");
-
+  console.log(userInformation, "userInformation");
+  console.log(selectedMenu, "userInformation1");
+  
+ console.log("abc");
+ 
   return (
     <div className="md:container md:mx-auto mx-3">
       <div className="border w-auto md:w-[700px]  p-3 md:p-8  flex flex-col justify-center mx-auto rounded-xl">
         <div className="flex justify-center object-cover">
           <img
-            src={hallInformation[0]?.selectedHall?.image}
+            src="https://api.asm.skype.com/v1/objects/0-sa-d8-bb1064670a8eef24524829aa6ed1677f/views/imgpsh_fullsize_anim"
             alt=""
             className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
           />
@@ -92,8 +97,8 @@ function Preview({
                 <div className="ml-3">
                   <p className="font-semibold">Name</p>
                   <p>
-                    {hallInformation[0]?.userInformation?.firstName}{" "}
-                    {hallInformation[0]?.userInformation?.lastName}
+                    {userInformation?.firstName}{" "}
+                    {userInformation?.lastName}
                   </p>
                 </div>
               </div>
@@ -104,7 +109,7 @@ function Preview({
                 <div className="ml-3">
                   <p className="font-semibold">Phone</p>
 
-                  <p>{hallInformation[0]?.userInformation?.PhoneNumber}</p>
+                  <p>{userInformation?.PhoneNumber}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -114,7 +119,7 @@ function Preview({
                 <div className="ml-3">
                   <p className="font-semibold">Notes</p>
 
-                  <p>{hallInformation[0]?.userInformation?.notes}</p>
+                  <p>{userInformation?.notes}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -123,7 +128,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Capacity</p>
-                  <p>{hallInformation[0]?.selectedHall?.maxCapacity}</p>
+                  <p>{"maxCapacity"}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -133,9 +138,9 @@ function Preview({
                 <div className="ml-3">
                   <p className="font-semibold">Facilities</p>
                   <div>
-                    {hallInformation[0]?.selectedHall?.services[0] && (
+                    {/* {hallInformation[0]?.selectedHall?.services[0] && ( */}
                       <p>Heating</p>
-                    )}
+                    {/* )} */}
                   </div>
                 </div>
               </div>
@@ -148,7 +153,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Email</p>
-                  <p>{hallInformation[0]?.userInformation?.email}</p>
+                  <p>{userInformation?.email}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -157,7 +162,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Address</p>
-                  <p>{hallInformation[0]?.userInformation?.address}</p>
+                  <p>{userInformation?.address}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -167,7 +172,7 @@ function Preview({
                 <div className="ml-3">
                   <p className="font-semibold">Hall Name</p>
 
-                  <p>{hallInformation[0]?.selectedHall?.name}</p>
+                  <p>{"name"}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -176,7 +181,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Price</p>
-                  <p>{hallInformation[0]?.selectedHall?.price}</p>
+                  <p>{selectedMenu?.price}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -192,7 +197,7 @@ function Preview({
                         className="text-blue-600 underline"
                         href=""
                       >
-                        {`${hallInformation[0]?.Menu?.dishes?.length} Dishes`}
+                        {`${selectedMenu?.dishes?.length} Dishes`}
                       </Link>
                     }
 
@@ -203,7 +208,7 @@ function Preview({
                       onCancel={handleCancel}
                     >
                       {" "}
-                      {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
+                      {selectedMenu?.dishes?.map((item, index) => (
                         <li key={index}>{item}</li>
                       ))}
                     </Modal>

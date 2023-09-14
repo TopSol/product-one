@@ -19,6 +19,7 @@ import MarqueeAvailability from "./selectHall";
 import UserInformation from "./userInformation";
 import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
+import { log } from "console";
 
 const initialFormState = {
   firstName: "",
@@ -54,7 +55,7 @@ function Slider() {
   const [hallInformation, setHallInformation] = useState([]);
   const [marqueeData, setMarqueeData] = useState([]);
   const [successPage, setSuccessPage] = useState(false);
-
+  const [step, setStep] = useState(0);
   const params = useSearchParams();
   const [inputs, setInputs] = useState({
     Heating: false,
@@ -63,6 +64,9 @@ function Slider() {
   });
 
   const id = params.get("id");
+  const name = params.get("name");
+  console.log("NameName", name?.split(','));
+  
   const sendData = async () => {
     const fieldId = Math.random().toString(36).slice(2);
 
@@ -89,8 +93,6 @@ function Slider() {
       Menu: selectedMenu,
       userInformation: userInformation,
     };
-
-    setHallInformation([{ ...users }]);
   };
 
   const fetchData = async () => {
@@ -166,11 +168,29 @@ function Slider() {
       });
     }, 100);
   };
-  const handleSlider = (index) =>{
-    setSlider(index)
-  }
-console.log("slider",slider);
+  const handleSlider = (index) => {
+    if (
+      !user.firstName ||
+      !user.lastName ||
+      !user.email ||
+      !user.address ||
+      !user.notes ||
+      !user.tableShape ||
+      !user.services
+    )
+      return message.warning(
+        "Something went wrong please fillout all the fields"
+      );
+    const selectCheck = marqueeData?.dish?.filter((v) => v.selected);
 
+    if (!selectCheck?.length)
+      return message.warning(
+        "Something went wrong please fillout all the fields"
+      );
+    setSlider(index);
+  };
+  console.log("hallInformation", hallInformation);
+  
 
   return (
     <div>
@@ -202,51 +222,41 @@ console.log("slider",slider);
               ))}
             </div>
 
-            {
-              //  slider === 0 ? (
-              //     <MarqueeAvailability
-              //       venus={marqueeData.venues}
-              //       setSlider={setSlider}
-              //       setSelectedHall={setSelectedHall}
-              //       selectedHall={selectedHall}
-              //       setClickedIndex={setClickedIndex}
-              //       clickedIndex={clickedIndex}
-              //     />
-              //    ) :
-              slider === 0 ? (
-                <UserInformation
-                  setSlider={setSlider}
-                  selectedHall={selectedHall}
-                  selectedMenu={selectedMenu}
-                  setUserInformation={setUserInformation}
-                  setUser={setUser}
-                  user={user}
-                  setSelectedOption={setSelectedOption}
-                  selectedOption={selectedOption}
-                  setInputs={setInputs}
-                  inputs={inputs}
-                />
-              ) : slider === 1 ? (
-                <ChooseMenu
-                  marqueeData={marqueeData}
-                  setMarqueeData={setMarqueeData}
-                  setSlider={setSlider}
-                  setSelectedMenu={setSelectedMenu}
-                  preview={preview}
-                  selectedMenu={selectedMenu}
-                  setMenuIndex={setMenuIndex}
-                  menuIndex={menuIndex}
-                  withoutVenueDish={marqueeData.withoutVenueDish}
-                />
-              ) : slider == 2 ? (
-                <Preview
-                  hallInformation={hallInformation}
-                  sendData={sendData}
-                  setSuccessPage={setSuccessPage}
-                  openMessage={openMessage}
-                />
-              ) : null
-            }
+            {slider === 0 ? (
+              <UserInformation
+                setSlider={setSlider}
+                selectedHall={selectedHall}
+                selectedMenu={selectedMenu}
+                setUserInformation={setUserInformation}
+                setUser={setUser}
+                user={user}
+                setSelectedOption={setSelectedOption}
+                selectedOption={selectedOption}
+                setInputs={setInputs}
+                inputs={inputs}
+                setStep={setStep}
+              />
+            ) : slider === 1 ? (
+              <ChooseMenu
+                marqueeData={marqueeData}
+                setMarqueeData={setMarqueeData}
+                setSlider={setSlider}
+                setSelectedMenu={setSelectedMenu}
+                preview={preview}
+                selectedMenu={selectedMenu}
+                setMenuIndex={setMenuIndex}
+                menuIndex={menuIndex}
+                withoutVenueDish={marqueeData.withoutVenueDish}
+              />
+            ) : slider === 2 ? (
+              <Preview
+                selectedMenu={selectedMenu}
+                userInformation={userInformation}
+                sendData={sendData}
+                setSuccessPage={setSuccessPage}
+                openMessage={openMessage}
+              />
+            ) : null}
           </div>
         </>
       )}

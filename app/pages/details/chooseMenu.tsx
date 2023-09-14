@@ -24,8 +24,6 @@ function ChooseMenu({
   const [suggestionDish, setSuggestionDish] = useState([]);
   console.log(suggestionDish, "suggestionDish");
   const handleClick = (item, index) => {
-    console.log("itemitem",item);
-    
     const arr = marqueeData?.dish?.map((val, idx) => {
       if (idx === index) {
         setSelectedMenu(val);
@@ -118,9 +116,15 @@ function ChooseMenu({
   };
 
   const nextPage = () => {
+    if(!selectCheck?.length)
+    return message.warning("Something went wrong please fillout all the fields")
+
+    
     preview();
-    setSlider(3);
+    setSlider(2);
   };
+
+  
   const renderDishes = (name) => {
     let values = [];
     let price;
@@ -143,6 +147,7 @@ function ChooseMenu({
     }
   };
   const selectCheck = marqueeData?.dish?.filter((v) => v.selected)
+  console.log("selectCheck", !selectCheck?.length);
   return (
     <>
       {marqueeData?.dish?.length > 0 && (

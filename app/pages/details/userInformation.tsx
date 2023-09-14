@@ -21,6 +21,7 @@ function UserInformation({
   preview,
   setInputs,
   inputs,
+  setStep,
 }) {
   const [value, setValue] = useState()
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
@@ -69,10 +70,8 @@ function UserInformation({
       services: user.services,
       tableShape: user.tableShape,
     };
-    console.log("usersusers", users);
     setUserInformation(users);
-  setSlider(1)
-
+    setSlider(1)
   };
 
   return (
