@@ -203,16 +203,6 @@ console.log("slider",slider);
             </div>
 
             {
-              //  slider === 0 ? (
-              //     <MarqueeAvailability
-              //       venus={marqueeData.venues}
-              //       setSlider={setSlider}
-              //       setSelectedHall={setSelectedHall}
-              //       selectedHall={selectedHall}
-              //       setClickedIndex={setClickedIndex}
-              //       clickedIndex={clickedIndex}
-              //     />
-              //    ) :
               slider === 0 ? (
                 <UserInformation
                   setSlider={setSlider}

@@ -237,7 +237,6 @@ function Marquee() {
           lat: parseFloat(data[0].lat),
           lng: parseFloat(data[0].lon),
         };
-        console.log("Coordinates:asdasdasdas", coordinates);
         setFilterData({ ...filterData, location: coors });
         setCoordinates(coors);
       } else {
@@ -352,7 +351,7 @@ function Marquee() {
           <div className="w-full  lg:w-[75%]">
             {showMessage ? (
               (filterMarqueeWithPrice.length
-                ? filterMarqueeWithPrice
+                ? filterMarqueeWithPrice 
                 : userData
               ).map((item, index) => (
                 <MarqueeDetails

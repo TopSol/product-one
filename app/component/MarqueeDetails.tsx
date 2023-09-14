@@ -47,16 +47,13 @@ function MarqueeDetails({ item, showMessage }) {
     const asd = venuesData?.filter((item) => {
       return item?.data?.userId === id;
     });
-    console.log(asd, "asdasd");
-
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
-      minCapacity:item?.data?.minCapacity,
+      minCapacity:item?.data?.minCapacity,  
       maxCapacity:item?.data?.maxCapacity,
       disabled: false,
     }));
-    console.log(marqueeVenueName, "marqueeVenueName");
     addMarqueeVenueNames(marqueeVenueName);
   };
 
@@ -139,13 +136,14 @@ function MarqueeDetails({ item, showMessage }) {
       ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
       : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch);
   };
-
+console.log(item,"sdfdsfsdfsdfdsfsd")
   return (
     <>
       <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
         <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
           <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
-            <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
+            {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref> */}
+            <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref>
               <img
                 src={item?.data?.images?.[0]}
                 className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
@@ -194,7 +192,8 @@ function MarqueeDetails({ item, showMessage }) {
                   <FontAwesomeIcon icon={faStar} />
                   <FontAwesomeIcon icon={faStar} />
                 </p>
-                <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref>
+                {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}/${item?.data?.name}`} passHref> */}
+                <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}`} passHref>
                   <button
                     onClick={() => {
                       venuesName(item?.id);
