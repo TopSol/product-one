@@ -52,6 +52,9 @@ function MarqueeDetails({ item, showMessage }) {
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
+      minCapacity:item?.data?.minCapacity,
+      maxCapacity:item?.data?.maxCapacity,
+      disabled: false,
     }));
     console.log(marqueeVenueName, "marqueeVenueName");
     addMarqueeVenueNames(marqueeVenueName);
@@ -64,6 +67,9 @@ function MarqueeDetails({ item, showMessage }) {
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
+      disabled: false,
+      minCapacity:item?.data?.minCapacity,
+      maxCapacity:item?.data?.maxCapacity,
     }));
     addMarqueeVenueNames(marqueeVenueName);
     setName(marqueeVenueName);
