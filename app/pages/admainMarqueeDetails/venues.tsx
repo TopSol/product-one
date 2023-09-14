@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../../component/Loader";
-import ImageLightbox from "react-image-lightbox";
 import Lightbox from "react-image-lightbox";
-// import { Image } from "antd";
 import Image from "next/image";
 import { Checkbox, Button } from "antd";
 import Link from "next/link";
@@ -43,15 +41,16 @@ function Venues({
 }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenue, setaddVenue] = useState([]);
-  const { Column } = Table;
+  const [previewImage, setPreviewImage] = useState([]);
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const { Column } = Table;
   const { userInformation, addUser, Venues, addVenues, dates } = useStore();
   const storage = getStorage();
   const storage2 = getStorage();
-  const [previewImage, setPreviewImage] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const ImageRef = ref(storage, "images/");
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({
@@ -104,12 +103,12 @@ function Venues({
       images.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
         const storageRef = ref(storage2, fileName);
-        // const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
         return urls;
       })
     );
+
     const VenueId = Math.random().toString(36).substring(2);
     const venue = {
       name: user.name,

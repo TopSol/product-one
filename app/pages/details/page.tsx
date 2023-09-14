@@ -31,9 +31,6 @@ const initialFormState = {
 };
 const steps = [
   {
-    title: "First",
-  },
-  {
     title: "Second",
   },
   {
@@ -43,14 +40,7 @@ const steps = [
     title: "Last",
   },
 ];
-const smallSteps = [
-  {
-    title: "Second",
-  },
-  {
-    title: "Last",
-  },
-];
+
 function Slider() {
   const { bookedDates, marqueeImage } = useStore();
   const [slider, setSlider] = useState(0);
@@ -85,7 +75,7 @@ function Slider() {
       marqueeId: id,
       services: [],
     };
-    
+
     try {
       await setDoc(doc(db, "contactUs", fieldId), users);
     } catch (error) {
@@ -99,12 +89,9 @@ function Slider() {
       Menu: selectedMenu,
       userInformation: userInformation,
     };
-    console.log("userInformation1", userInformation);
 
     setHallInformation([{ ...users }]);
   };
-  console.log("HallInformation", hallInformation);
-  console.log("userInformation", userInformation);
 
   const fetchData = async () => {
     try {
@@ -134,7 +121,6 @@ function Slider() {
       let menuDataArr = [];
       menusSnapshot.forEach((doc) => {
         const items = doc.data();
-        console.log(items, "doc");
         menuDataArr.push({ ...items, selected: false });
       });
       let withoutVenueDish = [];
@@ -180,11 +166,12 @@ function Slider() {
       });
     }, 100);
   };
+  const handleSlider = (index) =>{
+    setSlider(index)
+  }
+console.log("slider",slider);
 
-  const checkData =
-    marqueeData?.venues?.length === 0 &&
-    marqueeData?.dish?.length === 0 &&
-    marqueeData?.withoutVenueDish?.length === 0;
+
   return (
     <div>
       {successPage ? (
@@ -193,53 +180,39 @@ function Slider() {
         <>
           <Navbar />
           <div className="mt-28">
-            {checkData ? (
-              <div className="flex justify-center mb-6 ">
-                {smallSteps.map((item, index) => (
-                  <div key={index} className="flex items-center">
-                    <div
-                      onClick={() => setSlider(index)}
-                      className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
-                        slider >= index ? "bg-blue-500" : "bg-slate-300"
-                      } text-white`}
-                    >
-                      {index + 1}
-                    </div>
-                    {index !== smallSteps.length - 1 && (
-                      <div
-                        className={`w-12 md:w-52 border-b-8 ${
-                          slider > index ? "border-blue-500" : "bg-white"
-                        }`}
-                      />
-                    )}
+            <div className="flex justify-center mb-6">
+              {steps.map((item, index) => (
+                <div key={index} className="flex items-center">
+                  <div
+                    onClick={() => handleSlider(index)}
+                    className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
+                      slider >= index ? "bg-blue-500" : "bg-slate-300"
+                    } text-white`}
+                  >
+                    {index + 1}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex justify-center mb-6 ">
-                {steps.map((item, index) => (
-                  <div key={index} className="flex items-center">
+                  {index !== steps.length - 1 && (
                     <div
-                      onClick={() => setSlider(index)}
-                      className={`flex  justify-center items-center w-8 h-8 rounded-full md:w-11 md:h-11 ${
-                        slider >= index ? "bg-blue-500" : "bg-slate-300"
-                      } text-white`}
-                    >
-                      {index + 1}
-                    </div>
-                    {index !== steps.length - 1 && (
-                      <div
-                        className={`w-12 md:w-28 border-b-8 ${
-                          slider > index ? "border-blue-500" : "bg-white"
-                        }`}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                      className={`w-12 md:w-28 border-b-8 ${
+                        slider > index ? "border-blue-500" : "bg-white"
+                      }`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
 
-            {checkData ? (
+            {
+              //  slider === 0 ? (
+              //     <MarqueeAvailability
+              //       venus={marqueeData.venues}
+              //       setSlider={setSlider}
+              //       setSelectedHall={setSelectedHall}
+              //       selectedHall={selectedHall}
+              //       setClickedIndex={setClickedIndex}
+              //       clickedIndex={clickedIndex}
+              //     />
+              //    ) :
               slider === 0 ? (
                 <UserInformation
                   setSlider={setSlider}
@@ -252,62 +225,28 @@ function Slider() {
                   selectedOption={selectedOption}
                   setInputs={setInputs}
                   inputs={inputs}
-                  checkData={checkData}
-                  preview={preview}
                 />
-              ) : slider == 1 ? (
+              ) : slider === 1 ? (
+                <ChooseMenu
+                  marqueeData={marqueeData}
+                  setMarqueeData={setMarqueeData}
+                  setSlider={setSlider}
+                  setSelectedMenu={setSelectedMenu}
+                  preview={preview}
+                  selectedMenu={selectedMenu}
+                  setMenuIndex={setMenuIndex}
+                  menuIndex={menuIndex}
+                  withoutVenueDish={marqueeData.withoutVenueDish}
+                />
+              ) : slider == 2 ? (
                 <Preview
-                  userInformation={userInformation}
                   hallInformation={hallInformation}
                   sendData={sendData}
                   setSuccessPage={setSuccessPage}
                   openMessage={openMessage}
-                  marqueeImage={marqueeImage}
-                  checkData={checkData}
                 />
               ) : null
-            ) : slider === 0 ? (
-              <MarqueeAvailability
-                venus={marqueeData.venues}
-                setSlider={setSlider}
-                setSelectedHall={setSelectedHall}
-                selectedHall={selectedHall}
-                setClickedIndex={setClickedIndex}
-                clickedIndex={clickedIndex}
-              />
-            ) : slider === 1 ? (
-              <UserInformation
-                setSlider={setSlider}
-                selectedHall={selectedHall}
-                selectedMenu={selectedMenu}
-                setUserInformation={setUserInformation}
-                setUser={setUser}
-                user={user}
-                setSelectedOption={setSelectedOption}
-                selectedOption={selectedOption}
-                setInputs={setInputs}
-                inputs={inputs}
-              />
-            ) : slider === 2 ? (
-              <ChooseMenu
-                marqueeData={marqueeData}
-                setMarqueeData={setMarqueeData}
-                setSlider={setSlider}
-                setSelectedMenu={setSelectedMenu}
-                preview={preview}
-                selectedMenu={selectedMenu}
-                setMenuIndex={setMenuIndex}
-                menuIndex={menuIndex}
-                withoutVenueDish={marqueeData.withoutVenueDish}
-              />
-            ) : slider == 3 ? (
-              <Preview
-                hallInformation={hallInformation}
-                sendData={sendData}
-                setSuccessPage={setSuccessPage}
-                openMessage={openMessage}
-              />
-            ) : null}
+            }
           </div>
         </>
       )}

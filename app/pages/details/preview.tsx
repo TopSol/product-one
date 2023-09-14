@@ -71,25 +71,16 @@ function Preview({
     setIsModalOpen(false);
   };
   console.log(menus.menus[0]?.dish, "Dishes");
-  
 
   return (
     <div className="md:container md:mx-auto mx-3">
       <div className="border w-auto md:w-[700px]  p-3 md:p-8  flex flex-col justify-center mx-auto rounded-xl">
         <div className="flex justify-center object-cover">
-          {checkData ? (
-            <img
-              src={marqueeImage}
-              alt=""
-              className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
-            />
-          ) : (
-            <img
-              src={hallInformation[0]?.selectedHall?.image}
-              alt=""
-              className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
-            />
-          )}
+          <img
+            src={hallInformation[0]?.selectedHall?.image}
+            alt=""
+            className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
+          />
         </div>
         <div className=" flex justify-center ">
           <div className="w-[100%] md:flex  md:justify-between mx-auto items-center justify-center">
@@ -100,16 +91,10 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Name</p>
-                  {checkData ? (
-                    <p>
-                      {userInformation?.firstName} {userInformation?.lastName}
-                    </p>
-                  ) : (
-                    <p>
-                      {hallInformation[0]?.userInformation?.firstName}{" "}
-                      {hallInformation[0]?.userInformation?.lastName}
-                    </p>
-                  )}
+                  <p>
+                    {hallInformation[0]?.userInformation?.firstName}{" "}
+                    {hallInformation[0]?.userInformation?.lastName}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -118,11 +103,8 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Phone</p>
-                  {checkData ? (
-                    <p>{userInformation?.PhoneNumber}</p>
-                  ) : (
-                    <p>{hallInformation[0]?.userInformation?.PhoneNumber}</p>
-                  )}
+
+                  <p>{hallInformation[0]?.userInformation?.PhoneNumber}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -131,11 +113,8 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Notes</p>
-                  {checkData ? (
-                    <p>{userInformation?.notes}</p>
-                  ) : (
-                    <p>{hallInformation[0]?.userInformation?.notes}</p>
-                  )}
+
+                  <p>{hallInformation[0]?.userInformation?.notes}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -144,11 +123,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Capacity</p>
-                  {checkData ? (
-                    <p> {menus.menus[0]?.capacity}</p>
-                  ) : (
-                    <p>{hallInformation[0]?.selectedHall?.maxCapacity}</p>
-                  )}
+                  <p>{hallInformation[0]?.selectedHall?.maxCapacity}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -157,15 +132,11 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Facilities</p>
-                  {checkData ? (
-                   <p>Heating</p>
-                  ) : (
-                    <div>
-                      {hallInformation[0]?.selectedHall?.services[0] && (
-                        <p>Heating</p>
-                      )}
-                    </div>
-                  )}
+                  <div>
+                    {hallInformation[0]?.selectedHall?.services[0] && (
+                      <p>Heating</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -177,11 +148,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Email</p>
-                  {checkData ? (
-                    <p>{userInformation?.email}</p>
-                  ) : (
-                    <p>{hallInformation[0]?.userInformation?.email}</p>
-                  )}
+                  <p>{hallInformation[0]?.userInformation?.email}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -190,11 +157,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Address</p>
-                  {checkData ? (
-                    <p>{userInformation?.address}</p>
-                  ) : (
-                    <p>{hallInformation[0]?.userInformation?.address}</p>
-                  )}
+                  <p>{hallInformation[0]?.userInformation?.address}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -203,11 +166,8 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Hall Name</p>
-                  {checkData ? (
-                    <p>{menus.menus[0]?.hall}</p>
-                  ) : (
-                    <p>{hallInformation[0]?.selectedHall?.name}</p>
-                  )}
+
+                  <p>{hallInformation[0]?.selectedHall?.name}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -216,11 +176,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Price</p>
-                  {checkData ? (
-                    <p> {menus.menus[0]?.price}</p>
-                  ) : (
-                    <p>{hallInformation[0]?.selectedHall?.price}</p>
-                  )}
+                  <p>{hallInformation[0]?.selectedHall?.price}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -236,9 +192,7 @@ function Preview({
                         className="text-blue-600 underline"
                         href=""
                       >
-                        {checkData
-                          ? `${menus.menus[0]?.dish.length} Dishes `
-                          : `${hallInformation[0]?.Menu?.dishes?.length} Dishes`}
+                        {`${hallInformation[0]?.Menu?.dishes?.length} Dishes`}
                       </Link>
                     }
 
@@ -249,13 +203,9 @@ function Preview({
                       onCancel={handleCancel}
                     >
                       {" "}
-                      {checkData
-                          ? menus.menus[0]?.dish.map(
-                            (item, index) => <li key={index}>{item}</li>
-                          )
-                        :  hallInformation[0]?.Menu?.dishes?.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
+                      {hallInformation[0]?.Menu?.dishes?.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
                     </Modal>
                   </div>
                 </div>

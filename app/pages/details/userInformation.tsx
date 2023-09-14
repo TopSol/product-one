@@ -1,14 +1,12 @@
-import React, { use, useState } from "react";
+"use client";
+import React, { useState } from "react";
 import dots from "../../assets/images/dots.svg";
-import userIcon from "../../assets/images/user.svg";
-import email from "../../assets/images/email-1-svgrepo-com.svg";
-import call from "../../assets/images/call.svg";
-import address from "../../assets/images/address-location-map-svgrepo-com 1.svg";
-import notes from "../../assets/images/notes.svg";
 import Image from "next/image";
+import PhoneInput from "react-phone-number-input";
+import TextArea from "antd/es/input/TextArea";
 import { Input, Checkbox, Radio } from "antd";
-import { useStore } from "@/store";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
+import "react-phone-number-input/style.css";
 
 function UserInformation({
   setSlider,
@@ -18,14 +16,14 @@ function UserInformation({
   setSelectedOption,
   selectedOption,
   setUserInformation,
+  chooseMenu,
   checkData,
   preview,
   setInputs,
   inputs,
 }) {
-  const [value, setValue] = useState(1);
+  const [value, setValue] = useState()
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
-  console.log(selectedHall, "selectedHallselectedHall");
   const handleInputChange = (checkedValues: CheckboxValueType[]) => {
     setUser({ ...user, services: checkedValues });
   };
@@ -52,14 +50,14 @@ function UserInformation({
       !user.email ||
       !user.address ||
       !user.notes ||
-      !user.PhoneNumber ||
+      !value ||
       !user.tableShape ||
       !user.services
     ) {
       alert("Please fill all the fields");
       return;
     }
-    const phone = user.PhoneNumber;
+    const phone = value;
     const convertedPhoneNumber = "92" + phone.replace(/^0/, "");
     const users = {
       firstName: user.firstName,
@@ -67,20 +65,14 @@ function UserInformation({
       email: user.email,
       address: user.address,
       notes: user.notes,
-      PhoneNumber: convertedPhoneNumber,
+      // PhoneNumber: convertedPhoneNumber,
       services: user.services,
       tableShape: user.tableShape,
     };
+    console.log("usersusers", users);
     setUserInformation(users);
-      if(checkData)
-          {
-            setSlider(1);
-            preview();
-          }
-     else{
-        setSlider(2)
-     }
-    
+  setSlider(1)
+
   };
 
   return (
@@ -98,7 +90,7 @@ function UserInformation({
         <div className="mx-3 md:mx-0 font-semibold">
           <div className=" lg:flex lg:justify-between md:mx-10">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
+              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
                   F/Name
                 </p>
@@ -109,21 +101,15 @@ function UserInformation({
                   name="firstName"
                   value={user.firstName}
                   onChange={handleChange}
-                  suffix={
-                    <Image
-                      src={userIcon}
-                      alt="User Icon"
-                      className="inline-block h-6 w-6"
-                    />
-                  }
+                 
                   className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
-                  L/Nmae
+                  L/Name
                 </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
@@ -132,13 +118,7 @@ function UserInformation({
                   name="lastName"
                   value={user.lastName}
                   onChange={handleChange}
-                  suffix={
-                    <Image
-                      src={userIcon}
-                      alt="User Icon"
-                      className="inline-block h-6 w-6"
-                    />
-                  }
+                 
                   className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
@@ -158,13 +138,7 @@ function UserInformation({
                   name="email"
                   value={user.email}
                   onChange={handleChange}
-                  suffix={
-                    <Image
-                      src={email}
-                      alt="User Icon"
-                      className="inline-block h-6 w-6"
-                    />
-                  }
+                 
                   className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
@@ -176,19 +150,15 @@ function UserInformation({
                 </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <Input
+                <PhoneInput
                   type="PhoneNumber"
                   name="PhoneNumber"
-                  value={user.PhoneNumber}
-                  onChange={handleChange}
-                  suffix={
-                    <Image
-                      src={call}
-                      alt="User Icon"
-                      className="inline-block h-6 w-6"
-                    />
-                  }
-                  className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                  international
+                  countryCallingCodeEditable={false}
+                  defaultCountry="PK"
+                  value={value}
+                  onChange={setValue}
+                  className="border rounded outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-6 mb-3 flex justify-center text-xs relative px-2"
                 />
               </div>
             </div>
@@ -196,47 +166,33 @@ function UserInformation({
 
           <div className="lg:flex lg:justify-between md:mx-10">
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute  top-[calc(50%_-_88.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
                   Notes
                 </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <Input
+                <TextArea
                   rows={4}
                   name="notes"
                   value={user.notes}
                   onChange={handleChange}
-                  suffix={
-                    <Image
-                      src={notes}
-                      alt="User Icon"
-                      className="inline-block h-6 w-6"
-                    />
-                  }
                   className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[80.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute  top-[calc(50%_-_88.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[80.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
                   Address
                 </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <Input
+                <TextArea
                   rows={4}
                   name="address"
                   value={user.address}
                   onChange={handleChange}
-                  suffix={
-                    <Image
-                      src={address}
-                      alt="User Icon"
-                      className="inline-block h-6 w-6"
-                    />
-                  }
                   className="border outline-none md:w-96 lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
@@ -254,31 +210,6 @@ function UserInformation({
                 onChange={handleInputChange}
                 className=" outline-none md:w-[700px] w-full flex-col  z-10   py-5  flex  text-xs "
               />
-              {/* <Checkbox
-                type="checkbox"
-                name="Heating"
-                checked={inputs.Heating}
-                onChange={handleInputChange}
-              >
-                Heating
-              </Checkbox>
-              <Checkbox
-                type="checkbox"
-                name="Cooling"
-                checked={inputs.Cooling}
-                onChange={handleInputChange}
-                className="my-2"
-              >
-                Cooling
-              </Checkbox>
-              <Checkbox
-                type="checkbox"
-                name="MusicSystem"
-                checked={inputs.MusicSystem}
-                onChange={handleInputChange}
-              >
-                Music System
-              </Checkbox> */}
             </div>
           </div>
 

@@ -1,3 +1,27 @@
 .modal .ant-modal-content {
     padding: 0px !important;
 }
+.PhoneInputInput {
+    width: 41vw;
+    outline: none;
+}
+
+.PhoneInput:hover {
+    border-color: #4096FF;
+}
+
+.PhoneInput {
+    outline: none;
+    border-radius: 5px;
+   
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #cdcdcd;
+}
+
+/* @media (max-width: 760) {
+    .PhoneInputInput {
+        width: 100vw !important;
+    }
+} */
