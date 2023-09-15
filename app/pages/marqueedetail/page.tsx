@@ -7,8 +7,9 @@ import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Input, Select, Space, Typography, message } from "antd";
+import { Breadcrumb, Input, Select, Space, Typography, message } from "antd";
 import { getFormatDates } from "@/app/utils";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import {
   faCalendarDays,
   faPerson,
@@ -28,6 +29,7 @@ import "./style.css";
 import chair from "../../assets/images/chair.svg";
 import click from "../../assets/images/click.svg";
 import Image from "next/image";
+import Link from "next/link";
 function Marqueedetail() {
   const {
     addBookedDates,
@@ -69,7 +71,9 @@ function Marqueedetail() {
   };
 
   const id = searchParams.get("id");
-
+  const marqueeName = searchParams.get("name");
+  const location=searchParams.get("location")
+console.log( location?.split(",") ,"locationlocation")
   const handleButton = () => {
     addBookedDates(marqueeDates);
     router.push(`/pages/details?id=${data?.userId}&name=${Object.values(data)}`);
@@ -171,6 +175,12 @@ function Marqueedetail() {
   };
 
   const handleVenueType = (e) => {
+    console.log(e, "target");
+    if (e == "1") {
+      setMeal("Lunch");
+    } else {
+      setMeal("Diner");
+    }
     e == "1"
       ? handleVenueName(venueId, "Lunch")
       : handleVenueName(venueId, "Diner");
@@ -202,18 +212,12 @@ function Marqueedetail() {
   const handleNumberOfPeople = (e) => {
     setNumberOfPeople(e.target.value);
   };
-  // const handleVenue=()=>{
-
-  // const data =  marqueeVenueNames.filter((capacity)=>{
-
-  //     if(numberOfPeople < capacity.minCapacity && numberOfPeople > capacity.maxCapacity){
-  //       return [capacity,{disabled:true}]
-  //     }
-  //   })
-  // }
   const handleVenue = () => {
     const updatedData = marqueeVenueNames.map((capacity) => {
-      const isDisabled =numberOfPeople.length ? numberOfPeople  > capacity.minCapacity && numberOfPeople < capacity.maxCapacity: true
+      const isDisabled = numberOfPeople.length
+        ? numberOfPeople > capacity.minCapacity &&
+          numberOfPeople < capacity.maxCapacity
+        : true;
       if (isDisabled) {
         return { ...capacity, disabled: false };
       } else {
@@ -223,9 +227,18 @@ function Marqueedetail() {
     console.log(updatedData, "updatedDataupdatedData", numberOfPeople);
     addMarqueeVenueNames(updatedData);
   };
-  const handleMouseEnter=(date)=>{
-console.log(date,"datsseff")
-  }
+  const handleMouseEnter = (date) => {
+    console.log(date, "datsseff");
+  };
+  const containerStyle = {
+    width: '100%',
+    height: '400px',
+  };
+  
+  const center = {
+    lat: Number(location?.[0]), // Example latitude
+    lng: Number(location?.[1]), // Example longitude
+  };
   return (
     <>
       <div>
@@ -234,16 +247,24 @@ console.log(date,"datsseff")
           <div className="md:container md:mx-auto py-5 flex justify-between items-center mx-3">
             <div>
               <h1 className="font-vollkorn text-4xl text-gray-600">
-                Hotel Detail
+                {marqueeName}
               </h1>
-              <p className="mt-2 text-xs font-roboto">Home / Hotel</p>
-            </div>
-            <div>
-              <h1 className="font-vollkorn text-4xl text-gray-600">350$</h1>
+              <Breadcrumb
+                items={[
+                  {
+                    title: "Home",
+                  },
+                  {
+                    title: <Link href="/pages/marquee">Marquee</Link>,
+                  },
+                  {
+                    title: "Marquee Details",
+                  },
+                ]}
+              />
             </div>
           </div>
         </div>
-
         <div className="md:container mx-auto flex flex-col justify-between lg:flex-row mt-16 ">
           <div className="lg:w-[60%] mx-3 lg:mx-0">
             <div className="">
@@ -272,8 +293,8 @@ console.log(date,"datsseff")
                 <p className="text-2xl text-white font-poppins">Details</p>
               </div>
               <div className=" p-2 flex flex-col md:flex-row justify-between md:px-10 md:py-4">
-                <div className=" md:h-[300px] h-[200px] flex flex-col justify-around w-full md:w-[40%]">
-                  <div className="flex items-center  px-3 rounded-md bg-bgColor md:py-3 py-1">
+                <div className=" md:h-[300px] h-[200px] flex flex-col justify-center w-full md:w-[40%]">
+                  <div className="flex items-center  px-3 rounded-md bg-bgColor md:py-3 my-3">
                     <div className="bg-white w-8 h-8 rounded-full flex justify-center ">
                       <Image
                         src={chair}
@@ -290,7 +311,7 @@ console.log(date,"datsseff")
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center px-3 rounded-md bg-bgColor md:py-3 py-1">
+                  <div className="flex items-center px-3 rounded-md bg-bgColor md:py-3 my-3">
                     <div className="bg-white w-8 h-8 rounded-full flex justify-center ">
                       <Image
                         src={chair}
@@ -307,23 +328,6 @@ console.log(date,"datsseff")
                       </p>
                     </div>
                   </div>
-                  {/* <div className="flex items-center px-3 rounded-md bg-bgColor py-3">
-                    <div className="bg-white w-8 h-8 rounded-full flex justify-center ">
-                      <Image
-                        src={chair}
-                        alt="Chair"
-                        height={20}
-                        width={20}
-                        className=""
-                      />
-                    </div>
-                    <div className="pl-3">
-                      <p className="md:text-md  mb-2">Price</p>
-                      <p className="underline md:text-sm font-thin">
-                        {data?.price}
-                      </p>
-                    </div>
-                  </div> */}
                 </div>
                 <div className="w-full md:w-[50%]">
                   <div className="border my-4 md:h-[268px] h-[210px]   rounded-md ">
@@ -338,7 +342,7 @@ console.log(date,"datsseff")
                           display: "flex",
                         }}
                       >
-                        {data?.services?.map((item,index) => (
+                        {data?.services?.map((item, index) => (
                           <div className={`flex`}>
                             <Image
                               src={click}
@@ -355,6 +359,18 @@ console.log(date,"datsseff")
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="mt-5">
+
+            <LoadScript googleMapsApiKey="AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4">
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={12}
+                >
+                <Marker position={center} />
+              </GoogleMap>
+            </LoadScript>
             </div>
           </div>
           <div className="lg:w-[30%] mx-3 lg:mx-5">
@@ -375,76 +391,74 @@ console.log(date,"datsseff")
                 </Space>
                 <div className="flex justify-between flex-col md:flex-row  ">
                   <div>
-                  <Space direction="vertical">
-                    <Typography.Text className="text-primaryColor text-lg  font-poppins">
-                      Select Hall
-                    </Typography.Text>
-                    <Select
-                      showSearch
-                      defaultValue={{
-                        value:
-                          marqueeVenueNames?.[marqueeVenueNames.length - 1]
-                            ?.value,
-                        label:
-                          marqueeVenueNames?.[marqueeVenueNames.length - 1]
-                            ?.label,
-                      }}
-                      style={{
-                        // width: 210,
-                        marginBottom: 20,
-                        borderRadius: 10,
-                      }}
-                      placeholder="Search to Select"
-                      size="large"
-                      placement="bottomLeft"
-                      optionFilterProp="children"
-                      filterOption={(input, option) =>
-                        (option?.label ?? "").includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? "")
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? "").toLowerCase())
-                      }
-                      onChange={(e) => handleVenueName(e)}
-                      options={marqueeVenueNames}
-                      className="w-[295px] md:w-[210px]"
-                    />
-                  </Space>
+                    <Space direction="vertical">
+                      <Typography.Text className="text-primaryColor text-lg  font-poppins">
+                        Select Hall
+                      </Typography.Text>
+                      <Select
+                        showSearch
+                        defaultValue={{
+                          value:
+                            marqueeVenueNames?.[marqueeVenueNames.length - 1]
+                              ?.value,
+                          label:
+                            marqueeVenueNames?.[marqueeVenueNames.length - 1]
+                              ?.label,
+                        }}
+                        style={{
+                          // width: 210,
+                          marginBottom: 20,
+                          borderRadius: 10,
+                        }}
+                        placeholder="Search to Select"
+                        size="large"
+                        placement="bottomLeft"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label ?? "").includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? "")
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                        }
+                        onChange={(e) => handleVenueName(e)}
+                        options={marqueeVenueNames}
+                        className="w-[295px] md:w-[210px]"
+                      />
+                    </Space>
                   </div>
                   <div>
-
-                  
-                  <Space direction="vertical">
-                    <Typography.Text className="text-primaryColor text-lg font-poppins">
-                      Select Lunch Type
-                    </Typography.Text>
-                    <Select
-                      showSearch
-                      style={{
-                        // width: 210,
-                        marginBottom: 20,
-                        borderRadius: 10,
-                      }}
-                      className="mr-[6px] lg:mr-0 w-[295px] md:w-[210px]"
-                      placeholder="Search to Select"
-                      size="large"
-                      placement="bottomLeft"
-                      optionFilterProp="children"
-                      filterOption={(input, option) =>
-                        (option?.label ?? "").includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? "")
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? "").toLowerCase())
-                      }
-                      onChange={(e) => handleVenueType(e)}
-                      options={lunchDinner}
-                      value={meal}
-                      // className="w-[295px] md:w-[210px]"
-                    />
-                  </Space>
+                    <Space direction="vertical">
+                      <Typography.Text className="text-primaryColor text-lg font-poppins">
+                        Select Lunch Type
+                      </Typography.Text>
+                      <Select
+                        showSearch
+                        style={{
+                          // width: 210,
+                          marginBottom: 20,
+                          borderRadius: 10,
+                        }}
+                        className="mr-[6px] lg:mr-0 w-[295px] md:w-[210px]"
+                        placeholder="Search to Select"
+                        size="large"
+                        placement="bottomLeft"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label ?? "").includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? "")
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                        }
+                        onChange={(e) => handleVenueType(e)}
+                        options={lunchDinner}
+                        value={meal}
+                        // className="w-[295px] md:w-[210px]"
+                      />
+                    </Space>
                   </div>
                 </div>
               </div>
@@ -463,7 +477,6 @@ console.log(date,"datsseff")
                     disabled={days}
                     selected={marqueeDates}
                     onSelect={handleDateRangeSelect}
-                    onMouseEnter={handleMouseEnter}
                   />
                 </div>
               </div>
@@ -477,7 +490,9 @@ console.log(date,"datsseff")
             {isShow && (
               <div
                 onClick={handleButton}
-                className="flex bg-bgColor rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor"
+                className={`flex ${
+                  numberOfPeople.length ? "bg-lightPrimary" : "bg-bgColor"
+                } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor`}
               >
                 {/* <NextLink href={`/pages/details?id=${data?.userId}`} passHref> */}
                 <div>{loading ? <Loader /> : " Book Now"}</div>

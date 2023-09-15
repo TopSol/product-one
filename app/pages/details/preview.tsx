@@ -20,6 +20,7 @@ import menus from "./data";
 import dots from "@/app/assets/images/dots.svg";
 import { useStore } from "@/store";
 import "./style.css";
+import { useSearchParams } from "next/navigation";
 
 function Preview({
   hallInformation,
@@ -76,6 +77,9 @@ function Preview({
   console.log(selectedMenu, "userInformation1");
   
  console.log("abc");
+const params = useSearchParams();
+ const name = params.get("name");
+  console.log("NameName", name?.split(','));
  
   return (
     <div className="md:container md:mx-auto mx-3">
@@ -128,7 +132,7 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Capacity</p>
-                  <p>{"maxCapacity"}</p>
+                  <p>{name?.[0]}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">
@@ -172,7 +176,7 @@ function Preview({
                 <div className="ml-3">
                   <p className="font-semibold">Hall Name</p>
 
-                  <p>{"name"}</p>
+                  <p>{"Hall 1"}</p>
                 </div>
               </div>
               <div className="flex items-center my-5">

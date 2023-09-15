@@ -64,8 +64,7 @@ function Slider() {
   });
 
   const id = params.get("id");
-  const name = params.get("name");
-  console.log("NameName", name?.split(','));
+  
   
   const sendData = async () => {
     const fieldId = Math.random().toString(36).slice(2);
