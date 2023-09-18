@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { Modal } from "antd";
+import { useStore } from "@/store";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import nameImg from "../../assets/images/user.svg";
@@ -18,12 +21,9 @@ import facilites from "../../assets/images/facilites.svg";
 import dish from "../../assets/images/menuIcon.svg";
 import menus from "./data";
 import dots from "@/app/assets/images/dots.svg";
-import { useStore } from "@/store";
 import "./style.css";
-import { useSearchParams } from "next/navigation";
 
 function Preview({
-  hallInformation,
   sendData,
   setSuccessPage,
   openMessage,
@@ -31,12 +31,12 @@ function Preview({
   userInformation,
   checkData,
   selectedMenu,
-  
 }) {
+  const { hallInformation } = useStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [showFacilities, setShowFacilities] = useState(false);
+  const [open, setOpen] = useState(false);
   const [blogs, setBlogs] = useState([]);
-  console.log("hallInformation", hallInformation);
+  const router = useRouter();
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
@@ -46,7 +46,6 @@ function Preview({
       console.error("Error fetching blogs:", error);
     }
   };
-  // console.log("userInformationnnnnnn", userInformation);
 
   useEffect(() => {
     fetchBlogs();
@@ -59,9 +58,6 @@ function Preview({
   };
 
   let a = parseInt(userInformation?.Heating);
-  // let b = parseInt(Menu?.Heating);
-
-  // const total = `${hallInformation[0]?.selectedHall?.price} + ${hallInformation[0]?.Menu?.price}`;
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -73,50 +69,112 @@ function Preview({
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  console.log(userInformation, "userInformation");
-  console.log(selectedMenu, "userInformation1");
-  
- console.log("abc");
-const params = useSearchParams();
- const name = params.get("name");
-  console.log("NameName", name?.split(','));
- 
+
   return (
-    <div className="md:container md:mx-auto mx-3">
-      <div className="border w-auto md:w-[700px]  p-3 md:p-8  flex flex-col justify-center mx-auto rounded-xl">
+    <div>
+      {/* IMAGE DIV */}
+
+      <div className="md:container md:w-[920px] flex flex-col justify-center mx-auto border px-3 md:px-7 py-4 rounded-lg">
         <div className="flex justify-center object-cover">
           <img
-            src="https://api.asm.skype.com/v1/objects/0-sa-d8-bb1064670a8eef24524829aa6ed1677f/views/imgpsh_fullsize_anim"
+            src={hallInformation?.image}
             alt=""
-            className=" md:w-[650px]  md:h-64 rounded-xl cursor-pointer object-cover "
+            className=" md:w-[920px]  md:h-56 rounded-xl cursor-pointer object-cover "
           />
         </div>
-        <div className=" flex justify-center ">
-          <div className="w-[100%] md:flex  md:justify-between mx-auto items-center justify-center">
-            <div className="font-Manrope">
-              <div className="flex items-center my-5 ">
+
+        {/* HALL'S DIV */}
+        <div className="bg-bgColor p-4 md:p-7 flex flex-col  md:flex md:flex-row justify-between mt-6 rounded-lg">
+          <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
+            <div className="flex items-center justify-start my-3 md:my-5 px-3">
+              <div>
+                <Image src={hall} alt="Image" />
+              </div>
+              <div className="ml-3">
+                <p className="font-semibold">Hall Name</p>
+                <p>{hallInformation?.name}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg md:w-[350px] ">
+            <div className="flex items-center justify-start my-3 md:my-5 px-3">
+              <div>
+                <Image src={capacity} alt="Image" height={35} width={35} />
+              </div>
+              <div className="ml-3">
+                <p className="font-semibold">Sitting Capacity</p>
+                <p>{hallInformation?.maxCapacity}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* USERINFORMATION'S DIV */}
+
+        <div className="bg-bgColor px-4 md:px-6 py-3 md:py-5 flex flex-col justify-between my-6 rounded-lg">
+          {/* FIRST */}
+
+          <div className="flex flex-col md:flex md:flex-row justify-between mb-3 md:mb-0">
+            <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
+              <div className="flex items-center my-3 md:my-5 px-3">
                 <div>
                   <Image src={nameImg} alt="Image" />
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Name</p>
                   <p>
-                    {userInformation?.firstName}{" "}
-                    {userInformation?.lastName}
+                    {userInformation?.firstName} {userInformation?.lastName}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center my-5">
+            </div>
+
+            <div className="bg-white rounded-lg md:w-[350px]">
+              <div className="flex items-center my-5 px-3">
+                <div>
+                  <Image src={email} alt="Image" />
+                </div>
+                <div className="ml-3">
+                  <p className="font-semibold">Email</p>
+                  <p>{userInformation?.email}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECOND */}
+
+          <div className="flex flex-col md:flex md:flex-row justify-between mb-3 md:my-5">
+            <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
+              <div className="flex items-center my-5 px-3">
                 <div>
                   <Image src={call} alt="Image" />
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Phone</p>
-
                   <p>{userInformation?.PhoneNumber}</p>
                 </div>
               </div>
-              <div className="flex items-center my-5">
+            </div>
+
+            <div className="bg-white rounded-lg md:w-[350px]">
+              <div className="flex items-center my-5 px-3">
+                <div>
+                  <Image src={address} alt="Image" />
+                </div>
+                <div className="ml-3">
+                  <p className="font-semibold">Address</p>
+                  <p>{userInformation?.address}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* THIRD */}
+
+          <div className="flex flex-col md:flex md:flex-row justify-between mb-3 md:mb-0">
+            <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
+              <div className="flex items-center my-5 px-3">
                 <div>
                   <Image src={notes} alt="Image" />
                 </div>
@@ -126,95 +184,36 @@ const params = useSearchParams();
                   <p>{userInformation?.notes}</p>
                 </div>
               </div>
-              <div className="flex items-center my-5">
-                <div>
-                  <Image src={capacity} alt="Image" height={35} width={35} />
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold">Capacity</p>
-                  <p>{name?.[0]}</p>
-                </div>
-              </div>
-              <div className="flex items-center my-5">
+            </div>
+
+            <div className="bg-white rounded-lg md:w-[350px]">
+              <div className="flex items-center my-5 px-3">
                 <div>
                   <Image src={facilites} alt="Image" />
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Facilities</p>
-                  <div>
-                    {/* {hallInformation[0]?.selectedHall?.services[0] && ( */}
-                      <p>Heating</p>
-                    {/* )} */}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="font-Manrope">
-              <div className="flex items-center my-5">
-                <div>
-                  <Image src={email} alt="Image" />
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold">Email</p>
-                  <p>{userInformation?.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center my-5">
-                <div>
-                  <Image src={address} alt="Image" />
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold">Address</p>
-                  <p>{userInformation?.address}</p>
-                </div>
-              </div>
-              <div className="flex items-center my-5">
-                <div>
-                  <Image src={hall} alt="Image" />
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold">Hall Name</p>
-
-                  <p>{"Hall 1"}</p>
-                </div>
-              </div>
-              <div className="flex items-center my-5">
-                <div>
-                  <Image src={price} alt="Image" height={35} width={35} />
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold">Price</p>
-                  <p>{selectedMenu?.price}</p>
-                </div>
-              </div>
-              <div className="flex items-center my-5">
-                <div>
-                  <Image src={dish} alt="Image" />
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold">Dishes</p>
                   <div className="flex flex-col">
-                    {
-                      <Link
-                        onClick={showModal}
-                        className="text-blue-600 underline"
-                        href=""
-                      >
-                        {`${selectedMenu?.dishes?.length} Dishes`}
-                      </Link>
-                    }
-
-                    <Modal
-                      title="Dishes"
-                      open={isModalOpen}
-                      footer={null}
-                      onCancel={handleCancel}
+                    <Link
+                      onClick={() => setOpen(true)}
+                      className="text-blue-600 underline"
+                      href="#"
                     >
-                      {" "}
-                      {selectedMenu?.dishes?.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
+                      {`${userInformation?.services?.length} Services`}
+                    </Link>
+                    <Modal
+                      title="Services"
+                      centered
+                      visible={open}
+                      onOk={() => setOpen(false)}
+                      onCancel={() => setOpen(false)}
+                      footer={null}
+                    >
+                      <ul>
+                        {userInformation?.services?.map((item, index) => (
+                          <li key={index}>{item}</li>
+                        ))}
+                      </ul>
                     </Modal>
                   </div>
                 </div>
@@ -222,12 +221,38 @@ const params = useSearchParams();
             </div>
           </div>
         </div>
+
+        {/* CHOOSE MENU */}
+        <div className="bg-bgColor p-3 md:p-6 rounded-lg">
+          <div className="bg-white px-3 rounded-lg pt-5">
+            <div className="flex justify-between mx-5 font-semibold font-sc">
+              <p>{hallInformation?.name}</p>
+              <p>Rs {hallInformation?.price}</p>
+            </div>
+            <div className="flex items-center">
+              <div className="ml-3">
+                <p className="font-sc my-4">
+                  This menu contains the following items :
+                </p>
+                <div className="flex flex-col bg-bgColor rounded-lg w-52 p-2 my-3">
+                  {selectedMenu?.dishes?.map((item, index) => (
+                    <div
+                      className="flex items-center font-sc space-y-2 "
+                      key={index}
+                    >
+                      <div className="bg-matteBlack h-4 w-4 rounded-full mr-3 "></div>
+                      <p className=""> {item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div className="flex justify-end ">
-        <button
-          className="border px-9 py-2 my-3 bg-primaryColor rounded-md text-white font-bold"
-          onClick={() => nextPage()}
-        >
+        <button className="border px-9 py-2 my-3 bg-primaryColor rounded-md text-white font-bold">
           Next
         </button>
       </div>

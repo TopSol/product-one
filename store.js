@@ -19,11 +19,13 @@ export const useStore = create(
       hallIndex: null,
       userInformation: {},
       marqueeImage:"",
+
+
       addUserInformation: (data) => {
         set({ userInformation: data });
       },
-      addHallInformation: (data, item) => {
-        set({ hallInformation: data, hallIndex: item });
+      addHallInformation: (data) => {
+        set({ hallInformation: data});
       },
       addMarqueeVenueNames: (data) => {
         set({ marqueeVenueNames: data });

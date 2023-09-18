@@ -37,6 +37,7 @@ function Marqueedetail() {
     marqueeVenueDates,
     bookedDates,
     addMarqueeVenueNames,
+    addHallInformation,
   } = useStore();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -72,13 +73,16 @@ function Marqueedetail() {
 
   const id = searchParams.get("id");
   const marqueeName = searchParams.get("name");
-  const location=searchParams.get("location")
-console.log( location?.split(",") ,"locationlocation")
+  const location = searchParams.get("location");
+  console.log(location?.split(","), "locationlocation");
   const handleButton = () => {
     addBookedDates(marqueeDates);
-    router.push(`/pages/details?id=${data?.userId}&name=${Object.values(data)}`);
-    // setLoading(true);
+    router.push(
+      `/pages/details?id=${data?.userId}`
+    );
   };
+
+  
   console.log(data, "data");
 
   // const getDocById = async (id) => {
@@ -147,6 +151,7 @@ console.log( location?.split(",") ,"locationlocation")
       if (docSnap.exists()) {
         const abc = docSnap.data();
         setData(abc);
+        addHallInformation(abc)
         getMarqueeImage(abc?.images?.[0]);
       } else {
         console.log("No such document!");
@@ -231,14 +236,16 @@ console.log( location?.split(",") ,"locationlocation")
     console.log(date, "datsseff");
   };
   const containerStyle = {
-    width: '100%',
-    height: '400px',
+    width: "100%",
+    height: "400px",
   };
-  
+
   const center = {
     lat: Number(location?.[0]), // Example latitude
     lng: Number(location?.[1]), // Example longitude
   };
+  console.log(" 123data" ,data);
+  
   return (
     <>
       <div>
@@ -361,16 +368,15 @@ console.log( location?.split(",") ,"locationlocation")
               </div>
             </div>
             <div className="mt-5">
-
-            <LoadScript googleMapsApiKey="AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4">
-              <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={center}
-                zoom={12}
+              <LoadScript googleMapsApiKey="AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4">
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={center}
+                  zoom={12}
                 >
-                <Marker position={center} />
-              </GoogleMap>
-            </LoadScript>
+                  <Marker position={center} />
+                </GoogleMap>
+              </LoadScript>
             </div>
           </div>
           <div className="lg:w-[30%] mx-3 lg:mx-5">

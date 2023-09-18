@@ -7,6 +7,7 @@ import { faCirclePlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import boxes from "../../assets/images/boxes.svg";
 import whiteBoxes from "../../assets/images/whiteBoxes.svg";
+import UserInformation from "./userInformation";
 
 function ChooseMenu({
   setSlider,
@@ -22,7 +23,8 @@ function ChooseMenu({
 }) {
   const [isImage, setIsImage] = useState(false);
   const [suggestionDish, setSuggestionDish] = useState([]);
-  console.log(suggestionDish, "suggestionDish");
+  const [isHover, setIsHover] = useState(false);
+
   const handleClick = (item, index) => {
     const arr = marqueeData?.dish?.map((val, idx) => {
       if (idx === index) {
@@ -118,13 +120,9 @@ function ChooseMenu({
   const nextPage = () => {
     if(!selectCheck?.length)
     return message.warning("Something went wrong please fillout all the fields")
-
-    
-    preview();
-    setSlider(2);
+    setSlider(1);
   };
 
-  
   const renderDishes = (name) => {
     let values = [];
     let price;
@@ -146,15 +144,15 @@ function ChooseMenu({
       return price;
     }
   };
+
   const selectCheck = marqueeData?.dish?.filter((v) => v.selected)
-  console.log("selectCheck", !selectCheck?.length);
+  console.log("selectCheck", selectCheck);
   return (
     <>
       {marqueeData?.dish?.length > 0 && (
         <div className="md:container md:mx-auto mx-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor">
             {marqueeData?.dish?.map((item, index) => {
-              const [isHover, setIsHover] = useState(false);
               
               return (
                 <div
@@ -163,15 +161,14 @@ function ChooseMenu({
                   key={index}
                   className={`
                 border border-primary p-3 rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer
-                hover:bg-primaryColor hover:border-primaryColor hover:text-white h-64
+                h-64
                 ${selectCheck?.length ? item.selected ? "border-primary border-2" : "opacity-50" : ""}
               `}
                   onClick={() => handleClick(item, index)}
                 >
                   <div
-                    className={`flex items-center justify-between mb-3  ${
-                      isHover ? "text-white" : "text-black"
-                    }    `}
+                    className="flex items-center justify-between mb-3 text-black"
+                    
                   >
                     <p className="text-center text-xl">{item.name}</p>
                     <p className="text-xl flex flex-col justify-end my-auto">
@@ -189,11 +186,9 @@ function ChooseMenu({
                       {item?.dishes?.map((dish, i) => {
                         if (i < 3) {
                           return (
-                            <div className="flex items-center" key={i}>
+                            <div className="flex items-center w-[130%]" key={i}>
                               <div
-                                className={`${
-                                  isHover ? "bg-white" : "bg-primaryColor"
-                                }   h-3 w-3 rounded-full mr-3 `}
+                                className= "bg-primaryColor h-3 w-3 rounded-full mr-3 "
                               ></div>
                               <li className="">{dish}</li>
                             </div>

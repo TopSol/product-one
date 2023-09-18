@@ -190,6 +190,8 @@ function Slider() {
   };
   console.log("hallInformation", hallInformation);
   
+//  const data = params.get("data");
+//   console.log("datadata", data?.split(','));
 
   return (
     <div>
@@ -222,31 +224,32 @@ function Slider() {
             </div>
 
             {slider === 0 ? (
-              <UserInformation
-                setSlider={setSlider}
-                selectedHall={selectedHall}
-                selectedMenu={selectedMenu}
-                setUserInformation={setUserInformation}
-                setUser={setUser}
-                user={user}
-                setSelectedOption={setSelectedOption}
-                selectedOption={selectedOption}
-                setInputs={setInputs}
-                inputs={inputs}
-                setStep={setStep}
-              />
-            ) : slider === 1 ? (
               <ChooseMenu
-                marqueeData={marqueeData}
-                setMarqueeData={setMarqueeData}
-                setSlider={setSlider}
-                setSelectedMenu={setSelectedMenu}
-                preview={preview}
-                selectedMenu={selectedMenu}
-                setMenuIndex={setMenuIndex}
-                menuIndex={menuIndex}
-                withoutVenueDish={marqueeData.withoutVenueDish}
-              />
+              marqueeData={marqueeData}
+              setMarqueeData={setMarqueeData}
+              setSlider={setSlider}
+              setSelectedMenu={setSelectedMenu}
+              preview={preview}
+              selectedMenu={selectedMenu}
+              setMenuIndex={setMenuIndex}
+              menuIndex={menuIndex}
+              withoutVenueDish={marqueeData.withoutVenueDish}
+            />
+             
+            ) : slider === 1 ? (
+              <UserInformation
+              setSlider={setSlider}
+              selectedHall={selectedHall}
+              selectedMenu={selectedMenu}
+              setUserInformation={setUserInformation}
+              setUser={setUser}
+              user={user}
+              setSelectedOption={setSelectedOption}
+              selectedOption={selectedOption}
+              setInputs={setInputs}
+              inputs={inputs}
+              setStep={setStep}
+            />
             ) : slider === 2 ? (
               <Preview
                 selectedMenu={selectedMenu}
