@@ -188,7 +188,7 @@ function Slider() {
       );
     setSlider(index);
   };
-  console.log("hallInformation", hallInformation);
+  console.log("selectedMenuselectedMenu", selectedMenu);
   
 
   return (
