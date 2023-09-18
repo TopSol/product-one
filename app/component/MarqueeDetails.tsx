@@ -193,7 +193,8 @@ console.log(item,"sdfdsfsdfsdfdsfsd")
                   <FontAwesomeIcon icon={faStar} />
                 </p>
                 {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}/${item?.data?.name}`} passHref> */}
-                <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}`} passHref>
+                {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}`} passHref> */}
+                <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref>
                   <button
                     onClick={() => {
                       venuesName(item?.id);

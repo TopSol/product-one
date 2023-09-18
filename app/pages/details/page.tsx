@@ -188,7 +188,7 @@ function Slider() {
       );
     setSlider(index);
   };
-  console.log("hallInformation", hallInformation);
+  console.log("selectedMenuselectedMenu", selectedMenu);
   
 //  const data = params.get("data");
 //   console.log("datadata", data?.split(','));

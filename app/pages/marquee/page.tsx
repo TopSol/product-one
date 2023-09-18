@@ -351,7 +351,7 @@ function Marquee() {
           <div className="w-full  lg:w-[75%]">
             {showMessage ? (
               (filterMarqueeWithPrice.length
-                ? filterMarqueeWithPrice 
+                ? filterMarqueeWithPrice
                 : userData
               ).map((item, index) => (
                 <MarqueeDetails

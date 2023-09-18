@@ -77,34 +77,8 @@ function Marqueedetail() {
   console.log(location?.split(","), "locationlocation");
   const handleButton = () => {
     addBookedDates(marqueeDates);
-    router.push(
-      `/pages/details?id=${data?.userId}`
-    );
+    router.push(`/pages/details?id=${data?.userId}`);
   };
-
-  
-  console.log(data, "data");
-
-  // const getDocById = async (id) => {
-  //   try {
-  //     const docRef = doc(db, "Venues", id);
-  //     const docSnap = await getDoc(docRef);
-  //     if (docSnap.exists()) {
-  //       const abc = docSnap.data()
-  //       setData(abc);
-  //       getMarqueeImage(abc?.images?.[0])
-  //     } else {
-  //       console.log("No such document!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error :", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getDocById(id);
-
-  // }, [id]);
 
   const getCollection = async (id) => {
     try {
@@ -151,7 +125,7 @@ function Marqueedetail() {
       if (docSnap.exists()) {
         const abc = docSnap.data();
         setData(abc);
-        addHallInformation(abc)
+        addHallInformation(abc);
         getMarqueeImage(abc?.images?.[0]);
       } else {
         console.log("No such document!");
@@ -204,8 +178,8 @@ function Marqueedetail() {
   }, [datess.length]);
 
   const disabledStyle = {
-    backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
-    color: "#aaa", // Set your desired text color for disabled dates
+    backgroundColor: "#f2f2f2",
+    color: "#aaa",
   };
   const handleDateRangeSelect = (newRange) => {
     setMarqueeDates(newRange);
@@ -241,11 +215,11 @@ function Marqueedetail() {
   };
 
   const center = {
-    lat: Number(location?.[0]), // Example latitude
-    lng: Number(location?.[1]), // Example longitude
+    lat: Number(location?.[0]),
+    lng: Number(location?.[1]),
   };
-  console.log(" 123data" ,data);
-  
+  console.log(" 123data", data);
+
   return (
     <>
       <div>
@@ -462,7 +436,6 @@ function Marqueedetail() {
                         onChange={(e) => handleVenueType(e)}
                         options={lunchDinner}
                         value={meal}
-                        // className="w-[295px] md:w-[210px]"
                       />
                     </Space>
                   </div>
@@ -500,9 +473,7 @@ function Marqueedetail() {
                   numberOfPeople.length ? "bg-lightPrimary" : "bg-bgColor"
                 } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor`}
               >
-                {/* <NextLink href={`/pages/details?id=${data?.userId}`} passHref> */}
                 <div>{loading ? <Loader /> : " Book Now"}</div>
-                {/* </NextLink> */}
               </div>
             )}
             <img
