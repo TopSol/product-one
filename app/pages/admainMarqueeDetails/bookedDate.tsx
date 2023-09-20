@@ -29,6 +29,7 @@ function BookedDate() {
         venuesSnapshot.forEach((doc) => {
           venueDataArr.push(doc.data());
         });
+        console.log(venueDataArr,"venueDataArrvenueDataArr")
         setCustomerInformation(venueDataArr);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -56,7 +57,8 @@ function BookedDate() {
                   />
                   <div className="">
                     <a
-                      href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
+                      href={`https://wa.me/${item?.phoneNumber}`}
+                      // href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
                       target="_blank"
                     >
                       <WhatsAppOutlined
@@ -69,7 +71,7 @@ function BookedDate() {
                 </div>
                 <img
                   className=" h-[167px] w-[167px]  rounded-full -mt-[75px] mb-2"
-                  src={item?.selectedHall.image[0]}
+                  src={item?.image?.[0]}
                   alt=""
                 />
                 <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full px-4">
@@ -83,10 +85,15 @@ function BookedDate() {
                       placeholder="Name"
                       type="text"
                       name="name"
+                      // value={
+                      //   item?.UserInformation.firstName +
+                      //   " " +
+                      //   item?.UserInformation.lastName
+                      // }
                       value={
-                        item?.UserInformation.firstName +
+                        item?.firstName +
                         " " +
-                        item?.UserInformation.lastName
+                        item?.lastName
                       }
                       className="border text-sm outline-none z-10  py-5 mb-3 flex justify-center  relative"
                     />
@@ -103,7 +110,8 @@ function BookedDate() {
                       placeholder="Name"
                       type="text"
                       name="name"
-                      value={item.UserInformation.PhoneNumber}
+                      value={item?.phoneNumber}
+                      // value={item.UserInformation.PhoneNumber}
                       className="border text-sm outline-none  z-10 w-full  py-5 mb-3 flex justify-center  relative"
                     />
                   </div>
@@ -119,7 +127,8 @@ function BookedDate() {
                       placeholder="Name"
                       type="text"
                       name="name"
-                      value={item?.UserInformation.email}
+                      value={item?.email}
+                      // value={item?.UserInformation.email}
                       className="border outline-none  z-10 w-full  py-5 mb-3 flex justify-center text-sm  relative"
                     />
                   </div>
@@ -135,7 +144,8 @@ function BookedDate() {
                       placeholder="Name"
                       type="text"
                       name="name"
-                      value={item.UserInformation.address}
+                      value={item?.address}
+                      // value={item.UserInformation.address}
                       className="border outline-none   z-10 w-full  py-5 mb-3 flex justify-center text-sm  relative"
                     />
                   </div>
@@ -151,9 +161,10 @@ function BookedDate() {
                       placeholder="Name"
                       type="text"
                       name="name"
-                      value={
-                        item?.Menu?.totalDiscount + item?.selectedHall?.price
-                      }
+                      // value={
+                      //   item?.Menu?.totalDiscount + item?.selectedHall?.price
+                      // }
+                      value={"400"}
                       className="border outline-none  z-10 w-full  py-5 mb-3 flex justify-center text-sm  relative"
                     />
                   </div>
@@ -228,15 +239,18 @@ function BookedDate() {
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Name</p>
-          <p>{detailsData?.selectedHall?.name}</p>
+          <p>{detailsData?.venueName}</p>
+          {/* <p>{detailsData?.selectedHall?.name}</p> */}
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Minimum Capacity</p>
-          <p>{detailsData?.selectedHall?.minCapacity}</p>
+          <p>{detailsData?.minimumCapacity}</p>
+          {/* <p>{detailsData?.selectedHall?.minCapacity}</p> */}
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Maximum Capacity</p>
-          <p>{detailsData?.selectedHall?.maxCapacity}</p>
+          <p>{detailsData?.maximumCapacity}</p>
+          {/* <p>{detailsData?.selectedHall?.maxCapacity}</p> */}
         </div>
         <div className="flex items-center justify-center mt-6 mb-8">
           <hr className="hidden md:block px-8 py-[1px] rounded-lg bg-matteBlack" />
@@ -247,7 +261,8 @@ function BookedDate() {
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Name</p>
-          <p>{detailsData?.Menu?.name}</p>
+          <p>{detailsData?.menu}</p>
+          {/* <p>{detailsData?.Menu?.name}</p> */}
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Dishes</p>
@@ -257,23 +272,26 @@ function BookedDate() {
               className="text-blue-600 underline"
               href=""
             >
-              {detailsData?.Menu?.dishes.length} Dishes
+              {detailsData?.dishes?.length} Dishes
             </Link>
           }
         </div>
-
+{/* 
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Price</p>
+          <p>{"255555"}</p>
           <p>{detailsData?.Menu?.price}</p>
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Discount Amount</p>
+          <p>{"55555"}</p>
           <p>{detailsData?.Menu?.discountAmount}</p>
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Net Price</p>
+          <p>{"56456"}</p>
           <p>{detailsData?.Menu?.totalDiscount}</p>
-        </div>
+        </div> */}
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Dishes</p>
           <div className="flex flex-col ">
@@ -332,7 +350,7 @@ function BookedDate() {
             <p className="text-xl pl-3 text-white py-4">Dishes Name</p>
           </div>
           <div className="p-5">
-            {detailsData?.Menu?.dishes?.map((item, index) => (
+            {detailsData?.dishes?.map((item, index) => (
               <div key={index} className="flex items-center ">
                 <span className="w-4 h-4 rounded-full bg-primary"></span>
                 <p className="text-lg pl-3 py-2"> {item}</p>

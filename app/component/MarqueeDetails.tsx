@@ -16,7 +16,7 @@ import { useStore } from "@/store";
 import NextLink from "next/link";
 import "react-day-picker/dist/style.css";
 function MarqueeDetails({ item, showMessage }) {
-  const { addMarqueeVenueNames, addMarqueeVenueDates } = useStore();
+  const { addMarqueeVenueNames, addMarqueeVenueDates ,addMarqueeData} = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
@@ -142,7 +142,6 @@ console.log(item,"sdfdsfsdfsdfdsfsd")
       <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
         <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
           <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
-            {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}`} passHref> */}
             <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref>
               <img
                 src={item?.data?.images?.[0]}
@@ -152,6 +151,7 @@ console.log(item,"sdfdsfsdfsdfdsfsd")
                   venuesName(item?.id);
                   getDates(item?.id);
                   handleVenueName(name[0]?.value);
+                  addMarqueeData(item)
                 }}
               />
             </NextLink>
@@ -198,6 +198,7 @@ console.log(item,"sdfdsfsdfsdfdsfsd")
                   <button
                     onClick={() => {
                       venuesName(item?.id);
+                      addMarqueeData(item)
                     }}
                     className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
                   >

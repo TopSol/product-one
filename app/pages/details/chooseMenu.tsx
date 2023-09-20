@@ -1,31 +1,29 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Select, message } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCirclePlus, faXmark } from "@fortawesome/free-solid-svg-icons";
-import SuggestionDish from "./suggestionDish";
+import {  message } from "antd";
+import SuggestionDish from "./suggestionDish"
+import DishMenu from "./dishMenu"
+import { useStore } from "@/store";
 function ChooseMenu({
   setSlider,
   setSelectedMenu,
   preview,
   selectedMenu,
-  dish,
+  // dish,
+  setNewData,
+  newData,
   setMarqueeData,
   marqueeData,
   setMenuIndex,
   menuIndex,
   withoutVenueDish,
 }) {
-  const [isImage, setIsImage] = useState(false);
   const [suggestionDish, setSuggestionDish] = useState({});
   const [clickedItems, setClickedItems] = useState({});
-  const [newData, setNewData] = useState([]);
-  const [searchVisible, setSearchVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState({});
-  const [searchIndex, setSearchIndex] = useState();
-  const [isHover, setIsHover] = useState(false);
+  const [searchIndex,setSearchIndex]=useState("")
+
+  const { hallInformation, bookedDates,marqueeImage,getMarqueeImage } = useStore();
   useEffect(() => {
     setNewData(marqueeData);
   }, []);
@@ -64,6 +62,8 @@ function ChooseMenu({
   };
   const AddDish = (item, price) => {
     let updatedMarqueeData = { ...newData };
+    // let updatedMarqueeData = JSON.parse(JSON.stringify(marqueeData));
+
     let Dishes = [];
     let dishPrice = 0;
 
@@ -101,6 +101,7 @@ function ChooseMenu({
         }
         return val1;
       });
+      // setMarqueeData(updatedMarqueeData);
       setNewData(updatedMarqueeData);
       console.log(updatedMarqueeData, "updatedMarqueeData");
     } else {
@@ -142,13 +143,11 @@ function ChooseMenu({
       console.error("marqueeData.dish is missing or not an array");
     }
   };
-  console.log(newData, "ggggg");
   const nextPage = () => {
     if (!selectCheck?.length)
       return message.warning(
         "Something went wrong please fillout all the fields"
       );
-
     setSlider(1);
   };
 
@@ -181,88 +180,21 @@ function ChooseMenu({
         : "bg-lightPrimary";
     setClickedItems(updatedClickedItems);
   };
-  console.log(selectedMenu, "selectedMenuselectedMenu");
   const selectCheck = marqueeData?.dish?.filter((v) => v.selected);
-  console.log(filteredSuggestions, "filteredSuggestions");
-  const handleSearch = () => {
-    // if(e!= "" && key!==""){
-    //   setSearchQuery(e.target.value)
-    // }
-    const filtered = {};
-    Object.keys(suggestionDish).forEach((item) => {
-      console.log(item, "jjjj");
-      const filteredItems = suggestionDish[item].filter((dish) =>
-        dish.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      if (filteredItems.length > 0) {
-        filtered[item] = filteredItems;
-      }
-    });
-    console.log(filtered, "filtered");
-    setFilteredSuggestions(filtered);
-  };
-
-  const clearSearch = () => {
-    setSearchQuery("");
-    setFilteredSuggestions({});
-    setSearchVisible(false);
-  };
-  console.log(searchVisible, "searchVisible");
   return (
     <>
       {marqueeData?.dish?.length > 0 && (
         <div className="md:container md:mx-auto mx-5">
           <p className="text-2xl py-5 md:px-16  mx-auto mb-3">Main Course</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor">
-            {marqueeData?.dish?.map((item, index) => {
-              return (
-                <div
-                  onMouseEnter={() => setIsHover(true)}
-                  onMouseLeave={() => setIsHover(false)}
-                  key={index}
-                  className={`
-                border border-primary p-3 rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer
-                hover:bg-primaryColor hover:border-primaryColor hover:text-white h-64
-                ${
-                  selectCheck?.length
-                    ? item.selected
-                      ? "border-primary border-2"
-                      : "opacity-50"
-                    : ""
-                }
-              `}
-                  onClick={() => handleClick(item, index)}
-                >
-                  <div className="flex items-center justify-between mb-3 text-black">
-                    <p className="text-center text-xl">{item.name}</p>
-                    <p className="text-xl flex flex-col justify-end my-auto">
-                      {" "}
-                      Rs {item.totalDiscount} / perHead
-                    </p>
-                  </div>
-                  <div>
-                    <p className=" md:w-56 font-sc my-4">
-                      This menu contains the following items :
-                    </p>
-                  </div>
-                  <div className="w-1/2">
-                    <ul>
-                      {item?.dishes?.map((dish, i) => {
-                        if (i < 3) {
-                          return (
-                            <div className="flex items-center w-[130%]" key={i}>
-                              <div className="bg-primaryColor h-3 w-3 rounded-full mr-3 "></div>
-                              <li className="">{dish}</li>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })}
+            {marqueeData?.dish?.map((item, index) => (
+              <DishMenu item={item}
+              handleClick={handleClick}
+              index={index}
+              selectCheck={selectCheck}
+              />
+            )
+            )}
           </div>
           <div className="border w-1/2 border-primaryColor mx-auto my-10"></div>
           <p className="text-2xl py-5 md:px-16  mx-auto">Add One</p>
@@ -270,13 +202,16 @@ function ChooseMenu({
             {Object.keys(suggestionDish).length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor rounded-md my-5 cursor-pointer">
                 {Object.keys(suggestionDish).map((item, index) => (
-                  <SuggestionDish
-                    clickedItems={clickedItems}
-                    setClickedItems={setClickedItems}
-                    handleItemBackground={handleItemBackground}
-                    AddDish={AddDish}
-                    item={item}
-                    suggestionDish={suggestionDish}
+                  <SuggestionDish 
+                  clickedItems={clickedItems}
+                  setClickedItems={setClickedItems}
+                  handleItemBackground={handleItemBackground}
+                  AddDish={AddDish}
+                  item={item}
+                  searchIndex={searchIndex}
+                  setSearchIndex={setSearchIndex}
+                  index={index}
+                  suggestionDish={suggestionDish}
                   />
                 ))}
               </div>

@@ -37,7 +37,11 @@ function Marqueedetail() {
     marqueeVenueDates,
     bookedDates,
     addMarqueeVenueNames,
-    addHallInformation,
+    addMarqueeData,
+    marqueeData,
+    getMarqueeImage,
+    lunchDinner,
+    marqueeImage
   } = useStore();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -46,7 +50,7 @@ function Marqueedetail() {
   const [isLunch, setIsLunch] = useState<any>();
   const [selectedOption, setSelectedOption] = useState("");
   const [data, setData] = useState();
-  const [isShow, setIsShow] = useState(false);
+  const [isShow, setIsShow] = useState(false); 
   const [bookDates, setBookDates] = useState();
   const [dates, setDates] = useState([]);
   const [days, setDays] = useState<any>([]);
@@ -57,10 +61,11 @@ function Marqueedetail() {
   const [meal, setMeal] = useState("Lunch");
   const [isRangeComplete, setIsRangeComplete] = useState(false);
   const [numberOfPeople, setNumberOfPeople] = useState("");
-  const [lunchDinner, setLunchDinner] = useState<any>([
+  const [mealType, setMealType] = useState<any>([
     { value: "1", label: "Lunch" },
     { value: "2", label: "Diner" },
   ]);
+  console.log(lunchDinner,"lunchDinnerlunchDinner")
   const router = useRouter();
   const handleClick = (index: any) => {
     setSelectImage(data?.image[index]);
@@ -77,8 +82,33 @@ function Marqueedetail() {
   console.log(location?.split(","), "locationlocation");
   const handleButton = () => {
     addBookedDates(marqueeDates);
-    router.push(`/pages/details?id=${data?.userId}`);
+    router.push(
+      `/pages/details?id=${data?.userId}&name=${Object.values(data)}`
+    );
+    // setLoading(true);
   };
+  console.log(data, "data");
+
+  // const getDocById = async (id) => {
+  //   try {
+  //     const docRef = doc(db, "Venues", id);
+  //     const docSnap = await getDoc(docRef);
+  //     if (docSnap.exists()) {
+  //       const abc = docSnap.data()
+  //       setData(abc);
+  //       getMarqueeImage(abc?.images?.[0])
+  //     } else {
+  //       console.log("No such document!");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error :", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getDocById(id);
+
+  // }, [id]);
 
   const getCollection = async (id) => {
     try {
@@ -99,6 +129,7 @@ function Marqueedetail() {
       getCollection(id);
       handleVenueName(marqueeVenueNames[marqueeVenueNames.length - 1]?.value);
     }
+    addMarqueeData({...marqueeData,lunchType:meal})
   }, [id]);
 
   const handleCheck = (event, item) => {
@@ -125,15 +156,15 @@ function Marqueedetail() {
       if (docSnap.exists()) {
         const abc = docSnap.data();
         setData(abc);
-        addHallInformation(abc);
-        getMarqueeImage(abc?.images?.[0]);
+        console.log(abc,"hhhhhhhhh")
+        getMarqueeImage(abc);
+        // getMarqueeImage(abc?.images?.[0]);
       } else {
         console.log("No such document!");
       }
     } catch (error) {
       console.error("Error :", error);
     }
-    console.log(data, "hhhjjj");
 
     const reserveDate = marqueeVenueDates.map((item) => {
       return {
@@ -152,13 +183,17 @@ function Marqueedetail() {
         : handleCheck(lunchProps, reserveDate[0]?.dates?.Lunch);
     }
   };
-
+    console.log(data, "hhhjjjddddd");
   const handleVenueType = (e) => {
     console.log(e, "target");
     if (e == "1") {
       setMeal("Lunch");
+    addMarqueeData({...marqueeData,lunchType:"Lunch"})
+
     } else {
       setMeal("Diner");
+    addMarqueeData({...marqueeData,lunchType:"Diner"})
+
     }
     e == "1"
       ? handleVenueName(venueId, "Lunch")
@@ -178,8 +213,8 @@ function Marqueedetail() {
   }, [datess.length]);
 
   const disabledStyle = {
-    backgroundColor: "#f2f2f2",
-    color: "#aaa",
+    backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
+    color: "#aaa", // Set your desired text color for disabled dates
   };
   const handleDateRangeSelect = (newRange) => {
     setMarqueeDates(newRange);
@@ -205,6 +240,7 @@ function Marqueedetail() {
     });
     console.log(updatedData, "updatedDataupdatedData", numberOfPeople);
     addMarqueeVenueNames(updatedData);
+    getMarqueeImage({...marqueeImage,numberOfPeople:numberOfPeople})
   };
   const handleMouseEnter = (date) => {
     console.log(date, "datsseff");
@@ -215,11 +251,9 @@ function Marqueedetail() {
   };
 
   const center = {
-    lat: Number(location?.[0]),
-    lng: Number(location?.[1]),
+    lat: Number(location?.[0]), // Example latitude
+    lng: Number(location?.[1]), // Example longitude
   };
-  console.log(" 123data", data);
-
   return (
     <>
       <div>
@@ -434,8 +468,9 @@ function Marqueedetail() {
                             .localeCompare((optionB?.label ?? "").toLowerCase())
                         }
                         onChange={(e) => handleVenueType(e)}
-                        options={lunchDinner}
+                        options={mealType}
                         value={meal}
+                        // className="w-[295px] md:w-[210px]"
                       />
                     </Space>
                   </div>
@@ -473,7 +508,9 @@ function Marqueedetail() {
                   numberOfPeople.length ? "bg-lightPrimary" : "bg-bgColor"
                 } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor`}
               >
+                {/* <NextLink href={`/pages/details?id=${data?.userId}`} passHref> */}
                 <div>{loading ? <Loader /> : " Book Now"}</div>
+                {/* </NextLink> */}
               </div>
             )}
             <img

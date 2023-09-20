@@ -245,7 +245,7 @@ function Marquee() {
     } catch (error) {
       console.error("Error retrieving place details:", error);
     }
-  };
+  }; 
   const clearFilter = () => {
     setFilterData({
       capacity: "",
@@ -295,7 +295,7 @@ function Marquee() {
 
             <div className="my-6 bg-bgColor">
               <GooglePlacesAutocomplete
-                apiKey="AIzaSyBF_ycMAzFjvl1ERxmZUSpqla-RFukZWHw"
+                apiKey="AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4"
                 className="border-none bg-bgColor w-[295px] p-3 my-6 rounded-md"
                 selectProps={{
                   onChange: handleSelect,
@@ -351,7 +351,7 @@ function Marquee() {
           <div className="w-full  lg:w-[75%]">
             {showMessage ? (
               (filterMarqueeWithPrice.length
-                ? filterMarqueeWithPrice
+                ? filterMarqueeWithPrice 
                 : userData
               ).map((item, index) => (
                 <MarqueeDetails

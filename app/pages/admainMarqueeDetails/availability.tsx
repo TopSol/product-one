@@ -19,6 +19,8 @@ function Availability() {
   const [showButton, setShowButton] = useState(false);
   const [selectedDate, setSelectedDate] = useState([]);
   const [deleteDates, setDeleteDates] = useState([]);
+  const [updateDateAfterDelete,setUpdateDateAfterDelete]=useState({})
+  const [isDateDelete,setIsDateDelete]=useState(false)
   const [menu, setMenu] = useState([
     {
       label: "Lunch",
@@ -48,6 +50,7 @@ function Availability() {
 
     return data;
   }
+  console.log(lunchDinner,"lunchDinnerlunchDinner")
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -66,7 +69,23 @@ function Availability() {
     };
     fetchBlogs();
   }, []);
+ useEffect(()=>{
+  isDateDelete && updateDeleteDate(lunchDinner)
+ },[lunchDinner])
+ const updateDeleteDate= async(lunch)=>{
+  const NotAvailableDate = {
+    id: "wLA6R1rC5mNAcPItqqK7nIleYKB2",
+    dates: lunch,
+  };
+     try {
+        await setDoc(doc(db, "bookDate", "wLA6R1rC5mNAcPItqqK7nIleYKB2"), NotAvailableDate);
+        message.success("Date is successfully deleted");
+       setIsDateDelete(false)
 
+      } catch (error) {
+        console.log(error, "error");
+      }
+ }
   useEffect(() => {
     const VenueName = Venues.map((item) => ({
       value: item.id,
@@ -127,6 +146,7 @@ function Availability() {
     setShowButton(false);
   };
   const DeleteSendDateInFirebase = async (item) => {
+    setIsDateDelete(true)
     const data = dates?.[item] || {};
     const docRef = doc(db, "Venues", item);
     const docSnap = await getDoc(docRef);
@@ -135,32 +155,32 @@ function Availability() {
         ...docSnap.data(),
         dates: data,
       };
+    console.log(venueDates,"venueDatesdddd")
+
+      update(item, user, venueDates);
       const result = lunchDinner[selectedVenue]?.[lunchType]?.filter(
         (value) => {
           return !deleteDates.some((item) => value === item.date);
         }
       );
-      console.log(
-        user.userId,
-        "Id",
-        result,
-        "resultresult",
-        selectedVenue,
-        lunchType
-      );
       addDateKey(selectedVenue, lunchType, result);
       const NotAvailableDate = {
         id: user.userId,
-        dates: result,
+        dates: venueDates,
       };
-      try {
-        await setDoc(doc(db, "bookDate", user.userId), NotAvailableDate);
-        message.success("Date is successfully deleted");
-      } catch (error) {
-        console.log(error, "error");
-      }
+      console.log(updateDateAfterDelete, "updateDateAfterDelete");
+
+      // console.log(NotAvailableDate,"NotAvailableDate")
+      // try {
+      //   await setDoc(doc(db, "bookDate", user.userId), NotAvailableDate);
+      //   message.success("Date is successfully deleted");
+      // } catch (error) {
+      //   console.log(error, "error");
+      // }
     }
   };
+  console.log(lunchDinner, "deleteDatedddddddds");
+
   const handleMenuSelect = (e) => {
     let data = [];
     switch (e) {
