@@ -612,15 +612,11 @@ function Preview({
         </div>
 
         {/* CHOOSE MENU */}
-        {/* <div className="bg-bgColor p-3 md:p-6 rounded-lg">
+         <div className="bg-bgColor p-3 md:p-6 rounded-lg">
           <div className="bg-white px-3 rounded-lg pt-5">
             <div className="flex justify-between mx-5 font-semibold font-sc">
               <p>{selectedMenu?.name}</p>
-<<<<<<< HEAD
-              <p>{hallInformation?.name}</p>
-=======
               {/* <p>{hallInformation?.name}</p> */}
->>>>>>> ad34639 (work on some section 19)
               <p>Rs {hallInformation?.price}</p>
             </div>
             <div className="flex items-center">
@@ -642,7 +638,7 @@ function Preview({
               </div>
             </div>
           </div>
-        </div> */}
+        </div> 
        <div className="bg-bgColor p-3 md:p-6 rounded-lg w-full">
           <div className="bg-white px-3 rounded-lg pt-5 w-full">
             <div className="flex justify-between mx-3 font-semibold font-sc">
