@@ -156,7 +156,6 @@ function Marqueedetail() {
       if (docSnap.exists()) {
         const abc = docSnap.data();
         setData(abc);
-        console.log(abc,"hhhhhhhhh")
         getMarqueeImage(abc);
         // getMarqueeImage(abc?.images?.[0]);
       } else {

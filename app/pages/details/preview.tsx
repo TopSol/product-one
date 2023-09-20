@@ -616,7 +616,11 @@ function Preview({
           <div className="bg-white px-3 rounded-lg pt-5">
             <div className="flex justify-between mx-5 font-semibold font-sc">
               <p>{selectedMenu?.name}</p>
+<<<<<<< HEAD
               <p>{hallInformation?.name}</p>
+=======
+              {/* <p>{hallInformation?.name}</p> */}
+>>>>>>> ad34639 (work on some section 19)
               <p>Rs {hallInformation?.price}</p>
             </div>
             <div className="flex items-center">
