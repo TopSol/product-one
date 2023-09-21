@@ -15,8 +15,9 @@ import { collection, getDocs } from "firebase/firestore";
 import { useStore } from "@/store";
 import NextLink from "next/link";
 import "react-day-picker/dist/style.css";
+import { useRouter } from "next/navigation";
 function MarqueeDetails({ item, showMessage }) {
-  const { addMarqueeVenueNames, addMarqueeVenueDates ,addMarqueeData} = useStore();
+  const { addMarqueeVenueNames, addMarqueeVenueDates ,addMarqueeData,addBookedDates} = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
@@ -29,7 +30,8 @@ function MarqueeDetails({ item, showMessage }) {
   const [meal, setMeal] = useState("Lunch");
   const [value, setValue] = useState("1");
   const [venueId, setVenueId] = useState();
-
+  const [marqueeDates, setMarqueeDates] = useState({ from: null, to: null });
+  const router=useRouter()
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
@@ -136,13 +138,41 @@ function MarqueeDetails({ item, showMessage }) {
       ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
       : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch);
   };
-console.log(item,"sdfdsfsdfsdfdsfsd")
+  const handleDateRangeSelect = (newRange) => {
+    let dateString1 = newRange;
+    let date1 = new Date(dateString1);
+    let currentDate = new Date();
+    if (currentDate <= date1) {
+      if (marqueeDates.from > newRange) {
+        return setMarqueeDates({ from: newRange, to: null });
+      }
+      if (!marqueeDates.from) {
+        setMarqueeDates({ ...marqueeDates, from: newRange });
+      } else if (marqueeDates.from && !marqueeDates.to) {
+        const date = days?.filter(
+          (element) => element >= marqueeDates?.from && element <= newRange
+        );
+        if (date.length > 0) {
+          alert("you can not selet this date");
+          setMarqueeDates([]);
+        }else{
+         setMarqueeDates({ ...marqueeDates, to: newRange});
+        }
+      } else if (marqueeDates.from && marqueeDates.to) {
+        setMarqueeDates({ from: newRange, to: null });
+      }
+    }
+  };
+  const bookedStyle = { border: "2px solid currentColor" };
+  const handleMarqueeDetails=(id)=>{
+    router.push (`/pages/marqueedetail?id=${id}`);
+  }
   return (
     <>
       <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
         <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
           <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
-            <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref>
+            {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref> */}
               <img
                 src={item?.data?.images?.[0]}
                 className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
@@ -152,9 +182,11 @@ console.log(item,"sdfdsfsdfsdfdsfsd")
                   getDates(item?.id);
                   handleVenueName(name[0]?.value);
                   addMarqueeData(item)
+                  handleMarqueeDetails(item?.id)
+                  addBookedDates(marqueeDates)
                 }}
               />
-            </NextLink>
+            {/* </NextLink> */}
           </div>
 
           <div className="w-[100%] bg-bgColor p-3 rounded-2xl mx-3 mt-5 lg:mt-0">
@@ -199,6 +231,7 @@ console.log(item,"sdfdsfsdfsdfdsfsd")
                     onClick={() => {
                       venuesName(item?.id);
                       addMarqueeData(item)
+                      addBookedDates(marqueeDates)
                     }}
                     className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
                   >
@@ -225,16 +258,34 @@ console.log(item,"sdfdsfsdfsdfdsfsd")
         </div>
         <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
           {open[item?.data?.id] && (
-            <DayPicker
-              className={`${
-                isLunch == `Lunch` ? `customClasses` : `customClasses2`
-              }`}
-              style={{ width: "100%" }}
-              mode="multiple"
-              min={1}
-              selected={days}
-              onSelect={setDays}
-            />
+            // <DayPicker
+            //   className={`${
+            //     isLunch == `Lunch` ? `customClasses` : `customClasses2`
+            //   }`}
+            //   style={{ width: "100%" }}
+            //   // mode="multiple"
+            //   disabled={days}
+            //   // min={1}
+            //   selected={days}
+            //   onSelect={setDays}
+            // />
+                   <DayPicker
+                        className={`${
+                          isLunch === `Lunch`
+                            ? `combinedClasses`
+                            : `combinedClasses2`
+                        } w-[100%]`}
+                        // mode="s"
+                        disabled={days}
+                        modifiers={{ booked: days }}
+                        modifiersStyles={{ booked: bookedStyle }}
+                        selected={marqueeDates}
+                        onDayClick={handleDateRangeSelect}
+                        // onSelect={handleDateRangeSelect}
+                        // modifiers={{
+                        //   disabled: (date) => isDateDisabled(date),
+                        // }}
+                      />
           )}
           {open[item?.data?.id] && (
             <div className="w-full  p-5">

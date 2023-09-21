@@ -31,7 +31,7 @@
 //   userInformation,
 //   //checkData,
 //   selectedMenu,
-  
+
 // }) {
 //   const [isModalOpen, setIsModalOpen] = useState(false);
 //   // const [showFacilities, setShowFacilities] = useState(false);
@@ -74,12 +74,12 @@
 //   };
 //   console.log(userInformation, "userInformation");
 //   console.log(selectedMenu, "userInformation1");
-  
+
 //  console.log("abc");
 // const params = useSearchParams();
 //  const name = params.get("name");
 //   console.log("NameName", name?.split(','));
- 
+
 //   return (
 //     <div className="md:container md:mx-auto mx-3">
 //       <div className="border w-auto md:w-[700px]  p-3 md:p-8  flex flex-col justify-center mx-auto rounded-xl">
@@ -254,7 +254,7 @@ import call from "../../assets/images/call.svg";
 import address from "../../assets/images/address-location-map-svgrepo-com 1.svg";
 import notes from "../../assets/images/notes.svg";
 import hall from "../../assets/images/hall.svg";
-import foodIcon  from "../../assets/images/menuIcon.svg"
+import foodIcon from "../../assets/images/menuIcon.svg";
 import capacity from "../../assets/images/chair.svg";
 import calander from "../../assets/images/calender.svg";
 import price from "../../assets/images/dollor.svg";
@@ -263,10 +263,7 @@ import dish from "../../assets/images/menuIcon.svg";
 import menus from "./data";
 import dots from "@/app/assets/images/dots.svg";
 import "./style.css";
-import {
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 function Preview({
   sendData,
   setSuccessPage,
@@ -276,14 +273,16 @@ function Preview({
   checkData,
   marqueeId,
   selectedMenu,
+  setSlider
 }) {
-  const { hallInformation, bookedDates, marqueeData,marqueeImage } = useStore();
+  const { hallInformation, bookedDates, marqueeData, marqueeImage } =
+    useStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [dates, setDates] = useState();
   const router = useRouter();
-  console.log(marqueeImage,"marqueeImagemarqueeImage");
+  console.log(marqueeImage, "marqueeImagemarqueeImage");
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
@@ -298,45 +297,47 @@ function Preview({
     fetchBlogs();
   }, []);
 
-  const nextPage =async () => {
+  const nextPage = async () => {
+    console.log("kkkkkkkkk")
     const fieldId = Math.random().toString(36).slice(2);
     const users = {
-      image:marqueeImage?.image,
-      minimumCapacity:marqueeImage?.minCapacity,
-      maximumCapacity:marqueeImage?.maxCapacity,
-      venueName:marqueeImage?.name,
-      venuePrice:marqueeImage?.price,
-      dates:bookedDates,
-      // marqueeHonerPhoneNumber:marqueeData?.data?.phoneNumber,
-      marqueeLocation:marqueeData?.data?.address,
-      mealType:marqueeData?.lunchType,
-      services:userInformation?.services,
-      firstName:userInformation?.firstName,
-      lastName:userInformation?.lastName,
-      email:userInformation?.email,
-      phoneNumber:userInformation?.PhoneNumber,
-      notes:userInformation?.notes,
-      dishes:selectedMenu?.dishes,
-      menu:selectedMenu?.name,
-      marqueeId:marqueeId,
+      image: marqueeImage?.image,
+      minimumCapacity: marqueeImage?.minCapacity,
+      maximumCapacity: marqueeImage?.maxCapacity,
+      venueName: marqueeImage?.name,
+      venuePrice: marqueeImage?.price,
+      dates: bookedDates,
+      marqueeHonerPhoneNumber:marqueeData?.data?.phoneNumber,
+      marqueeLocation: marqueeData?.data?.address,
+      mealType: marqueeData?.lunchType,
+      services: userInformation?.services,
+      firstName: userInformation?.firstName,
+      lastName: userInformation?.lastName,
+      email: userInformation?.email,
+      phoneNumber: userInformation?.PhoneNumber,
+      notes: userInformation?.notes,
+      dishes: selectedMenu?.dishes,
+      menu: selectedMenu?.name,
+      marqueeId: marqueeId,
       id: fieldId,
-      address:userInformation?.address,
-      NumberOfPeople:marqueeImage?.numberOfPeople,
-      eventType:userInformation?.eventType,
-      
-    }; 
-     try {
+      address: userInformation?.address,
+      NumberOfPeople: marqueeImage?.numberOfPeople,
+      eventType: userInformation?.eventType,
+    };
+    try {
+      console.log("lll")
       await setDoc(doc(db, "contactUs", fieldId), users);
+      setSuccessPage(true);
+      openMessage();
     } catch (error) {
       console.log(" Error", error);
     }
-    console.log(users,"sdfsdfsdfdsfs")
+    console.log(users, "sdfsdfsdfdsfs");
     // sendData();
-    // setSuccessPage(true);
-    // openMessage();
+   
   };
- console.log("marqueeData",marqueeData);
- 
+  console.log("marqueeData", marqueeData);
+
   let a = parseInt(userInformation?.Heating);
   const showModal = () => {
     setIsModalOpen(true);
@@ -372,14 +373,14 @@ function Preview({
       return null;
     }
   };
-  console.log(userInformation,"userInformation")
+  console.log(userInformation, "userInformation");
   const fromDate = formatDate(bookedDates.from);
   const toDate = formatDate(bookedDates.to);
   return (
     <div>
       {/* IMAGE DIV */}
 
-      <div className="md:container md:w-[920px] flex flex-col justify-center mx-auto border px-3 md:px-7 py-4 rounded-lg">
+      <div className="md:container md:w-[920px] flex flex-col md:mb-3 justify-center mx-auto border px-3 md:px-7 py-4 rounded-lg">
         <div className="flex justify-center object-cover">
           <img
             src={marqueeImage?.image?.[0]}
@@ -418,7 +419,7 @@ function Preview({
             </div>
           </div>
           {/* HALL'S SECOND */}
-             <div className="flex flex-col md:flex md:flex-row justify-between  md:my-5">
+          <div className="flex flex-col md:flex md:flex-row justify-between  md:my-5">
             <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
               <div className="flex items-center my-5 px-3">
                 <div>
@@ -452,7 +453,9 @@ function Preview({
                 </div>
                 <div className="ml-3">
                   <p className="font-semibold">Number Of People</p>
-                  <p className="text-xs md:text-sm">{marqueeImage?.numberOfPeople}</p>
+                  <p className="text-xs md:text-sm">
+                    {marqueeImage?.numberOfPeople}
+                  </p>
                 </div>
               </div>
             </div>
@@ -470,8 +473,8 @@ function Preview({
             </div>
           </div>
 
-        {/* HALL'S THIRD */}
-        <div className="flex flex-col md:flex md:flex-row justify-between ">
+          {/* HALL'S THIRD */}
+          <div className="flex flex-col md:flex md:flex-row justify-between ">
             <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
               <div className="flex items-center my-5 px-3">
                 <div>
@@ -639,7 +642,7 @@ function Preview({
             </div>
           </div>
         </div> */}
-       <div className="bg-bgColor p-3 md:p-6 rounded-lg w-full">
+        <div className="bg-bgColor p-3 md:p-6 rounded-lg w-full">
           <div className="bg-white px-3 rounded-lg pt-5 w-full">
             <div className="flex justify-between mx-3 font-semibold font-sc">
               <p>{selectedMenu?.name}</p>
@@ -652,10 +655,7 @@ function Preview({
                 </p>
                 <div className="grid grid-cols-4 mb-3">
                   {selectedMenu?.dishes?.map((item, index) => (
-                    <div
-                      className="flex items-center font-sc "
-                      key={index}
-                    >
+                    <div className="flex items-center font-sc " key={index}>
                       <div className="bg-matteBlack h-4 w-4 rounded-full mr-3 "></div>
                       <p className=""> {item}</p>
                     </div>
@@ -665,14 +665,20 @@ function Preview({
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-end ">
-        <button className="border px-9 py-2 my-3 bg-primaryColor rounded-md text-white font-bold"
-        onClick={()=>nextPage()}
-        >
-          Next
-        </button>
+        <div className="flex justify-between">
+          <button
+            className="border px-9 py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+            onClick={() => setSlider(1)}
+          >
+            Previous
+          </button>
+          <button
+            className="border px-9 py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+            onClick={() => nextPage()}
+          >
+            Book Now
+          </button>
+        </div>
       </div>
     </div>
   );

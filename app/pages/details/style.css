@@ -19,7 +19,9 @@
     align-items: center;
     border: 1px solid #cdcdcd;
 }
-
+.textarea1 .ant-input{
+    resize: none;
+}
 /* @media (max-width: 760) {
     .PhoneInputInput {
         width: 100vw !important;

@@ -41,7 +41,7 @@ function DishMenu({item,handleClick,index,selectCheck,}) {
             <p className="text-center text-xl">{item.name}</p>
             <p className="text-xl flex flex-col justify-end my-auto">
               {" "}
-              Rs {item.totalDiscount} / perHead
+              Rs {item.totalDiscount} / PerPerson
             </p>
           </div>
           <div>

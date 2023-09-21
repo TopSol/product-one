@@ -357,9 +357,9 @@ console.log(value,"valuevalue")
         <div className="mx-5 md:mx-0 font-semibold">
           <div className=" lg:flex lg:flex-row lg:justify-between md:mx-10">
             <div className="flex flex-col items-center justify-center relative md:mt-3 mt-4 ">
-              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
+              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[100.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
-                  F/Name
+                  First Name
                 </p>
               </div>
               <div className="mb-6 w-[100%]">
@@ -374,9 +374,9 @@ console.log(value,"valuevalue")
             </div>
 
             <div className="flex flex-col items-start relative md:mt-3 mt-4 ">
-              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[100.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
-                  L/Name
+                  Last Name
                 </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
@@ -440,8 +440,9 @@ console.log(value,"valuevalue")
                   rows={4}
                   name="notes"
                   value={user.notes}
+                  autoSize={false}
                   onChange={handleChange}
-                  className="border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                  className=" textarea1 border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
               </div>
             </div>
@@ -457,20 +458,27 @@ console.log(value,"valuevalue")
                   name="address"
                   value={user.address}
                   onChange={handleChange}
-                  className="border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
-                />
+                  className="  textarea1 border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                /> 
               </div>
             </div>
           </div>
           <div className=" lg:flex lg:flex-row lg:justify-between md:mx-10">
             <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full">
-              <div className="absolute  top-[calc(40%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[166.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[166.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
                   Select Event Type
                 </p>
               </div>
               <div className="mb-6 w-[100%]">
-              <Select
+              <Input
+                  type="eventType"
+                  name="eventType"
+                  value={user.eventType}
+                  onChange={handleChange}
+                  className="border outline-none z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                />
+              {/* <Select
                 showSearch
                 size={"large"}
                 placeholder="Select Event"
@@ -498,17 +506,7 @@ console.log(value,"valuevalue")
                     label: 'Birthday',
                   },
                 ]}
-              />
-                {/* <PhoneInput
-                  type="PhoneNumber"
-                  name="PhoneNumber"
-                  international
-                  countryCallingCodeEditable={false}
-                  defaultCountry="PK"
-                  value={value}
-                  onChange={setValue}
-                  className="border rounded outline-none  z-10 w-full  py-6 mb-3 flex justify-center text-xs relative px-2"
-                /> */}
+              /> */}
               </div>
             </div>
           </div>
@@ -561,7 +559,13 @@ console.log(value,"valuevalue")
             </div>
           </div>
         </div>
-        <div className="flex justify-center ">
+        <div className="flex justify-between px-10 ">
+          <button
+            className="border px-9 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
+            onClick={() => setSlider(0)}
+          >
+            Previous
+          </button>
           <button
             className="border px-9 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
             onClick={() => nextPage()}
