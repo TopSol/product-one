@@ -83,7 +83,7 @@ function Marqueedetail() {
   const handleButton = () => {
     addBookedDates(marqueeDates);
     router.push(
-      `/pages/details?id=${data?.userId}&name=${Object.values(data)}`
+      `/pages/details?id=${data?.userId}}`
     );
     // setLoading(true);
   };

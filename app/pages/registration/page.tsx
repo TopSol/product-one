@@ -166,7 +166,6 @@ function details() {
       return;
     }
     setLoading((pre) => !pre);
-    console.log("hhhhh");
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -186,7 +185,6 @@ function details() {
           return urls;
         })
       );
-      console.log(imageUrls, "imageURLS");
 
       const VenueId = Math.random().toString(36).substring(2);
       const userInfo = {
@@ -283,18 +281,9 @@ function details() {
 
   const handleDiemension = async (id) => {
     const selectedImage = multipleImage.find((image) => image.id === id);
-    console.log(image, "immmmmmage");
-
     if (selectedImage) {
       setSelectedImage(selectedImage);
       const objectURL = URL.createObjectURL(selectedImage.file);
-      console.log(
-        selectedImage.file,
-        "imageeeeeeeeeeee",
-        selectedImage.id,
-        "id"
-      );
-
       setImage({
         id: selectedImage.id,
         img: objectURL,
@@ -339,7 +328,6 @@ function details() {
               </div>{" "}
               <Form.Item
                 className="w-[100%]"
-                // name="name"
                 rules={[
                   {
                     required: true,
@@ -448,7 +436,6 @@ function details() {
               </div>{" "}
               <Form.Item
                 className="w-[100%]"
-                // name="capacity"
                 rules={[
                   {
                     required: true,
@@ -461,7 +448,7 @@ function details() {
                   placeholder="Enter Capacity Here"
                   type="number"
                   name="capacity"
-                  value={details.capacity || ""} // Ensure it's either a valid number or an empty string
+                  value={details.capacity || ""}
                   onChange={handleChange}
                 />
               </Form.Item>
