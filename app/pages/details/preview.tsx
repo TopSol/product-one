@@ -31,6 +31,7 @@ function Preview({
   checkData,
   marqueeId,
   selectedMenu,
+  setSlider
 }) {
   const { hallInformation, bookedDates, marqueeData, marqueeImage } =
     useStore();
@@ -63,6 +64,7 @@ function Preview({
       venueName: marqueeImage?.name,
       venuePrice: marqueeImage?.price,
       dates: bookedDates,
+      marqueeHonerPhoneNumber:marqueeData?.data?.phoneNumber,
       marqueeLocation: marqueeData?.data?.address,
       mealType: marqueeData?.lunchType,
       services: userInformation?.services,
@@ -81,6 +83,8 @@ function Preview({
     };
     try {
       await setDoc(doc(db, "contactUs", fieldId), users);
+      setSuccessPage(true);
+      openMessage();
     } catch (error) {
       console.log(" Error", error);
     }

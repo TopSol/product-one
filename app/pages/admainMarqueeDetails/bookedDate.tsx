@@ -70,8 +70,9 @@ function BookedDate() {
                   </div>
                 </div>
                 <img
-                  className=" h-[167px] w-[167px]  rounded-full -mt-[75px] mb-2"
+                  className=" h-[167px] w-[167px]  rounded-full -mt-[75px] mb-2 object-cover "
                   src={item?.image?.[0]}
+
                   alt=""
                 />
                 <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full px-4">

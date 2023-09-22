@@ -266,6 +266,7 @@ function Slider() {
                 marqueeId={id}
                 setSuccessPage={setSuccessPage}
                 openMessage={openMessage}
+                setSlider={setSlider}
               />
             ) : null}
           </div>

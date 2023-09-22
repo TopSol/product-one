@@ -201,7 +201,7 @@ function ChooseMenu({
           <div className="">
             {Object.keys(suggestionDish).length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor rounded-md my-5 cursor-pointer">
-                {Object.keys(suggestionDish).map((item, index) => (
+                {Object.keys(suggestionDish).map((item, index) => ( 
                   <SuggestionDish 
                   clickedItems={clickedItems}
                   setClickedItems={setClickedItems}
@@ -217,11 +217,12 @@ function ChooseMenu({
               </div>
             )}
           </div>
+          <div className="fixed bottom-0 right-0 ">
           <div className="flex  justify-between md:justify-end items-center space-x-2 font-semibold my-5 md:mr-16">
             {renderDishes("price") && (
               <>
                 <p>Total</p>
-                <div className="text-2xl px-3"> {renderDishes("price")}</div>
+                <div className="text-2xl px-3"> {renderDishes("price")} <span className="text-lg">PerPerson</span> </div>
               </>
             )}
             <button
@@ -230,6 +231,7 @@ function ChooseMenu({
             >
               Next
             </button>
+          </div>
           </div>
         </div>
       )}
