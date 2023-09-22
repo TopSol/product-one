@@ -27,11 +27,25 @@ function ChooseMenu({
   useEffect(() => {
     setNewData(marqueeData);
   }, []);
+  const combinedData = marqueeData?.venues?.concat(marqueeData?.withoutVenueDish);
+
+  console.log(marqueeData,"marqueeDatamarqueeDatad")
   const handleClick = (item, index) => {
     setClickedItems({});
     const array = marqueeData?.dish?.map((val, idx) => {
       if (idx === index) {
-        setSelectedMenu(val);
+        console.log(val,"jkjk")
+        const filter=combinedData.filter(item=> val?.dishes.includes(item?.name))
+          const nameAndPriceArrays = filter.map(item => ({
+            name: item.name,
+            price: item.price
+          }));
+          const venueDish ={
+            venueDish:nameAndPriceArrays,
+            perHead:val?.totalDiscount
+          }
+          console.log(venueDish,"venueDishss")
+        setSelectedMenu({...selectedMenu, venueDish });
         return { ...val, selected: true };
       } else {
         return { ...val, selected: false };
@@ -40,7 +54,17 @@ function ChooseMenu({
     setMarqueeData({ ...marqueeData, dish: array });
     const arr = newData?.dish?.map((val, idx) => {
       if (idx === index) {
-        setSelectedMenu(val);
+        const filter=combinedData.filter(item=> val?.dishes.includes(item?.name))
+          const nameAndPriceArrays = filter.map(item => ({
+            name: item.name,
+            price: item.price
+          }));
+          const venueDish ={
+            venueDish:nameAndPriceArrays,
+            perHead:val?.totalDiscount
+          }
+          setSelectedMenu({...selectedMenu, nameAndPriceArrays,perHead:val?.totalDiscount,name:val.name });
+        // setSelectedMenu(val);
         return { ...val, selected: true };
       } else {
         return { ...val, selected: false };
@@ -60,13 +84,11 @@ function ChooseMenu({
     });
     setSuggestionDish(categorizedData);
   };
+  const venueDishes = marqueeData?.venues;
   const AddDish = (item, price) => {
     let updatedMarqueeData = { ...newData };
-    // let updatedMarqueeData = JSON.parse(JSON.stringify(marqueeData));
-
     let Dishes = [];
     let dishPrice = 0;
-
     if (updatedMarqueeData.dish && Array.isArray(updatedMarqueeData.dish)) {
       for (let val1 of updatedMarqueeData.dish) {
         if (val1.selected && val1.dishes.length > 0) {
@@ -85,7 +107,6 @@ function ChooseMenu({
           break;
         }
       }
-      console.log(dishPrice, "dishPricedishPrice", Dishes);
       updatedMarqueeData.dish = updatedMarqueeData.dish.map((val1) => {
         if (val1.selected && val1.dishes.length > 0) {
           setSelectedMenu({
@@ -93,6 +114,17 @@ function ChooseMenu({
             dishes: Dishes,
             totalDiscount: dishPrice,
           });
+          const filterData=combinedData.filter(item=> Dishes.includes(item?.name))
+          const nameAndPriceArray = filterData.map(item => ({
+            name: item.name,
+            price: item.price
+          }));
+        //  const updatedVenue={
+        //   nameAndPriceArray,
+        //   totalDiscount: dishPrice,
+        //  }
+          setSelectedMenu({...selectedMenu,nameAndPriceArray,totalDiscount: dishPrice,});
+          console.log(nameAndPriceArray,"nameAndPriceArray")
           return {
             ...val1,
             dishes: Dishes,
@@ -101,9 +133,7 @@ function ChooseMenu({
         }
         return val1;
       });
-      // setMarqueeData(updatedMarqueeData);
       setNewData(updatedMarqueeData);
-      console.log(updatedMarqueeData, "updatedMarqueeData");
     } else {
       console.error("marqueeData.dish is missing or not an array");
     }
@@ -148,6 +178,8 @@ function ChooseMenu({
       return message.warning(
         "Something went wrong please fillout all the fields"
       );
+     
+      console.log(combinedData,"combinedData")
     setSlider(1);
   };
 

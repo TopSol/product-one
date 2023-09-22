@@ -16,6 +16,7 @@ function BookedDate() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
   const [detailsData, setDetailsData] = useState([]);
+  console.log(detailsData,"detailsDatass")
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -351,10 +352,10 @@ function BookedDate() {
             <p className="text-xl pl-3 text-white py-4">Dishes Name</p>
           </div>
           <div className="p-5">
-            {detailsData?.dishes?.map((item, index) => (
+            {detailsData?.dishes?.nameAndPriceArray?.map((item, index) => (
               <div key={index} className="flex items-center ">
                 <span className="w-4 h-4 rounded-full bg-primary"></span>
-                <p className="text-lg pl-3 py-2"> {item}</p>
+                <p className="text-lg pl-3 py-2"> {item.name}</p>
               </div>
             ))}
           </div>

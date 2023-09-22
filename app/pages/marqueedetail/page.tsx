@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DayPicker } from "react-day-picker";
 import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
@@ -9,7 +8,6 @@ import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Breadcrumb, Input, Select, Space, Typography, message } from "antd";
 import { getFormatDates } from "@/app/utils";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { isBefore, startOfToday } from "date-fns";
 import Location from "./Location"
 import {
@@ -81,13 +79,14 @@ function Marqueedetail() {
   const id = searchParams.get("id");
   const marqueeName = searchParams.get("name");
   const location = searchParams.get("location");
+  console.log(numberOfPeople,"numberOfPeoplenumberOfPeople")
   const handleButton = () => {
     addBookedDates(marqueeDates); 
     getMarqueeImage({...marqueeImage,numberOfPeople:numberOfPeople})
     router.push(
       `/pages/details?id=${data?.userId}`
     );
-    setLoading(true);
+    // setLoading(true);
   };
   console.log(data, "data");
   const getCollection = async (id) => {
@@ -255,17 +254,12 @@ function Marqueedetail() {
   const handleMouseEnter = (date) => {
     console.log(date, "datsseff");
   };
-  const containerStyle = {
-    width: "100%",
-    height: "400px",
-  };
+  
    
     
   const center = {
-    lat: marqueeData?.data?.locations?.lat, // Example latitude
+    lat: marqueeData?.data?.locations?.lat,
     lng: marqueeData?.data?.locations?.lng,   
-    // lat: Number(locations?.[0]), // Example latitude
-    // lng: Number(location?.[1]), // Example longitude
   };
   const isDateDisabled = (date) => {
     // Disable dates before today
@@ -398,18 +392,8 @@ function Marqueedetail() {
                 </div>
                 <div className="mt-5">
                 <Location
-                containerStyle={containerStyle}
-                center={center}
+                 center={center}
                 />
-                  {/* <LoadScript googleMapsApiKey="AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4">
-                    <GoogleMap
-                      mapContainerStyle={containerStyle}
-                      center={center}
-                      zoom={12}
-                    >
-                      <Marker position={center} />
-                    </GoogleMap>
-                  </LoadScript>  */}
                 </div>
               </>
             )}
