@@ -92,19 +92,8 @@ function UserInformation({
           <Image src={dots} alt="IMage" className="mx-6" />
           <p>Details</p>
         </div>
-        <Form
-          name="basic"
-          labelCol={{
-            span: 8,
-          }}
-          wrapperCol={{
-            span: 16,
-          }}
-          style={
-            {
-              // maxWidth: 600,
-            }
-          }
+        <Form 
+          
           initialValues={{
             remember: true,
           }}

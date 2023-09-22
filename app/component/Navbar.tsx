@@ -19,7 +19,9 @@ export default function Navbar() {
         </div>
 
         <div className=" flex items-center">
-          <FontAwesomeIcon icon={faBarsStaggered} size="xs" className=" h-7 text-[#DEB666] lg:hidden  " onClick={ShowSideBar} />
+          <div className="lg:hidden ">
+          <FontAwesomeIcon icon={faBarsStaggered} size="xs" className=" h-7 text-[#DEB666] " onClick={ShowSideBar} />
+          </div>
           <div className=" hidden lg:flex items-center ">
             <ul className=" flex space-x-10 font-roboto font-bold ">
               <li className="cursor-pointer">
