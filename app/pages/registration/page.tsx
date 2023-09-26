@@ -1,35 +1,29 @@
 "use client";
 import React from "react";
-import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
-import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
+import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { db } from "@/app/firebase";
 import { message } from "antd";
 import { useRouter } from "next/navigation";
 import { Modal } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { divIcon } from "leaflet";
-import { renderToStaticMarkup } from "react-dom/server";
 import { useStore } from "../../../store";
 import { Input, Form } from "antd";
 import { setDoc, doc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import L from "leaflet";
 import Loader from "@/app/component/Loader";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import ImageCroper from "@/app/component/ImageCropper";
 import Image from "next/image";
-import icon from "./consonant";
 import PhoneInput from "react-phone-number-input";
 import RegistrationImg from "../../assets/images/RegistrationImg.png";
 import "./style.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 import "react-phone-number-input/style.css";
+
 const initialValue = {
-  name: "",
+  fullName: "",
   email: "",
   phoneNumber: "",
   password: "",
@@ -39,86 +33,40 @@ const initialValue = {
   image: [],
 };
 
-const position = [51.505, -0.09];
-
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
-
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
-
-function LeafletGeoSearch({ customMarkerIcon, setLocation }) {
-  const map = useMap();
-  const markerRef = useRef(null);
-
-  useEffect(() => {
-    const provider = new OpenStreetMapProvider();
-    const searchControl = GeoSearchControl({
-      notFoundMessage: "Sorry, that address could not be found.",
-      provider,
-      showMarker: false,
-      style: "bar",
-      marker: {
-        icon,
-        draggable: true,
-      },
-    });
-    map.addControl(searchControl);
-
-    const handleLocationChange = (result) => {
-      const { y: lat, x: lng } = result.location;
-      setLocation({ lat, lng });
-
-      if (markerRef.current) {
-        markerRef.current.setLatLng([lat, lng]);
-      } else {
-        markerRef.current = L.marker([lat, lng], {
-          icon: customMarkerIcon,
-          draggable: true,
-        }).addTo(map);
-
-        markerRef.current.on("dragend", function (event) {
-          const { lat, lng } = event.target.getLatLng();
-          console.log("Updated Marker Position:", { lat, lng });
-          setLocation({ lat, lng });
-        });
-      }
-    };
-
-    map.on("geosearch/showlocation", handleLocationChange);
-
-    return () => {
-      map.removeControl(searchControl);
-      if (markerRef.current) {
-        markerRef.current.off("dragend");
-        map.removeLayer(markerRef.current);
-      }
-    };
-  }, [map]);
-
-  return <div></div>;
-}
-
 function details() {
   const [details, setDetails] = useState(initialValue);
   const [modalOpen, setModalOpen] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
-  const [map, setMap] = useState(null);
   const [location, setLocation] = useState({});
   const [value, setValue] = useState();
   const [loading, setLoading] = useState(false);
-  const [markerPos, setMarkerPos] = useState();
   const [cropImage, setCropImage] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [image, setImage] = useState([]);
   const [multipleImage, setMultipleImage] = useState([]);
-  const [prevImages, setPrevImages] = useState([]); // Define the state variable here
-  const { TextArea } = Input;
+  const [prevImages, setPrevImages] = useState([]);
   const { addUser, addRegistration } = useStore();
+  const [center, setCenter] = useState({ lat: 31.4187, lng: 73.0791 });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [autocomplete, setAutocomplete] = useState(null);
+  const [predictions, setPredictions] = useState([]);
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4",
+    libraries: ["places"],
+  });
+
   const storage = getStorage();
+  const router = useRouter();
+
+  const onFinish = (values) => {
+    console.log("Success:", values);
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -137,29 +85,6 @@ function details() {
     setModalOpen(false);
   };
 
-  useEffect(() => {
-    if (map) {
-      setInterval(function () {
-        map.invalidateSize();
-      }, 100);
-    }
-  }, [map]);
-
-  const markerRef = useRef();
-  const updatePosition = React.useMemo(
-    () => ({
-      dragend() {
-        const marker = markerRef.current;
-        if (marker != null) {
-          const newPos = { ...marker.getLatLng() };
-          setMarkerPos(newPos);
-        }
-      },
-    }),
-    []
-  );
-
-  const router = useRouter();
   const handleRegistration = async () => {
     if (!multipleImage?.length) {
       message.warning("Please select atleast one image");
@@ -189,12 +114,12 @@ function details() {
       const VenueId = Math.random().toString(36).substring(2);
       const userInfo = {
         userId: user.uid,
-        name: details.name,
+        name: details.fullName,
         email: details.email,
         address: details.address,
         phoneNumber: value,
         capacity: details.capacity,
-        locations: location,
+        locations: center,
         images: imageUrls,
         description: details.marqueeDetails,
         id: VenueId,
@@ -212,16 +137,6 @@ function details() {
     }
   };
 
-  const iconMarkup = renderToStaticMarkup(
-    <FontAwesomeIcon icon={faLocationDot} className="text-4xl text-blue-600" />
-  );
-
-  const customMarkerIcon = divIcon({
-    html: iconMarkup,
-    className: "custom-marker-icon",
-    iconSize: [40, 40],
-  });
-
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
@@ -238,8 +153,13 @@ function details() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
   const handleImageDiemension = async (e) => {
     let images = e.target.files;
+    setImage({
+      id: 0,
+      img: URL.createObjectURL(images?.[0])
+    });
     const validImages = [];
     try {
       await Promise.all(
@@ -253,7 +173,8 @@ function details() {
                 validImages.push({
                   id: index,
                   file: image,
-                });
+                })
+                
               } else {
                 message.warning("Image dimensions are not valid.");
               }
@@ -293,26 +214,74 @@ function details() {
     }
   };
 
+  const onLoad = (map) => {
+    setAutocomplete(new window.google.maps.places.AutocompleteService());
+  };
+
+  const onUnmount = () => {
+    setAutocomplete(null);
+  };
+
+  const handleSearch = () => {
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: searchQuery }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const latitude = results[0].geometry.location.lat().toFixed(7);
+        const longitude = results[0].geometry.location.lng().toFixed(7);
+  
+        setCenter({
+          lat: parseFloat(latitude),
+          lng: parseFloat(longitude),
+        });
+  
+        setPredictions([]);
+      } else {
+        console.error('Geocode was not successful for the following reason:', status);
+      }
+    });
+  };
+
+  const handleInputChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    if (autocomplete && query) {
+      autocomplete.getPlacePredictions(
+        {
+          input: query,
+        },
+        (predictions, status) => {
+          if (status === "OK") {
+            setPredictions(predictions);
+          }
+        }
+      );
+    } else {
+      setPredictions([]);
+    }
+  };
+
+  const handlePredictionClick = (prediction) => {
+    setSearchQuery(prediction.description);
+    handleSearch();
+  };
+
+  const containerStyle = {
+    width: "100%",
+    height: "550px",
+  };
+  console.log("center Location:", center);
+
   return (
     <div>
       <div className=" mx-auto my-auto w-full flex flex-col md:flex md:flex-row">
         <div className="w-full lg:w-[40%] md:ml-24 flex flex-col  my-3">
-          <p className=" mb-5 mt-7 text-5xl text-center md:text-[28px] font-semibold font-poppins text-primary items-center md:-ml-32">
+          <p className=" mb-5 mt-7 text-[28px] md:text-3xl xl:text-4xl text-center font-semibold font-poppins text-primary items-center md:-ml-28">
             REGISTER HERE
           </p>
 
           <Form
             className="w-full"
-            name="basic"
-            labelCol={{
-              span: 8,
-            }}
-            wrapperCol={{
-              span: 16,
-            }}
-            style={{
-              maxWidth: "100%",
-            }}
             initialValues={{
               remember: true,
             }}
@@ -320,34 +289,35 @@ function details() {
             onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
+              <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[85.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Full Name
                 </b>
               </div>{" "}
               <Form.Item
                 className="w-[100%]"
+                name="fullName"
                 rules={[
                   {
                     required: true,
-                    message: "Please fillout the name input!",
+                    message: "Please Fillout The Name's Input!",
                   },
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
-                  placeholder="Enter Full Name Here"
-                  type="text"
-                  name="name"
-                  value={details.name}
+                  className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative"
+                  placeholder="Enter Name Here"
+                  type="fullName"
+                  name="fullName"
+                  value={details.fullName}
                   onChange={handleChange}
                 />
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[79.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0  mb-4">
+              <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[56.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Email
                 </b>
@@ -359,12 +329,12 @@ function details() {
                   {
                     type: "email",
                     required: true,
-                    message: "Please fillout the email input!",
+                    message: "Please Fillout The Email's Input!",
                   },
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative"
                   placeholder="Enter Email Here"
                   type="email"
                   name="email"
@@ -374,8 +344,8 @@ function details() {
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
+              <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[85.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Password
                 </b>
@@ -386,12 +356,12 @@ function details() {
                 rules={[
                   {
                     required: true,
-                    message: "Please fillout the password input!",
+                    message: "Please Fillout The Password's Input!",
                   },
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative PhoneInput"
                   placeholder="Enter password Here"
                   type="password"
                   name="password"
@@ -401,8 +371,8 @@ function details() {
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col md:items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[129.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col md:items-start relative px-5 md:px-0 mb-4">
+              <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[111.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Phone Number
                 </b>
@@ -413,7 +383,7 @@ function details() {
                 rules={[
                   {
                     required: true,
-                    message: "Please fillout the phone input!",
+                    message: "Please Fillout The Phone's Input!",
                   },
                 ]}
               >
@@ -423,28 +393,29 @@ function details() {
                   defaultCountry="PK"
                   value={value}
                   onChange={setValue}
-                  className=" outline-none rounded py-3"
+                  className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative"
                 />
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
+              <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[75.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Capacity
                 </b>
               </div>{" "}
               <Form.Item
                 className="w-[100%]"
+                name="capacity"
                 rules={[
                   {
                     required: true,
-                    message: "Please fillout the capacity input!",
+                    message: "Please Fillout The Capacity's Input!",
                   },
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10 py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10 py-4 flex justify-center text-xs relative"
                   placeholder="Enter Capacity Here"
                   type="number"
                   name="capacity"
@@ -454,24 +425,24 @@ function details() {
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 ">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[79.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4 ">
+              <div className="absolute top-[calc(50%_-_51.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Image
                 </b>
               </div>{" "}
               <Form.Item
                 className="w-[100%]"
-                name="capacity"
+                name="image"
                 rules={[
                   {
                     required: true,
-                    message: "Please fill out the capacity input!",
+                    message: "Please Select Atleast Single Image!",
                   },
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10 py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10 py-4 flex justify-center text-xs relative"
                   placeholder="Please Select Image"
                   type="file"
                   name="image"
@@ -483,8 +454,8 @@ function details() {
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[21.89px] rounded-3xs bg-white w-[99.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
+              <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[69.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
                   Address
                 </b>
@@ -495,12 +466,12 @@ function details() {
                 rules={[
                   {
                     required: true,
-                    message: "Please fillout the address input!",
+                    message: "Please Fillout The Address's Input!",
                   },
                 ]}
               >
                 <Input
-                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10  py-4  flex justify-center text-xs relative"
                   placeholder="Enter Address Here"
                   type="address"
                   name="address"
@@ -510,8 +481,8 @@ function details() {
               </Form.Item>
             </div>
 
-            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0">
-              <div className="absolute top-[calc(50%_-_53.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[93.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+            <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
+              <div className="absolute top-[calc(50%_-_48.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[90.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1">Description</b>
               </div>
               <Form.Item
@@ -520,7 +491,7 @@ function details() {
                 rules={[
                   {
                     required: true,
-                    message: "Please fillout the marqueeDetails input!",
+                    message: "Please Fillout The Description's Input!",
                   },
                 ]}
               >
@@ -531,7 +502,7 @@ function details() {
                   name="marqueeDetails"
                   value={details.marqueeDetails}
                   onChange={handleChange}
-                  className="border outline-none md:w-[30vw] z-10  py-4 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[30vw] z-10  py-4  flex justify-center text-xs relative"
                 />
               </Form.Item>
             </div>
@@ -566,40 +537,69 @@ function details() {
           ) : null}
         </div>
       </div>
-
       <Modal
         open={modalOpen}
         onCancel={closeModal}
-        width={2000}
         centered
+        width={2000}
         footer={null}
       >
-        <MapContainer
-          zoom={20}
-          scrollWheelZoom={false}
-          style={{ height: "85vh" }}
-          whenCreated={setMap}
-        >
-          <TileLayer
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <Marker
-            position={position}
-            draggable={true}
-            showMarker={false}
-            eventHandlers={updatePosition}
-            ref={markerRef}
-            icon={customMarkerIcon}
-          >
-            <div>
-              <LeafletGeoSearch
-                customMarkerIcon={customMarkerIcon}
-                setLocation={setLocation}
-              />
-            </div>
-          </Marker>
-        </MapContainer>
+        <div className="w-full">
+          <div className="flex justify-center items-center md:mx-auto mb-2 mx-3">
+            <Input
+              type="text"
+              placeholder="Search location Here"
+              value={searchQuery}
+              onChange={handleInputChange}
+              className="md:w-96"
+            />
+            <button
+              className="border px-3 md:px-5 py-1 bg-primary text-white font-bold rounded-md md:rounded-lg"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
+          </div>
+          {predictions.length > 0 && (
+            <ul
+              className="w-[90%] px-12 md:w-[60%] lg:w-[35%] md:mx-auto flex flex-col justify-center"
+              style={{
+                position: "absolute",
+                zIndex: 1000,
+                backgroundColor: "white",
+                listStyleType: "none",
+                padding: 0,
+                margin: 0,
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                borderRadius: "4px",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              {predictions.map((prediction) => (
+                <li
+                  key={prediction.place_id}
+                  onClick={() => handlePredictionClick(prediction)}
+                  style={{ padding: "8px", cursor: "pointer" }}
+                >
+                  {prediction.description}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {isLoaded && (
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={center}
+              zoom={16}
+              onLoad={onLoad}
+              onUnmount={onUnmount}
+            >
+              <Marker position={center} />
+            </GoogleMap>
+          )}
+        </div>
       </Modal>
       <Modal
         open={modal1Open}

@@ -26,6 +26,7 @@ function UserInformation({
 }) {
   const [value, setValue] = useState();
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
+  const [isValidPhone, setIsValidPhone] = useState(true);
   const handleInputChange = (checkedValues: CheckboxValueType[]) => {
     setUser({ ...user, services: checkedValues });
   };
@@ -84,7 +85,14 @@ function UserInformation({
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  const preventNonNumericInput = (e) => {
+    const input = e.key;
 
+    // Allow only alphabetic characters (letters)
+    if (!/^[a-zA-Z]+$/.test(input) && input !== 'Backspace') {
+      e.preventDefault();
+    }
+  };
   return (
     <div className="md:container mx-auto text-textColor ">
       <div className="md:w-[70%] mx-4 md:mx-auto border rounded-lg ">
@@ -131,6 +139,7 @@ function UserInformation({
                       value={user.firstName}
                       onChange={handleChange}
                       className="border outline-none lg:w-72 xl:w-96 z-10 w-full py-6 mb-3 flex justify-center text-xs relative"
+                      onKeyPress={preventNonNumericInput}
                     />
                   </Form.Item>
                 </div>
@@ -157,6 +166,7 @@ function UserInformation({
                       name="lastName"
                       value={user.lastName}
                       onChange={handleChange}
+                      onKeyPress={preventNonNumericInput}
                       className="border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
                     />
                   </Form.Item>
@@ -205,7 +215,20 @@ function UserInformation({
                     rules={[
                       {
                         required: true,
-                        message: "Please fillout your phone's input!",
+                        // message: "Please fillout your phone's input!",
+                        validator: (_, value) => {
+                          const cleanedPhoneNumber = value.replace(/\D/g, ''); // Clean non-digit characters
+                          if (
+                            (cleanedPhoneNumber.startsWith('0') && cleanedPhoneNumber.length === 13) ||
+                            (!cleanedPhoneNumber.startsWith('0') && cleanedPhoneNumber.length === 12)
+                          ) {
+                            setIsValidPhone(true);
+                            return Promise.resolve();
+                          } else {
+                            setIsValidPhone(false);
+                            return Promise.reject('Invalid phone number');
+                          }
+                        },
                       },
                     ]}
                   >

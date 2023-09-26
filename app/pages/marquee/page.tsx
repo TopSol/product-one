@@ -39,7 +39,7 @@ function Marquee() {
   const [range, setRange] = useState<DateRange | undefined>();
   const [checkedServices, setCheckedServices] = useState([]);
   const [coordinates, setCoordinates] = useState({});
-
+  const [marqueeDates, setMarqueeDates] = useState({ from: null, to: null });
   const [filterData, setFilterData] = useState({
     capacity: "",
     location: "",
@@ -48,14 +48,13 @@ function Marquee() {
   });
 
   useEffect(() => {
-    const dates = getFormatDates([range]);
+    const dates = getFormatDates([marqueeDates]);
     const startDate = new Date(dates[0]?.from);
     const endDate = new Date(dates[0]?.to);
     venuesPrice.map((item1) => {
       bookDate.map((item2) => {});
     });
-  }, [range]);
-
+  }, [marqueeDates]);
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
@@ -73,19 +72,139 @@ function Marquee() {
       bookDateSnapshot.forEach((doc) => {
         bookDateArr.push({ id: doc.id, data: doc.data() });
       });
+
+
+
+      marquee(VenueArr,dataArr)
+
+     
+
+
       setVenuesPrice(VenueArr);
       setUserData(dataArr);
       setBookDate(bookDateArr);
     };
     getUser();
   }, []);
-
+  const marquee=(VenueArr,dataArr)=>{
+    let arr = [];
+      dataArr.map((item) => {
+        VenueArr.map((item1) => {
+          if (item.data.userId.includes(item1.data.userId)) {
+            if (!arr.includes(item)) {
+              arr.push(item);
+            }
+          }
+        });
+      });
+      if (arr.length) {
+        setFilterMarqueeWithPrice(arr);
+        setShowMessage(true);
+      } else {
+        setShowMessage(false);
+        setFilterMarqueeWithPrice([]);
+      }
+  }
+  const handleDateRangeSelect = (newRange) => {
+    let dateString1 = newRange;
+    let date1 = new Date(dateString1);
+    let currentDate = new Date();
+    if (currentDate <= date1) {
+      if (!marqueeDates.from) {
+        setMarqueeDates({ ...marqueeDates, from: newRange });
+      } else if (!marqueeDates.to) {
+        if (marqueeDates.from > newRange) {
+          setMarqueeDates({ from: newRange, to: null });
+        } else {
+          setMarqueeDates({ ...marqueeDates, to: newRange });
+        }
+      } else {
+        setMarqueeDates({ from: newRange, to: null });
+      }
+    }
+  };
+  function filterDataByDates(data, marqueeDates = {}) {
+    const { from, to } = marqueeDates;
+  
+    if (from || to) {
+      data = data.filter((item) => {
+        const eventDates = item.data.dates;
+        if (eventDates) {
+          const dateArrays = Object.values(eventDates);
+          const flattenedDates = [].concat(...dateArrays);
+          const eventDateObjects = getFormatDates(flattenedDates);
+          const fromISOString = from?.toISOString();
+          const toISOString = to?.toISOString();
+  
+          // Check if any event date matches the from or to date
+          const dateMatches = eventDateObjects.some(
+            (date) =>
+              date.toISOString() === fromISOString ||
+              date.toISOString() === toISOString
+          );
+  
+          return !dateMatches;
+        } else {
+          console.log("item.data.dates is undefined or null");
+          return false;
+        }
+      });
+    }
+  
+    return data;
+  }
   const handleFilterData = async () => {
     let data = venuesPrice;
     const minCapacity =
       filterData.capacity !== "" ? Number(filterData.capacity) : 0;
     const maxPrice = filterData.price !== "" ? Number(filterData.price) : 0;
     const requiredServices = filterData.services;
+
+      if (marqueeDates.from || marqueeDates.to) {
+
+        data= filterDataByDates(data, marqueeDates);
+
+        // data = data.filter((item) => {
+        //   let eventDates = item.data.dates;
+        //   if (eventDates) {
+        //     const dateArrays = Object.values(eventDates);
+        //     const flattenedDates = [].concat(...dateArrays);
+        //     const eventDateObjects = getFormatDates(flattenedDates);
+        //     const fromISOString = marqueeDates.from?.toISOString();
+        //     const toISOString = marqueeDates.to?.toISOString();
+      
+        //     // Check if any event date matches the from or to date
+        //     const dateMatches = eventDateObjects.some(
+        //       (date) =>
+        //         date.toISOString() === fromISOString ||
+        //         date.toISOString() === toISOString
+        //     );
+      
+        //     return !dateMatches;
+        //   } else {
+        //     console.log("item.data.dates is undefined or null");
+        //     return false;
+        //   }
+        // });
+      }
+
+
+      // data = data.filter((item) => {
+      //   let eventDates = item.data.dates;
+      //   if (eventDates) {
+      //     Object.keys(eventDates).forEach((key) => {
+      //       const datessss = getFormatDates(eventDates[key]); 
+      //       console.log(datessss,"datessss",marqueeDates)
+      //       const filtered =datessss.filter(i => (i?.toISOString() !=marqueeDates.from?.toISOString()) && (i?.toISOString() != marqueeDates.to?.toISOString()));
+      //       console.log("filtered=====",filtered)
+      //     });
+      //   return true;
+      //   } else {
+      //     console.log("item.data.dates is undefined or null");
+      //   }
+      // });
+      // console.log(data,"datadatadata")
+   
     if (filterData.capacity != "") {
       data = data.filter((item) => minCapacity >= item?.data?.maxCapacity);
     }
@@ -101,7 +220,6 @@ function Marquee() {
     }
     let arr = [];
     userData.map((item) => {
-      console.log(item, "pppp", data);
       data.map((item1) => {
         if (item.data.userId.includes(item1.data.userId)) {
           if (!arr.includes(item)) {
@@ -110,7 +228,7 @@ function Marquee() {
         }
       });
     });
-
+    console.log(arr,"arrarr",userData)
     const datas = arr.length ? arr : userData;
     const branch = datas.filter((item) => {
       if (
@@ -123,15 +241,19 @@ function Marquee() {
           lng: item.data.locations.lng,
         };
         if (isWithinRange(coordinates, itemCoordinates, 1)) {
+          console.log("true")
           return true;
         } else {
+          console.log("false")
+
           return false;
         }
       } else {
         return false;
       }
     });
-    if (filterData.capacity || filterData.price || filterData.services.length) {
+    console.log(branch,"branchbranch",arr)
+    if (filterData.capacity || filterData.price || filterData.services.length || (marqueeDates.from && marqueeDates.to)) {
       if (arr.length) {
         setFilterMarqueeWithPrice(arr);
         setShowMessage(true);
@@ -140,15 +262,16 @@ function Marquee() {
         setFilterMarqueeWithPrice([]);
       }
     } else {
-      console.log("bbb");
       setFilterMarqueeWithPrice([]);
+      marquee(venuesPrice,userData)
     }
     if (branch.length) {
       setShowMessage(true);
       setFilterMarqueeWithPrice(branch);
+    }else if( !branch.length && (coordinates.lat && coordinates.lng)){
+      setShowMessage(false);
     }
   };
-  console.log(filterMarqueeWithPrice, "filterMarqueeWithPrice");
   const handleSittingCapacity = (e) => {
     const capacity = Number(e.target.value);
     setFilterData({ ...filterData, capacity: capacity });
@@ -194,16 +317,16 @@ function Marquee() {
       setFilteredVenuesPrice(arr);
     }
   };
-
+ console.log(coordinates,"coordinates")
   let footer = <p className="text-textColor font-poppins ">Select Date</p>;
 
-  if (range?.from) {
-    if (!range.to) {
-      footer = <p>{format(range.from, "PPP")}</p>;
-    } else if (range.to) {
+  if (marqueeDates?.from) {
+    if (!marqueeDates.to) {
+      footer = <p>{format(marqueeDates.from, "PPP")}</p>;
+    } else if (marqueeDates.to) {
       footer = (
         <p>
-          {format(range.from, "PPP")}–{format(range.to, "PPP")}
+          {format(marqueeDates.from, "PPP")}–{format(marqueeDates.to, "PPP")}
         </p>
       );
     }
@@ -214,7 +337,7 @@ function Marquee() {
   };
 
   const isWithinRange = (coord1, coord2, range) => {
-    console.log(coord1, "distancecoord2", coord2, range);
+
 
     const distance = Math.sqrt(
       Math.pow(coord1.lat - coord2.lat, 2) +
@@ -224,7 +347,7 @@ function Marquee() {
   };
 
   const handleSelect = async (value) => {
-    console.log(value, "asdasdasdas");
+
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
@@ -245,16 +368,21 @@ function Marquee() {
     } catch (error) {
       console.error("Error retrieving place details:", error);
     }
-  }; 
+  };
   const clearFilter = () => {
+    setShowMessage(true);
     setFilterData({
       capacity: "",
       location: "",
       price: "",
       services: [],
     });
+    setCoordinates({})
+    setMarqueeDates({ from: null, to: null })
     setFilterMarqueeWithPrice([]);
+    marquee(venuesPrice,userData)
   };
+
   return (
     <>
       <div>
@@ -271,14 +399,16 @@ function Marquee() {
               <h1 className="font-poppins text-xl my-5 flex justify-center mx-auto font-semibold text-textColor">
                 Booking Details
               </h1>
-              <div className="flex items-center ">
-                <div className="text-xs flex flex-col w-[100%] rounded-tl-lg rounded-bl-lg flex-end border-none bg-bgColor py-4 pl-2 justify-between ">
+              <div className="flex items-center bg-bgColor rounded-md">
+                <div className="text-xs flex flex-col w-[100%]  flex-end border-none py-4 pl-2 justify-between ">
                   {footer}
                 </div>
-                <div className="bg-bgColor p-4 rounded-tr-lg rounded-br-lg cursor-pointer">
+                <div className="bg-bgColor  rounded-tr-lg rounded-br-lg cursor-pointer">
                   <Image
                     onClick={() => setIsModalOpen((pre) => !pre)}
                     src={calenderIcon}
+                    width={55}
+                    height={55}
                     alt="Image"
                   />
                 </div>
@@ -351,7 +481,7 @@ function Marquee() {
           <div className="w-full  lg:w-[75%]">
             {showMessage ? (
               (filterMarqueeWithPrice.length
-                ? filterMarqueeWithPrice 
+                ? filterMarqueeWithPrice
                 : userData
               ).map((item, index) => (
                 <MarqueeDetails
@@ -377,13 +507,19 @@ function Marquee() {
         onCancel={() => setIsModalOpen((pre) => !pre)}
         footer={null}
       >
-        <DayPicker
+        {/* <DayPicker
           id="test"
           mode="range"
           defaultMonth={pastMonth}
           selected={range}
           footer={footer}
           onSelect={setRange}
+        /> */}
+        <DayPicker
+          className={`w-[100%] customClasses2 customClasses3`}
+          selected={marqueeDates}
+          footer={footer}
+          onDayClick={handleDateRangeSelect}
         />
       </Modal>
     </>

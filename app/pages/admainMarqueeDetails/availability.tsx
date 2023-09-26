@@ -5,7 +5,7 @@ import Select from "antd/es/select";
 import "./style.css";
 import { Button, message, Popconfirm } from "antd";
 import { db } from "@/app/firebase";
-import { getDoc, doc, setDoc, getDocs, collection } from "firebase/firestore";
+import { getDoc, doc, setDoc, getDocs, collection, updateDoc } from "firebase/firestore";
 function Availability() {
   const { Venues, dates, addDateKey, lunchDinner, userInformation, addDates } =
     useStore();
@@ -19,8 +19,9 @@ function Availability() {
   const [showButton, setShowButton] = useState(false);
   const [selectedDate, setSelectedDate] = useState([]);
   const [deleteDates, setDeleteDates] = useState([]);
-  const [updateDateAfterDelete,setUpdateDateAfterDelete]=useState({})
-  const [isDateDelete,setIsDateDelete]=useState(false)
+  const [updateDateAfterDelete, setUpdateDateAfterDelete] = useState({});
+  const [isDateDelete, setIsDateDelete] = useState(false);
+  const [deleteVenueId,setDeleteVenueId]=useState("")
   const [menu, setMenu] = useState([
     {
       label: "Lunch",
@@ -50,7 +51,6 @@ function Availability() {
 
     return data;
   }
-  console.log(lunchDinner,"lunchDinnerlunchDinner")
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -69,23 +69,76 @@ function Availability() {
     };
     fetchBlogs();
   }, []);
- useEffect(()=>{
-  isDateDelete && updateDeleteDate(lunchDinner)
- },[lunchDinner])
- const updateDeleteDate= async(lunch)=>{
-  const NotAvailableDate = {
-    id: "wLA6R1rC5mNAcPItqqK7nIleYKB2",
-    dates: lunch,
-  };
-     try {
-        await setDoc(doc(db, "bookDate", "wLA6R1rC5mNAcPItqqK7nIleYKB2"), NotAvailableDate);
-        message.success("Date is successfully deleted");
-       setIsDateDelete(false)
-
-      } catch (error) {
-        console.log(error, "error");
+  useEffect(() => {
+    isDateDelete && updateDeleteDate(lunchDinner);
+  }, [isDateDelete]);
+  const updateDeleteDate = async (lunch) => {
+    let singleVenueDate = null;
+    Object.keys(lunchDinner).find((item) => {
+      if (deleteVenueId === item) {
+        singleVenueDate = lunchDinner?.[item];
       }
- }
+    });
+
+    if (singleVenueDate !== null) {
+      const docRef = doc(db, "Venues", deleteVenueId); // Adjust the collection name
+      const dateOfVenue = {
+        dates: singleVenueDate,
+      };
+  
+      try {
+        await updateDoc(docRef, dateOfVenue);
+        console.log("Value of an Existing Document Field has been updated");
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log("No matching item found in lunchDinner for deleteVenueId");
+    }  
+
+    // const docRef = doc(db, "Venue", deleteVenueId);
+    // const dateOfVenue={
+    //   dates:singleVenueDate
+    // }
+    // console.log(dateOfVenue,"dateOfVenuedateOfVenuedateOfVenue")
+    // updateDoc(docRef, dateOfVenue)
+    // .then(docRef => {
+    //     console.log("Value of an Existing Document Field has been updated");
+    // })
+    // .catch(error => {
+    //     console.log(error);
+    // })
+
+
+    // console.log(deleteVenueId, " venueDatNotAvailableDate",singleVenueDate);
+    // try {
+    //   await setDoc(doc(db, "Venues", deleteVenueId), dateOfVenue, { merge: true });
+    //   message.success("Date is successfully added");
+    // } catch (error) {
+    //   console.log(error, "error");
+    // }
+
+
+
+
+    const NotAvailableDate = {
+      id: "wLA6R1rC5mNAcPItqqK7nIleYKB2",
+      dates: lunch,
+    };
+    if(deleteDates?.length){
+      try {
+        await setDoc(
+          doc(db, "bookDate", "wLA6R1rC5mNAcPItqqK7nIleYKB2"),
+          NotAvailableDate
+        );
+        message.success("Date is successfully deleted");
+        setIsDateDelete(false);
+      } catch (error) {
+        console.log(error, "errorssss");
+      }
+    }
+    
+  };
   useEffect(() => {
     const VenueName = Venues.map((item) => ({
       value: item.id,
@@ -108,21 +161,28 @@ function Availability() {
       }
     });
   };
-  console.log(lunchDinner, "deleteDates");
   const update = async (id, venueDate, venueDates) => {
-    console.log(venueDate.userId, "venueDatesss");
+    let singleVenueDate = {};
+    const data = Object.keys(lunchDinner).find((item) => {
+      if (id === item) {
+        singleVenueDate = lunchDinner?.[item];
+      }
+    });
     const NotAvailableDate = {
       id: venueDate.userId,
       dates: venueDates,
     };
+    const dateOfVenue={
+      dates:singleVenueDate
+    }
     try {
       await setDoc(doc(db, "bookDate", venueDate.userId), NotAvailableDate);
+      await setDoc(doc(db, "Venues", id), dateOfVenue, { merge: true });
       message.success("Date is successfully added");
     } catch (error) {
       console.log(error, "error");
     }
   };
-  console.log(lunchDinner, "lunchDinner");
   const SendDateInFirebase = async (item) => {
     setSelectedDate([]);
     const data = dates?.[item] || {};
@@ -134,7 +194,6 @@ function Availability() {
           ...docSnap.data(),
           dates: data,
         };
-        console.log(user, "useruseruser");
         setVenueDate(user);
         update(item, user, venueDates);
       } else {
@@ -146,7 +205,7 @@ function Availability() {
     setShowButton(false);
   };
   const DeleteSendDateInFirebase = async (item) => {
-    setIsDateDelete(true)
+    setDeleteVenueId(item)
     const data = dates?.[item] || {};
     const docRef = doc(db, "Venues", item);
     const docSnap = await getDoc(docRef);
@@ -155,20 +214,22 @@ function Availability() {
         ...docSnap.data(),
         dates: data,
       };
-    console.log(venueDates,"venueDatesdddd")
+    // if(deleteDates.length){
+    // update(item, user, venueDates);
+    // }
 
-      update(item, user, venueDates);
       const result = lunchDinner[selectedVenue]?.[lunchType]?.filter(
         (value) => {
           return !deleteDates.some((item) => value === item.date);
         }
       );
       addDateKey(selectedVenue, lunchType, result);
+      setIsDateDelete(true);
+
       const NotAvailableDate = {
         id: user.userId,
         dates: venueDates,
       };
-      console.log(updateDateAfterDelete, "updateDateAfterDelete");
 
       // console.log(NotAvailableDate,"NotAvailableDate")
       // try {
@@ -179,7 +240,6 @@ function Availability() {
       // }
     }
   };
-  console.log(lunchDinner, "deleteDatedddddddds");
 
   const handleMenuSelect = (e) => {
     let data = [];
@@ -200,7 +260,6 @@ function Availability() {
             });
           });
           SetAllDate(data);
-          console.log(data, "dddggd");
           setLunchType("All");
         }
         break;
@@ -209,7 +268,6 @@ function Availability() {
     }
   };
   const cancel = (e) => {
-    console.log(e);
     message.error("Click on No");
   };
   return (

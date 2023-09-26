@@ -226,18 +226,19 @@ function MarqueeDetails({ item, showMessage }) {
                 </p>
                 {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}/${item?.data?.name}`} passHref> */}
                 {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}`} passHref> */}
-                <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref>
+                {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref> */}
                   <button
                     onClick={() => {
                       venuesName(item?.id);
                       addMarqueeData(item)
                       addBookedDates(marqueeDates)
+                      handleMarqueeDetails(item?.id)
                     }}
                     className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
                   >
                     Details
                   </button>
-                </NextLink>
+                {/* </NextLink> */}
               </div>
 
               <div
