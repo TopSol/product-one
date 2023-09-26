@@ -60,7 +60,7 @@ function UserInformation({
       return;
     }
     const phone = value;
-    const convertedPhoneNumber = "92" + phone.replace(/^0/, "");
+    const convertedPhoneNumber = phone.replace(/^0/, "");
     console.log(convertedPhoneNumber, "convertedPhoneNumber");
     const users = {
       firstName: user.firstName,
@@ -352,7 +352,13 @@ function UserInformation({
               </div>
             </div>
           </div>
-          <div className="flex justify-center ">
+          <div className="flex justify-between px-10 ">
+            <button
+              className="border px-9 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
+              onClick={() => setSlider(0)}
+            >
+              Previous
+            </button>
             <button
               className="border px-9 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
               onClick={() => nextPage()}

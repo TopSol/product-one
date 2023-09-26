@@ -3,7 +3,6 @@ import React from "react";
 import { useState } from "react";
 import { Data, ReviewData } from "./Data";
 import { useRouter } from "next/navigation";
-import { useStore } from "@/store";
 import Review from "../../component/review";
 import Footer from "@/app/component/footer";
 import Herro from "@/app/component/Herro";

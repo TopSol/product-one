@@ -51,7 +51,7 @@ function Slider() {
   const [clickedIndex, setClickedIndex] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
   const [selectedHall, setSelectedHall] = useState({});
-  const [selectedMenu, setSelectedMenu] = useState("");
+  const [selectedMenu, setSelectedMenu] = useState({});
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([]);
   const [marqueeData, setMarqueeData] = useState([]);
@@ -59,7 +59,7 @@ function Slider() {
   const [step, setStep] = useState(0);
   const params = useSearchParams();
   const [newData, setNewData] = useState([]);
-
+console.log(selectedMenu,"selectedMenuksksks")
   const [inputs, setInputs] = useState({
     Heating: false,
     Cooling: false,

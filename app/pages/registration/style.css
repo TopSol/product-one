@@ -10,7 +10,6 @@
 
 
 .PhoneInputInput {
-    width: 41vw;
     outline: none;
 }
 
@@ -21,17 +20,10 @@
 .PhoneInput {
     outline: none;
     border-radius: 5px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 16px;
     padding-left: 10px;
-    margin-bottom: 12px;
     display: flex;
     align-items: center;
     border: 1px solid #cdcdcd;
 }
 
-@media (max-width: 760) {
-    .PhoneInputInput {
-        width: 100vw !important;
-    }
-}

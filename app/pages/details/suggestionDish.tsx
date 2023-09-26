@@ -18,34 +18,28 @@ function SuggestionDish({
 }) {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  console.log(item, "Dish");
-  // const [searchIndex,setSearchIndex]=useState("")
+  console.log(suggestionDish, "suggestionDish");
   return (
     <div className="flex flex-col w-[full] pl-2" key={item}>
       <div className="bg-primaryColor flex items-center justify-between p-3 rounded-t-md">
         <p className="text-lg text-white">{item}</p>
-        <div
-          className="ml-3 cursor-pointer"
-          // onClick={() => {
-          //   setSearchVisible(true);
-          //   // setSearchVisible(!searchVisible);
-          //   setSearchIndex(index);
-          // }}
-        >
+        <div className="ml-3 cursor-pointer">
           {searchQuery || (searchIndex == index && searchVisible) ? (
             <div className="">
               <Input
                 type="text"
                 suffix={
                   <CloseOutlined
-                    onClick={() => setSearchVisible(!searchVisible)}
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchVisible(!searchVisible);
+                    }}
                   />
                 }
                 placeholder="Search Dish"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="py-2 rounded-md pl-2"
-                // onBlur={()=> setSearchVisible(false)}
                 autoFocus
               />
             </div>
@@ -63,42 +57,6 @@ function SuggestionDish({
           )}
         </div>
       </div>
-      {/* <div className="border">
-        {suggestionDish[item]?.filter((item1)=>(item1.name?.toLowerCase()?.includes(searchQuery.toLowerCase())))?.map((dish, index) => {
-            console.log(dish,"lldddd")
-          const itemBackgroundColor =
-            clickedItems[dish.name] || "bg-secondary";
-          const textClass =
-            clickedItems[dish.name] === "bg-lightPrimary"
-              ? "text-white"
-              : "";
-          const imageSrc =
-            clickedItems[dish.name] === "bg-lightPrimary"
-              ? subtract
-              : add;
-          return (
-            
-            <div
-              key={index}
-              className={`flex items-center ${itemBackgroundColor} m-3 rounded-md justify-between p-3`}
-              onClick={() => {
-                handleItemBackground(dish.name);
-                AddDish(dish.name, dish.price);
-              }}
-            >  
-              <p className={textClass}>{dish.name}</p>
-              <Image
-                alt="sdf"
-                src={imageSrc}
-                width={30}
-                height={30}
-                className="ml-3"
-              />
-            </div>
-          );
-        })
-        }
-      </div> */}
       <div className="border">
         {suggestionDish[item]?.filter((item1) =>
           item1.name?.toLowerCase()?.includes(searchQuery.toLowerCase())
@@ -132,15 +90,17 @@ function SuggestionDish({
                     <div className="border"></div>
                   </div>
                   <div className="justify-around flex w-full">
-                  <p className={`${textClass} font-poppins ` }>RS{dish.price}</p>
-                  <Image
-                    alt="sdf"
-                    src={imageSrc}
-                    width={30}
-                    height={30}
-                    className="ml-3"
+                    <p className={`${textClass} font-poppins `}>
+                      RS{dish.price}
+                    </p>
+                    <Image
+                      alt="sdf"
+                      src={imageSrc}
+                      width={30}
+                      height={30}
+                      className="ml-3"
                     />
-                    </div>
+                  </div>
                 </div>
               );
             })

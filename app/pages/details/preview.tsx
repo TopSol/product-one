@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { use } from "react";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/app/firebase";
@@ -40,7 +40,7 @@ function Preview({
   const [blogs, setBlogs] = useState([]);
   const [dates, setDates] = useState();
   const router = useRouter();
-
+console.log(selectedMenu,"marqueeImagessssssss")
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
@@ -50,7 +50,7 @@ function Preview({
       console.error("Error fetching blogs:", error);
     }
   };
-
+console.log(userInformation,"userInformation")
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -73,7 +73,7 @@ function Preview({
       email: userInformation?.email,
       phoneNumber: userInformation?.PhoneNumber,
       notes: userInformation?.notes,
-      dishes: selectedMenu?.dishes,
+      dishes: selectedMenu,
       menu: selectedMenu?.name,
       marqueeId: marqueeId,
       id: fieldId,
@@ -81,6 +81,7 @@ function Preview({
       NumberOfPeople: marqueeImage?.numberOfPeople,
       eventType: userInformation?.eventType,
     };
+    console.log(users,"lllllll")
     try {
       await setDoc(doc(db, "contactUs", fieldId), users);
       setSuccessPage(true);
@@ -236,7 +237,7 @@ function Preview({
                 <div className="ml-3">
                   <p className="font-semibold">Number Of Geusts</p>
                   <p className="text-xs md:text-sm">
-                    {marqueeData?.numberOfPeople}
+                    {marqueeImage?.numberOfPeople}
                   </p>
                 </div>
               </div>
@@ -322,28 +323,74 @@ function Preview({
         </div>
 
         {/* CHOOSE MENU */}
-        <div className="bg-bgColor p-3 md:p-6 rounded-lg w-full mt-3 md:mt-6">
-          <div className="bg-white px-3 rounded-lg pt-5 w-full">
-            <div className="flex justify-between mx-3 font-semibold font-sc">
-              <p>{selectedMenu?.name}</p>
-              <p>Rs {hallInformation?.price}</p>
-            </div>
-            <div className="flex items-center  w-full">
-              <div className="ml-3">
-                <p className="font-sc my-4">
-                  This menu contains the following items :
-                </p>
-                <div className="grid md:grid-cols-4 mb-3">
-                  {selectedMenu?.dishes?.map((item, index) => (
-                    <div className="flex items-center font-sc " key={index}>
-                      <div className="bg-matteBlack h-4 w-4 rounded-full mr-2 "></div>
-                      <p className=""> {item}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+        <div className="bg-bgColor flex justify-between p-3 md:p-6 rounded-lg w-full mt-3 md:mt-6">
+        <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
+          <div
+            className={`flex items-center justify-between mb-3`}
+          >
+            <p className="text-center text-xl">{selectedMenu?.name}</p>
+            <p className="text-xl flex flex-col justify-end my-auto">
+              {" "}
+              Rs {selectedMenu?.perHead} / PerHead
+            </p>
           </div>
+          <div>
+            <p className=" md:w-56 font-sc my-4">
+              This menu contains the following items :
+            </p>
+          </div>
+          <div className="w-full">
+            <ul>
+              { selectedMenu?.nameAndPriceArrays?.map((dish, i) => {
+                  return (
+                    <div className="flex items-center py-1" key={i}>
+                      <div className={`bg-textColor h-3 w-3 rounded-full mr-3 `}></div>
+                      <div className="flex justify-between w-full">
+
+                      <li className="">{dish.name}</li>
+                      <li className=" font-poppins ">RS {dish.price}</li>
+                      </div>
+                    </div>
+                  );
+               
+              })}
+            </ul>
+          </div>
+        </div>
+        <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
+          <div
+            className={`flex items-center justify-between mb-3`}
+          >
+            <p className="text-center text-xl">{selectedMenu?.name}</p>
+            <p className="text-xl flex flex-col justify-end my-auto">
+              {" "}
+              Rs {selectedMenu?.totalDiscount} / PerHead
+            </p>
+          </div>
+          <div>
+            <p className=" md:w-56 font-sc my-4">
+              This menu contains the following items :
+            </p>
+          </div>
+          <div className="w-full">
+            <ul>
+              {selectedMenu?.nameAndPriceArray?.map((dish, i) => {
+                  return (
+                    <div className="flex items-center py-1" key={i}>
+                    <div className={`bg-textColor h-3 w-3 rounded-full mr-3 `}></div>
+                    <div className="flex justify-between w-full">
+
+                    <li className="">{dish.name}</li>
+                    <li className=" font-poppins ">RS {dish.price}</li>
+                    </div>
+                  </div>
+                  );
+                }
+               
+                )}
+            </ul>
+          </div>
+        </div>
         </div>
 
         {/* HALL'S DIV */}
@@ -402,16 +449,23 @@ function Preview({
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-end ">
+        <div className="flex justify-between ">
         <button
-          className="border px-9 py-2 my-3 bg-primaryColor rounded-md text-white font-bold"
+          className="border px-9 py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+          onClick={() => setSlider(1)}
+        >
+          Previous
+        </button>
+        <button
+          className="border px-9 py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
           onClick={() => nextPage()}
         >
-          Next
+          Book Now
         </button>
       </div>
+      </div>
+
+      
     </div>
   );
 }
