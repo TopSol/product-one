@@ -6,21 +6,13 @@ import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Breadcrumb, Input, Select, Space, Typography, message } from "antd";
+import { Breadcrumb, Input, Select, Space, Typography } from "antd";
 import { getFormatDates } from "@/app/utils";
 import { isBefore, startOfToday } from "date-fns";
 import Location from "./Location"
-import {
-  faCalendarDays,
-  faPerson,
-  faBed,
-  faMap,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import ImageLightbox from "react-image-lightbox";
-import NextLink from "next/link";
 import Loader from "@/app/component/Loader";
 import "react-day-picker/dist/style.css";
 import "react-day-picker/dist/style.css";
@@ -30,17 +22,30 @@ import chair from "../../assets/images/chair.svg";
 import click from "../../assets/images/click.svg";
 import Image from "next/image";
 import Link from "next/link";
+import { DocumentData } from 'firebase/firestore'; 
+interface VenueData {
+  image: string[];
+  name: string;
+  price: number;
+  maxCapacity: number;
+  services: string[];
+  userId: string;
+  venueId: string;
+  minCapacity: number;
+  dates: {
+    Diner: { seconds: number; nanoseconds: number }[];
+    Lunch: { seconds: number; nanoseconds: number }[];
+  };
+}
 function Marqueedetail() {
   const {
     addBookedDates,
     marqueeVenueNames,
     marqueeVenueDates,
-    bookedDates,
     addMarqueeVenueNames,
     addMarqueeData,
     marqueeData,
     getMarqueeImage,
-    lunchDinner,
     marqueeImage,
   } = useStore();
   let searchParams = useSearchParams();
@@ -49,12 +54,17 @@ function Marqueedetail() {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isLunch, setIsLunch] = useState<any>();
   const [selectedOption, setSelectedOption] = useState("");
-  const [data, setData] = useState();
+  // const [data, setData] = useState();
+  const [data, setData] = useState<DocumentData | VenueData | null>(null);
   const [isShow, setIsShow] = useState(false);
-  const [bookDates, setBookDates] = useState();
-  const [dates, setDates] = useState([]);
+  // const [bookDates, setBookDates] = useState();
+  const [bookDates, setBookDates] = useState<DocumentData | undefined>(undefined);
+  const [dates, setDates] = useState<string[]>([]);
   const [days, setDays] = useState<any>([]);
-  const [marqueeDates, setMarqueeDates] = useState({ from: null, to: null });
+const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date | null }>({
+  from: null,
+  to: null,
+});
   const [otherDates, setOtherDates] = useState([]);
   const [venueId, setVenueId] = useState();
   const [loading, setLoading] = useState(false);
@@ -67,28 +77,24 @@ function Marqueedetail() {
   ]);
   const router = useRouter();
   const handleClick = (index: any) => {
-    setSelectImage(data?.image[index]);
-    setPhotoIndex(index);
+    if (data?.image) {
+      setSelectImage(data.image[index]);
+      setPhotoIndex(index);
+    }
   };
-
   const closeLightbox = () => {
     setIsOpen(false);
   };
- 
-
   const id = searchParams.get("id");
   const marqueeName = searchParams.get("name");
   const location = searchParams.get("location");
-  console.log(numberOfPeople,"numberOfPeoplenumberOfPeople")
   const handleButton = () => {
     addBookedDates(marqueeDates); 
     getMarqueeImage({...marqueeImage,numberOfPeople:numberOfPeople})
     router.push(
       `/pages/details?id=${data?.userId}`
     );
-    // setLoading(true);
   };
-  console.log(data, "data");
   const getCollection = async (id) => {
     try {
       const docRef = doc(db, "BookDate", id);
@@ -102,24 +108,19 @@ function Marqueedetail() {
       console.error("Error :", error);
     }
   };
-
   useEffect(() => {
     if (id) {
       getCollection(id);
       handleVenueName(marqueeVenueNames[marqueeVenueNames.length - 1]?.value);
     }
     const center = {
-      lat: marqueeData?.data?.locations?.lat, // Example latitude
+      lat: marqueeData?.data?.locations?.lat, 
       lng: marqueeData?.data?.locations?.lng,   
     };
-    
     addMarqueeData({ ...marqueeData, lunchType: meal });
   }, [id]);
-
   const handleCheck = (event, item) => {
-    console.log(event, "event", item);
     const selectedValue = event?.target?.value || event;
-    console.log(selectedValue, "selectedValue");
     setSelectedOption(selectedValue);
     if (selectedValue == "Lunch") {
       setDays(item);
@@ -129,27 +130,21 @@ function Marqueedetail() {
       setIsLunch("Diner");
     }
   };
-
   const handleVenueName = async (id, lunchProps = "Lunch") => {
-    console.log(id, "sdfdsfsdfsdff");
     setVenueId(id);
-    console.log(marqueeVenueDates, "marqueeVenueDates");
     try {
       const docRef = doc(db, "Venues", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const abc = docSnap.data();
         setData(abc);
-        console.log(abc, "hhhhhhhhh");
         getMarqueeImage(abc);
-        // getMarqueeImage(abc?.images?.[0]);
       } else {
         console.log("No such document!");
       }
     } catch (error) {
       console.error("Error :", error);
     }
-
     const reserveDate = marqueeVenueDates.map((item) => {
       return {
         id,
@@ -159,7 +154,6 @@ function Marqueedetail() {
         },
       };
     });
-    console.log(reserveDate, "reserveDate");
     setBookDates(reserveDate);
     {
       lunchProps == "Diner"
@@ -167,9 +161,7 @@ function Marqueedetail() {
         : handleCheck(lunchProps, reserveDate[0]?.dates?.Lunch);
     }
   };
-  console.log(data, "hhhjjjddddd");
   const handleVenueType = (e) => {
-    console.log(e, "target");
     if (e == "1") {
       setMeal("Lunch");
       addMarqueeData({ ...marqueeData, lunchType: "Lunch" });
@@ -181,23 +173,15 @@ function Marqueedetail() {
       ? handleVenueName(venueId, "Lunch")
       : handleVenueName(venueId, "Diner");
   };
-
   const datess = bookDates?.dates || [];
   useEffect(() => {
     if (!Array.isArray(datess)) {
       console.error("datess is not a valid array");
     } else {
       const formattedDates = datess.map((v, i) => v.toDate());
-      console.log(formattedDates, "format");
-
       setDates(formattedDates);
     }
   }, [datess.length]);
-
-  const disabledStyle = {
-    backgroundColor: "#f2f2f2", // Set your desired color for disabled dates
-    color: "#aaa", // Set your desired text color for disabled dates
-  };
   const handleDateRangeSelect = (newRange) => {
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
@@ -208,13 +192,19 @@ function Marqueedetail() {
       }
       if (!marqueeDates.from) {
         setMarqueeDates({ ...marqueeDates, from: newRange });
-      } else if (marqueeDates.from && !marqueeDates.to) {
+      } else if (marqueeDates.from !== null && !marqueeDates.to) {
         const date = days.filter(
-          (element) => element >= marqueeDates?.from && element <= newRange
+          (element) => {
+            // Ensure marqueeDates.from is not null before using it
+            if (marqueeDates.from !== null) {
+              return element >= marqueeDates.from && element <= newRange;
+            }
+            return false; // Handle the case when marqueeDates.from is null
+          }
         );
         if (date.length > 0) {
           alert("you can not selet this date");
-          setMarqueeDates([]);
+          setMarqueeDates({ from: null, to: null });
         }else{
          setMarqueeDates({ ...marqueeDates, to: newRange});
         }
@@ -226,11 +216,9 @@ function Marqueedetail() {
   const handleNumberOfPeople = (e) => {
     const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
     setNumberOfPeople(sanitizedValue);
-    // setNumberOfPeople(e.target.value);
   };
   const preventNonNumericInput = (e) => {
     const input = e.key;
-    // Allow only numeric characters (0-9)
     if (!/[0-9]/.test(input)) {
       e.preventDefault();
     }
@@ -240,29 +228,20 @@ function Marqueedetail() {
       const isDisabled = numberOfPeople.length
         ? numberOfPeople < capacity.maxCapacity
         : true;
-      // const isDisabled = numberOfPeople.length ? numberOfPeople > capacity.minCapacity && numberOfPeople < capacity.maxCapacity : true;
       if (isDisabled) {
         return { ...capacity, disabled: false };
       } else {
         return { ...capacity, disabled: true };
       }
     });
-    console.log(updatedData, "updatedDataupdatedData");
     addMarqueeVenueNames(updatedData);
     getMarqueeImage({ ...marqueeImage, numberOfPeople: numberOfPeople });
   };
-  const handleMouseEnter = (date) => {
-    console.log(date, "datsseff");
-  };
-  
-   
-    
   const center = {
     lat: marqueeData?.data?.locations?.lat,
     lng: marqueeData?.data?.locations?.lng,   
   };
   const isDateDisabled = (date) => {
-    // Disable dates before today
     return isBefore(date, startOfToday());
   };
   const bookedStyle = { border: "2px solid currentColor" };
@@ -373,7 +352,7 @@ function Marqueedetail() {
                             }}
                           >
                             {data?.services?.map((item, index) => (
-                              <div className={`flex`}>
+                              <div className={`flex`} key={index}>
                                 <Image
                                   src={click}
                                   alt="Chair"
@@ -432,7 +411,6 @@ function Marqueedetail() {
                               ?.label,
                         }}
                         style={{
-                          // width: 210,
                           marginBottom: 20,
                           borderRadius: 10,
                         }}
@@ -441,12 +419,12 @@ function Marqueedetail() {
                         placement="bottomLeft"
                         optionFilterProp="children"
                         filterOption={(input, option) =>
-                          (option?.label ?? "").includes(input)
+                          String((option?.label ?? "")) .includes(input)
                         }
                         filterSort={(optionA, optionB) =>
-                          (optionA?.label ?? "")
+                          String((optionA?.label ?? ""))  
                             .toLowerCase()
-                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                            .localeCompare(String((optionB?.label ?? "")).toLowerCase())
                         }
                         onChange={(e) => handleVenueName(e)}
                         options={marqueeVenueNames}
@@ -463,7 +441,6 @@ function Marqueedetail() {
                       <Select
                         showSearch
                         style={{
-                          // width: 210,
                           marginBottom: 20,
                           borderRadius: 10,
                         }}
@@ -473,17 +450,16 @@ function Marqueedetail() {
                         placement="bottomLeft"
                         optionFilterProp="children"
                         filterOption={(input, option) =>
-                          (option?.label ?? "").includes(input)
+                        String((option?.label ?? ""))  .includes(input)
                         }
                         filterSort={(optionA, optionB) =>
-                          (optionA?.label ?? "")
+                          String((optionA?.label ?? ""))   
                             .toLowerCase()
-                            .localeCompare((optionB?.label ?? "").toLowerCase())
+                            .localeCompare( String((optionB?.label ?? "")) .toLowerCase())
                         }
                         onChange={(e) => handleVenueType(e)}
                         options={mealType}
                         value={meal}
-                        // className="w-[295px] md:w-[210px]"
                       />
                     </Space>
                   </div>
@@ -507,10 +483,6 @@ function Marqueedetail() {
                         modifiersStyles={{ booked: bookedStyle }}
                         selected={marqueeDates}
                         onDayClick={handleDateRangeSelect}
-                        // onSelect={handleDateRangeSelect}
-                        // modifiers={{
-                        //   disabled: (date) => isDateDisabled(date),
-                        // }}
                       />
                     </div>
                   </div>
@@ -535,9 +507,7 @@ function Marqueedetail() {
                   numberOfPeople.length ? "bg-lightPrimary" : "bg-bgColor"
                 } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor`}
               >
-                {/* <NextLink href={`/pages/details?id=${data?.userId}`} passHref> */}
                 <div>{loading ? <Loader /> : " Book Now"}</div>
-                {/* </NextLink> */}
               </div>
             )}
             <img

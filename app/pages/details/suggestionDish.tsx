@@ -12,7 +12,7 @@ function SuggestionDish({
   AddDish,
   clickedItems,
   index,
-  setClickedItems,
+  key,
   searchIndex,
   setSearchIndex,
 }) {

@@ -24,11 +24,9 @@ import facilites from "../../assets/images/facilites.svg";
 import "./style.css";
 import { doc, setDoc } from "firebase/firestore";
 function Preview({
-  sendData,
   setSuccessPage,
   openMessage,
   userInformation,
-  checkData,
   marqueeId,
   selectedMenu,
   setSlider
@@ -44,7 +42,7 @@ console.log(selectedMenu,"marqueeImagessssssss")
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
-      const tempArray = response.docs.map((doc) => doc.data());
+      const tempArray :any = response.docs.map((doc) => doc.data());
       setBlogs(tempArray);
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -94,7 +92,7 @@ console.log(userInformation,"userInformation")
   let a = parseInt(userInformation?.Heating);
 
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
+    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(
       undefined,
       options
@@ -102,7 +100,7 @@ console.log(userInformation,"userInformation")
     const dateParts = formattedDate.split(" ");
 
     let day = dateParts[1];
-    if (day.length === 1) {
+    if (day?.length === 1) {
       day = `0${day}`;
     }
 

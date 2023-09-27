@@ -3,7 +3,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { db } from "@/app/firebase";
-// import { collection, getDocs } from "firebase/firestore";
 import { Input } from "antd";
 import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
@@ -19,12 +18,7 @@ import Footer from "@/app/component/footer";
 import Image from "next/image";
 import "react-day-picker/dist/style.css";
 import "./style.css";
-import { collection, query, where, getDocs, or, and } from "firebase/firestore";
-import { Filter } from "firebase";
-
-import setSeconds from "date-fns/esm/setSeconds";
-const pastMonth = new Date();
-
+import { collection, getDocs } from "firebase/firestore";
 function Marquee() {
   const [sliderValue, setSliderValue] = useState(0);
   const [userData, setUserData] = useState([]);
@@ -46,7 +40,6 @@ function Marquee() {
     price: "",
     services: [],
   });
-
   useEffect(() => {
     const dates = getFormatDates([marqueeDates]);
     const startDate = new Date(dates[0]?.from);
@@ -72,39 +65,32 @@ function Marquee() {
       bookDateSnapshot.forEach((doc) => {
         bookDateArr.push({ id: doc.id, data: doc.data() });
       });
-
-
-
-      marquee(VenueArr,dataArr)
-
-     
-
-
+      marquee(VenueArr, dataArr);
       setVenuesPrice(VenueArr);
       setUserData(dataArr);
       setBookDate(bookDateArr);
     };
     getUser();
   }, []);
-  const marquee=(VenueArr,dataArr)=>{
+  const marquee = (VenueArr, dataArr) => {
     let arr = [];
-      dataArr.map((item) => {
-        VenueArr.map((item1) => {
-          if (item.data.userId.includes(item1.data.userId)) {
-            if (!arr.includes(item)) {
-              arr.push(item);
-            }
+    dataArr.map((item) => {
+      VenueArr.map((item1) => {
+        if (item.data.userId.includes(item1.data.userId)) {
+          if (!arr.includes(item)) {
+            arr.push(item);
           }
-        });
+        }
       });
-      if (arr.length) {
-        setFilterMarqueeWithPrice(arr);
-        setShowMessage(true);
-      } else {
-        setShowMessage(false);
-        setFilterMarqueeWithPrice([]);
-      }
-  }
+    });
+    if (arr.length) {
+      setFilterMarqueeWithPrice(arr);
+      setShowMessage(true);
+    } else {
+      setShowMessage(false);
+      setFilterMarqueeWithPrice([]);
+    }
+  };
   const handleDateRangeSelect = (newRange) => {
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
@@ -125,7 +111,6 @@ function Marquee() {
   };
   function filterDataByDates(data, marqueeDates = {}) {
     const { from, to } = marqueeDates;
-  
     if (from || to) {
       data = data.filter((item) => {
         const eventDates = item.data.dates;
@@ -135,14 +120,11 @@ function Marquee() {
           const eventDateObjects = getFormatDates(flattenedDates);
           const fromISOString = from?.toISOString();
           const toISOString = to?.toISOString();
-  
-          // Check if any event date matches the from or to date
           const dateMatches = eventDateObjects.some(
             (date) =>
               date.toISOString() === fromISOString ||
               date.toISOString() === toISOString
           );
-  
           return !dateMatches;
         } else {
           console.log("item.data.dates is undefined or null");
@@ -150,7 +132,6 @@ function Marquee() {
         }
       });
     }
-  
     return data;
   }
   const handleFilterData = async () => {
@@ -159,52 +140,9 @@ function Marquee() {
       filterData.capacity !== "" ? Number(filterData.capacity) : 0;
     const maxPrice = filterData.price !== "" ? Number(filterData.price) : 0;
     const requiredServices = filterData.services;
-
-      if (marqueeDates.from || marqueeDates.to) {
-
-        data= filterDataByDates(data, marqueeDates);
-
-        // data = data.filter((item) => {
-        //   let eventDates = item.data.dates;
-        //   if (eventDates) {
-        //     const dateArrays = Object.values(eventDates);
-        //     const flattenedDates = [].concat(...dateArrays);
-        //     const eventDateObjects = getFormatDates(flattenedDates);
-        //     const fromISOString = marqueeDates.from?.toISOString();
-        //     const toISOString = marqueeDates.to?.toISOString();
-      
-        //     // Check if any event date matches the from or to date
-        //     const dateMatches = eventDateObjects.some(
-        //       (date) =>
-        //         date.toISOString() === fromISOString ||
-        //         date.toISOString() === toISOString
-        //     );
-      
-        //     return !dateMatches;
-        //   } else {
-        //     console.log("item.data.dates is undefined or null");
-        //     return false;
-        //   }
-        // });
-      }
-
-
-      // data = data.filter((item) => {
-      //   let eventDates = item.data.dates;
-      //   if (eventDates) {
-      //     Object.keys(eventDates).forEach((key) => {
-      //       const datessss = getFormatDates(eventDates[key]); 
-      //       console.log(datessss,"datessss",marqueeDates)
-      //       const filtered =datessss.filter(i => (i?.toISOString() !=marqueeDates.from?.toISOString()) && (i?.toISOString() != marqueeDates.to?.toISOString()));
-      //       console.log("filtered=====",filtered)
-      //     });
-      //   return true;
-      //   } else {
-      //     console.log("item.data.dates is undefined or null");
-      //   }
-      // });
-      // console.log(data,"datadatadata")
-   
+    if (marqueeDates.from || marqueeDates.to) {
+      data = filterDataByDates(data, marqueeDates);
+    }
     if (filterData.capacity != "") {
       data = data.filter((item) => minCapacity >= item?.data?.maxCapacity);
     }
@@ -228,7 +166,6 @@ function Marquee() {
         }
       });
     });
-    console.log(arr,"arrarr",userData)
     const datas = arr.length ? arr : userData;
     const branch = datas.filter((item) => {
       if (
@@ -241,10 +178,10 @@ function Marquee() {
           lng: item.data.locations.lng,
         };
         if (isWithinRange(coordinates, itemCoordinates, 1)) {
-          console.log("true")
+          console.log("true");
           return true;
         } else {
-          console.log("false")
+          console.log("false");
 
           return false;
         }
@@ -252,8 +189,12 @@ function Marquee() {
         return false;
       }
     });
-    console.log(branch,"branchbranch",arr)
-    if (filterData.capacity || filterData.price || filterData.services.length || (marqueeDates.from && marqueeDates.to)) {
+    if (
+      filterData.capacity ||
+      filterData.price ||
+      filterData.services.length ||
+      (marqueeDates.from && marqueeDates.to)
+    ) {
       if (arr.length) {
         setFilterMarqueeWithPrice(arr);
         setShowMessage(true);
@@ -263,12 +204,12 @@ function Marquee() {
       }
     } else {
       setFilterMarqueeWithPrice([]);
-      marquee(venuesPrice,userData)
+      marquee(venuesPrice, userData);
     }
     if (branch.length) {
       setShowMessage(true);
       setFilterMarqueeWithPrice(branch);
-    }else if( !branch.length && (coordinates.lat && coordinates.lng)){
+    } else if (!branch.length && coordinates.lat && coordinates.lng) {
       setShowMessage(false);
     }
   };
@@ -280,46 +221,7 @@ function Marquee() {
     const price = Number(event.target.value);
     setFilterData({ ...filterData, price: price });
   };
-  const handlePrice = (value) => {
-    const filteredVenues = venuesPrice.filter((item) => {
-      if (checkedServices.length) {
-        const result = [];
-        checkedServices.forEach((value) => {
-          if (item?.data?.services?.includes(value)) {
-            result.push(value);
-          }
-        });
-        return result.length && value <= item?.data?.price;
-      } else {
-        return value <= item?.data?.price;
-      }
-    });
-    let arr = [];
-    const data = controlPrice.length ? controlPrice : userData;
-    data.map((item) => {
-      filteredVenues.map((item1) => {
-        if (item.data.userId.includes(item1.data.userId)) {
-          if (!arr.includes(item)) {
-            arr.push(item);
-          }
-        }
-      });
-    });
-
-    if (arr.length) {
-      setFilterMarqueeWithPrice(arr);
-      setFilteredVenuesPrice(arr);
-      setServices(arr);
-      setShowMessage(true);
-    } else {
-      setShowMessage(false);
-      setFilterMarqueeWithPrice(arr);
-      setFilteredVenuesPrice(arr);
-    }
-  };
- console.log(coordinates,"coordinates")
   let footer = <p className="text-textColor font-poppins ">Select Date</p>;
-
   if (marqueeDates?.from) {
     if (!marqueeDates.to) {
       footer = <p>{format(marqueeDates.from, "PPP")}</p>;
@@ -335,19 +237,14 @@ function Marquee() {
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
     setFilterData({ ...filterData, services: checkedValues });
   };
-
   const isWithinRange = (coord1, coord2, range) => {
-
-
     const distance = Math.sqrt(
       Math.pow(coord1.lat - coord2.lat, 2) +
         Math.pow(coord1.lng - coord2.lng, 2)
     );
     return distance <= range;
   };
-
   const handleSelect = async (value) => {
-
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
@@ -377,10 +274,10 @@ function Marquee() {
       price: "",
       services: [],
     });
-    setCoordinates({})
-    setMarqueeDates({ from: null, to: null })
+    setCoordinates({});
+    setMarqueeDates({ from: null, to: null });
     setFilterMarqueeWithPrice([]);
-    marquee(venuesPrice,userData)
+    marquee(venuesPrice, userData);
   };
 
   return (
@@ -413,7 +310,6 @@ function Marquee() {
                   />
                 </div>
               </div>
-
               <Input
                 type="text"
                 placeholder="Maximum capacity"
@@ -432,7 +328,6 @@ function Marquee() {
                 }}
               />
             </div>
-
             <div>
               <h1 className="font-poppins text-xl text-textColor font-semibold  my-6">
                 Price
@@ -450,7 +345,6 @@ function Marquee() {
                 Slider Value: {filterData?.price}
               </p>
             </div>
-
             <div>
               <h1 className="font-poppins font-semibold text-xl my-9 text-textColor">
                 Additional Services
@@ -477,7 +371,6 @@ function Marquee() {
               </button>
             </div>
           </div>
-
           <div className="w-full  lg:w-[75%]">
             {showMessage ? (
               (filterMarqueeWithPrice.length
@@ -507,14 +400,6 @@ function Marquee() {
         onCancel={() => setIsModalOpen((pre) => !pre)}
         footer={null}
       >
-        {/* <DayPicker
-          id="test"
-          mode="range"
-          defaultMonth={pastMonth}
-          selected={range}
-          footer={footer}
-          onSelect={setRange}
-        /> */}
         <DayPicker
           className={`w-[100%] customClasses2 customClasses3`}
           selected={marqueeDates}

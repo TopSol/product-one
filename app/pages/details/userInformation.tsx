@@ -6,23 +6,13 @@ import TextArea from "antd/es/input/TextArea";
 import { Input, Checkbox, Radio, Select, Form } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import "react-phone-number-input/style.css";
-import { log } from "util";
-import { userInfo } from "os";
-
 function UserInformation({
   setSlider,
-  selectedHall,
   setUser,
   user,
   setSelectedOption,
   selectedOption,
   setUserInformation,
-  chooseMenu,
-  checkData,
-  preview,
-  setInputs,
-  inputs,
-  setStep,
 }) {
   const [value, setValue] = useState();
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
