@@ -1,3 +1,4 @@
+
 .combinedClasses .rdp-months {
     background-color: #f5f5f5;
     margin-top: -5px;
@@ -13,19 +14,15 @@
     width: 97%;
 }
 
-/* .rdp .combinedClasses2 {
-    width: 96%;
-} */
-
 .combinedClasses .rdp-day_selected {
     background-color: orange;
     border-radius: 0;
 }
 
 
-.combinedClasses .rdp-button_reset {
+/* .combinedClasses .rdp-button_reset {
     margin: 2px 6px;
-}
+} */
 
 .combinedClasses .rdp-caption {
     padding-top: 10px;
@@ -53,9 +50,9 @@
     border-radius: 0;
 }
 
-.combinedClasses2 .rdp-button_reset {
+/* .combinedClasses2 .rdp-button_reset {
     margin: 2px 6px;
-}
+} */
 
 .combinedClasses-custom2 .rdp-caption {
     padding-top: 10px;
@@ -95,4 +92,15 @@
         margin: 0px 0px;
 
     }
+}
+
+@media only screen and (min-width: 1280px) {
+    .combinedClasses2 .rdp-button_reset {
+        margin: 2px 6px;
+    }
+    
+    .combinedClasses .rdp-button_reset {
+        margin: 2px 6px;
+    }
+    
 }

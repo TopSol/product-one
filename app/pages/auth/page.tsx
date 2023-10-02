@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { useRouter } from "next/navigation";
 import { useStore } from "../../../store";
-import { Input, Form } from "antd";
+import { Input, Form, message } from "antd";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import Link from "next/link";
@@ -53,8 +53,6 @@ function Login() {
   };
 
   const handleLogin = () => {
-    console.log("consile");
-    
     signInWithEmailAndPassword(auth, user.email, user.password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -66,8 +64,12 @@ function Login() {
         }
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        console.log("useruser", user);
+        if (!user.email || !user.password) {
+        } else {
+          message.error("Please Enter a valid Email or Password");
+          const errorCode = error.code;
+        }
       });
   };
 
@@ -75,16 +77,6 @@ function Login() {
     <div className=" h-[100vh] flex  justify-center items-center lg:flex lg:flex-row">
       <div className="w-full flex justify-center items-center  md:w-[50%] bg-white py-3   mx-auto    ">
         <Form
-          name="basic"
-          labelCol={{
-            span: 8,
-          }}
-          wrapperCol={{
-            span: 16,
-          }}
-          style={{
-            maxWidth: 600,
-          }}
           initialValues={{
             remember: true,
           }}
@@ -99,7 +91,7 @@ function Login() {
               Login Now
             </h1>
             <div className="flex flex-col items-start relative mb-5">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1">Email</b>
               </div>
               <Form.Item
@@ -108,13 +100,13 @@ function Login() {
                   {
                     type: "email",
                     required: true,
-                    message: "Please input your Email/Phone!",
+                    message: "Please Fillout Your Email's Input!",
                   },
                 ]}
               >
                 <Input
-                  className="border outline-none md:max-lg:w-[400px] lg:w-[500px] z-10 w-72  py-4 mb-3 flex justify-center text-xs relative"
-                  placeholder="Type Your Email / Phone"
+                  className="border outline-none md:max-lg:w-[400px] lg:w-[500px] z-10 w-72  py-5 mb-3 flex justify-center text-xs relative"
+                  placeholder="Type Your Email Here"
                   type="email"
                   name="email"
                   value={user.email}
@@ -123,7 +115,7 @@ function Login() {
               </Form.Item>
             </div>
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px]  rounded-3xs bg-white w-[83.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px]  rounded-3xs bg-white w-[83.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <b className="absolute leading-[100%] z-20 pt-1">Password</b>
               </div>
               <Form.Item
@@ -131,13 +123,13 @@ function Login() {
                 rules={[
                   {
                     required: true,
-                    message: "Please input your password!",
+                    message: "Please Fillout Your Password's Input !",
                   },
                 ]}
               >
                 <Input
-                 className="border outline-none md:max-lg:w-[400px] lg:w-[500px] z-10 w-72  py-4 mb-3 flex justify-center text-xs relative"
-                  placeholder="Type Your Password"
+                  className="border outline-none md:max-lg:w-[400px] lg:w-[500px] z-10 w-72  py-5 mb-3 flex justify-center text-xs relative"
+                  placeholder="Type Your Password Here"
                   type="password"
                   name="password"
                   value={user.password}
@@ -163,7 +155,9 @@ function Login() {
               className=" text-[#006CE1] ml-2 font-semibold"
               href="/pages/registration"
             >
-              <div className="text-primary sm:text-xl sm:text-primary">Register Now</div>
+              <div className="text-primary sm:text-xl sm:text-primary">
+                Register Now
+              </div>
             </Link>
           </p>
         </Form>

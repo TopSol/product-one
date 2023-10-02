@@ -59,12 +59,29 @@
     display: flex;
     justify-content: start;
 }
-
 .customClasses2 .rdp-caption {
     padding-left: 10px;
     padding-top: 20px;
 }
 
+.customClasses3.rdp-button_reset {
+    margin: 3px 8px;
+}
+.customClasses3.rdp-button_reset {
+    margin: 3px 8px;
+}
+
+.customClasses3 .rdp-months{
+    /* margin: auto; */
+    display: flex !important ;
+    /* align-items: center !important; */
+    justify-content: center !important;
+    border-radius: 8px;
+}
+.customClasses3.rdp-caption {
+    padding-left: 10px;
+    padding-top: 20px;
+}
 @media (max-width: 500px) {
     .customClasses2 .rdp-button_reset {
         margin: 5px 0px;

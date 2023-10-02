@@ -4,20 +4,20 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
 import { Radio, Select, Space } from "antd";
-import {
-  faAngleDown,
-  faLocationDot,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown,faLocationDot,faStar,} from "@fortawesome/free-solid-svg-icons";
 import { DayPicker } from "react-day-picker";
 import { getFormatDates } from "@/app/utils";
 import { collection, getDocs } from "firebase/firestore";
 import { useStore } from "@/store";
-import NextLink from "next/link";
-import "react-day-picker/dist/style.css";
 import { useRouter } from "next/navigation";
+import "react-day-picker/dist/style.css";
 function MarqueeDetails({ item, showMessage }) {
-  const { addMarqueeVenueNames, addMarqueeVenueDates ,addMarqueeData,addBookedDates} = useStore();
+  const {
+    addMarqueeVenueNames,
+    addMarqueeVenueDates,
+    addMarqueeData,
+    addBookedDates,
+  } = useStore();
   const [open, setOpen] = useState({});
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
@@ -31,7 +31,7 @@ function MarqueeDetails({ item, showMessage }) {
   const [value, setValue] = useState("1");
   const [venueId, setVenueId] = useState();
   const [marqueeDates, setMarqueeDates] = useState({ from: null, to: null });
-  const router=useRouter()
+  const router = useRouter();
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
@@ -52,8 +52,8 @@ function MarqueeDetails({ item, showMessage }) {
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
-      minCapacity:item?.data?.minCapacity,  
-      maxCapacity:item?.data?.maxCapacity,
+      minCapacity: item?.data?.minCapacity,
+      maxCapacity: item?.data?.maxCapacity,
       disabled: false,
     }));
     addMarqueeVenueNames(marqueeVenueName);
@@ -67,8 +67,8 @@ function MarqueeDetails({ item, showMessage }) {
       value: item?.data?.venueId,
       label: item?.data?.name,
       disabled: false,
-      minCapacity:item?.data?.minCapacity,
-      maxCapacity:item?.data?.maxCapacity,
+      minCapacity: item?.data?.minCapacity,
+      maxCapacity: item?.data?.maxCapacity,
     }));
     addMarqueeVenueNames(marqueeVenueName);
     setName(marqueeVenueName);
@@ -155,8 +155,8 @@ function MarqueeDetails({ item, showMessage }) {
         if (date.length > 0) {
           alert("you can not selet this date");
           setMarqueeDates([]);
-        }else{
-         setMarqueeDates({ ...marqueeDates, to: newRange});
+        } else {
+          setMarqueeDates({ ...marqueeDates, to: newRange });
         }
       } else if (marqueeDates.from && marqueeDates.to) {
         setMarqueeDates({ from: newRange, to: null });
@@ -164,29 +164,27 @@ function MarqueeDetails({ item, showMessage }) {
     }
   };
   const bookedStyle = { border: "2px solid currentColor" };
-  const handleMarqueeDetails=(id)=>{
-    router.push (`/pages/marqueedetail?id=${id}`);
-  }
+  const handleMarqueeDetails = (id) => {
+    router.push(`/pages/marqueedetail?id=${id}`);
+  };
   return (
     <>
       <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
         <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
           <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
-            {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref> */}
-              <img
-                src={item?.data?.images?.[0]}
-                className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
-                alt=""
-                onClick={() => {
-                  venuesName(item?.id);
-                  getDates(item?.id);
-                  handleVenueName(name[0]?.value);
-                  addMarqueeData(item)
-                  handleMarqueeDetails(item?.id)
-                  addBookedDates(marqueeDates)
-                }}
-              />
-            {/* </NextLink> */}
+            <img
+              src={item?.data?.images?.[0]}
+              className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
+              alt=""
+              onClick={() => {
+                venuesName(item?.id);
+                getDates(item?.id);
+                handleVenueName(name[0]?.value);
+                addMarqueeData(item);
+                handleMarqueeDetails(item?.id);
+                addBookedDates(marqueeDates);
+              }}
+            />
           </div>
 
           <div className="w-[100%] bg-bgColor p-3 rounded-2xl mx-3 mt-5 lg:mt-0">
@@ -224,20 +222,17 @@ function MarqueeDetails({ item, showMessage }) {
                   <FontAwesomeIcon icon={faStar} />
                   <FontAwesomeIcon icon={faStar} />
                 </p>
-                {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}/${item?.data?.name}`} passHref> */}
-                {/* <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}`} passHref> */}
-                <NextLink href={`/pages/marqueedetail?id=${item?.id}&name=${item?.data?.name}&location=${ Object.values(item?.data?.locations)}`} passHref>
-                  <button
-                    onClick={() => {
-                      venuesName(item?.id);
-                      addMarqueeData(item)
-                      addBookedDates(marqueeDates)
-                    }}
-                    className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
-                  >
-                    Details
-                  </button>
-                </NextLink>
+                <button
+                  onClick={() => {
+                    venuesName(item?.id);
+                    addMarqueeData(item);
+                    addBookedDates(marqueeDates);
+                    handleMarqueeDetails(item?.id);
+                  }}
+                  className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
+                >
+                  Details
+                </button>
               </div>
 
               <div
@@ -258,34 +253,16 @@ function MarqueeDetails({ item, showMessage }) {
         </div>
         <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
           {open[item?.data?.id] && (
-            // <DayPicker
-            //   className={`${
-            //     isLunch == `Lunch` ? `customClasses` : `customClasses2`
-            //   }`}
-            //   style={{ width: "100%" }}
-            //   // mode="multiple"
-            //   disabled={days}
-            //   // min={1}
-            //   selected={days}
-            //   onSelect={setDays}
-            // />
-                   <DayPicker
-                        className={`${
-                          isLunch === `Lunch`
-                            ? `combinedClasses`
-                            : `combinedClasses2`
-                        } w-[100%]`}
-                        // mode="s"
-                        disabled={days}
-                        modifiers={{ booked: days }}
-                        modifiersStyles={{ booked: bookedStyle }}
-                        selected={marqueeDates}
-                        onDayClick={handleDateRangeSelect}
-                        // onSelect={handleDateRangeSelect}
-                        // modifiers={{
-                        //   disabled: (date) => isDateDisabled(date),
-                        // }}
-                      />
+            <DayPicker
+              className={`${
+                isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
+              } w-[100%]`}
+              disabled={days}
+              modifiers={{ booked: days }}
+              modifiersStyles={{ booked: bookedStyle }}
+              selected={marqueeDates}
+              onDayClick={handleDateRangeSelect}
+            />
           )}
           {open[item?.data?.id] && (
             <div className="w-full  p-5">
@@ -384,17 +361,6 @@ function MarqueeDetails({ item, showMessage }) {
                     Diner
                   </label>
                 </div>
-                {/* <Radio.Group name="radiogroup" defaultValue={1}>
-                  <Space direction="vertical">
-                    <Radio
-                    onChange={(e) => {
-                      setValue(e.target.value);
-                    }}
-                    value={value}
-                  >A</Radio>
-                    <Radio value={2}>B</Radio>
-                  </Space>
-                </Radio.Group> */}
               </div>
             </div>
           )}

@@ -3,11 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useStore } from "@/store";
 const EventTitle = ({ lunchType,selectedDate,date,selectedVenue,deleteDates })=> {
-  console.log("selectedDate",selectedDate)
   const { addDateKey, lunchDinner } = useStore();
   const da=selectedDate.filter(item=>(item.date===date))
-  console.log(selectedDate,"selectedDate")
-  console.log(lunchDinner?.[selectedVenue]?.[lunchType],"lunchDinner")
   return (
     <>
       <div

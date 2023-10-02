@@ -21,6 +21,7 @@ import "./style.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 import "react-phone-number-input/style.css";
+import { type } from "os";
 
 const initialValue = {
   fullName: "",
@@ -34,6 +35,7 @@ const initialValue = {
 };
 
 function details() {
+ 
   const [details, setDetails] = useState(initialValue);
   const [modalOpen, setModalOpen] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
@@ -154,13 +156,15 @@ function details() {
     };
   }, []);
 
+ 
+
   const handleImageDiemension = async (e) => {
     let images = e.target.files;
     setImage({
       id: 0,
       img: URL.createObjectURL(images?.[0])
     });
-    const validImages = [];
+    const validImages:any = [];
     try {
       await Promise.all(
         Object.values(images).map(async (image, index) => {
@@ -173,7 +177,7 @@ function details() {
                 validImages.push({
                   id: index,
                   file: image,
-                })
+                }  )
                 
               } else {
                 message.warning("Image dimensions are not valid.");
@@ -643,6 +647,3 @@ function details() {
   );
 }
 export default details;
-
-
-

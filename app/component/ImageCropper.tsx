@@ -1,8 +1,16 @@
-  "use client";
+"use client";
   import React, { createRef } from "react";
   import Cropper, { ReactCropperElement } from "react-cropper";
   import "cropperjs/dist/cropper.css";
   import "./cropStyle.css";
+
+  interface ImageCroperType {
+    image? : string | number,
+    setModal1Open: any,
+    setCropImage: any,
+    multipleImage:any,
+    setMultipleImage:any
+  }
 
   function ImageCroper({
     image,
@@ -10,7 +18,7 @@
     setCropImage,
     multipleImage,
     setMultipleImage,
-  }) {
+  }:ImageCroperType) {
     console.log(image, "multipleImage", multipleImage);
     const cropperRef = createRef<ReactCropperElement>();
     const getCropData = async () => {
