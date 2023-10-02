@@ -6,10 +6,10 @@ import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Breadcrumb, Input, Select, Space, Typography,message } from "antd";
+import { Breadcrumb, Input, Select, Space, Typography, message } from "antd";
 import { getFormatDates } from "@/app/utils";
 import { isBefore, startOfToday } from "date-fns";
-import Location from "./Location"
+import Location from "./Location";
 import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import ImageLightbox from "react-image-lightbox";
@@ -22,7 +22,7 @@ import chair from "../../assets/images/chair.svg";
 import click from "../../assets/images/click.svg";
 import Image from "next/image";
 import Link from "next/link";
-import { DocumentData } from 'firebase/firestore'; 
+import { DocumentData } from "firebase/firestore";
 interface VenueData {
   image: string[];
   name: string;
@@ -58,13 +58,18 @@ function Marqueedetail() {
   const [data, setData] = useState<DocumentData | VenueData | null>(null);
   const [isShow, setIsShow] = useState(false);
   // const [bookDates, setBookDates] = useState();
-  const [bookDates, setBookDates] = useState<DocumentData | undefined>(undefined);
+  const [bookDates, setBookDates] = useState<DocumentData | undefined>(
+    undefined
+  );
   const [dates, setDates] = useState<string[]>([]);
   const [days, setDays] = useState<any>([]);
-const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date | null }>({
-  from: null,
-  to: null,
-});
+  const [marqueeDates, setMarqueeDates] = useState<{
+    from: Date | null;
+    to: Date | null;
+  }>({
+    from: null,
+    to: null,
+  });
   const [otherDates, setOtherDates] = useState([]);
   const [venueId, setVenueId] = useState();
   const [loading, setLoading] = useState(false);
@@ -89,11 +94,9 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
   const marqueeName = searchParams.get("name");
   const location = searchParams.get("location");
   const handleButton = () => {
-    addBookedDates(marqueeDates); 
-    getMarqueeImage({...marqueeImage,numberOfPeople:numberOfPeople})
-    router.push(
-      `/pages/details?id=${data?.userId}`
-    );
+    addBookedDates(marqueeDates);
+    getMarqueeImage({ ...marqueeImage, numberOfPeople: numberOfPeople });
+    router.push(`/pages/details?id=${data?.userId}`);
   };
   const getCollection = async (id) => {
     try {
@@ -114,8 +117,8 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
       handleVenueName(marqueeVenueNames[marqueeVenueNames.length - 1]?.value);
     }
     const center = {
-      lat: marqueeData?.data?.locations?.lat, 
-      lng: marqueeData?.data?.locations?.lng,   
+      lat: marqueeData?.data?.locations?.lat,
+      lng: marqueeData?.data?.locations?.lng,
     };
     addMarqueeData({ ...marqueeData, lunchType: meal });
   }, [id]);
@@ -139,6 +142,10 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
         const abc = docSnap.data();
         setData(abc);
         getMarqueeImage(abc);
+        setMarqueeDates({
+          from: null,
+          to: null,
+        });
       } else {
         console.log("No such document!");
       }
@@ -165,9 +172,17 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
     if (e == "1") {
       setMeal("Lunch");
       addMarqueeData({ ...marqueeData, lunchType: "Lunch" });
+      setMarqueeDates({
+        from: null,
+        to: null,
+      });
     } else {
       setMeal("Diner");
       addMarqueeData({ ...marqueeData, lunchType: "Diner" });
+      setMarqueeDates({
+        from: null,
+        to: null,
+      });
     }
     e == "1"
       ? handleVenueName(venueId, "Lunch")
@@ -193,20 +208,18 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
       if (!marqueeDates.from) {
         setMarqueeDates({ ...marqueeDates, from: newRange });
       } else if (marqueeDates.from !== null && !marqueeDates.to) {
-        const date = days.filter(
-          (element) => {
-            // Ensure marqueeDates.from is not null before using it
-            if (marqueeDates.from !== null) {
-              return element >= marqueeDates.from && element <= newRange;
-            }
-            return false; // Handle the case when marqueeDates.from is null
+        const date = days.filter((element) => {
+          // Ensure marqueeDates.from is not null before using it
+          if (marqueeDates.from !== null) {
+            return element >= marqueeDates.from && element <= newRange;
           }
-        );
+          return false; // Handle the case when marqueeDates.from is null
+        });
         if (date.length > 0) {
           message.error("you can not select this date");
           setMarqueeDates({ from: null, to: null });
-        }else{
-         setMarqueeDates({ ...marqueeDates, to: newRange});
+        } else {
+          setMarqueeDates({ ...marqueeDates, to: newRange });
         }
       } else if (marqueeDates.from && marqueeDates.to) {
         setMarqueeDates({ from: newRange, to: null });
@@ -236,10 +249,14 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
     });
     addMarqueeVenueNames(updatedData);
     getMarqueeImage({ ...marqueeImage, numberOfPeople: numberOfPeople });
+    setMarqueeDates({
+      from: null,
+      to: null,
+    });
   };
   const center = {
     lat: marqueeData?.data?.locations?.lat,
-    lng: marqueeData?.data?.locations?.lng,   
+    lng: marqueeData?.data?.locations?.lng,
   };
   const isDateDisabled = (date) => {
     return isBefore(date, startOfToday());
@@ -370,9 +387,7 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
                   </div>
                 </div>
                 <div className="mt-5">
-                <Location
-                 center={center}
-                />
+                  <Location center={center} />
                 </div>
               </>
             )}
@@ -396,7 +411,7 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
                 </Space>
                 <div className="flex justify-between flex-col 2xl:flex-row  ">
                   <div className="2xl:w-[200px] ">
-                    <Space direction="vertical" style={{ width: '100%' }} >
+                    <Space direction="vertical" style={{ width: "100%" }}>
                       <Typography.Text className="text-primaryColor text-lg  font-poppins">
                         Select Hall
                       </Typography.Text>
@@ -413,85 +428,95 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
                         style={{
                           marginBottom: 20,
                           borderRadius: 10,
-                          width: '100%'
+                          width: "100%",
                         }}
                         placeholder="Search to Select"
                         size="large"
                         placement="bottomLeft"
                         optionFilterProp="children"
                         filterOption={(input, option) =>
-                          String((option?.label ?? "")) .includes(input)
+                          String(option?.label ?? "").includes(input)
                         }
                         filterSort={(optionA, optionB) =>
-                          String((optionA?.label ?? ""))  
+                          String(optionA?.label ?? "")
                             .toLowerCase()
-                            .localeCompare(String((optionB?.label ?? "")).toLowerCase())
+                            .localeCompare(
+                              String(optionB?.label ?? "").toLowerCase()
+                            )
                         }
                         onChange={(e) => handleVenueName(e)}
                         options={marqueeVenueNames}
                       />
                     </Space>
+                    {!shouldShowDiv && (
+                      <div>
+                        <p className="text-red-600 mb-4"></p>
+                      </div>
+                    )}
                   </div>
-                  <div  className="2xl:w-[200px] ">
-                    <Space direction="vertical" style={{ width: '100%' }} >
-                      <Typography.Text className="text-primaryColor text-lg font-poppins">
-                        {/* Select Lunch Type */}
-                        Event Time
-                      </Typography.Text>
-                      <Select
-                        showSearch
-                        style={{
-                          marginBottom: 20,
-                          borderRadius: 10,
-                          width: '100%'
-                        }}
-                        className="mr-[6px] lg:mr-0 md:w-[50%]"
-                        placeholder="Search to Select"
-                        size="large"
-                        placement="bottomLeft"
-                        optionFilterProp="children"
-                        filterOption={(input, option) =>
-                        String((option?.label ?? ""))  .includes(input)
-                        }
-                        filterSort={(optionA, optionB) =>
-                          String((optionA?.label ?? ""))   
-                            .toLowerCase()
-                            .localeCompare( String((optionB?.label ?? "")) .toLowerCase())
-                        }
-                        onChange={(e) => handleVenueType(e)}
-                        options={mealType}
-                        value={meal}
-                      />
-                    </Space>
-                  </div>
+                  {shouldShowDiv && (
+                    <>
+                      <div className="2xl:w-[200px] ">
+                        <Space direction="vertical" style={{ width: "100%" }}>
+                          <Typography.Text className="text-primaryColor text-lg font-poppins">
+                            {/* Select Lunch Type */}
+                            Event Time
+                          </Typography.Text>
+                          <Select
+                            showSearch
+                            style={{
+                              marginBottom: 20,
+                              borderRadius: 10,
+                              width: "100%",
+                            }}
+                            className="mr-[6px] lg:mr-0 md:w-[50%]"
+                            placeholder="Search to Select"
+                            size="large"
+                            placement="bottomLeft"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              String(option?.label ?? "").includes(input)
+                            }
+                            filterSort={(optionA, optionB) =>
+                              String(optionA?.label ?? "")
+                                .toLowerCase()
+                                .localeCompare(
+                                  String(optionB?.label ?? "").toLowerCase()
+                                )
+                            }
+                            onChange={(e) => handleVenueType(e)}
+                            options={mealType}
+                            value={meal}
+                          />
+                        </Space>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div>
-                {shouldShowDiv ? (
-                  <div className="">
-                    <div onClick={() => setIsShow(true)}>
-                      <Typography.Text className="text-primaryColor text-lg  font-poppins">
-                        Select Date
-                      </Typography.Text>
-                      <DayPicker
-                        className={`${
-                          isLunch === `Lunch`
-                            ? `combinedClasses`
-                            : `combinedClasses2`
-                        } w-[100%]`}
-                        disabled={days}
-                        modifiers={{ booked: days }}
-                        modifiersStyles={{ booked: bookedStyle }}
-                        selected={marqueeDates}
-                        onDayClick={handleDateRangeSelect}
-                      />
+                {shouldShowDiv && (
+                  <>
+                    <div className="">
+                      <div onClick={() => setIsShow(true)}>
+                        <Typography.Text className="text-primaryColor text-lg  font-poppins">
+                          Select Date
+                        </Typography.Text>
+                        <DayPicker
+                          className={`${
+                            isLunch === `Lunch`
+                              ? `combinedClasses`
+                              : `combinedClasses2`
+                          } w-[100%]`}
+                          disabled={days}
+                          modifiers={{ booked: days }}
+                          modifiersStyles={{ booked: bookedStyle }}
+                          selected={marqueeDates}
+                          onDayClick={handleDateRangeSelect}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <p className="text-center text-red-700">
-                    {" "}
-                    Marquee not Found{" "}
-                  </p>
+                  </>
                 )}
               </div>
               <div className="flex items-center space-x-2  lg:mt-0 lg:mb-0">
