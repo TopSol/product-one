@@ -263,6 +263,7 @@ function Marqueedetail() {
   };
   const bookedStyle = { border: "2px solid currentColor" };
   const shouldShowDiv = marqueeVenueNames.some((item) => !item.disabled);
+  console.log(shouldShowDiv, "shouldShowDiv");
   return (
     <>
       <div>
@@ -410,7 +411,8 @@ function Marqueedetail() {
                   />
                 </Space>
                 <div className="flex justify-between flex-col 2xl:flex-row  ">
-                  <div className="2xl:w-[200px] ">
+                  {/* <div className={` ${!shouldShowDiv}? w-full : 2xl:w-[200px] `}> */}
+                  <div className={`2xl:w-[200px]`}>
                     <Space direction="vertical" style={{ width: "100%" }}>
                       <Typography.Text className="text-primaryColor text-lg  font-poppins">
                         Select Hall
@@ -450,7 +452,9 @@ function Marqueedetail() {
                     </Space>
                     {!shouldShowDiv && (
                       <div>
-                        <p className="text-red-600 mb-4"></p>
+                        <p className="text-red-600 mb-4 w-[450px]">
+                          No hall availabe for this number of Guest
+                        </p>
                       </div>
                     )}
                   </div>
