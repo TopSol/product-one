@@ -2,10 +2,14 @@ import React from "react";
 import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-export default function sideBar() {
+import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
+export default function sideBar({setShow}) {
   return (
     <div className="w-[300px] h-[100vh] lg:hidden bg-white absolute top-0">
-      <h1 className="text-center bg-gray-200 py-7 ">MENU</h1>
+      <div className="bg-gray-200 py-7 flex justify-between px-3 ">
+        <h1 className="text-center">MENU</h1> 
+       <FontAwesomeIcon icon={faBarsStaggered} size="xl" className=" h-7 text-[#DEB666] lg:hidden  " onClick={()=>setShow(pre=>!pre)} />
+      </div>
       <ul className="space-y-4 ">
         <li className="cursor-pointer ml-6 mt-5">
           <Link href="/">Home</Link>

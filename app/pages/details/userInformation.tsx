@@ -6,23 +6,13 @@ import TextArea from "antd/es/input/TextArea";
 import { Input, Checkbox, Radio, Select, Form } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import "react-phone-number-input/style.css";
-import { log } from "util";
-import { userInfo } from "os";
-
 function UserInformation({
   setSlider,
-  selectedHall,
   setUser,
   user,
   setSelectedOption,
   selectedOption,
   setUserInformation,
-  chooseMenu,
-  checkData,
-  preview,
-  setInputs,
-  inputs,
-  setStep,
 }) {
   const [value, setValue] = useState();
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
@@ -375,9 +365,9 @@ function UserInformation({
               </div>
             </div>
           </div>
-          <div className="flex justify-between px-10 ">
+          <div className="flex justify-between md:px-10 px-3 ">
             <button
-              className="border px-9 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
+              className="border  px-6 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
               onClick={() => setSlider(0)}
             >
               Previous

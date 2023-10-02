@@ -1,16 +1,14 @@
-
 import React, { useEffect } from "react";
 import { useState } from "react";
-import {  message } from "antd";
-import SuggestionDish from "./suggestionDish"
-import DishMenu from "./dishMenu"
+import { message } from "antd";
+import SuggestionDish from "./suggestionDish";
+import DishMenu from "./dishMenu";
 import { useStore } from "@/store";
 function ChooseMenu({
   setSlider,
   setSelectedMenu,
   preview,
   selectedMenu,
-  // dish,
   setNewData,
   newData,
   setMarqueeData,
@@ -21,31 +19,31 @@ function ChooseMenu({
 }) {
   const [suggestionDish, setSuggestionDish] = useState({});
   const [clickedItems, setClickedItems] = useState({});
-  const [searchIndex,setSearchIndex]=useState("")
-
-  const { hallInformation, bookedDates,marqueeImage,getMarqueeImage } = useStore();
+  const [searchIndex, setSearchIndex] = useState("");
+  const { hallInformation, bookedDates, marqueeImage, getMarqueeImage } =
+    useStore();
   useEffect(() => {
     setNewData(marqueeData);
   }, []);
-  const combinedData = marqueeData?.venues?.concat(marqueeData?.withoutVenueDish);
-
-  console.log(marqueeData,"marqueeDatamarqueeDatad")
+  const combinedData = marqueeData?.venues?.concat(
+    marqueeData?.withoutVenueDish
+  );
   const handleClick = (item, index) => {
     setClickedItems({});
     const array = marqueeData?.dish?.map((val, idx) => {
       if (idx === index) {
-        console.log(val,"jkjk")
-        const filter=combinedData.filter(item=> val?.dishes.includes(item?.name))
-          const nameAndPriceArrays = filter.map(item => ({
-            name: item.name,
-            price: item.price
-          }));
-          const venueDish ={
-            venueDish:nameAndPriceArrays,
-            perHead:val?.totalDiscount
-          }
-          console.log(venueDish,"venueDishss")
-        setSelectedMenu({...selectedMenu, venueDish });
+        const filter = combinedData.filter((item) =>
+          val?.dishes.includes(item?.name)
+        );
+        const nameAndPriceArrays = filter.map((item) => ({
+          name: item.name,
+          price: item.price,
+        }));
+        const venueDish = {
+          venueDish: nameAndPriceArrays,
+          perHead: val?.totalDiscount,
+        };
+        setSelectedMenu({ ...selectedMenu, venueDish });
         return { ...val, selected: true };
       } else {
         return { ...val, selected: false };
@@ -54,17 +52,23 @@ function ChooseMenu({
     setMarqueeData({ ...marqueeData, dish: array });
     const arr = newData?.dish?.map((val, idx) => {
       if (idx === index) {
-        const filter=combinedData.filter(item=> val?.dishes.includes(item?.name))
-          const nameAndPriceArrays = filter.map(item => ({
-            name: item.name,
-            price: item.price
-          }));
-          const venueDish ={
-            venueDish:nameAndPriceArrays,
-            perHead:val?.totalDiscount
-          }
-          setSelectedMenu({...selectedMenu, nameAndPriceArrays,perHead:val?.totalDiscount,name:val.name });
-        // setSelectedMenu(val);
+        const filter = combinedData.filter((item) =>
+          val?.dishes.includes(item?.name)
+        );
+        const nameAndPriceArrays = filter.map((item) => ({
+          name: item.name,
+          price: item.price,
+        }));
+        const venueDish = {
+          venueDish: nameAndPriceArrays,
+          perHead: val?.totalDiscount,
+        };
+        setSelectedMenu({
+          ...selectedMenu,
+          nameAndPriceArrays,
+          perHead: val?.totalDiscount,
+          name: val.name,
+        });
         return { ...val, selected: true };
       } else {
         return { ...val, selected: false };
@@ -87,7 +91,7 @@ function ChooseMenu({
   const venueDishes = marqueeData?.venues;
   const AddDish = (item, price) => {
     let updatedMarqueeData = { ...newData };
-    let Dishes = [];
+    let Dishes: string[] = [];
     let dishPrice = 0;
     if (updatedMarqueeData.dish && Array.isArray(updatedMarqueeData.dish)) {
       for (let val1 of updatedMarqueeData.dish) {
@@ -107,6 +111,7 @@ function ChooseMenu({
           break;
         }
       }
+      console.log(Dishes, "asdfasDish");
       updatedMarqueeData.dish = updatedMarqueeData.dish.map((val1) => {
         if (val1.selected && val1.dishes.length > 0) {
           setSelectedMenu({
@@ -114,17 +119,19 @@ function ChooseMenu({
             dishes: Dishes,
             totalDiscount: dishPrice,
           });
-          const filterData=combinedData.filter(item=> Dishes.includes(item?.name))
-          const nameAndPriceArray = filterData.map(item => ({
+          const filterData = combinedData.filter((item) =>
+            Dishes.includes(item?.name)
+          );
+          const nameAndPriceArray = filterData.map((item) => ({
             name: item.name,
-            price: item.price
+            price: item.price,
           }));
-        //  const updatedVenue={
-        //   nameAndPriceArray,
-        //   totalDiscount: dishPrice,
-        //  }
-          setSelectedMenu({...selectedMenu,nameAndPriceArray,totalDiscount: dishPrice,});
-          console.log(nameAndPriceArray,"nameAndPriceArray")
+
+          setSelectedMenu({
+            ...selectedMenu,
+            nameAndPriceArray,
+            totalDiscount: dishPrice,
+          });
           return {
             ...val1,
             dishes: Dishes,
@@ -138,71 +145,22 @@ function ChooseMenu({
       console.error("marqueeData.dish is missing or not an array");
     }
   };
-  const removeDish = (item, index) => {
-    let updatedMarqueeData = { ...marqueeData };
-    if (updatedMarqueeData.dish && Array.isArray(updatedMarqueeData.dish)) {
-      for (let val1 of updatedMarqueeData.dish) {
-        if (val1.selected && val1.dishes.length > 0) {
-          let Dishes = [...val1.dishes];
-          console.log(val1, "val1");
-          let dishPrice = val1.totalDiscount;
-          if (Dishes[index] === item) {
-            const priceList = suggestionDish?.filter(
-              (val) => val.name === Dishes[index]
-            );
-
-            if (priceList.length > 0) {
-              dishPrice = dishPrice - priceList[0].price;
-              Dishes.splice(index, 1);
-              updatedMarqueeData.dish = updatedMarqueeData.dish.map((val2) => {
-                if (val2.selected && val2.dishes.length > 0) {
-                  return {
-                    ...val2,
-                    dishes: Dishes,
-                    totalDiscount: dishPrice,
-                  };
-                }
-                return val2;
-              });
-              setMarqueeData(updatedMarqueeData);
-            }
-          }
-        }
-      }
-    } else {
-      console.error("marqueeData.dish is missing or not an array");
-    }
-  };
   const nextPage = () => {
     if (!selectCheck?.length)
       return message.warning(
         "Something went wrong please fillout all the fields"
       );
-     
-      console.log(combinedData,"combinedData")
     setSlider(1);
   };
 
   const renderDishes = (name) => {
-    let values = [];
     let price;
-    if (name == "DishName") {
-      newData?.dish?.forEach((val1) => {
-        val1.selected &&
-          val1.dishes.length > 0 &&
-          val1.dishes.map((item) => {
-            values.push(item);
-          });
-      });
-      return values;
-    } else {
-      newData?.dish?.forEach((val1) => {
-        if (val1.selected) {
-          price = val1.totalDiscount;
-        }
-      });
-      return price;
-    }
+    newData?.dish?.forEach((val1) => {
+      if (val1.selected) {
+        price = val1.totalDiscount;
+      }
+    });
+    return price;
   };
   const handleItemBackground = (name) => {
     const updatedClickedItems = { ...clickedItems };
@@ -220,50 +178,58 @@ function ChooseMenu({
           <p className="text-2xl py-5 md:px-16  mx-auto mb-3">Main Course</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor">
             {marqueeData?.dish?.map((item, index) => (
-              <DishMenu item={item}
-              handleClick={handleClick}
-              index={index}
-              selectCheck={selectCheck}
+              <DishMenu
+                item={item}
+                key={index}
+                handleClick={handleClick}
+                index={index}
+                selectCheck={selectCheck}
               />
-            )
-            )}
+            ))}
           </div>
           <div className="border w-1/2 border-primaryColor mx-auto my-10"></div>
           <p className="text-2xl py-5 md:px-16  mx-auto">Add One</p>
           <div className="">
             {Object.keys(suggestionDish).length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor rounded-md my-5 cursor-pointer">
-                {Object.keys(suggestionDish).map((item, index) => ( 
-                  <SuggestionDish 
-                  clickedItems={clickedItems}
-                  setClickedItems={setClickedItems}
-                  handleItemBackground={handleItemBackground}
-                  AddDish={AddDish}
-                  item={item}
-                  searchIndex={searchIndex}
-                  setSearchIndex={setSearchIndex}
-                  index={index}
-                  suggestionDish={suggestionDish}
+                {Object.keys(suggestionDish).map((item, index) => (
+                  <SuggestionDish
+                    key={index}
+                    clickedItems={clickedItems}
+                    handleItemBackground={handleItemBackground}
+                    AddDish={AddDish}
+                    item={item}
+                    searchIndex={searchIndex}
+                    setSearchIndex={setSearchIndex}
+                    index={index}
+                    suggestionDish={suggestionDish}
                   />
                 ))}
               </div>
             )}
           </div>
           <div className="fixed bottom-0 right-0 ">
-          <div className="flex  justify-between md:justify-end items-center space-x-2 font-semibold my-5 md:mr-16">
-            {renderDishes("price") && (
-              <>
-                <p>Total</p>
-                <div className="text-2xl px-3"> {renderDishes("price")} <span className="text-lg">PerPerson</span> </div>
-              </>
-            )}
-            <button
-              className="border w-32 py-2 bg-primaryColor hover:bg-hoverPrimary text-white  rounded-md"
-              onClick={() => nextPage()}
-            >
-              Next
-            </button>
-          </div>
+            <div className="flex  justify-between md:justify-end items-center space-x-2 font-semibold my-5 md:mr-16">
+              {renderDishes("price") && (
+                <>
+                  <p>Total</p>
+                  <div className="text-lg px-3 flex items-center">
+                    {" "}
+                    <span className="text-sm md:text-lg">
+
+                    {renderDishes("price")}{" "}
+                    </span>
+                    <span className="md:text-lg text-sm "> <span className="md:text-2xl">/</span> PerPerson</span>{" "}
+                  </div>
+                </>
+              )}
+              <button
+                className="border w-32 py-2 bg-primaryColor hover:bg-hoverPrimary text-white  rounded-md"
+                onClick={() => nextPage()}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       )}

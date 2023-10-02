@@ -3,7 +3,16 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "@/app/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  DocumentData,
+  doc,
+  setDoc,
+} from "firebase/firestore";
+
 import { useStore } from "@/store";
 import { message } from "antd";
 import Success from "./success";
@@ -11,7 +20,43 @@ import Navbar from "@/app/component/Navbar";
 import UserInformation from "./userInformation";
 import ChooseMenu from "./chooseMenu";
 import Preview from "./preview";
-
+import { log } from "console";
+type VenueData = {
+  venueId: string;
+  price: number;
+  name: string;
+  minCapacity: number;
+  image: string[];
+  services: string[];
+  userId: string;
+  maxCapacity: number;
+  dates: {
+    Lunch: { seconds: number; nanoseconds: number }[];
+    Diner: { seconds: number; nanoseconds: number }[];
+  };
+};
+interface MenuItem {
+  discount: number;
+  discountAmount: number;
+  dishId: string;
+  dishes: string[];
+  id: string;
+  name: string;
+  price: number;
+  selected: boolean;
+  totalDiscount: number;
+  userId: string;
+}
+type Menu = {
+  price: number;
+  description: string;
+  status: string;
+  name: string;
+  image: string[];
+  type: string;
+  menuId: string;
+  userId: string;
+};
 const initialFormState = {
   firstName: "",
   lastName: "",
@@ -21,6 +66,7 @@ const initialFormState = {
   phoneNumber: "",
   tableShape: "",
   eventType: "",
+  services: [],
 };
 
 const steps = [
@@ -46,10 +92,27 @@ function Slider() {
   const [selectedMenu, setSelectedMenu] = useState({});
   const [userInformation, setUserInformation] = useState("");
   const [hallInformation, setHallInformation] = useState([]);
-  const [marqueeData, setMarqueeData] = useState([]);
+  const [marqueeData, setMarqueeData] = useState<{
+    venues: Array<Object>;
+    withoutVenueDish: Array<Object>;
+    dish: Array<Object>;
+  }>({
+    venues: [],
+    withoutVenueDish: [],
+    dish: [],
+  });
   const [successPage, setSuccessPage] = useState(false);
   const [step, setStep] = useState(0);
-  const [newData, setNewData] = useState([]);
+  const [newData, setNewData] = useState<{
+    venues: Array<Object>;
+    withoutVenueDish: Array<Object>;
+    dish: Array<Object>;
+  }>({
+    venues: [],
+    withoutVenueDish: [],
+    dish: [],
+  });
+  console.log(selectedMenu, "selectedMenuksksks");
   const [inputs, setInputs] = useState({
     Heating: false,
     Cooling: false,
@@ -99,19 +162,23 @@ function Slider() {
         getDocs(marqueeDishes),
       ]);
 
-      let venueDataArr = [];
+      let venueDataArr: VenueData[] = [];
       venuesSnapshot.forEach((doc) => {
-        venueDataArr.push(doc.data());
+        venueDataArr.push(doc.data() as VenueData);
       });
 
-      let menuDataArr = [];
+      let menuDataArr: MenuItem[] = [];
       menusSnapshot.forEach((doc) => {
         const items = doc.data();
-        menuDataArr.push({ ...items, selected: false });
+        const menuItem: any = {
+          ...items,
+          selected: false,
+        };
+        menuDataArr.push(menuItem);
       });
-      let withoutVenueDish = [];
+      let withoutVenueDish: Menu[] = [];
       dishSnapshot.forEach((doc) => {
-        withoutVenueDish.push(doc.data());
+        withoutVenueDish.push(doc.data() as Menu);
       });
       setMarqueeData({
         venues: venueDataArr,
@@ -169,15 +236,9 @@ function Slider() {
       !user.services
     )
       return;
-    //  message.warning(
-    //   "Something went wrong please fillout all the fields"
-    // );
-    const selectCheck = marqueeData?.dish?.filter((v) => v.selected);
+    const selectCheck = marqueeData?.dish?.filter((v: any) => v.selected);
 
     if (!selectCheck?.length)
-      // return message.warning(
-      //   // "Something went wrong please fillout all the fields"
-      // );
       setSlider(index);
   };
 
@@ -228,22 +289,16 @@ function Slider() {
             ) : slider === 1 ? (
               <UserInformation
                 setSlider={setSlider}
-                selectedHall={selectedHall}
-                selectedMenu={selectedMenu}
                 setUserInformation={setUserInformation}
                 setUser={setUser}
                 user={user}
                 setSelectedOption={setSelectedOption}
                 selectedOption={selectedOption}
-                setInputs={setInputs}
-                inputs={inputs}
-                setStep={setStep}
               />
             ) : slider === 2 ? (
               <Preview
                 selectedMenu={selectedMenu}
                 userInformation={userInformation}
-                sendData={sendData}
                 marqueeId={id}
                 setSuccessPage={setSuccessPage}
                 openMessage={openMessage}

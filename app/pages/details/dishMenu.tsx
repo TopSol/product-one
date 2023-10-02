@@ -1,19 +1,6 @@
 import React, { useState } from 'react'
-
-function DishMenu({item,handleClick,index,selectCheck,}) {
-    // const [isHoverArray, setIsHoverArray] = useState(new Array(marqueeData?.dish?.length).fill(false));
+function DishMenu({item,handleClick,index,selectCheck,key}) {
     const [isHover, setIsHover] = useState(false);
-    const handleMouseEnter = (index) => {
-        const newArray = [...isHoverArray];
-        newArray[index] = true;
-        setIsHoverArray(newArray);
-      };
-      
-      const handleMouseLeave = (index) => {
-        const newArray = [...isHoverArray];
-        newArray[index] = false;
-        setIsHoverArray(newArray);
-      };
     return (
         <div
         onMouseEnter={() => setIsHover(true)}
@@ -33,7 +20,6 @@ function DishMenu({item,handleClick,index,selectCheck,}) {
           onClick={() => handleClick(item, index)}
         >
           <div
-            // className={"flex items-center justify-between mb-3"}
             className={`flex items-center justify-between mb-3  ${
                 isHover ? "text-white" : "text-black"
               }    `}
@@ -59,7 +45,6 @@ function DishMenu({item,handleClick,index,selectCheck,}) {
                         className={`${
                           isHover ? "bg-white" : "bg-primaryColor"
                         }   h-3 w-3 rounded-full mr-3 `}
-                        // className={"h-3 w-3 rounded-full mr-3 bg-primaryColor" }
                       ></div>
                       <li className="">{dish}</li>
                     </div>
