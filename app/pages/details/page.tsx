@@ -236,15 +236,16 @@ console.log(selectedMenu,"selectedMenuksksks")
       !user.tableShape ||
       !user.services
     )
-      return message.warning(
-        "Something went wrong please fillout all the fields"
-      );
+      return
+      //  message.warning(
+      //   "Something went wrong please fillout all the fields"
+      // );
     const selectCheck = marqueeData?.dish?.filter((v:any) => v.selected);
 
     if (!selectCheck?.length)
-      return message.warning(
-        "Something went wrong please fillout all the fields"
-      );
+      // return message.warning(
+      //   "Something went wrong please fillout all the fields"
+      // );
     setSlider(index);
   };
   console.log("selectedMenuselectedMenu", marqueeData);

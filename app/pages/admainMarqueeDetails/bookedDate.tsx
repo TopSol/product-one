@@ -9,14 +9,58 @@ import { getFormatDates } from "@/app/utils";
 import Link from "next/link";
 import Image from "next/image";
 import dots from "@/app/assets/images/dots.svg";
+interface marqueeBookingRecord {
+  marqueeHonerPhoneNumber: string;
+  marqueeLocation: string;
+  lastName: string;
+  firstName: string;
+  eventType: string;
+  services: string[];
+  image: string[];
+  NumberOfPeople: string;
+  dates: {
+    from: {
+      seconds: number;
+      nanoseconds: number;
+    };
+    to: {
+      seconds: number;
+      nanoseconds: number;
+    };
+  };
+  address: string;
+  venueName: string;
+  notes: string;
+  email: string;
+  minimumCapacity: number;
+  id: string;
+  marqueeId: string;
+  maximumCapacity: number;
+  mealType: string;
+  venuePrice: number;
+  phoneNumber: string;
+  menu: string;
+  dishes: {
+    nameAndPriceArray: {
+      name: string;
+      price: number;
+    }[];
+    name: string;
+    perHead: number;
+    totalDiscount: number;
+    nameAndPriceArrays: {
+      name: string;
+      price: number;
+    }[];
+  };
+}
 
 function BookedDate() {
   const { userInformation } = useStore();
-  const [customerInformation, setCustomerInformation] = useState([]);
+  const [customerInformation, setCustomerInformation] = useState<marqueeBookingRecord[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
-  const [detailsData, setDetailsData] = useState([]);
-  console.log(detailsData,"detailsDatass")
+  const [detailsData, setDetailsData] = useState<marqueeBookingRecord>();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,9 +70,9 @@ function BookedDate() {
         );
         const [venuesSnapshot] = await Promise.all([getDocs(venuesQuery)]);
 
-        let venueDataArr = [];
+        let venueDataArr:marqueeBookingRecord[] = [];
         venuesSnapshot.forEach((doc) => {
-          venueDataArr.push(doc.data());
+          venueDataArr.push(doc.data()as marqueeBookingRecord);
         });
         console.log(venueDataArr,"venueDataArrvenueDataArr")
         setCustomerInformation(venueDataArr);
@@ -59,7 +103,6 @@ function BookedDate() {
                   <div className="">
                     <a
                       href={`https://wa.me/${item?.phoneNumber}`}
-                      // href={`https://wa.me/${item.UserInformation?.PhoneNumber}`}
                       target="_blank"
                     >
                       <WhatsAppOutlined
@@ -77,7 +120,7 @@ function BookedDate() {
                   alt=""
                 />
                 <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full px-4">
-                  <div className="absolute top-[calc(50%_-_45.5px)] ml-2 z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="absolute top-[calc(50%_-_50.5px)] ml-2 z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                     <p className="absolute text-base	 leading-[100%] z-20 pt-1">
                       Name
                     </p>
@@ -87,11 +130,6 @@ function BookedDate() {
                       placeholder="Name"
                       type="text"
                       name="name"
-                      // value={
-                      //   item?.UserInformation.firstName +
-                      //   " " +
-                      //   item?.UserInformation.lastName
-                      // }
                       value={
                         item?.firstName +
                         " " +
@@ -102,7 +140,7 @@ function BookedDate() {
                   </div>
                 </div>
                 <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full px-4">
-                  <div className="absolute top-[calc(50%_-_45.5px)] ml-2 z-20 left-[19.89px] rounded-3xs bg-white w-[140.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="absolute top-[calc(50%_-_50.5px)] ml-2 z-20 left-[19.89px] rounded-3xs bg-white w-[140.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                     <p className="absolute text-base leading-[100%] z-20 pt-1">
                       Phone Number
                     </p>
@@ -113,13 +151,12 @@ function BookedDate() {
                       type="text"
                       name="name"
                       value={item?.phoneNumber}
-                      // value={item.UserInformation.PhoneNumber}
                       className="border text-sm outline-none  z-10 w-full  py-5 mb-3 flex justify-center  relative"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full px-4">
-                  <div className="absolute top-[calc(50%_-_45.5px)] z-20 ml-2 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="absolute top-[calc(50%_-_50.5px)] z-20 ml-2 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                     <p className="absolute text-base leading-[100%] z-20 pt-1">
                       Email
                     </p>
@@ -130,13 +167,12 @@ function BookedDate() {
                       type="text"
                       name="name"
                       value={item?.email}
-                      // value={item?.UserInformation.email}
                       className="border outline-none  z-10 w-full  py-5 mb-3 flex justify-center text-sm  relative"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col items-start relative md:mt-3 mt-4  w-full px-4 ">
-                  <div className="absolute top-[calc(50%_-_45.5px)]  z-20 left-[19.89px] bg-white  ml-2 rounded-3xs  w-[80.67px] h-[22.56px] flex flex-row py-px  box-border items-center justify-center">
+                  <div className="absolute top-[calc(50%_-_50.5px)]  z-20 left-[19.89px] bg-white  ml-2 rounded-3xs  w-[80.67px] h-[22.56px] flex flex-row py-px  box-border items-center justify-center">
                     <p className="absolute text-base leading-[100%] z-20 pt-1">
                       Address
                     </p>
@@ -147,15 +183,14 @@ function BookedDate() {
                       type="text"
                       name="name"
                       value={item?.address}
-                      // value={item.UserInformation.address}
                       className="border outline-none   z-10 w-full  py-5 mb-3 flex justify-center text-sm  relative"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full px-4">
-                  <div className="absolute top-[calc(50%_-_56.5px)] z-20 ml-2 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="absolute top-[calc(50%_-_62.5px)] z-20 ml-2 left-[19.89px] rounded-3xs bg-white w-[80.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                     <p className="absolute text-base leading-[100%] z-20 pt-1">
-                      Price
+                      PerHead
                     </p>
                   </div>
                   <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
@@ -163,10 +198,7 @@ function BookedDate() {
                       placeholder="Name"
                       type="text"
                       name="name"
-                      // value={
-                      //   item?.Menu?.totalDiscount + item?.selectedHall?.price
-                      // }
-                      value={"400"}
+                      value={item.dishes.totalDiscount}
                       className="border outline-none  z-10 w-full  py-5 mb-3 flex justify-center text-sm  relative"
                     />
                   </div>
@@ -242,17 +274,30 @@ function BookedDate() {
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Name</p>
           <p>{detailsData?.venueName}</p>
-          {/* <p>{detailsData?.selectedHall?.name}</p> */}
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Minimum Capacity</p>
           <p>{detailsData?.minimumCapacity}</p>
-          {/* <p>{detailsData?.selectedHall?.minCapacity}</p> */}
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Maximum Capacity</p>
           <p>{detailsData?.maximumCapacity}</p>
-          {/* <p>{detailsData?.selectedHall?.maxCapacity}</p> */}
+        </div>
+        <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+          <p>Event Type</p>
+          <p>{detailsData?.eventType}</p>
+        </div>
+        <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+          <p>Number of people</p>
+          <p>{detailsData?.NumberOfPeople}</p>
+        </div>
+        <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+          <p>Notes</p>
+          <p>{detailsData?.notes}</p>
+        </div>
+         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
+          <p>Services</p>
+          <p>{detailsData?.services}</p>
         </div>
         <div className="flex items-center justify-center mt-6 mb-8">
           <hr className="hidden md:block px-8 py-[1px] rounded-lg bg-matteBlack" />
@@ -264,7 +309,6 @@ function BookedDate() {
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Name</p>
           <p>{detailsData?.menu}</p>
-          {/* <p>{detailsData?.Menu?.name}</p> */}
         </div>
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Dishes</p>
@@ -274,11 +318,11 @@ function BookedDate() {
               className="text-blue-600 underline"
               href=""
             >
-              {detailsData?.dishes?.length} Dishes
+              {detailsData?.dishes?.nameAndPriceArray?.length} Dishes
             </Link>
           }
         </div>
-{/* 
+        {/* 
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Price</p>
           <p>{"255555"}</p>
@@ -295,12 +339,12 @@ function BookedDate() {
           <p>{detailsData?.Menu?.totalDiscount}</p>
         </div> */}
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-          <p>Dishes</p>
+          <p>Date</p>
           <div className="flex flex-col ">
             {detailsData?.dates &&
               typeof detailsData?.dates === "object" &&
               Object.values(detailsData.dates).map((item) => {
-                const dates = getFormatDates([item]);
+                const dates:any = getFormatDates([item]);
                 const date = new Date(dates);
                 const formattedDate = `${(date.getMonth() + 1)
                   .toString()
@@ -355,7 +399,15 @@ function BookedDate() {
             {detailsData?.dishes?.nameAndPriceArray?.map((item, index) => (
               <div key={index} className="flex items-center ">
                 <span className="w-4 h-4 rounded-full bg-primary"></span>
+                <div className="flex justify-between  w-full">
                 <p className="text-lg pl-3 py-2"> {item.name}</p>
+                <div className="text-lg  py-2   flex-end ">
+                  <div className="flex justify-evenly flex-end ">
+
+                   <span>Rs</span><span className="flex flex-start w-[50px] ml-2">{item.price}</span> 
+                  </div>
+                </div>
+                </div>
               </div>
             ))}
           </div>

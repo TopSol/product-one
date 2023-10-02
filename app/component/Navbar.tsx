@@ -8,18 +8,25 @@ import SideBar from "../model/sideBar";
 import Link from "next/link";
 export default function Navbar() {
   const [show, setShow] = useState(false);
-  const ShowSideBar = () => {
-    setShow(!show);
-  };
   return (
     <div className="  bg-white fixed top-0 left-0 right-0 z-50 ">
       <div className="flex justify-between lg:container mx-auto items-center py-7 px-6 lg:px-0">
         <div>
-          <p className=" text-[#DEB666] font-extrabold text-xl ">BOOKING NOW.</p>
+          <p className=" text-[#DEB666] font-extrabold text-xl ">
+            BOOKING NOW.
+          </p>
         </div>
 
         <div className=" flex items-center">
-          <FontAwesomeIcon icon={faBarsStaggered} size="xs" className=" h-7 text-[#DEB666] lg:hidden  " onClick={ShowSideBar} />
+          {
+            !show && <FontAwesomeIcon
+            icon={faBarsStaggered}
+            size="lg"
+            className="h-7 text-[#DEB666] md:invisible"
+            onClick={() => setShow((prev) => !prev)}
+          />
+           }
+          
           <div className=" hidden lg:flex items-center ">
             <ul className=" flex space-x-10 font-roboto font-bold ">
               <li className="cursor-pointer">
@@ -40,7 +47,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      {show ? <SideBar /> : null}
+      {show ? <SideBar setShow={setShow} /> : null}
     </div>
   );
 }

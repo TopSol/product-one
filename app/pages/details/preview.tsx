@@ -321,7 +321,7 @@ console.log(userInformation,"userInformation")
         </div>
 
         {/* CHOOSE MENU */}
-        <div className="bg-bgColor flex justify-between p-3 md:p-6 rounded-lg w-full mt-3 md:mt-6">
+        <div className="bg-bgColor flex flex-col md:flex-row justify-between p-3 md:p-6 rounded-lg w-full mt-3 md:mt-6">
         <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
           <div
             className={`flex items-center justify-between mb-3`}
@@ -449,13 +449,13 @@ console.log(userInformation,"userInformation")
         </div>
         <div className="flex justify-between ">
         <button
-          className="border px-9 py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+          className="border px-6 py-3 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
           onClick={() => setSlider(1)}
         >
           Previous
         </button>
         <button
-          className="border px-9 py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+          className="border px-5 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
           onClick={() => nextPage()}
         >
           Book Now

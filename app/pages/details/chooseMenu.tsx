@@ -213,10 +213,13 @@ function ChooseMenu({
               {renderDishes("price") && (
                 <>
                   <p>Total</p>
-                  <div className="text-2xl px-3">
+                  <div className="text-lg px-3 flex items-center">
                     {" "}
+                    <span className="text-sm md:text-lg">
+
                     {renderDishes("price")}{" "}
-                    <span className="text-lg">PerPerson</span>{" "}
+                    </span>
+                    <span className="md:text-lg text-sm "> <span className="md:text-2xl">/</span> PerPerson</span>{" "}
                   </div>
                 </>
               )}

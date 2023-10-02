@@ -365,9 +365,9 @@ function UserInformation({
               </div>
             </div>
           </div>
-          <div className="flex justify-between px-10 ">
+          <div className="flex justify-between md:px-10 px-3 ">
             <button
-              className="border px-9 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
+              className="border  px-6 py-3 my-3 bg-primaryColor rounded-md text-white font-bold"
               onClick={() => setSlider(0)}
             >
               Previous

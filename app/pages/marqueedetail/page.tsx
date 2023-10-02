@@ -6,7 +6,7 @@ import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Breadcrumb, Input, Select, Space, Typography } from "antd";
+import { Breadcrumb, Input, Select, Space, Typography,message } from "antd";
 import { getFormatDates } from "@/app/utils";
 import { isBefore, startOfToday } from "date-fns";
 import Location from "./Location"
@@ -203,7 +203,7 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
           }
         );
         if (date.length > 0) {
-          alert("you can not selet this date");
+          message.error("you can not select this date");
           setMarqueeDates({ from: null, to: null });
         }else{
          setMarqueeDates({ ...marqueeDates, to: newRange});
@@ -394,9 +394,9 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
                     onKeyPress={preventNonNumericInput}
                   />
                 </Space>
-                <div className="flex justify-between flex-col md:flex-row  ">
-                  <div>
-                    <Space direction="vertical">
+                <div className="flex justify-between flex-col 2xl:flex-row  ">
+                  <div className="2xl:w-[200px] ">
+                    <Space direction="vertical" style={{ width: '100%' }} >
                       <Typography.Text className="text-primaryColor text-lg  font-poppins">
                         Select Hall
                       </Typography.Text>
@@ -413,6 +413,7 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
                         style={{
                           marginBottom: 20,
                           borderRadius: 10,
+                          width: '100%'
                         }}
                         placeholder="Search to Select"
                         size="large"
@@ -428,12 +429,11 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
                         }
                         onChange={(e) => handleVenueName(e)}
                         options={marqueeVenueNames}
-                        className="w-[295px] md:w-[210px]"
                       />
                     </Space>
                   </div>
-                  <div>
-                    <Space direction="vertical">
+                  <div  className="2xl:w-[200px] ">
+                    <Space direction="vertical" style={{ width: '100%' }} >
                       <Typography.Text className="text-primaryColor text-lg font-poppins">
                         {/* Select Lunch Type */}
                         Event Time
@@ -443,8 +443,9 @@ const [marqueeDates, setMarqueeDates] = useState<{ from: Date | null; to: Date |
                         style={{
                           marginBottom: 20,
                           borderRadius: 10,
+                          width: '100%'
                         }}
-                        className="mr-[6px] lg:mr-0 w-[295px] md:w-[210px]"
+                        className="mr-[6px] lg:mr-0 md:w-[50%]"
                         placeholder="Search to Select"
                         size="large"
                         placement="bottomLeft"
