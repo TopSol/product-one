@@ -15,12 +15,14 @@ function UserInformation({
   setUserInformation,
 }) {
   const [value, setValue] = useState();
+  const [cnic, setCNIC] = useState('');
+  const [state , setState] = useState(false)
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
   const [isValidPhone, setIsValidPhone] = useState(true);
   const handleInputChange = (checkedValues: CheckboxValueType[]) => {
     setUser({ ...user, services: checkedValues });
   };
-
+  const [form] = Form.useForm();
   const handleChange = (e, type) => {
     if (e.target?.value && !type) {
       setUser((prevState) => ({
@@ -36,13 +38,14 @@ function UserInformation({
     }
   };
   console.log(value, "valuevalue");
+
   const nextPage = () => {
+    setState(true)
     if (
       !user.firstName ||
       !user.lastName ||
       !user.email ||
       !user.address ||
-      !user.notes ||
       !value ||
       !user.tableShape ||
       !user.services ||
@@ -52,7 +55,6 @@ function UserInformation({
     }
     const phone = value;
     const convertedPhoneNumber = phone.replace(/^0/, "");
-    console.log(convertedPhoneNumber, "convertedPhoneNumber");
     const users = {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -77,12 +79,38 @@ function UserInformation({
   };
   const preventNonNumericInput = (e) => {
     const input = e.key;
-
-    // Allow only alphabetic characters (letters)
-    if (!/^[a-zA-Z]+$/.test(input) && input !== 'Backspace') {
+    if (!/^[a-zA-Z]+$/.test(input) && input !== "Backspace") {
       e.preventDefault();
     }
   };
+
+  const validatePhone = (_, value) => {
+    const cleanedPhoneNumber = value.replace(/\D/g, "");
+    if (
+      (cleanedPhoneNumber.startsWith("0") &&
+        cleanedPhoneNumber.length === 13) ||
+      (!cleanedPhoneNumber.startsWith("0") && cleanedPhoneNumber.length === 12)
+    ) {
+      setIsValidPhone(true);
+      return Promise.resolve();
+    } else {
+      setIsValidPhone(false);
+      return Promise.reject("Invalid phone number");
+    }
+  };
+  const handleCNICChange = (event) => {
+    const inputCNIC = event.target.value;
+    const formattedCNIC = formatCNIC(inputCNIC);
+    setCNIC(formattedCNIC);
+  };
+
+  const formatCNIC = (cnic) => {
+    const numericCNIC = cnic.replace(/\D/g, '');
+    const formattedCNIC = numericCNIC
+      .slice(0, 5) + '-' + numericCNIC.slice(5, 12) + '-' + numericCNIC.slice(12, 13);
+
+    return formattedCNIC;
+  }
   return (
     <div className="md:container mx-auto text-textColor ">
       <div className="md:w-[70%] mx-4 md:mx-auto border rounded-lg ">
@@ -90,8 +118,8 @@ function UserInformation({
           <Image src={dots} alt="IMage" className="mx-6" />
           <p>Details</p>
         </div>
-        <Form 
-          
+        <Form
+          form={form}
           initialValues={{
             remember: true,
           }}
@@ -108,10 +136,10 @@ function UserInformation({
           <div className="mx-5 md:mx-0 font-semibold">
             <div className="lg:flex lg:flex-row lg:justify-between md:mx-10 ">
               <div className="flex flex-col items-start relative md:mt-3 mt-4 ">
-                <div className="absolute top-[calc(50%_-_71.5px)] z-20 left-[23.89px] rounded-3xs bg-white w-[95.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
-                  <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
-                    FirstName
-                  </p>
+                <div className="absolute top-[calc(50%_-_71.5px)] z-20 left-[23.89px] rounded-3xs bg-white w-[108.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
+                  <b className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
+                    <span className="text-red-400">*</span>First Name
+                  </b>
                 </div>
                 <div className="mb-4 w-[100%]">
                   <Form.Item
@@ -119,7 +147,7 @@ function UserInformation({
                     rules={[
                       {
                         required: true,
-                        message: "Please fillout your first name's input!",
+                        message: "Please fill out your first name's input!",
                       },
                     ]}
                   >
@@ -136,10 +164,10 @@ function UserInformation({
               </div>
 
               <div className="flex flex-col items-start relative md:mt-3 mt-4 ">
-                <div className="absolute top-[calc(50%_-_71.5px)] z-20 left-[23.89px] rounded-3xs bg-white w-[95.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
-                  <p className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
-                    LastName
-                  </p>
+                <div className="absolute top-[calc(50%_-_71.5px)] z-20 left-[23.89px] rounded-3xs bg-white w-[108.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center font-Manrope">
+                  <b className="absolute text-lg leading-[100%] z-20 pt-1 font-Manrope">
+                    <span className="text-red-400">*</span>Last Name
+                  </b>
                 </div>
                 <div className="mb-4 w-[100%]">
                   <Form.Item
@@ -164,12 +192,11 @@ function UserInformation({
               </div>
             </div>
 
-            
             <div className=" lg:flex lg:flex-row lg:justify-between md:mx-10">
               <div className="flex flex-col items-start relative md:mt-3 mt-4 ">
-                <div className="absolute  top-[calc(50%_-_73.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <div className="absolute  top-[calc(50%_-_73.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[68.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                   <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
-                    Email
+                    <span className="text-red-400">*</span>Email
                   </p>
                 </div>
                 <div className="mb-4 w-[100%]">
@@ -177,11 +204,12 @@ function UserInformation({
                     name="email"
                     rules={[
                       {
-                        type: "email",
-                        required: true,
+                        // type: "email",
+                        required: state,
                         message: "Please fillout your email's input!",
                       },
                     ]}
+                    validateTrigger="onSubmit"
                   >
                     <Input
                       type="email"
@@ -194,9 +222,9 @@ function UserInformation({
                 </div>
               </div>
               <div className="flex flex-col items-start relative md:mt-3 mt-4 ">
-                <div className="absolute  top-[calc(50%_-_73.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <div className="absolute  top-[calc(50%_-_73.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[68.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                   <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
-                    Phone
+                    <span className="text-red-400">*</span>Phone
                   </p>
                 </div>
                 <div className="mb-4 w-[100%]">
@@ -205,22 +233,10 @@ function UserInformation({
                     rules={[
                       {
                         required: true,
-                        // message: "Please fillout your phone's input!",
-                        validator: (_, value) => {
-                          const cleanedPhoneNumber = value.replace(/\D/g, ''); // Clean non-digit characters
-                          if (
-                            (cleanedPhoneNumber.startsWith('0') && cleanedPhoneNumber.length === 13) ||
-                            (!cleanedPhoneNumber.startsWith('0') && cleanedPhoneNumber.length === 12)
-                          ) {
-                            setIsValidPhone(true);
-                            return Promise.resolve();
-                          } else {
-                            setIsValidPhone(false);
-                            return Promise.reject('Invalid phone number');
-                          }
-                        },
+                        validator: validatePhone,
                       },
                     ]}
+                    validateTrigger="onSubmit"
                   >
                     <PhoneInput
                       type="PhoneNumber"
@@ -268,9 +284,9 @@ function UserInformation({
                 </div>
               </div>
               <div className="flex flex-col items-start relative md:mt-3 mt-4 textArea">
-                <div className="absolute  top-[calc(50%_-_92.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[80.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                <div className="absolute  top-[calc(50%_-_92.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[88.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                   <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
-                    Address
+                    <span className="text-red-400">*</span>Address
                   </p>
                 </div>
                 <div className="mb-6 w-[100%]">
@@ -299,23 +315,45 @@ function UserInformation({
               </div>
             </div>
             <div className=" lg:flex lg:flex-row lg:justify-between md:mx-10">
-            <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full">
-              <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[166.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
-                  Select Event Type
-                </p>
-              </div>
-              <div className="mb-6 w-[100%]">
-              <Input
-                  type="eventType"
-                  name="eventType"
-                  value={user.eventType}
-                  onChange={handleChange}
-                  className="border outline-none z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
-                />
+              <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full">
+                <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[166.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
+                    Select Event Type
+                  </p>
+                </div>
+                <div className="mb-6 w-[100%]">
+                  <Input
+                    type="eventType"
+                    name="eventType"
+                    value={user.eventType}
+                    onChange={handleChange}
+                    className="border outline-none z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+            <div className=" lg:flex lg:flex-row lg:justify-between md:mx-10">
+              <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full">
+                <div className="absolute  top-[calc(50%_-_63.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[66.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <p className="absolute text-lg leading-[100%] font-Manrope z-20 pt-1">
+                    CNIC
+                  </p>
+                </div>
+                <div className="mb-6 w-[100%]">
+                  <Input
+                    type="text"
+                    id="cnic"
+                    value={cnic}
+                    onChange={handleCNICChange}
+                    maxLength={15} 
+                    minLength={15}
+                    required={true}
+                    placeholder="xxxxx-xxxxxxx-x"
+                    className="border outline-none z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className=" lg:flex lg:flex-row lg:justify-between mx-5 md:mx-10">
@@ -386,3 +424,40 @@ function UserInformation({
 }
 
 export default UserInformation;
+
+
+
+//   const [cnic, setCNIC] = useState('');
+
+  // const handleCNICChange = (event) => {
+  //   const inputCNIC = event.target.value;
+  //   const formattedCNIC = formatCNIC(inputCNIC);
+  //   setCNIC(formattedCNIC);
+  // };
+
+  // const formatCNIC = (cnic) => {
+  //   // Remove all non-numeric characters
+  //   const numericCNIC = cnic.replace(/\D/g, '');
+  //   // Apply the CNIC format: 12345-1234567-1
+  //   const formattedCNIC = numericCNIC
+  //     .slice(0, 5) + '-' + numericCNIC.slice(5, 12) + '-' + numericCNIC.slice(12, 13);
+
+  //   return formattedCNIC;
+  // };
+
+//   return (
+//     <div>
+//       <label htmlFor="cnic">Enter CNIC:</label>
+//       <input
+        // type="text"
+        // id="cnic"
+        // value={cnic}
+        // onChange={handleCNICChange}
+        // maxLength={15} // Maximum length including dashes
+        // placeholder="12345123456781"
+//       />
+//     </div>
+//   );
+// };
+
+// export default CNICInputMask;

@@ -35,7 +35,6 @@ const initialValue = {
 };
 
 function details() {
- 
   const [details, setDetails] = useState(initialValue);
   const [modalOpen, setModalOpen] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
@@ -156,15 +155,13 @@ function details() {
     };
   }, []);
 
- 
-
   const handleImageDiemension = async (e) => {
     let images = e.target.files;
     setImage({
       id: 0,
-      img: URL.createObjectURL(images?.[0])
+      img: URL.createObjectURL(images?.[0]),
     });
-    const validImages:any = [];
+    const validImages: any = [];
     try {
       await Promise.all(
         Object.values(images).map(async (image, index) => {
@@ -177,8 +174,7 @@ function details() {
                 validImages.push({
                   id: index,
                   file: image,
-                }  )
-                
+                });
               } else {
                 message.warning("Image dimensions are not valid.");
               }
@@ -229,18 +225,21 @@ function details() {
   const handleSearch = () => {
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: searchQuery }, (results, status) => {
-      if (status === 'OK' && results[0]) {
+      if (status === "OK" && results[0]) {
         const latitude = results[0].geometry.location.lat().toFixed(7);
         const longitude = results[0].geometry.location.lng().toFixed(7);
-  
+
         setCenter({
           lat: parseFloat(latitude),
           lng: parseFloat(longitude),
         });
-  
+
         setPredictions([]);
       } else {
-        console.error('Geocode was not successful for the following reason:', status);
+        console.error(
+          "Geocode was not successful for the following reason:",
+          status
+        );
       }
     });
   };
