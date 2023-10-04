@@ -6,6 +6,7 @@ import MarqueeVenues from "./venues";
 import MarqueeMenus from "./menus";
 import Availability from "./availability";
 import Dish from "./dish";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import Lightbox from "react-image-lightbox";
 import { getAuth, signOut } from "firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -96,6 +97,8 @@ function AdminMarqueeDetails() {
       setIsLoader(false);
     }
   }, [userInformation]);
+
+  console.log(userInformation,"userInformationuserInformation")
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
@@ -115,6 +118,17 @@ function AdminMarqueeDetails() {
   const openModal = () => {
     setModalOpen(true);
   };
+ 
+  useEffect (()=>{
+    const fetchData = async () => {
+      const q = query(collection(db, "users"), where("userId", "==",userInformation?.userId));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+          console.log( doc.data(),"sdfsdf");
+      });
+    };
+    fetchData();
+  },[])
 
   const handleDeleteVenues = async () => {
     try {
@@ -166,6 +180,7 @@ function AdminMarqueeDetails() {
     console.log(e);
     message.error('Click on No');
   };
+  console.log(Menus.length,"DishesDishes",Menus)
   return (
     <>
       {isLoader ? (
@@ -247,6 +262,11 @@ function AdminMarqueeDetails() {
                 {component === "Venues" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
                     <p className="md:text-2xl py-3">Venues</p>
+                    {
+                      Venues.length == 0 && (
+                      <p className="text-red-700">Please add Venue</p>
+                      )
+                    }
                     <div className="flex justify-center items-center">
                       <button
                         className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
@@ -281,7 +301,12 @@ function AdminMarqueeDetails() {
                   </div>
                 ) : component === "Menus" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
-                    <p className="md:text-2xl py-3">Menus</p>
+                        <p className="md:text-2xl py-3">Menus</p>
+                    {
+                      Dishes.length == 0 && (
+                    <p className="text-red-700">Please add Menus</p>
+                        )
+                    }
                     <div className="flex justify-center items-center">
                       <button
                         className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
@@ -317,6 +342,12 @@ function AdminMarqueeDetails() {
                 ) : component === "Dishes" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
                     <p className="md:text-2xl py-3">Dishes</p>
+                    {
+                      Menus.length == 0 && (
+                        <p className="text-red-700">Please add Dish</p>
+                        )
+                      }
+
                     <div className="flex justify-center items-center">
                       <button
                         className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"

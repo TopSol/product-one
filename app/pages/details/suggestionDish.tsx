@@ -79,7 +79,7 @@ function SuggestionDish({
               return (
                 <div
                   key={index}
-                  className={`flex items-center ${itemBackgroundColor} m-3 rounded-md justify-between p-3`}
+                  className={`flex items-center ${itemBackgroundColor} m-3 rounded-md justify-between p-3 `}
                   onClick={() => {
                     handleItemBackground(dish.name);
                     AddDish(dish.name, dish.price);

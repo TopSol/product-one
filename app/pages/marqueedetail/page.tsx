@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, DateAfter, DateBefore } from "react-day-picker";
 import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
@@ -14,7 +14,6 @@ import Navbar from "@/app/component/Navbar";
 import Footer from "@/app/component/footer";
 import ImageLightbox from "react-image-lightbox";
 import Loader from "@/app/component/Loader";
-import "react-day-picker/dist/style.css";
 import "react-day-picker/dist/style.css";
 import "react-image-lightbox/style.css";
 import "./style.css";
@@ -216,8 +215,8 @@ function Marqueedetail() {
           return false; // Handle the case when marqueeDates.from is null
         });
         if (date.length > 0) {
-          message.error("you can not select this date");
-          setMarqueeDates({ from: null, to: null });
+          // message.error("you can not select this date");
+          setMarqueeDates({ from: newRange, to: null });
         } else {
           setMarqueeDates({ ...marqueeDates, to: newRange });
         }
@@ -264,6 +263,15 @@ function Marqueedetail() {
   const bookedStyle = { border: "2px solid currentColor" };
   const shouldShowDiv = marqueeVenueNames.some((item) => !item.disabled);
   console.log(shouldShowDiv, "shouldShowDiv");
+  const currentDate = new Date(); // Get the current date
+  const currentMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth()
+  );
+
+
+  const beforeMatcher: DateBefore = { before: currentDate };
+  const disabledDays = [beforeMatcher,...days]
   return (
     <>
       <div>
@@ -512,11 +520,14 @@ function Marqueedetail() {
                               ? `combinedClasses`
                               : `combinedClasses2`
                           } w-[100%]`}
-                          disabled={days}
+                          disabled={disabledDays}
                           modifiers={{ booked: days }}
                           modifiersStyles={{ booked: bookedStyle }}
                           selected={marqueeDates}
                           onDayClick={handleDateRangeSelect}
+                          defaultMonth={currentMonth}
+                          fromMonth={currentMonth}
+                          toYear={currentDate.getFullYear()}
                         />
                       </div>
                     </div>

@@ -95,32 +95,6 @@ function Availability() {
     } else {
       console.log("No matching item found in lunchDinner for deleteVenueId");
     }  
-
-    // const docRef = doc(db, "Venue", deleteVenueId);
-    // const dateOfVenue={
-    //   dates:singleVenueDate
-    // }
-    // console.log(dateOfVenue,"dateOfVenuedateOfVenuedateOfVenue")
-    // updateDoc(docRef, dateOfVenue)
-    // .then(docRef => {
-    //     console.log("Value of an Existing Document Field has been updated");
-    // })
-    // .catch(error => {
-    //     console.log(error);
-    // })
-
-
-    // console.log(deleteVenueId, " venueDatNotAvailableDate",singleVenueDate);
-    // try {
-    //   await setDoc(doc(db, "Venues", deleteVenueId), dateOfVenue, { merge: true });
-    //   message.success("Date is successfully added");
-    // } catch (error) {
-    //   console.log(error, "error");
-    // }
-
-
-
-
     const NotAvailableDate = {
       id: "wLA6R1rC5mNAcPItqqK7nIleYKB2",
       dates: lunch,
@@ -214,10 +188,7 @@ function Availability() {
         ...docSnap.data(),
         dates: data,
       };
-    // if(deleteDates.length){
-    // update(item, user, venueDates);
-    // }
-
+    
       const result = lunchDinner[selectedVenue]?.[lunchType]?.filter(
         (value) => {
           return !deleteDates.some((item) => value === item.date);
@@ -230,14 +201,6 @@ function Availability() {
         id: user.userId,
         dates: venueDates,
       };
-
-      // console.log(NotAvailableDate,"NotAvailableDate")
-      // try {
-      //   await setDoc(doc(db, "bookDate", user.userId), NotAvailableDate);
-      //   message.success("Date is successfully deleted");
-      // } catch (error) {
-      //   console.log(error, "error");
-      // }
     }
   };
 
@@ -337,7 +300,6 @@ function Availability() {
                 cancelText="No"
               >
                 <button
-                  // onClick={() => DeleteSendDateInFirebase(selectedVenue)}
                   className="bg-primary text-white  px-5 py-2 rounded-lg"
                 >
                   Delete Dates

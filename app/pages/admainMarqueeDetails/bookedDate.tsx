@@ -5,6 +5,7 @@ import { Input, Modal } from "antd";
 import { db } from "@/app/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useStore } from "../../../store";
+import { useRouter } from 'next/navigation';
 import { getFormatDates } from "@/app/utils";
 import Link from "next/link";
 import Image from "next/image";
@@ -61,6 +62,7 @@ function BookedDate() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
   const [detailsData, setDetailsData] = useState<marqueeBookingRecord>();
+  const router = useRouter()
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -82,6 +84,7 @@ function BookedDate() {
     };
     fetchData();
   }, []);
+  
   return (
     <div className="md:container mx-auto ">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-[100%] my-6">
@@ -89,7 +92,7 @@ function BookedDate() {
           return (
             <div
               key={index}
-              className=" justify-center items-center md:my-10 md:mx-2 border border-gray-300 rounded-md shadow-md  "
+              className=" justify-center items-center md:my-10 md:mx-2  rounded-md shadow-md  "
             >
               <div className="flex flex-col justify-center items-center">
                 <div className=" bg-primary w-full justify-between items-center flex rounded-t-lg px-3">
@@ -210,12 +213,15 @@ function BookedDate() {
                         <div className="flex justify-between  py-2 px-7 ">
                           <button
                             onClick={() => {
-                              setIsModalOpen(true);
-                              setDetailsData(item);
+                              router.push(`/pages/admainMarqueeDetails/previewDetails?id=${item.id}`)
+                              // setIsModalOpen(true);
+                              // setDetailsData(item);
                             }}
                             className=" xl:px-4 lg:px-2 px-3  py-2 bg-primary text-white rounded-md"
                           >
-                            Details
+                          {/* <Link href={""}> */}
+                          Details
+                          {/* </Link>   */}
                           </button>
                           <button className=" xl:px-4 lg:px-2 px-3 py-2 bg-green-500 text-white rounded-md">
                             Accept
@@ -233,7 +239,7 @@ function BookedDate() {
           );
         })}
       </div>
-      <Modal
+      {/* <Modal
         className=" modal  w-full text-center"
         centered
         open={isModalOpen}
@@ -322,22 +328,6 @@ function BookedDate() {
             </Link>
           }
         </div>
-        {/* 
-        <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-          <p>Price</p>
-          <p>{"255555"}</p>
-          <p>{detailsData?.Menu?.price}</p>
-        </div>
-        <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-          <p>Discount Amount</p>
-          <p>{"55555"}</p>
-          <p>{detailsData?.Menu?.discountAmount}</p>
-        </div>
-        <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
-          <p>Net Price</p>
-          <p>{"56456"}</p>
-          <p>{detailsData?.Menu?.totalDiscount}</p>
-        </div> */}
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Date</p>
           <div className="flex flex-col ">
@@ -412,7 +402,7 @@ function BookedDate() {
             ))}
           </div>
         </>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }
