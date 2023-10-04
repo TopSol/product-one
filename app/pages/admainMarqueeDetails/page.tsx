@@ -6,6 +6,7 @@ import MarqueeVenues from "./venues";
 import MarqueeMenus from "./menus";
 import Availability from "./availability";
 import Dish from "./dish";
+import { collection, query, where, getDocs, setDoc, updateDoc, getDoc } from "firebase/firestore";
 import Lightbox from "react-image-lightbox";
 import { getAuth, signOut } from "firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -56,6 +57,7 @@ function AdminMarqueeDetails() {
   const [deleteVenues, setDeleteVenues] = useState([]);
   const [deleteMenus, setDeleteMenus] = useState([]);
   const [deleteDishes, setDeleteDishes] = useState([]);
+  const [activeMarquee,setActiveMarquee]=useState(false)
   const sideBar = [
     {
       name: "Venues",
@@ -96,6 +98,7 @@ function AdminMarqueeDetails() {
       setIsLoader(false);
     }
   }, [userInformation]);
+
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
@@ -105,7 +108,6 @@ function AdminMarqueeDetails() {
         setModalOpen2(false);
       }
     };
-
     window.addEventListener("resize", handleResize);
     handleResize();
     return () => {
@@ -115,7 +117,48 @@ function AdminMarqueeDetails() {
   const openModal = () => {
     setModalOpen(true);
   };
-
+  const fetchData = async () => {
+    try {
+      if (!userInformation?.userId) {
+        throw new Error("Invalid user ID.");
+      }
+    
+      const washingtonRef = doc(db, "users", userInformation.userId);
+      await updateDoc(washingtonRef, {
+        status: "active"
+      });
+    
+      console.log("Document successfully active!");
+    } catch (error) {
+      console.error("Error updating document:", error.message);
+    }
+   
+  };
+  const inactiveMarquee=async()=>{
+    try {
+      if (!userInformation?.userId) {
+        throw new Error("Invalid user ID.");
+      }
+    
+      const washingtonRef = doc(db, "users", userInformation.userId);
+      await updateDoc(washingtonRef, {
+        status: "inactive"
+      });
+    
+      console.log("Document successfully inactive!");
+    } catch (error) {
+      console.error("Error updating document:", error.message);
+    }
+  }
+  useEffect (()=>{
+    
+    if( Venues.length > 0  && Dishes.length > 0 && Menus.length > 0 ){
+      fetchData();
+    }else if(Venues.length == 0 || Dishes.length == 0 || Menus.length == 0){
+     
+      inactiveMarquee()
+    }
+  },[])
   const handleDeleteVenues = async () => {
     try {
       await Promise.all(
@@ -129,6 +172,7 @@ function AdminMarqueeDetails() {
     } catch (error) {
       console.error("Error removing document(s): ", error);
     }
+    inactiveMarquee()
   };
   const handleDeleteMenus = async () => {
     try {
@@ -140,9 +184,12 @@ function AdminMarqueeDetails() {
       const newBlogs = Menus.filter((blog) => !deleteMenus.includes(blog.id));
       addMenus(newBlogs);
       setDeleteMenus([]);
+
     } catch (error) {
       console.error("Error removing document(s): ", error);
     }
+    inactiveMarquee()
+
   };
   const handleDeleteDish = async () => {
     try {
@@ -154,16 +201,17 @@ function AdminMarqueeDetails() {
       const newBlogs = Dishes.filter((blog) => !deleteDishes.includes(blog.id));
       addDishes(newBlogs);
       setDeleteDishes([]);
+
     } catch (error) {
       console.error("Error removing document(s): ", error);
     }
+    inactiveMarquee()
+
   };
   const confirm = (e) => {
-    console.log(e);
     message.success('Click on Yes');
   };
   const cancel = (e) => {
-    console.log(e);
     message.error('Click on No');
   };
   return (
@@ -247,6 +295,11 @@ function AdminMarqueeDetails() {
                 {component === "Venues" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
                     <p className="md:text-2xl py-3">Venues</p>
+                    {
+                      Venues.length == 0 && (
+                      <p className="text-red-700">Please add Venue</p>
+                      )
+                    }
                     <div className="flex justify-center items-center">
                       <button
                         className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
@@ -281,11 +334,19 @@ function AdminMarqueeDetails() {
                   </div>
                 ) : component === "Menus" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
-                    <p className="md:text-2xl py-3">Menus</p>
+                        <p className="md:text-2xl py-3">Menus</p>
+                    {
+                      Dishes.length == 0 && (
+                    <p className="text-red-700">Please add Menus</p>
+                        )
+                    }
                     <div className="flex justify-center items-center">
                       <button
                         className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
-                        onClick={() => openModal()}
+                        onClick={() => {
+                          openModal()
+                          setActiveMarquee(pre => !pre)
+                        }}
                       >
                         <span className="flex">
                           <Image
@@ -300,7 +361,10 @@ function AdminMarqueeDetails() {
                       <Popconfirm
                         title="Delete the task"
                         description="Are you sure to delete this task?"
-                        onConfirm={() => handleDeleteDish()}
+                        onConfirm={() => {
+                          handleDeleteDish()
+                          setActiveMarquee(pre => !pre)
+                        }}
                         onCancel={cancel}
                         okText="Yes"
                         cancelText="No"
@@ -317,6 +381,12 @@ function AdminMarqueeDetails() {
                 ) : component === "Dishes" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
                     <p className="md:text-2xl py-3">Dishes</p>
+                    {
+                      Menus.length == 0 && (
+                        <p className="text-red-700">Please add Dish</p>
+                        )
+                      }
+
                     <div className="flex justify-center items-center">
                       <button
                         className="border rounded-md py-2 px-1 md:px-2 mr-2 pont-poppins text-primary border-primary  md:py-2"
@@ -359,6 +429,7 @@ function AdminMarqueeDetails() {
                       setLoading={setLoading}
                       setDeleteVenues={setDeleteVenues}
                       deleteVenues={deleteVenues}
+                      fetchData={fetchData}
                     />
                   ) : component === "Dishes" ? (
                     <MarqueeMenus
@@ -368,6 +439,7 @@ function AdminMarqueeDetails() {
                       setLoading={setLoading}
                       setDeleteMenus={setDeleteMenus}
                       deleteMenus={deleteMenus}
+                        fetchData={fetchData}
                     />
                   ) : component === "Menus" ? (
                     <Dish
@@ -379,6 +451,7 @@ function AdminMarqueeDetails() {
                       setDishModalOpen={setDishModalOpen}
                       setDeleteDishes={setDeleteDishes}
                       deleteDishes={deleteDishes}
+                      fetchData={fetchData}
                     />
                   ) : component === "Availability" ? (
                     <Availability />

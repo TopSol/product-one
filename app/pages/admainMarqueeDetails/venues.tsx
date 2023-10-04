@@ -38,6 +38,7 @@ function Venues({
   deleteVenues,
   loading,
   setLoading,
+  fetchData
 }) {
   const [user, setUser] = useState(initialFormState);
   const [addVenue, setaddVenue] = useState([]);
@@ -129,6 +130,8 @@ function Venues({
     setModalOpen(false);
     setUser(initialFormState);
     setLoading(false);
+    setActiveMarquee(pre => !pre)
+    fetchData()
   };
 
   const EditVenue = async (dishId) => {
@@ -197,6 +200,7 @@ function Venues({
     setUser(initialFormState);
     setOpenEditVenue(false);
     setLoading((pre) => !pre);
+    setActiveMarquee(pre => !pre)
   };
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
@@ -247,24 +251,9 @@ function Venues({
       </div>
     </div>
   );
-  console.log(user.image, "sfddsfsdfdsfsdfsfd");
   return (
     <>
       <div className="md:px-10">
-        {/* {renderHeader()}
-        <List
-          dataSource={Venues}
-          renderItem={(venue,index) => (
-            <VenueData
-               venue={venue}
-              onChange={onChange}
-              EditVenue={EditVenue}
-              setIsOpen={setIsOpen}
-              setPreviewImage={setPreviewImage}
-              setPhotoIndex={setPhotoIndex}
-            />
-          )}
-        /> */}
         <Table dataSource={Venues} className="myTable">
           <Column
             title="Check box"
@@ -294,18 +283,9 @@ function Venues({
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                {/* <Image
-                  width={80}
-                  height={60}
-                  src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
-                  alt="Description of the image"
-                /> */}
                 <img
                   alt="sdf"
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
-
-                  // width={80}
-                  // height={80}
                   className="ml-3 w-[80px]"
                 />
                 {
@@ -394,13 +374,6 @@ function Venues({
       >
         <div className=" w-full h-full flex justify-center items-center flex-col">
           <div className="mr-auto bg-primary w-full flex rounded-t-lg">
-            {/* <imge
-              alt="sdf"
-              src={dots}
-              width={40}
-              height={40}
-              className="ml-3"
-            /> */}
             <Image
                   alt="sdf"
               src={dots}

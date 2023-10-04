@@ -174,9 +174,9 @@ function ChooseMenu({
   return (
     <>
       {marqueeData?.dish?.length > 0 && (
-        <div className="md:container md:mx-auto mx-5">
+        <div className="md:container md:mx-auto mx-5 pb-[70px]">
           <p className="text-2xl py-5 md:px-16  mx-auto mb-3">Main Course</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor mb-50px pb-14 ">
             {marqueeData?.dish?.map((item, index) => (
               <DishMenu
                 item={item}
@@ -187,39 +187,47 @@ function ChooseMenu({
               />
             ))}
           </div>
-          <div className="border w-1/2 border-primaryColor mx-auto my-10"></div>
-          <p className="text-2xl py-5 md:px-16  mx-auto">Add One</p>
+
           <div className="">
             {Object.keys(suggestionDish).length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor rounded-md my-5 cursor-pointer">
-                {Object.keys(suggestionDish).map((item, index) => (
-                  <SuggestionDish
-                    key={index}
-                    clickedItems={clickedItems}
-                    handleItemBackground={handleItemBackground}
-                    AddDish={AddDish}
-                    item={item}
-                    searchIndex={searchIndex}
-                    setSearchIndex={setSearchIndex}
-                    index={index}
-                    suggestionDish={suggestionDish}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="border w-1/2 border-primaryColor mx-auto my-10"></div>
+                <p className="text-2xl py-5 md:px-16  mx-auto">Add One</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16 md:px-16 font-sc text-textColor rounded-md my-5 cursor-pointer mb-[30px]">
+                  {Object.keys(suggestionDish).map((item, index) => (
+                    <SuggestionDish
+                      key={index}
+                      clickedItems={clickedItems}
+                      handleItemBackground={handleItemBackground}
+                      AddDish={AddDish}
+                      item={item}
+                      searchIndex={searchIndex}
+                      setSearchIndex={setSearchIndex}
+                      index={index}
+                      suggestionDish={suggestionDish}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
-          <div className="fixed bottom-0 right-0 ">
-            <div className="flex  justify-between md:justify-end items-center space-x-2 font-semibold my-5 md:mr-16">
+          
+        </div>
+      )}
+      <div className="fixed bottom-0 right-0 w-full shadow-2xl bg-white mt-[10px]">
+            <div className="flex  justify-between md:justify-end items-center space-x-2 font-semibold my-5 md:pr-16 	">
               {renderDishes("price") && (
                 <>
                   <p>Total</p>
                   <div className="text-lg px-3 flex items-center">
                     {" "}
                     <span className="text-sm md:text-lg">
-
-                    {renderDishes("price")}{" "}
+                      {renderDishes("price")}{" "}
                     </span>
-                    <span className="md:text-lg text-sm "> <span className="md:text-2xl">/</span> PerPerson</span>{" "}
+                    <span className="md:text-lg text-sm ">
+                      {" "}
+                      <span className="md:text-2xl">/</span> PerPerson
+                    </span>{" "}
                   </div>
                 </>
               )}
@@ -231,8 +239,6 @@ function ChooseMenu({
               </button>
             </div>
           </div>
-        </div>
-      )}
     </>
   );
 }

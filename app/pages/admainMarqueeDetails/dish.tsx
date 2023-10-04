@@ -36,6 +36,7 @@ function Dish({
   setLoading,
   setDeleteDishes,
   deleteDishes,
+  fetchData
 }) {
   const [user, setUser] = useState(initialFormState);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -169,6 +170,7 @@ function Dish({
     setLoading(false);
     setCalculatedDiscount(0);
     setUser(initialFormState);
+    fetchData()
   };
   const deleteDish = async (dishId) => {
     try {

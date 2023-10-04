@@ -47,6 +47,7 @@ function Menus({
   setLoading,
   setDeleteMenus,
   deleteMenus,
+  fetchData
 }) {
   const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
@@ -161,6 +162,7 @@ function Menus({
     setModalOpen(false);
     setUser(initialFormState);
     setLoading(false);
+    fetchData()
   };
   const { TextArea } = Input;
   const deleteMenu = async (menuId) => {

@@ -75,9 +75,11 @@ console.log(userInformation,"userInformation")
       menu: selectedMenu?.name,
       marqueeId: marqueeId,
       id: fieldId,
+      tableShape:userInformation?.tableShape,
       address: userInformation?.address,
       NumberOfPeople: marqueeImage?.numberOfPeople,
       eventType: userInformation?.eventType,
+     
     };
     console.log(users,"lllllll")
     try {
@@ -109,7 +111,7 @@ console.log(userInformation,"userInformation")
 
   const fromDate = formatDate(bookedDates.from);
   const toDate = formatDate(bookedDates.to);
-  console.log("MarqueeImage ", marqueeImage);
+  console.log("MarqueeImage ", typeof selectedMenu?.totalDiscount ,typeof marqueeImage?.numberOfPeople);
 
   return (
     <div>
@@ -126,18 +128,11 @@ console.log(userInformation,"userInformation")
             </div>
           ))}
         </Carousel>
-
-        {/* <div className="flex justify-center object-cover">
-          <img
-            src={marqueeImage?.image?.[0]}
-            alt=""
-            className=" md:w-[920px]  md:h-56 rounded-xl cursor-pointer object-cover "
-          />
-        </div> */}
-
         {/* USERINFORMATION'S DIV */}
-        <div className="bg-bgColor px-4 md:px-6 py-3 md:py-5 flex flex-col justify-between mt-3 md:mt-6 rounded-lg">
 
+        <div className="bg-bgColor px-4 md:px-6 py-3 md:py-5 flex flex-col justify-between mt-3 md:mt-6 rounded-lg">
+        
+            <p className="text-center mb-3 text-2xl">User Information</p>
           {/* FIRST */}
 
           <div className="flex flex-col md:flex md:flex-row justify-between  md:mb-4 md:space-x-3 lg:space-x-0">
@@ -321,19 +316,20 @@ console.log(userInformation,"userInformation")
         </div>
 
         {/* CHOOSE MENU */}
-        <div className="bg-bgColor flex flex-col md:flex-row justify-between p-3 md:p-6 rounded-lg w-full mt-3 md:mt-6">
-        <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
+        <div className="bg-bgColor flex flex-col  p-3 md:p-6 rounded-lg w-full mt-3 md:mt-6">
+        <p className="text-center mb-3 text-2xl">Menu Information</p>
+        <div className={` p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
           <div
             className={`flex items-center justify-between mb-3`}
           >
             <p className="text-center text-xl">{selectedMenu?.name}</p>
             <p className="text-xl flex flex-col justify-end my-auto">
               {" "}
-              Rs {selectedMenu?.perHead} / PerHead
+              {/* Rs {selectedMenu?.perHead} / PerHead */}
             </p>
           </div>
           <div>
-            <p className=" md:w-56 font-sc my-4">
+            <p className=" font-sc my-4">
               This menu contains the following items :
             </p>
           </div>
@@ -354,8 +350,51 @@ console.log(userInformation,"userInformation")
               })}
             </ul>
           </div>
+           
+
+           {/* Add one */}
+
+          <div
+            className={`flex items-center justify-between mt-3 mb-6`}
+          >
+            <p className="text-center text-xl">Add on</p>
+            <p className="text-xl flex flex-col justify-end my-auto">
+              {" "}
+              {/* Rs {selectedMenu?.totalDiscount} / PerHead */}
+            </p>
+          </div>
+          <div>
+            <p className=" font-sc">
+              This menu contains the following items :
+            </p>
+          </div>
+          <div className="w-full">
+            <ul>
+              {selectedMenu?.nameAndPriceArray?.map((dish, i) => {
+                  return (
+                    <div className="flex items-center py-1" key={i}>
+                    <div className={`bg-textColor h-3 w-3 rounded-full mr-3 `}></div>
+                    <div className="flex justify-between w-full">
+
+                    <li className="">{dish.name}</li>
+                    <li className=" font-poppins ">RS {dish.price}</li>
+                    </div>
+                  </div>
+                  );
+                }
+               
+                )}
+            </ul>
+          </div>
+
+          {/* Total Price */}
+
+          <div className="flex justify-end w-full my-4">
+            <p className="text-xl  justify-end"> Total {parseInt(selectedMenu?.totalDiscount) * parseInt(marqueeImage?.numberOfPeople)}</p>
+          </div>
+
         </div>
-        <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
+        {/* <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
           <div
             className={`flex items-center justify-between mb-3`}
           >
@@ -388,12 +427,13 @@ console.log(userInformation,"userInformation")
                 )}
             </ul>
           </div>
-        </div>
+        </div> */}
         </div>
 
         {/* HALL'S DIV */}
         <div className="bg-bgColor px-4 md:px-6 py-3 md:py-5 flex flex-col justify-between rounded-lg  mt-3 md:mt-6">
           {/* HALL'S IMAGES */}
+          <p className="text-center mb-3 text-2xl">Hall Information</p>
 
           {/* First */}
           <div className="flex flex-col md:flex md:flex-row justify-between md:mb-4 md:space-x-3 lg:space-x-0 ">
