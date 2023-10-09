@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Checkbox, Input, List, Popconfirm, Row, Select, Table } from "antd";
+import { Button, Checkbox, Form, Input, List, Popconfirm, Row, Select, Table } from "antd";
 import Loader from "../../component/Loader";
 import DishTable from "./dishTable";
 import Lightbox from "react-image-lightbox";
-// import Image from "next/image";
+import Image from "next/image";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { Image } from "antd";
+// import { Image } from "antd";
 import dots from "@/app/assets/images/dots.svg";
 import Link from "next/link";
 import {
@@ -161,6 +161,7 @@ function Menus({
 
     setModalOpen(false);
     setUser(initialFormState);
+    handleSubmit()
     setLoading(false);
     fetchData()
   };
@@ -204,6 +205,7 @@ function Menus({
       }
       setModalOpen(false);
       setUser(initialFormState);
+      handleSubmit()
       setOpenEditVenue(false);
     } else {
       const images = Object.values(user.image);
@@ -237,6 +239,7 @@ function Menus({
     }
     setModalOpen(false);
     setUser(initialFormState);
+    handleSubmit()
     setOpenEditVenue(false);
     setLoading((prevState) => !prevState);
   };
@@ -315,6 +318,10 @@ function Menus({
       <div className="bg-primary py-4 text-white  w-[13%] rounded-tr-lg  flex justify-end pr-2">Action</div>
     </div>
   );
+  const [form] = Form.useForm();
+  const handleSubmit = () => {
+    form.resetFields();
+  }
   return (
     <div className="md:px-10">
       {/* {renderHeader()}
@@ -356,7 +363,7 @@ function Menus({
             
             <>
             <div className="flex items-center">
-                <Image 
+                <img 
                   width={80}
                   height={60}
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
@@ -571,13 +578,16 @@ function Menus({
                 />
               </div>
             </div>
+            <Form form={form} onFinish={handleSubmit}>
+
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_61.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_75.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">
                   Images
                 </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+              <Form.Item name="image">
                 <Input
                   placeholder="Basic usage"
                   type="file"
@@ -586,10 +596,12 @@ function Menus({
                   onChange={(e) => {
                     setUser({ ...user, image: e.target.files });
                   }}
-                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[500px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
+                </Form.Item>
               </div>
             </div>
+            </Form>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute  text-lg leading-[100%] z-20 pt-1">

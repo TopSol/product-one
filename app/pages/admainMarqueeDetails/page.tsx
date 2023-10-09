@@ -98,7 +98,7 @@ function AdminMarqueeDetails() {
       setIsLoader(false);
     }
   }, [userInformation]);
-
+console.log(!userInformation,"userInformation")
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
@@ -222,7 +222,7 @@ function AdminMarqueeDetails() {
         </div>
       ) : (
         <div className=" h-[100vh]">
-          <div className="mt-14">
+          <div className="">
             <AdminNavbar
               setModalOpen2={setModalOpen2}
               setShowIcon={setShowIcon}
@@ -291,7 +291,7 @@ function AdminMarqueeDetails() {
                 </div>
               ) : null}
 
-              <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto absolute md:relative">
+              <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto absolute md:relative pt-14">
                 {component === "Venues" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
                     <p className="md:text-2xl py-3">Venues</p>
@@ -325,7 +325,6 @@ function AdminMarqueeDetails() {
                       >
                         <button
                           className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
-                      
                         >
                           Delete
                         </button>
@@ -418,8 +417,8 @@ function AdminMarqueeDetails() {
                       </Popconfirm>
                     </div>
                   </div>
-                ) : null}
-
+                ) : null
+                }
                 <div>
                   {component === "Venues" ? (
                     <MarqueeVenues

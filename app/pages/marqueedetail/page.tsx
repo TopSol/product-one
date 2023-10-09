@@ -207,14 +207,14 @@ function Marqueedetail() {
       if (!marqueeDates.from) {
         setMarqueeDates({ ...marqueeDates, from: newRange });
       } else if (marqueeDates.from !== null && !marqueeDates.to) {
-        const date = days.filter((element) => {
+        const date = days?.filter((element) => {
           // Ensure marqueeDates.from is not null before using it
           if (marqueeDates.from !== null) {
             return element >= marqueeDates.from && element <= newRange;
           }
           return false; // Handle the case when marqueeDates.from is null
         });
-        if (date.length > 0) {
+        if (date?.length > 0) {
           // message.error("you can not select this date");
           setMarqueeDates({ from: newRange, to: null });
         } else {
@@ -271,7 +271,13 @@ function Marqueedetail() {
 
 
   const beforeMatcher: DateBefore = { before: currentDate };
-  const disabledDays = [beforeMatcher,...days]
+  if (Array.isArray(days)) {
+    var disabledDays = [beforeMatcher, ...days];
+    
+} else {
+    console.error('Error: days is not an array.');
+}
+  // const disabledDays = [beforeMatcher,...days]
   return (
     <>
       <div>

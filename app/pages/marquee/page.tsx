@@ -18,7 +18,7 @@ import Footer from "@/app/component/footer";
 import Image from "next/image";
 import "react-day-picker/dist/style.css";
 import "./style.css";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs,query, where  } from "firebase/firestore";
 function Marquee() {
   const [sliderValue, setSliderValue] = useState(0);
   const [userData, setUserData] = useState([]);
@@ -50,13 +50,18 @@ function Marquee() {
   }, [marqueeDates]);
   useEffect(() => {
     const getUser = async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
+      // const querySnapshot = await getDocs(collection(db, "users"));
+      const q = query(collection(db, "users"), where("status", "==", "active"));
       const venueSnapshot = await getDocs(collection(db, "Venues"));
       const bookDateSnapshot = await getDocs(collection(db, "bookDate"));
       const dataArr = [];
-      querySnapshot.forEach((doc) => {
-        dataArr.push({ id: doc.id, data: doc.data() });
+      const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+       dataArr.push({ id: doc.id, data: doc.data() });
       });
+      // querySnapshot.forEach((doc) => {
+      //   dataArr.push({ id: doc.id, data: doc.data() });
+      // });
       const VenueArr = [];
       venueSnapshot.forEach((doc) => {
         VenueArr.push({ id: doc.id, data: doc.data() });
@@ -65,7 +70,7 @@ function Marquee() {
       bookDateSnapshot.forEach((doc) => {
         bookDateArr.push({ id: doc.id, data: doc.data() });
       });
-      marquee(VenueArr, dataArr);
+      // marquee(VenueArr, dataArr);
       setVenuesPrice(VenueArr);
       setUserData(dataArr);
       setBookDate(bookDateArr);
@@ -110,10 +115,14 @@ function Marquee() {
     }
   };
   function filterDataByDates(data, marqueeDates = {}) {
+    console.log(data,marqueeDates,'marwueeDates')
     const { from, to } = marqueeDates;
     if (from || to) {
-      data = data.filter((item) => {
+      data = data?.filter((item) => {
+        if(!item.data?.dates) return  true  
         const eventDates = item.data.dates;
+        
+        console.log(eventDates,"eveDates")
         if (eventDates) {
           const dateArrays = Object.values(eventDates);
           const flattenedDates = [].concat(...dateArrays);
@@ -125,6 +134,7 @@ function Marquee() {
               date.toISOString() === fromISOString ||
               date.toISOString() === toISOString
           );
+          console.log(dateMatches,"dateMatches")
           return !dateMatches;
         } else {
           console.log("item.data.dates is undefined or null");
@@ -142,6 +152,7 @@ function Marquee() {
     const requiredServices = filterData.services;
     if (marqueeDates.from || marqueeDates.to) {
       data = filterDataByDates(data, marqueeDates);
+      console.log(data,"after")
     }
     if (filterData.capacity != "") {
       data = data.filter((item) => minCapacity >= item?.data?.maxCapacity);
@@ -204,7 +215,7 @@ function Marquee() {
       }
     } else {
       setFilterMarqueeWithPrice([]);
-      marquee(venuesPrice, userData);
+      // marquee(venuesPrice, userData);
     }
     if (branch.length) {
       setShowMessage(true);
@@ -277,7 +288,7 @@ function Marquee() {
     setCoordinates({});
     setMarqueeDates({ from: null, to: null });
     setFilterMarqueeWithPrice([]);
-    marquee(venuesPrice, userData);
+    // marquee(venuesPrice, userData);
   };
 
   return (
@@ -358,13 +369,13 @@ function Marquee() {
             </div>
             <div className=" mx-auto w-full flex  justify-around items-center">
               <button
-                className="bg-bgColor hover:bg-hoverBgColor  px-10 py-2 rounded-lg mt-6 font-semibold "
+                className="bg-bgColor hover:bg-hoverBgColor  md:text-xs px-10 py-2 rounded-lg mt-6 font-semibold "
                 onClick={() => handleFilterData()}
               >
                 Filter
               </button>
               <button
-                className="border-hoverBgColor hover:border-bgColor hover:bg-bgColor border px-5 py-2 rounded-lg mt-6  font-semibold"
+                className="border-hoverBgColor hover:border-bgColor md:text-xs hover:bg-bgColor border px-5 py-2 rounded-lg mt-6  font-semibold"
                 onClick={() => clearFilter()}
               >
                 Clear Filter

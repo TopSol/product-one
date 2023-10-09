@@ -25,7 +25,7 @@ function DishMenu({item,handleClick,index,selectCheck,key}) {
               }    `}
           >
             <p className="text-center text-xl">{item.name}</p>
-            <p className="text-xl flex flex-col justify-end my-auto">
+            <p className="text-md flex flex-col  justify-end my-auto">
               {" "}
               Rs {item.totalDiscount} / PerPerson
             </p>
