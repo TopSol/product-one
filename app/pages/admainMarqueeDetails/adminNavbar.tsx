@@ -17,11 +17,12 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
   const router = useRouter();
   const { userInformation, addUser, deleteDates, lunchDinner } = useStore();
   const auth = getAuth();
-  const { registration } = useStore();
+  const { registration,deletAdminMarqueeData } = useStore();
   const emptyObJect = {};
   const handleLogout = () => {
     deleteDates();
     addUser("");
+    deletAdminMarqueeData()
     router.push("/pages/auth");
   };
   const items = [

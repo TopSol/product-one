@@ -31,7 +31,7 @@ import venueIcon from "@/app/assets/images/venue.svg";
 import venueWIcon from "@/app/assets/images/venueIcon.svg";
 import { Button, message, Popconfirm } from "antd";
 function AdminMarqueeDetails() {
-  const [component, setComponent] = React.useState("Venues");
+  const [component, setComponent] = React.useState("MarqueeSection");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen1, setModalOpen1] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
@@ -60,7 +60,7 @@ function AdminMarqueeDetails() {
   const [activeMarquee,setActiveMarquee]=useState(false)
   const sideBar = [
     {
-      name: "Venues",
+      name: "MarqueeSection",
       icon: venueIcon,
       wIcon: venueWIcon,
       color: "gray",
@@ -132,7 +132,6 @@ console.log(!userInformation,"userInformation")
     } catch (error) {
       console.error("Error updating document:", error.message);
     }
-   
   };
   const inactiveMarquee=async()=>{
     try {
@@ -292,12 +291,12 @@ console.log(!userInformation,"userInformation")
               ) : null}
 
               <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto absolute md:relative pt-14">
-                {component === "Venues" ? (
+                {component === "MarqueeSection" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
-                    <p className="md:text-2xl py-3">Venues</p>
+                    <p className="md:text-2xl py-3">MarqueeSection</p>
                     {
                       Venues.length == 0 && (
-                      <p className="text-red-700">Please add Venue</p>
+                      <p className="text-red-700">Please add MarqueeSection</p>
                       )
                     }
                     <div className="flex justify-center items-center">
@@ -323,11 +322,16 @@ console.log(!userInformation,"userInformation")
                         okText="Yes"
                         cancelText="No"
                       >
-                        <button
+                        {
+                         Venues.length != 0 && (
+                         <button
                           className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
                         >
                           Delete
                         </button>
+                          )
+                        }
+                        
                       </Popconfirm>
                     </div>
                   </div>
@@ -368,11 +372,16 @@ console.log(!userInformation,"userInformation")
                         okText="Yes"
                         cancelText="No"
                       >
-                        <button
+                        {
+                          Dishes.length != 0 && (
+                            <button
                         className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
                       >
                         Delete
                       </button>
+                          )
+                        }
+                        
                       </Popconfirm>
                       
                     </div>
@@ -409,18 +418,24 @@ console.log(!userInformation,"userInformation")
                         okText="Yes"
                         cancelText="No"
                       >
-                      <button
+                        {
+                          Menus.length != 0 && (
+                            <button
                         className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2"
                       >
                         Delete
                       </button>
+                          )
+                        }
+                        
+                      
                       </Popconfirm>
                     </div>
                   </div>
                 ) : null
                 }
                 <div>
-                  {component === "Venues" ? (
+                  {component === "MarqueeSection" ? (
                     <MarqueeVenues
                       modalOpen={modalOpen}
                       setModalOpen={setModalOpen}

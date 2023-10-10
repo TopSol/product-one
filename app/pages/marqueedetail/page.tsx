@@ -277,7 +277,6 @@ function Marqueedetail() {
 } else {
     console.error('Error: days is not an array.');
 }
-  // const disabledDays = [beforeMatcher,...days]
   return (
     <>
       <div>

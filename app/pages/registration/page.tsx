@@ -274,10 +274,10 @@
 //     height: "550px",
 //   };
 //   console.log("center Location:", center);
-//   const onMarkerDragEnd = (e) => {
-//     // Update the center state when the marker is dragged
-//     setCenter({ lat: e.latLng.lat(), lng: e.latLng.lng() });
-//   };
+  // const onMarkerDragEnd = (e) => {
+  //   // Update the center state when the marker is dragged
+  //   setCenter({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+  // };
 //   console.log(center,"centerdf")
 //   return (
 //     <div>
@@ -603,11 +603,11 @@
 //               onLoad={onLoad}
 //               onUnmount={onUnmount}
 //             >
-//               <Marker
-//                position={center} 
-//                draggable={true}
-//                onDragEnd={onMarkerDragEnd}
-//               />
+              // <Marker
+              //  position={center} 
+              //  draggable={true}
+              //  onDragEnd={onMarkerDragEnd}
+              // />
 //             </GoogleMap>
 //           )}
 //         </div>
@@ -744,6 +744,9 @@ function details() {
     setModalOpen(false);
   };
 
+  const onMarkerDragEnd = (e) => {
+    setCenter({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+  };
   const handleRegistration = async () => {
     if (!multipleImage?.length) {
       message.warning("Please select atleast one image");
@@ -1257,7 +1260,11 @@ function details() {
               onLoad={onLoad}
               onUnmount={onUnmount}
             >
-              <Marker position={center} />
+              <Marker
+               position={center} 
+               draggable={true}
+               onDragEnd={onMarkerDragEnd}
+              />
             </GoogleMap>
           )}
         </div>

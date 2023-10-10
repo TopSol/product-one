@@ -77,6 +77,14 @@ export const useStore = create(
           },
         }));
       },
+      deletAdminMarqueeData:()=>{
+          set({
+            Dishes: [],
+            Venues: [],
+            Menus: [],
+          })
+
+      },
       getDates: async () => {
         try {
           const docRef = doc(db, "bookDate", userInformation.userId);

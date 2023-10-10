@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
 import { Radio, Select, Space } from "antd";
 import { faAngleDown,faLocationDot,faStar,} from "@fortawesome/free-solid-svg-icons";
-import { DayPicker } from "react-day-picker";
+import { DateBefore, DayPicker } from "react-day-picker";
 import { getFormatDates } from "@/app/utils";
 import { collection, getDocs } from "firebase/firestore";
 import { useStore } from "@/store";
@@ -148,13 +148,17 @@ function MarqueeDetails({ item, showMessage }) {
       }
       if (!marqueeDates.from) {
         setMarqueeDates({ ...marqueeDates, from: newRange });
-      } else if (marqueeDates.from && !marqueeDates.to) {
-        const date = days?.filter(
-          (element) => element >= marqueeDates?.from && element <= newRange
-        );
-        if (date.length > 0) {
-          alert("you can not selet this date");
-          setMarqueeDates([]);
+      } else if (marqueeDates.from !== null && !marqueeDates.to) {
+        const date = days?.filter((element) => {
+          // Ensure marqueeDates.from is not null before using it
+          if (marqueeDates.from !== null) {
+            return element >= marqueeDates.from && element <= newRange;
+          }
+          return false; // Handle the case when marqueeDates.from is null
+        });
+        if (date?.length > 0) {
+          // message.error("you can not select this date");
+          setMarqueeDates({ from: newRange, to: null });
         } else {
           setMarqueeDates({ ...marqueeDates, to: newRange });
         }
@@ -162,11 +166,50 @@ function MarqueeDetails({ item, showMessage }) {
         setMarqueeDates({ from: newRange, to: null });
       }
     }
+    // let dateString1 = newRange;
+    // let date1 = new Date(dateString1);
+    // let currentDate = new Date();
+    // if (currentDate <= date1) {
+    //   if (marqueeDates.from > newRange) {
+    //     return setMarqueeDates({ from: newRange, to: null });
+    //   }
+    //   if (!marqueeDates.from) {
+    //     setMarqueeDates({ ...marqueeDates, from: newRange });
+    //   } else if (marqueeDates.from && !marqueeDates.to) {
+    //     const date = days?.filter(
+    //       (element) => element >= marqueeDates?.from && element <= newRange
+    //     );
+    //     if (date.length > 0) {
+    //       alert("you can not selet this date");
+    //       setMarqueeDates([]);
+    //     } else {
+    //       setMarqueeDates({ ...marqueeDates, to: newRange });
+    //     }
+    //   } else if (marqueeDates.from && marqueeDates.to) {
+    //     setMarqueeDates({ from: newRange, to: null });
+    //   }
+    // }
   };
   const bookedStyle = { border: "2px solid currentColor" };
   const handleMarqueeDetails = (id) => {
     router.push(`/pages/marqueedetail?id=${id}`);
   };
+
+
+  const currentDate = new Date(); // Get the current date
+  const currentMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth()
+  );
+
+
+  const beforeMatcher: DateBefore = { before: currentDate };
+  if (Array.isArray(days)) {
+    var disabledDays = [beforeMatcher, ...days];
+    
+} else {
+    console.error('Error: days is not an array.');
+}
   return (
     <>
       <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
@@ -250,18 +293,21 @@ function MarqueeDetails({ item, showMessage }) {
               </div>
             </div>
           </div>
-        </div>
+        </div> 
         <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
           {open[item?.data?.id] && (
             <DayPicker
               className={`${
                 isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
-              } w-[100%]`}
-              disabled={days}
+              } w-[100%]`} 
+              disabled={disabledDays}
               modifiers={{ booked: days }}
               modifiersStyles={{ booked: bookedStyle }}
               selected={marqueeDates}
               onDayClick={handleDateRangeSelect}
+              defaultMonth={currentMonth}
+              fromMonth={currentMonth}
+              toYear={currentDate.getFullYear()}
             />
           )}
           {open[item?.data?.id] && (
@@ -292,6 +338,7 @@ function MarqueeDetails({ item, showMessage }) {
                     }
                     onChange={(e) => {
                       handleVenueName(e, meal);
+                      setMarqueeDates({ from: null, to: null });
                     }}
                     options={name}
                   />
@@ -322,6 +369,7 @@ function MarqueeDetails({ item, showMessage }) {
                       onClick={() => {
                         setMeal("Lunch");
                         handleVenueName(venueId, "Lunch");
+                        setMarqueeDates({ from: null, to: null });
                       }}
                       id="default-radio-2"
                       type="radio"
@@ -346,6 +394,7 @@ function MarqueeDetails({ item, showMessage }) {
                       onClick={() => {
                         setMeal("Diner");
                         handleVenueName(venueId, "Diner");
+                        setMarqueeDates({ from: null, to: null });
                       }}
                       id="default-radio-3"
                       type="radio"

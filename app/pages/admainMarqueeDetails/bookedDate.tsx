@@ -12,6 +12,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dots from "@/app/assets/images/dots.svg";
 import TextArea from "antd/es/input/TextArea";
+import MailSender from "./mailSender/page";
 interface marqueeBookingRecord {
   marqueeHonerPhoneNumber: string;
   marqueeLocation: string;
@@ -64,8 +65,8 @@ function BookedDate() {
     marqueeBookingRecord[]
   >([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
-  const [nodeMailer, setNodeMailer] = useState(false);
   const [detailsData, setDetailsData] = useState<marqueeBookingRecord>();
   const router = useRouter()
   useEffect(() => {
@@ -91,6 +92,8 @@ function BookedDate() {
   }, []);
   
   return (
+    <>
+  
     <div className="md:container mx-auto ">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-[100%] my-6">
         {customerInformation?.map((item, index) => {
@@ -224,7 +227,7 @@ function BookedDate() {
                           {/* </Link>   */}
                           </button>
                           <button
-                            onClick={() => setNodeMailer(true)}
+                            onClick={() => setModalOpen(true)}
                             className=" xl:px-4 lg:px-2 px-3 py-2 bg-green-500 text-white rounded-md"
                           >
                             Accept
@@ -242,6 +245,12 @@ function BookedDate() {
           );
         })}
       </div>
-      </div>)
+      </div>
+      <MailSender 
+      modalOpen={modalOpen}
+      setModalOpen={setModalOpen}
+      />
+      </>
+      )
 }
 export default BookedDate;
