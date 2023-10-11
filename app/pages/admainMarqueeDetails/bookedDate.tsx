@@ -64,7 +64,7 @@ function BookedDate() {
   const [customerInformation, setCustomerInformation] = useState<
     marqueeBookingRecord[]
   >([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [email, setEmail] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
   const [detailsData, setDetailsData] = useState<marqueeBookingRecord>();
@@ -90,6 +90,9 @@ function BookedDate() {
     };
     fetchData();
   }, []);
+
+  console.log("email :" , email);
+  
   
   return (
     <>
@@ -227,7 +230,10 @@ function BookedDate() {
                           {/* </Link>   */}
                           </button>
                           <button
-                            onClick={() => setModalOpen(true)}
+                            onClick={() => {
+                              setEmail(item?.email)
+                              setModalOpen(true)
+                            }}
                             className=" xl:px-4 lg:px-2 px-3 py-2 bg-green-500 text-white rounded-md"
                           >
                             Accept
@@ -249,6 +255,7 @@ function BookedDate() {
       <MailSender 
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
+      email={email}
       />
       </>
       )
