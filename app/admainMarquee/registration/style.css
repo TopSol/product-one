@@ -1,0 +1,32 @@
+.customGeoSearch .leaflet-marker-shadow {
+    display: none;
+}
+
+@media (min-width: 1536px) {
+    .customGeoSearch .leaflet-control-zoom {
+        margin-top: 20px;
+    }
+}
+
+
+.PhoneInputInput {
+    outline: none;
+}
+
+.PhoneInput:hover {
+    border-color: #4096FF;
+}
+
+.PhoneInput {
+    outline: none;
+    border-radius: 5px;
+    padding-top: 16px;
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #cdcdcd;
+}
+
+.modal .ant-modal-content {
+    padding: 0px !important;
+}
