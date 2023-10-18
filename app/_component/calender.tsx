@@ -4,7 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useStore } from "@/store";
 import { getFormatDates } from "@/app/utils";
-import EventTitle from "@/app/admainMarquee/eventTitle";
+import EventTitle from "@/app/adminMarquee/eventTitle";
 const localizer = momentLocalizer(moment);
 const MultipleDaySelectCalendar = ({
   selectedVenue,
@@ -130,21 +130,19 @@ const MultipleDaySelectCalendar = ({
             ? allDate?.map((data) => data)
             : getFormatDates(
                 lunchDinnerDate?.[selectedVenue]?.[lunchType]
-              )?.map(
-                (date) => ({
-                  start: date,
-                  end: date,
-                  title: (
-                    <EventTitle
-                      lunchType={lunchType}
-                      selectedDate={selectedDate}
-                      date={date}
-                      selectedVenue={selectedVenue}
-                      deleteDates={deleteDates}
-                    />
-                  ),
-                })
-              )
+              )?.map((date) => ({
+                start: date,
+                end: date,
+                title: (
+                  <EventTitle
+                    lunchType={lunchType}
+                    selectedDate={selectedDate}
+                    date={date}
+                    selectedVenue={selectedVenue}
+                    deleteDates={deleteDates}
+                  />
+                ),
+              }))
         }
         eventPropGetter={eventStyleGetter}
       />

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import Loader from "@/app/_component/Loader";
 import Lightbox from "react-image-lightbox";
 import Image from "next/image";
-import { Checkbox, Button, Form } from "antd";
+import { Checkbox, Button, Form, Upload } from "antd";
 import Link from "next/link";
 import dots from "../assets/images/dots.svg";
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
+
 import {
   collection,
   getDocs,
@@ -13,6 +15,7 @@ import {
   doc,
   getDoc,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import "./style.css";
@@ -23,6 +26,7 @@ import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "antd";
+import ImgCrop from "antd-img-crop";
 const initialFormState = {
   name: "",
   image: null,
@@ -41,11 +45,13 @@ function Venues({
   fetchData,
 }) {
   const [user, setUser] = useState(initialFormState);
-  const [addVenue, setaddVenue] = useState([]);
+  const [addVenue, setAddVenue] = useState([]);
   const [previewImage, setPreviewImage] = useState([]);
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [imageObject, setImageObject] = useState([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const { Column } = Table;
   const { userInformation, addUser, Venues, addVenues, dates } = useStore();
   const storage = getStorage();
@@ -90,7 +96,7 @@ function Venues({
   const HandleaddVenue = async () => {
     if (
       !user.name ||
-      !user.image ||
+      // !user.image ||
       !user.minCapacity ||
       !user.maxCapacity ||
       !user.price
@@ -98,10 +104,10 @@ function Venues({
       return;
     }
     setLoading(true);
-    const images = Object.values(user.image);
+    // const images = Object.values(imageObject.file);
     const folderName = `images`;
     const imageUrls = await Promise.all(
-      images.map(async (image) => {
+      imageObject.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
         const storageRef = ref(storage2, fileName);
         await uploadBytes(storageRef, image);
@@ -109,7 +115,7 @@ function Venues({
         return urls;
       })
     );
-
+    console.log(imageUrls, "imageUrl");
     const VenueId = Math.random().toString(36).substring(2);
     const venue = {
       name: user.name,
@@ -119,87 +125,112 @@ function Venues({
       userId: userInformation.userId,
       venueId: VenueId,
       price: user.price,
+      cropImage: fileList,
       services: user.services,
     };
+    console.log(venue, "venuevenuevenue");
     try {
       await setDoc(doc(db, "Venues", VenueId), venue);
     } catch (error) {
       console.log(error, "error");
     }
-    setaddVenue([...addVenue, user]);
+    setAddVenue([...addVenue, user]);
     setModalOpen(false);
     setLoading(false);
     setUser(initialFormState);
-    handleSubmit();
+    setFileList([]);
+    setImageObject([]);
+    // handleSubmit();
     fetchData();
   };
-
+  console.log(fileList, "fileListfileList");
   const EditVenue = async (dishId) => {
     setOpenEditVenue(true);
     setModalOpen((prevState) => !prevState);
     const docRef = doc(db, "Venues", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      console.log(docSnap.data(), "docSnap.data()");
       setUser(docSnap.data());
+      setFileList(docSnap.data().cropImage);
+      // console.log(docSnap.data().cropImage, "docSnap.data().cropImage");
     } else {
       console.log("No such document!");
     }
   };
-  console.log(user.image, "userimage");
+  console.log(user, "userimage");
 
   const updateVenue = async (venueId) => {
     setLoading((pre) => !pre);
 
-    if (typeof user?.image[0] === "string") {
-      try {
-        await setDoc(doc(db, "Venues", venueId), user);
-        const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
-        if (updatedIndex !== -1) {
-          const updatedVenues = [...Venues];
-          updatedVenues[updatedIndex] = { ...user, id: venueId };
-          addVenues(updatedVenues);
-        } else {
-          addVenues([...Venues, { ...user, id: venueId }]);
-        }
-      } catch (error) {
-        console.log(error, "error");
-      }
-    } else {
-      const images = Object.values(user.image);
-      console.log(images, "sdfdsfdsfdsf");
-      const folderName = `images`;
-      const imageUrls = await Promise.all(
-        images.map(async (image) => {
-          const fileName = `${folderName}/${image.name}`;
-          const storageRef = ref(storage2, fileName);
-          // const storageRef = ref(storage, fileName);
-          await uploadBytes(storageRef, image);
-          const urls = await getDownloadURL(storageRef);
-          return urls;
-        })
-      );
-      try {
-        const updatedUser = JSON.parse(JSON.stringify(user));
-        updatedUser.image = imageUrls;
+    // if (typeof user?.image[0] === "string") {
+    //   try {
+    //     await setDoc(doc(db, "Venues", venueId), user);
+    //     const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
+    //     if (updatedIndex !== -1) {
+    //       const updatedVenues = [...Venues];
+    //       updatedVenues[updatedIndex] = { ...user, id: venueId };
+    //       addVenues(updatedVenues);
+    //     } else {
+    //       addVenues([...Venues, { ...user, id: venueId }]);
+    //     }
+    //   } catch (error) {
+    //     console.log(error, "error");
+    //   }
+    // } else {
+    // const images = Object.values(user.image);
+    // console.log(images, "sdfdsfdsfdsf");
 
-        await setDoc(doc(db, "Venues", venueId), updatedUser);
+    // const folderName = `images`;
+    // const imageUrls = await Promise.all(
+    //   imageObject.map(async (image) => {
+    //     const fileName = `${folderName}/${image.name}`;
+    //     const storageRef = ref(storage2, fileName);
+    //     await uploadBytes(storageRef, image);
+    //     const urls = await getDownloadURL(storageRef);
+    //     return urls;
+    //   })
+    // );
 
-        const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
-        if (updatedIndex !== -1) {
-          const updatedVenues = [...Venues];
-          updatedVenues[updatedIndex] = { ...updatedUser, id: venueId };
-          addVenues(updatedVenues);
-        } else {
-          addVenues([...Venues, { ...updatedUser, id: venueId }]);
-        }
-      } catch (error) {
-        console.log(error, "error");
+    const folderName = `images`;
+    const imageUrls = await Promise.all(
+      imageObject.map(async (image) => {
+        const fileName = `${folderName}/${image.name}`;
+        const storageRef = ref(storage2, fileName);
+        // const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, image);
+        const urls = await getDownloadURL(storageRef);
+        return urls;
+      })
+    );
+    console.log(imageUrls, "imageUrldfe");
+    try {
+      const updatedUser = JSON.parse(JSON.stringify(user));
+      updatedUser.image = [...updatedUser.image, ...imageUrls];
+      updatedUser.cropImage = [...fileList];
+
+      console.log(updatedUser, "sdfsdfsdf");
+      const washingtonRef = doc(db, "Venues", venueId);
+      await updateDoc(washingtonRef, updatedUser);
+      // await updateDoc(doc(db, "Venues", venueId), updatedUser);
+      const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
+      if (updatedIndex !== -1) {
+        const updatedVenues = [...Venues];
+        updatedVenues[updatedIndex] = { ...updatedUser, id: venueId };
+        addVenues(updatedVenues);
+      } else {
+        addVenues([...Venues, { ...updatedUser, id: venueId }]);
       }
+    } catch (error) {
+      console.log(error, "error");
     }
+    // }
     setModalOpen(false);
-    setUser(initialFormState);
-    handleSubmit();
+    // handleSubmit();
     setOpenEditVenue(false);
+    setUser(initialFormState);
+    setFileList([]);
+    setImageObject([]);
     setLoading((pre) => !pre);
     // setActiveMarquee(pre => !pre)
   };
@@ -252,11 +283,35 @@ function Venues({
       </div>
     </div>
   );
-  const [form] = Form.useForm();
-  const handleSubmit = () => {
-    form.resetFields();
+  // const [form] = Form.useForm();
+  // const handleSubmit = () => {
+  //   form.resetFields();
+  // };
+  const handleOnChange: UploadProps["onChange"] = ({
+    fileList: newFileList,
+  }) => {
+    console.log(newFileList, "newFileList");
+    const lastFile = newFileList[newFileList?.length - 1];
+    newFileList.pop();
+    setFileList([...newFileList, { ...lastFile, status: "done" }]);
+    // setFileList(newFileList);
   };
+  const width = 2000;
+  const height = 1300;
+  const aspectRatio = width / height;
 
+  const beforeUpload = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    console.log(reader, "readerre");
+    reader.onload = () => {
+      setFileList((prev) => [...prev, { url: reader.result }]);
+    };
+    setImageObject((prevImageObject) => [...prevImageObject, file]);
+    // then upload `file` from the argument manually
+    return false;
+  };
+  console.log(imageObject, "imageOnddde", fileList);
   return (
     <>
       <div className="md:px-10">
@@ -407,7 +462,32 @@ function Venues({
                 />
               </div>
             </div>
-            <Form form={form} onFinish={handleSubmit}>
+
+            <p className="mb-2 font-Manrope font-bold  pl-5 lg:pl-0">Image</p>
+            <div className="mb-3 flex flex-start w-full pl-5 lg:pl-0">
+              <ImgCrop
+                rotationSlider
+                aspect={aspectRatio}
+                modalWidth={800}
+                modalTitle={"Edit your Image"}
+              >
+                <Upload
+                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                  listType="picture-card"
+                  fileList={fileList}
+                  beforeUpload={beforeUpload}
+                  // onChange={handleOnChange}
+                  // onPreview={onPreview
+                  showUploadList={{
+                    showPreviewIcon: false,
+                    showRemoveIcon: false,
+                  }}
+                >
+                  {fileList?.length < 5 && "+ Upload"}
+                </Upload>
+              </ImgCrop>
+            </div>
+            {/* <Form form={form} onFinish={handleSubmit}>
               <div className="flex flex-col items-start relative md:mt-3 mt-4">
                 <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                   <p className="absolute text-lg leading-[100%] z-20 pt-1">
@@ -429,7 +509,7 @@ function Venues({
                   </Form.Item>
                 </div>
               </div>
-            </Form>
+            </Form> */}
             <div className="flex flex-col items-start relative">
               <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">
@@ -579,7 +659,7 @@ export default Venues;
 //   fetchData
 // }) {
 //   const [user, setUser] = useState(initialFormState);
-//   const [addVenue, setaddVenue] = useState([]);
+//   const [addVenue, setAddVenue] = useState([]);
 //   const [previewImage, setPreviewImage] = useState([]);
 //   const [openEditVenue, setOpenEditVenue] = useState(false);
 //   const [photoIndex, setPhotoIndex] = useState(0);
@@ -665,7 +745,7 @@ export default Venues;
 //     } catch (error) {
 //       console.log(error, "error");
 //     }
-//     setaddVenue([...addVenue, user]);
+//     setAddVenue([...addVenue, user]);
 //     setUser(initialFormState);
 //     // setModalOpen(false);
 //     setLoading(false);

@@ -10,9 +10,12 @@ import {
   Row,
   Select,
   Table,
+  Upload,
 } from "antd";
 import Loader from "@/app/_component/Loader";
 import DishTable from "./dishTable";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
+
 import Lightbox from "react-image-lightbox";
 import Image from "next/image";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -38,6 +41,7 @@ import {
 import { useStore } from "../../store";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ImgCrop from "antd-img-crop";
 const plainOptions = [
   { label: "Available", value: "Available" },
   { label: "Not Available", value: "NotAvailable" },
@@ -71,6 +75,8 @@ function Menus({
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState([]);
+  const [imageObject, setImageObject] = useState([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [menu, setMenu] = useState([
     {
       label: "Venue Dish",
@@ -129,7 +135,7 @@ function Menus({
   const HandleAddVenues = async () => {
     if (
       !user.name ||
-      !user.image ||
+      // !user.image ||
       !user.price ||
       !user.type ||
       !user.description
@@ -137,11 +143,10 @@ function Menus({
       return;
     }
     setLoading(true);
-    const images = Object.values(user.image);
+    // const images = Object.values(user.image);
     const folderName = `images`;
-
     const urls = await Promise.all(
-      images.map(async (image) => {
+      imageObject.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
@@ -149,7 +154,6 @@ function Menus({
         return utls;
       })
     );
-
     const MenuId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
@@ -158,22 +162,70 @@ function Menus({
       description: user.description,
       menuId: MenuId,
       userId: userInformation.userId,
+      cropImage: fileList,
       price: user.price,
       status: "Available",
     };
-
     try {
       await setDoc(doc(db, "Menus", MenuId), users);
     } catch (error) {
       console.log(error, "error");
     }
     setAddVenues([...addVenues, user]);
-
     setModalOpen(false);
     setUser(initialFormState);
-    handleSubmit();
+    // handleSubmit();
+    setFileList([]);
+    setImageObject([]);
     setLoading(false);
     fetchData();
+    // if (
+    //   !user.name ||
+    //   // !user.image ||
+    //   !user.price ||
+    //   !user.type ||
+    //   !user.description
+    // ) {
+    //   return;
+    // }
+    // setLoading(true);
+    // const images = Object.values(user.image);
+    // const folderName = `images`;
+
+    // const urls = await Promise.all(
+    //   images.map(async (image) => {
+    //     const fileName = `${folderName}/${image.name}`;
+    //     const storageRef = ref(storage, fileName);
+    //     await uploadBytes(storageRef, image);
+    //     const utls = await getDownloadURL(storageRef);
+    //     return utls;
+    //   })
+    // );
+
+    // const MenuId = Math.random().toString(36).substring(2);
+    // const users = {
+    //   name: user.name,
+    //   image: urls,
+    //   type: user.type,
+    //   description: user.description,
+    //   menuId: MenuId,
+    //   userId: userInformation.userId,
+    //   price: user.price,
+    //   status: "Available",
+    // };
+
+    // try {
+    //   await setDoc(doc(db, "Menus", MenuId), users);
+    // } catch (error) {
+    //   console.log(error, "error");
+    // }
+    // setAddVenues([...addVenues, user]);
+
+    // setModalOpen(false);
+    // setUser(initialFormState);
+    // handleSubmit();
+    // setLoading(false);
+    // fetchData();
   };
   const { TextArea } = Input;
   const deleteMenu = async (menuId) => {
@@ -192,63 +244,44 @@ function Menus({
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       setUser(docSnap.data());
+      setFileList(docSnap.data().cropImage);
     } else {
       console.log("No such document!");
     }
   };
   const updateVenue = async (venueId) => {
     setLoading((prevState) => !prevState);
-    if (typeof user?.image[0] === "string") {
-      try {
-        await setDoc(doc(db, "Menus", venueId), user);
+    const folderName = `images`;
+    const urls = await Promise.all(
+      imageObject.map(async (image) => {
+        const fileName = `${folderName}/${image.name}`;
+        const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, image);
+        const utls = await getDownloadURL(storageRef);
+        return utls;
+      })
+    );
+    try {
+      const updatedUser = JSON.parse(JSON.stringify(user));
+      updatedUser.image = [...updatedUser.image, ...urls];
+      updatedUser.cropImage = [...fileList];
+      await setDoc(doc(db, "Menus", venueId), updatedUser);
 
-        const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
-        if (updatedIndex !== -1) {
-          const updatedMenus = [...Menus];
-          updatedMenus[updatedIndex] = { ...user, id: venueId };
-          addMenus(updatedMenus);
-        } else {
-          addMenus([...Menus, { ...user, id: venueId }]);
-        }
-      } catch (error) {
-        console.log(error, "error");
+      const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
+      if (updatedIndex !== -1) {
+        const updatedMenus = [...Menus];
+        updatedMenus[updatedIndex] = { ...updatedUser, id: venueId };
+        addMenus(updatedMenus);
+      } else {
+        addMenus([...Menus, { ...updatedUser, id: venueId }]);
       }
-      setModalOpen(false);
-      setUser(initialFormState);
-      handleSubmit();
-      setOpenEditVenue(false);
-    } else {
-      const images = Object.values(user.image);
-      const folderName = `images`;
-      const urls = await Promise.all(
-        images.map(async (image) => {
-          const fileName = `${folderName}/${image.name}`;
-          const storageRef = ref(storage, fileName);
-          await uploadBytes(storageRef, image);
-          const url = await getDownloadURL(storageRef);
-          return url;
-        })
-      );
-      try {
-        const updatedUser = JSON.parse(JSON.stringify(user));
-        updatedUser.image = urls;
-        await setDoc(doc(db, "Menus", venueId), updatedUser);
-
-        const updatedIndex = Menus.findIndex((menu) => menu.id === venueId);
-        if (updatedIndex !== -1) {
-          const updatedMenus = [...Menus];
-          updatedMenus[updatedIndex] = { ...updatedUser, id: venueId };
-          addMenus(updatedMenus);
-        } else {
-          addMenus([...Menus, { ...updatedUser, id: venueId }]);
-        }
-      } catch (error) {
-        console.log(error, "error");
-      }
+    } catch (error) {
+      console.log(error, "error");
     }
     setModalOpen(false);
     setUser(initialFormState);
-    handleSubmit();
+    setFileList([]);
+    setImageObject([]);
     setOpenEditVenue(false);
     setLoading((prevState) => !prevState);
   };
@@ -329,9 +362,20 @@ function Menus({
       </div>
     </div>
   );
-  const [form] = Form.useForm();
-  const handleSubmit = () => {
-    form.resetFields();
+
+  const width = 2000;
+  const height = 1300;
+  const aspectRatio = width / height;
+  console.log(user, "useruser");
+  const beforeUpload = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    console.log(reader, "readerre");
+    reader.onload = () => {
+      setFileList((prev) => [...prev, { url: reader.result }]);
+    };
+    setImageObject((prevImageObject) => [...prevImageObject, file]);
+    return false;
   };
   return (
     <div className="md:px-10">
@@ -607,7 +651,29 @@ function Menus({
                 />
               </div>
             </div>
-            <Form form={form} onFinish={handleSubmit}>
+            <p className="mb-2 font-Manrope font-bold  pl-5 lg:pl-0">Image</p>
+            <div className="mb-3 flex flex-start w-full pl-5 lg:pl-0">
+              <ImgCrop
+                rotationSlider
+                aspect={aspectRatio}
+                modalWidth={800}
+                modalTitle={"Edit your Image"}
+              >
+                <Upload
+                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                  listType="picture-card"
+                  fileList={fileList}
+                  beforeUpload={beforeUpload}
+                  showUploadList={{
+                    showPreviewIcon: false,
+                    showRemoveIcon: false,
+                  }}
+                >
+                  {fileList?.length < 5 && "+ Upload"}
+                </Upload>
+              </ImgCrop>
+            </div>
+            {/* <Form form={form} onFinish={handleSubmit}>
               <div className="flex flex-col items-start relative md:mt-3 mt-4">
                 <div className="absolute top-[calc(50%_-_75.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                   <p className="absolute text-lg leading-[100%] z-20 pt-1">
@@ -629,7 +695,7 @@ function Menus({
                   </Form.Item>
                 </div>
               </div>
-            </Form>
+            </Form> */}
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute  text-lg leading-[100%] z-20 pt-1">

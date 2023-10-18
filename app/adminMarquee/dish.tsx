@@ -224,6 +224,7 @@ function Dish({
     setUser((prevState) => ({
       ...prevState,
       dishes: selectedOptions,
+      totalDiscount: price,
       price,
     }));
   };
