@@ -16,6 +16,8 @@ module.exports = {
       },
       colors: {
         primaryColor: "#DDB667",
+        successColor:"#62C554",
+        rejectColor:"#FF4A4A",
         matteBlack : "#545454",
         primary:"#F59832",
         lightPrimary: "#F5BE4F",

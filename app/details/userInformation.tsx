@@ -392,7 +392,7 @@ function UserInformation({
                   onChange={(e) => handleChange(e, "straitTable")}
                   className="my-2"
                 >
-                  Strait Table
+                  Straight Table
                 </Radio>
                 <Radio
                   type="radio"

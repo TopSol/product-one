@@ -6,6 +6,7 @@ import MarqueeVenues from "./venues";
 import MarqueeMenus from "./menus";
 import Availability from "./availability";
 import Dish from "./dish";
+import ApprovedMarquee from "./approved";
 import {
   collection,
   query,
@@ -27,6 +28,8 @@ import BookedDate from "./bookedDate";
 import { doc, deleteDoc } from "firebase/firestore";
 import Image from "next/image";
 import addVenue from "@/app/assets/images/Group2.svg";
+import approvedIcon from "../assets/images/approved.svg";
+import approvedWhiteIcon from "../assets/images/approvedWhite.svg";
 import menuIcon from "@/app/assets/images/menuIcon.svg";
 import availabilityIcon from "@/app/assets/images/availabilityIcon.svg";
 import bookingIcon from "@/app/assets/images/bookingIcon.svg";
@@ -97,6 +100,12 @@ function AdminMarqueeDetails() {
       wIcon: bookingWIcon,
       color: "gray",
     },
+    {
+      name: "Approved",
+      icon: approvedIcon,
+      wIcon: approvedWhiteIcon,
+      color: "gray",
+    },
   ];
   const router = useRouter();
   useEffect(() => {
@@ -106,7 +115,6 @@ function AdminMarqueeDetails() {
       setIsLoader(false);
     }
   }, [userInformation]);
-  console.log(!userInformation, "userInformation");
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
@@ -452,6 +460,8 @@ function AdminMarqueeDetails() {
                     <Availability />
                   ) : component === "Booking" ? (
                     <BookedDate />
+                  ) : component === "Approved" ? (
+                    <ApprovedMarquee />
                   ) : null}
                 </div>
               </div>
