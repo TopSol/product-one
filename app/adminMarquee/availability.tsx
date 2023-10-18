@@ -5,7 +5,14 @@ import Select from "antd/es/select";
 import "./style.css";
 import { Button, message, Popconfirm } from "antd";
 import { db } from "@/app/firebase";
-import { getDoc, doc, setDoc, getDocs, collection, updateDoc } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  setDoc,
+  getDocs,
+  collection,
+  updateDoc,
+} from "firebase/firestore";
 function Availability() {
   const { Venues, dates, addDateKey, lunchDinner, userInformation, addDates } =
     useStore();
@@ -21,7 +28,7 @@ function Availability() {
   const [deleteDates, setDeleteDates] = useState([]);
   const [updateDateAfterDelete, setUpdateDateAfterDelete] = useState({});
   const [isDateDelete, setIsDateDelete] = useState(false);
-  const [deleteVenueId,setDeleteVenueId]=useState("")
+  const [deleteVenueId, setDeleteVenueId] = useState("");
   const [menu, setMenu] = useState([
     {
       label: "Lunch",
@@ -85,7 +92,7 @@ function Availability() {
       const dateOfVenue = {
         dates: singleVenueDate,
       };
-  
+
       try {
         await updateDoc(docRef, dateOfVenue);
         console.log("Value of an Existing Document Field has been updated");
@@ -94,12 +101,12 @@ function Availability() {
       }
     } else {
       console.log("No matching item found in lunchDinner for deleteVenueId");
-    }  
+    }
     const NotAvailableDate = {
       id: "wLA6R1rC5mNAcPItqqK7nIleYKB2",
       dates: lunch,
     };
-    if(deleteDates?.length){
+    if (deleteDates?.length) {
       try {
         await setDoc(
           doc(db, "bookDate", "wLA6R1rC5mNAcPItqqK7nIleYKB2"),
@@ -111,7 +118,6 @@ function Availability() {
         console.log(error, "errorssss");
       }
     }
-    
   };
   useEffect(() => {
     const VenueName = Venues.map((item) => ({
@@ -144,11 +150,11 @@ function Availability() {
     });
     const NotAvailableDate = {
       id: venueDate.userId,
-      dates: venueDates, 
+      dates: venueDates,
     };
-    const dateOfVenue={
-      dates:singleVenueDate 
-    }
+    const dateOfVenue = {
+      dates: singleVenueDate,
+    };
     try {
       await setDoc(doc(db, "bookDate", venueDate.userId), NotAvailableDate);
       await setDoc(doc(db, "Venues", id), dateOfVenue, { merge: true });
@@ -179,7 +185,7 @@ function Availability() {
     setShowButton(false);
   };
   const DeleteSendDateInFirebase = async (item) => {
-    setDeleteVenueId(item)
+    setDeleteVenueId(item);
     const data = dates?.[item] || {};
     const docRef = doc(db, "Venues", item);
     const docSnap = await getDoc(docRef);
@@ -188,7 +194,7 @@ function Availability() {
         ...docSnap.data(),
         dates: data,
       };
-    
+
       const result = lunchDinner[selectedVenue]?.[lunchType]?.filter(
         (value) => {
           return !deleteDates.some((item) => value === item.date);
@@ -299,9 +305,7 @@ function Availability() {
                 okText="Yes"
                 cancelText="No"
               >
-                <button
-                  className="bg-primary text-white  px-5 py-2 rounded-lg"
-                >
+                <button className="bg-primary text-white  px-5 py-2 rounded-lg">
                   Delete Dates
                 </button>
               </Popconfirm>
