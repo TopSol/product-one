@@ -21,6 +21,8 @@ function ChooseMenu({
 }) {
   const [suggestionDish, setSuggestionDish] = useState({});
   const [clickedItems, setClickedItems] = useState({});
+  const [searchIndex,setSearchIndex]=useState("")
+
   const { hallInformation, bookedDates,marqueeImage,getMarqueeImage } = useStore();
   useEffect(() => {
     setNewData(marqueeData);
@@ -206,6 +208,9 @@ function ChooseMenu({
                   handleItemBackground={handleItemBackground}
                   AddDish={AddDish}
                   item={item}
+                  searchIndex={searchIndex}
+                  setSearchIndex={setSearchIndex}
+                  index={index}
                   suggestionDish={suggestionDish}
                   />
                 ))}

@@ -321,6 +321,8 @@ function Preview({
       marqueeId:marqueeId,
       id: fieldId,
       address:userInformation?.address,
+      NumberOfPeople:marqueeImage?.numberOfPeople,
+      eventType:userInformation?.eventType,
       
     }; 
      try {
@@ -370,6 +372,7 @@ function Preview({
       return null;
     }
   };
+  console.log(userInformation,"userInformation")
   const fromDate = formatDate(bookedDates.from);
   const toDate = formatDate(bookedDates.to);
   return (
@@ -440,6 +443,33 @@ function Preview({
               </div>
             </div>
           </div>
+
+          <div className="flex flex-col md:flex md:flex-row justify-between  md:my-5">
+            <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
+              <div className="flex items-center my-5 px-3">
+                <div>
+                  <Image src={calander} alt="Image" />
+                </div>
+                <div className="ml-3">
+                  <p className="font-semibold">Number Of People</p>
+                  <p className="text-xs md:text-sm">{marqueeImage?.numberOfPeople}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
+              <div className="flex items-center my-5 px-3">
+                <div>
+                  <Image src={foodIcon} alt="Image" />
+                </div>
+                <div className="ml-3">
+                  <p className="font-semibold">Event Type</p>
+                  <p>{userInformation?.eventType}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         {/* HALL'S THIRD */}
         <div className="flex flex-col md:flex md:flex-row justify-between ">
             <div className="bg-white rounded-lg md:w-[350px] mb-3 md:mb-0">
@@ -582,11 +612,11 @@ function Preview({
         </div>
 
         {/* CHOOSE MENU */}
-        <div className="bg-bgColor p-3 md:p-6 rounded-lg">
+        {/* <div className="bg-bgColor p-3 md:p-6 rounded-lg">
           <div className="bg-white px-3 rounded-lg pt-5">
             <div className="flex justify-between mx-5 font-semibold font-sc">
               <p>{selectedMenu?.name}</p>
-              {/* <p>{hallInformation?.name}</p> */}
+              <p>{hallInformation?.name}</p>
               <p>Rs {hallInformation?.price}</p>
             </div>
             <div className="flex items-center">
@@ -598,6 +628,32 @@ function Preview({
                   {selectedMenu?.dishes?.map((item, index) => (
                     <div
                       className="flex items-center font-sc space-y-2 "
+                      key={index}
+                    >
+                      <div className="bg-matteBlack h-4 w-4 rounded-full mr-3 "></div>
+                      <p className=""> {item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> */}
+       <div className="bg-bgColor p-3 md:p-6 rounded-lg w-full">
+          <div className="bg-white px-3 rounded-lg pt-5 w-full">
+            <div className="flex justify-between mx-3 font-semibold font-sc">
+              <p>{selectedMenu?.name}</p>
+              <p>Rs {hallInformation?.price}</p>
+            </div>
+            <div className="flex items-center  w-full">
+              <div className="ml-3">
+                <p className="font-sc my-4">
+                  This menu contains the following items :
+                </p>
+                <div className="grid grid-cols-4 mb-3">
+                  {selectedMenu?.dishes?.map((item, index) => (
+                    <div
+                      className="flex items-center font-sc "
                       key={index}
                     >
                       <div className="bg-matteBlack h-4 w-4 rounded-full mr-3 "></div>

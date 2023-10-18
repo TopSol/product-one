@@ -27,8 +27,9 @@ const initialFormState = {
   email: "",
   address: "",
   notes: "",
-  PhoneNumber: "",
+  phoneNumber: "",
   tableShape: "",
+  eventType:""
 };
 const steps = [
   {
@@ -67,7 +68,7 @@ function Slider() {
 
   const id = params.get("id");
   
-  
+  console.log(user,"useruser")
   const sendData = async () => {
     const fieldId = Math.random().toString(36).slice(2);
 

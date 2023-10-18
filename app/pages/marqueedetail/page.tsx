@@ -40,7 +40,8 @@ function Marqueedetail() {
     addMarqueeData,
     marqueeData,
     getMarqueeImage,
-    lunchDinner
+    lunchDinner,
+    marqueeImage
   } = useStore();
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -155,6 +156,7 @@ function Marqueedetail() {
       if (docSnap.exists()) {
         const abc = docSnap.data();
         setData(abc);
+        console.log(abc,"hhhhhhhhh")
         getMarqueeImage(abc);
         // getMarqueeImage(abc?.images?.[0]);
       } else {
@@ -238,6 +240,7 @@ function Marqueedetail() {
     });
     console.log(updatedData, "updatedDataupdatedData", numberOfPeople);
     addMarqueeVenueNames(updatedData);
+    getMarqueeImage({...marqueeImage,numberOfPeople:numberOfPeople})
   };
   const handleMouseEnter = (date) => {
     console.log(date, "datsseff");
