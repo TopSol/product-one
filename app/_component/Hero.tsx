@@ -63,7 +63,9 @@ export default function Hero() {
                 <li className="cursor-pointer px-3 ">
                   <Link href="/marquee">Marquee</Link>
                 </li>
-                <li className="cursor-pointer px-3 ">Booking</li>
+                <li className="cursor-pointer px-3 ">
+                  <Link href="/adminMarquee">Booking</Link>
+                </li>
                 <li className="cursor-pointer px-3 ">Services</li>
                 <li className="cursor-pointer px-3 ">Blog</li>
                 <li className="cursor-pointer px-3 ">Help</li>

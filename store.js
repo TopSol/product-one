@@ -1,5 +1,4 @@
-
-import {create} from "zustand";
+import { create } from "zustand";
 import { persist } from "zustand/middleware";
 export const useStore = create(
   persist(
@@ -14,16 +13,16 @@ export const useStore = create(
       bookedDates: [],
       marqueeVenueNames: [],
       marqueeVenueDates: [],
-      marqueeData:{},
+      marqueeData: {},
       hallInformation: {},
       hallIndex: null,
       userInformation: {},
-      marqueeImage:"",
+      marqueeImage: "",
       addUserInformation: (data) => {
         set({ userInformation: data });
       },
       addHallInformation: (data) => {
-        set({ hallInformation: data});
+        set({ hallInformation: data });
       },
       addMarqueeVenueNames: (data) => {
         set({ marqueeVenueNames: data });
@@ -68,22 +67,20 @@ export const useStore = create(
           },
         }));
       },
-      addDates:(dates)=>{
-        set({lunchDinner:dates?.dates})
+      addDates: (dates) => {
+        set({ lunchDinner: dates?.dates });
       },
-      deleteDates:() => {
+      deleteDates: () => {
         set((state) => ({
-          lunchDinner: {
-          },
+          lunchDinner: {},
         }));
       },
-      deletAdminMarqueeData:()=>{
-          set({
-            Dishes: [],
-            Venues: [],
-            Menus: [],
-          })
-
+      deletAdminMarqueeData: () => {
+        set({
+          Dishes: [],
+          Venues: [],
+          Menus: [],
+        });
       },
       getDates: async () => {
         try {
@@ -100,8 +97,8 @@ export const useStore = create(
           console.error("Error fetching document:", error);
         }
       },
-      getMarqueeImage:(image)=>{
-        set({marqueeImage: image})
+      getMarqueeImage: (image) => {
+        set({ marqueeImage: image });
       },
     }),
     {

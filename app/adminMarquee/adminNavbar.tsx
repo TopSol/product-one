@@ -23,8 +23,9 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
     deleteDates();
     addUser("");
     deletAdminMarqueeData();
-    router.push("/admainMarquee/login");
+    router.push("/adminMarquee/login");
   };
+  console.log(userInformation, "userInformationss");
   const items = [
     {
       label: <p>{userInformation.name}</p>,
@@ -86,7 +87,9 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
             <Image src={logo} width={40} alt="Picture of the author" />
           </div>
           <div className="mr-0 md:ml-8">
-            <p className=" text-primary font-poppins ">BOOKING MARQUEE</p>
+            <p className=" text-primary font-poppins ">
+              {userInformation?.marqueeName}
+            </p>
           </div>
         </div>
         <div className="flex items-center">

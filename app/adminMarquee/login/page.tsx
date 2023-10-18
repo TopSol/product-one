@@ -59,7 +59,7 @@ function Login() {
         console.log(user, "signin", user.uid);
         if (user) {
           registrationInformation(user.uid);
-          router.push("/admainMarquee");
+          router.push("/adminMarquee");
           setLoader(true);
         }
       })

@@ -4,13 +4,7 @@ import { Button, Input, Select, Table } from "antd";
 import dots from "@/app/assets/images/dots.svg";
 import Image from "next/image";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import {
-  collection,
-  getDocs,
-  getDoc,
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
 import Loader from "@/app/_component/Loader";
 
 import { useStore } from "../../store";
@@ -194,7 +188,7 @@ function DishModal({
         closeIcon={
           <div className=" right-2 ">
             <svg
-              onClick={() => setModalOpen(false)}
+              onClick={() => setDishModalOpen(false)}
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
               fill="none"
@@ -213,10 +207,10 @@ function DishModal({
           </div>
         }
         footer={[
-          <div className="pb-5 mr-3">
+          <div className="pb-5 mr-3" key={"index"}>
             <Button
               key="cancel"
-              className=" border-primary text-primary "
+              className="AddVenue border-primary text-primary "
               onClick={() => {
                 setDishModalOpen(false);
                 setModalOpen((prev) => !prev);
@@ -253,7 +247,9 @@ function DishModal({
             <div className="md:justify-between flex flex-col">
               <div className="flex flex-col items-start relative md:mt-3 mt-4">
                 <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                  <p className="absolute text-lg leading-[100%] z-20 pt-1">Name</p>
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                    Name
+                  </p>
                 </div>
                 <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                   <Input
@@ -269,7 +265,9 @@ function DishModal({
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
               <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">Images</p>
+                <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                  Images
+                </p>
               </div>
               <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
@@ -287,7 +285,9 @@ function DishModal({
             <div className="md:flex md:justify-between flex flex-col ">
               <div className="flex flex-col items-start relative md:mt-3 mt-4">
                 <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                  <p className="absolute text-lg leading-[100%] z-20 pt-1">Price</p>
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                    Price
+                  </p>
                 </div>
                 <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                   <Input
@@ -303,7 +303,9 @@ function DishModal({
 
               <div className="flex flex-col items-start relative md:mt-3 mt-4">
                 <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                  <p className="absolute text-lg leading-[100%] z-20 pt-1">Type</p>
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                    Type
+                  </p>
                 </div>
                 <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                   <Select
@@ -350,7 +352,6 @@ function DishModal({
                   />
                 </div>
               </div>
-
             </div>
           </div>
         </div>

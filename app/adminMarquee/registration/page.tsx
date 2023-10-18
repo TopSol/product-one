@@ -168,8 +168,9 @@ function Details() {
       await setDoc(doc(db, "users", user.uid), userInfo);
       if (userInfo) {
         addRegistration(userInfo);
-        addUser(user.uid);
-        router.push("/admainMarquee/login");
+        // addUser(user.uid);
+        addUser(userInfo);
+        router.push("/adminMarquee");
         setLoading(true);
       }
     } catch (error) {
@@ -280,7 +281,6 @@ function Details() {
       }
     });
   };
-
   const handleInputChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);

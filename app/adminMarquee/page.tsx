@@ -40,9 +40,11 @@ import bookingWIcon from "@/app/assets/images/bookingWIcon.svg";
 import dishWIcon from "@/app/assets/images/dishWIcon.svg";
 import venueIcon from "@/app/assets/images/venue.svg";
 import venueWIcon from "@/app/assets/images/venueIcon.svg";
+import hall from "@/app/assets/images/hall.svg";
+import hallWhite from "@/app/assets/images/hallWhite.svg";
 import { Button, message, Popconfirm } from "antd";
 function AdminMarqueeDetails() {
-  const [component, setComponent] = React.useState("MarqueeSection");
+  const [component, setComponent] = React.useState("Halls");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen1, setModalOpen1] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
@@ -71,9 +73,9 @@ function AdminMarqueeDetails() {
   const [activeMarquee, setActiveMarquee] = useState(false);
   const sideBar = [
     {
-      name: "MarqueeSection",
-      icon: venueIcon,
-      wIcon: venueWIcon,
+      name: "Halls",
+      icon: hall,
+      wIcon: hallWhite,
       color: "gray",
     },
     {
@@ -95,7 +97,7 @@ function AdminMarqueeDetails() {
       color: "gray",
     },
     {
-      name: "Booking",
+      name: "Bookings",
       icon: bookingIcon,
       wIcon: bookingWIcon,
       color: "gray",
@@ -110,7 +112,7 @@ function AdminMarqueeDetails() {
   const router = useRouter();
   useEffect(() => {
     if (!userInformation) {
-      router.push("/admainMarquee/login");
+      router.push("/adminMarquee/login");
     } else {
       setIsLoader(false);
     }
@@ -234,7 +236,7 @@ function AdminMarqueeDetails() {
           <div className="">
             <AdminNavbar
               setModalOpen2={setModalOpen2}
-              setShowIcon={setShowIcon}
+              // setShowIcon={setShowIcon}
               setRemoveMenuIcon={setRemoveMenuIcon}
             />
             <div className="sidebar flex">
@@ -304,11 +306,11 @@ function AdminMarqueeDetails() {
               ) : null}
 
               <div className="w-[100%]  h-[100vh] z-10 lg:z-0 flex-1 overflow-y-auto absolute md:relative pt-14">
-                {component === "MarqueeSection" ? (
+                {component === "Halls" ? (
                   <div className="flex md:px-5 border rounded-md justify-between  items-center px-4 my-5 mx-5 ">
-                    <p className="md:text-2xl py-3">MarqueeSection</p>
+                    <p className="md:text-2xl py-3">Halls</p>
                     {Venues.length == 0 && (
-                      <p className="text-red-700">Please add MarqueeSection</p>
+                      <p className="text-red-700">Please add Halls</p>
                     )}
                     <div className="flex justify-center items-center">
                       <button
@@ -424,7 +426,7 @@ function AdminMarqueeDetails() {
                   </div>
                 ) : null}
                 <div>
-                  {component === "MarqueeSection" ? (
+                  {component === "Halls" ? (
                     <MarqueeVenues
                       modalOpen={modalOpen}
                       setModalOpen={setModalOpen}
@@ -458,7 +460,7 @@ function AdminMarqueeDetails() {
                     />
                   ) : component === "Availability" ? (
                     <Availability />
-                  ) : component === "Booking" ? (
+                  ) : component === "Bookings" ? (
                     <BookedDate />
                   ) : component === "Approved" ? (
                     <ApprovedMarquee />
