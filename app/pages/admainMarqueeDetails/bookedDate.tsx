@@ -29,7 +29,7 @@ function BookedDate() {
         venuesSnapshot.forEach((doc) => {
           venueDataArr.push(doc.data());
         });
-        console.log(venueDataArr,"venueDataArrvenueDataArr")
+        console.log(venueDataArr, "venueDataArrvenueDataArr");
         setCustomerInformation(venueDataArr);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -90,11 +90,7 @@ function BookedDate() {
                       //   " " +
                       //   item?.UserInformation.lastName
                       // }
-                      value={
-                        item?.firstName +
-                        " " +
-                        item?.lastName
-                      }
+                      value={item?.firstName + " " + item?.lastName}
                       className="border text-sm outline-none z-10  py-5 mb-3 flex justify-center  relative"
                     />
                   </div>
@@ -276,7 +272,7 @@ function BookedDate() {
             </Link>
           }
         </div>
-{/* 
+        {/* 
         <div className="flex justify-between items-center px-6 border-t-[1px] py-2">
           <p>Price</p>
           <p>{"255555"}</p>
