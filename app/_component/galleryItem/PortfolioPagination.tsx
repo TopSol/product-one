@@ -10,7 +10,7 @@ export default function PortfolioPagination() {
       <div className=" grid grid-cols-1 md:grid-cols-2 gap-6 lg:grid-cols-4 lg: lg:container lg:mx-auto ">
         {currentPost.map((item) => (
           <div key={item.id}>
-            <PortfolioCard src={item.src} name={item.name} desc={item.desc} />
+            {/* <PortfolioCard src={item.src} name={item.name} desc={item.desc} /> */}
           </div>
         ))}
       </div>
