@@ -11,7 +11,13 @@ import { Modal } from "antd";
 import { useStore } from "../../../store";
 import { Input, Form } from "antd";
 import { setDoc, doc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  Timestamp,
+} from "firebase/storage";
 import Loader from "@/app/_component/Loader";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import ImageCroper from "@/app/_component/ImageCropper";
@@ -163,6 +169,7 @@ function Details() {
         images: imageUrls,
         description: details.marqueeDetails,
         id: VenueId,
+        createdAt: Timestamp.now(),
       };
       console.log(userInfo, "dsafasdfa");
       await setDoc(doc(db, "users", user.uid), userInfo);

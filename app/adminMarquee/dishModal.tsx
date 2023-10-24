@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Input, Select, Table } from "antd";
+import { Button, Input, Select, Table, Upload } from "antd";
 import dots from "@/app/assets/images/dots.svg";
 import Image from "next/image";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -9,6 +9,7 @@ import Loader from "@/app/_component/Loader";
 
 import { useStore } from "../../store";
 import { Modal } from "antd";
+import ImgCrop from "antd-img-crop";
 const plainOptions = [
   { label: "Available", value: "Available" },
   { label: "Not Available", value: "NotAvailable" },
@@ -34,6 +35,8 @@ function DishModal({
   const [openEditVenue, setOpenEditVenue] = useState(false);
   const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [status, setStatus] = useState();
+  const [imageObject, setImageObject] = useState([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [menu, setMenu] = useState([
     {
       label: "Venue Dish",
@@ -78,7 +81,7 @@ function DishModal({
   const HandleAddVenues = async () => {
     if (
       !user.name ||
-      !user.image ||
+      // !user.image ||
       !user.price ||
       !user.type ||
       !user.description ||
@@ -87,11 +90,21 @@ function DishModal({
       return;
     }
     setLoading(true);
-    const images = Object.values(user.image);
-    const folderName = `images`;
+    // const images = Object.values(user.image);
+    // const folderName = `images`;
 
+    // const urls = await Promise.all(
+    //   images.map(async (image) => {
+    //     const fileName = `${folderName}/${image.name}`;
+    //     const storageRef = ref(storage, fileName);
+    //     await uploadBytes(storageRef, image);
+    //     const utls = await getDownloadURL(storageRef);
+    //     return utls;
+    //   })
+    // );
+    const folderName = `images`;
     const urls = await Promise.all(
-      images.map(async (image) => {
+      imageObject.map(async (image) => {
         const fileName = `${folderName}/${image.name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
@@ -109,6 +122,7 @@ function DishModal({
       menuId: MenuId,
       userId: userInformation.userId,
       price: user.price,
+      cropImage: fileList,
       status: user.status,
     };
     try {
@@ -175,7 +189,19 @@ function DishModal({
     setUser(initialFormState);
     setOpenEditVenue(false);
   };
-
+  const width = 2000;
+  const height = 1300;
+  const aspectRatio = width / height;
+  const beforeUpload = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    console.log(reader, "readerre");
+    reader.onload = () => {
+      setFileList((prev) => [...prev, { url: reader.result }]);
+    };
+    setImageObject((prevImageObject) => [...prevImageObject, file]);
+    return false;
+  };
   return (
     <div>
       <Modal
@@ -183,7 +209,7 @@ function DishModal({
         centered
         open={dishModalOpen}
         width={600}
-        bodyStyle={{ height: 640 }}
+        bodyStyle={{ height: 700 }}
         okButtonProps={{ className: "custom-ok-button" }}
         closeIcon={
           <div className=" right-2 ">
@@ -264,7 +290,29 @@ function DishModal({
               </div>
             </div>
             <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <p className="mb-2 font-Manrope font-bold  pl-5 lg:pl-0">Image</p>
+              <div className="mb-3 flex flex-start w-full pl-5 lg:pl-0">
+                <ImgCrop
+                  rotationSlider
+                  aspect={aspectRatio}
+                  modalWidth={800}
+                  modalTitle={"Edit your Image"}
+                >
+                  <Upload
+                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    listType="picture-card"
+                    fileList={fileList}
+                    beforeUpload={beforeUpload}
+                    showUploadList={{
+                      showPreviewIcon: false,
+                      showRemoveIcon: false,
+                    }}
+                  >
+                    {fileList?.length < 5 && "+ Upload"}
+                  </Upload>
+                </ImgCrop>
+              </div>
+              {/* <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">
                   Images
                 </p>
@@ -280,7 +328,7 @@ function DishModal({
                   }}
                   className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                 />
-              </div>
+              </div> */}
             </div>
             <div className="md:flex md:justify-between flex flex-col ">
               <div className="flex flex-col items-start relative md:mt-3 mt-4">

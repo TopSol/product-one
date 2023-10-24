@@ -16,6 +16,8 @@ import { useStore } from "@/store";
 import { useRouter } from "next/navigation";
 import "react-day-picker/dist/style.css";
 function MarqueeDetails({ item, showMessage }) {
+  const router = useRouter();
+
   const {
     addMarqueeVenueNames,
     addMarqueeVenueDates,
@@ -35,7 +37,6 @@ function MarqueeDetails({ item, showMessage }) {
   const [value, setValue] = useState("1");
   const [venueId, setVenueId] = useState();
   const [marqueeDates, setMarqueeDates] = useState({ from: null, to: null });
-  const router = useRouter();
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
@@ -193,7 +194,7 @@ function MarqueeDetails({ item, showMessage }) {
     //   }
     // }
   };
-  const bookedStyle = { border: "2px solid currentColor" };
+
   const handleMarqueeDetails = (id) => {
     router.push(`/marqueedetail?id=${id}`);
   };

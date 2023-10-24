@@ -387,7 +387,7 @@ function Venues({
         centered
         open={modalOpen}
         width={600}
-        bodyStyle={{ height: 683, padding: 0 }}
+        bodyStyle={{ height: 720, padding: 0 }}
         onCancel={() => setModalOpen(false)}
         okButtonProps={{ className: "custom-ok-button" }}
         closeIcon={

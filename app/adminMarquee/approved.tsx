@@ -1,15 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tag } from "antd";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import "./style.css";
-
+import { useStore } from "@/store";
 function ApprovedMarquee() {
   const [isShowApproved, setIsShowApproved] = useState();
   const { Column } = Table;
-
+  const { userInformation } = useStore();
+  console.log(userInformation);
   const fetchData = async () => {
-    const querySnapshot = await getDocs(collection(db, "approvedMarquee"));
+    // const querySnapshot = await getDocs(collection(db, "approvedMarquee"));
+    const q = query(
+      collection(db, "approvedMarquee"),
+      where("marqueeId", "==", userInformation.userId)
+    );
+    const querySnapshot = await getDocs(q);
     const dataArr = [];
     querySnapshot.forEach((doc) => {
       dataArr.push(doc.data());
