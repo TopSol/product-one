@@ -1,0 +1,53 @@
+.customClasses2 .rdp-month {
+    margin-top: -15px;
+}
+
+.customClasses2 .rdp-day_selected {
+    background-color: blue;
+    /* padding: 15px; */
+    border-radius: 0 !important;
+}
+
+.customClasses2 .rdp-button_reset {
+    margin: 3px 8px;
+}
+
+.customClasses2 .rdp-months {
+    margin-top: -5px;
+    padding-left: 10px;
+    padding-right: 05px;
+    border-radius: 8px;
+    margin-left: -18px;
+    display: flex;
+    justify-content: start;
+}
+.customClasses2 .rdp-caption {
+    padding: 10px 0px;
+    display: flex;
+    justify-content: space-between;
+}
+@media (max-width: 500px) {
+    .customClasses2 .rdp-button_reset {
+        margin: 5px 0px;
+        padding-right: 13px;
+    }
+
+}
+.customClasses3.rdp-button_reset {
+    margin: 3px 8px;
+}
+.customClasses3.rdp-button_reset {
+    margin: 3px 8px;
+}
+
+.customClasses3 .rdp-months{
+    /* margin: auto; */
+    display: flex !important ;
+    /* align-items: center !important; */
+    justify-content: center !important;
+    border-radius: 8px;
+}
+.customClasses3.rdp-caption {
+    padding-left: 10px;
+    padding-top: 20px;
+}

@@ -15,7 +15,15 @@ import Image from "next/image";
 import logo from "@/app/assets/images/image1.svg";
 export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
   const router = useRouter();
-  const { userInformation, addUser, deleteDates, lunchDinner } = useStore();
+  const {
+    userInformation,
+    addUser,
+    deleteDates,
+    lunchDinner,
+    Dishes,
+    Venues,
+    Menus,
+  } = useStore();
   const auth = getAuth();
   const { registration, deletAdminMarqueeData } = useStore();
   const emptyObJect = {};
@@ -23,7 +31,9 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
     deleteDates();
     addUser("");
     deletAdminMarqueeData();
-    router.push("/adminMarquee/login");
+    if (Dishes.length == 0 && Venues.length == 0 && Menus.length == 0) {
+      router.push("/adminMarquee/login");
+    }
   };
   console.log(userInformation, "userInformationss");
   const items = [

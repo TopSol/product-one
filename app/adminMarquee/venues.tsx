@@ -261,25 +261,27 @@ function Venues({
   const beforeUpload = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-
+  
     reader.onload = () => {
-      const img = new window.Image();
+      const img = new window.Image(); // Use window.Image to avoid potential conflicts
       img.src = reader.result;
-
+  
       img.onload = () => {
-        if (aspectRatio) {
+        const width = img.width;
+        const height = img.height;
+  
+        if (width < 20000 || height < 10000) {
+          message.warning("Please upload an image with a width of at least 1500px and a height of at least 1000px.");
+        } else {
           setFileList((prev) => [...prev, { url: reader.result }]);
           setImageObject((prevImageObject) => [...prevImageObject, file]);
-        } else {
-          message.warning(
-            "Please upload an image with a width of at least 1500px and a height of at least 1000px."
-          );
         }
       };
     };
-
+  
     return false;
   };
+  
 
   return (
     <>
@@ -356,7 +358,7 @@ function Venues({
         centered
         open={modalOpen}
         width={600}
-        bodyStyle={{ height: 683, padding: 0 }}
+        bodyStyle={{ height: 720, padding: 0 }}
         onCancel={() => setModalOpen(false)}
         okButtonProps={{ className: "custom-ok-button" }}
         closeIcon={

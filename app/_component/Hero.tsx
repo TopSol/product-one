@@ -9,10 +9,39 @@ import Navbar from "./Navbar";
 import Link from "next/link";
 import Image from "next/image";
 import bg from "../assets/images/background.jpg";
-// import bg from "../app/assets/images/background.jpg";
-export default function Hero() {
+import CityName from "./cityName";
+import { getFormatDates } from "@/app/utils";
+import "../landingPage/style.css";
+import calenderIcon from "../assets/images/calender.svg";
+import SelectDate from "./selectDate";
+import {
+  Timestamp,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebase";
+export default function Hero({
+  setMarquees,
+  setShowMessage,
+  selectedDateRange,
+  setSelectedDateRange,
+  setCityName,
+  cityName,
+  removeCityName,
+}: any) {
   const [show, setShow] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
+  // const [cityName, setCityName] = useState<String>("");
+  const [bookDate, setBookDate] = useState<any[]>([]);
+  const [venuesPrice, setVenuesPrice] = useState<any[]>([]);
+  const [userData, setUserData] = useState<any[]>([]);
+  // const [selectedDateRange, setSelectedDateRange] = useState<any[]>([
+  //   null,
+  //   null,
+  // ]);
+
   useEffect(() => {
     const handleScroll = () => {
       const position = window.pageYOffset;
@@ -23,100 +52,197 @@ export default function Hero() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  const ShowSideBar = () => {
-    setShow(!show);
+  const handleMarqueeData = async () => {
+    setShowMessage(false);
+
+    let q = query(collection(db, "users"), where("address", "==", cityName));
+    const querySnapshot = await getDocs(q);
+    let adminMarqueeUser = [];
+    querySnapshot.forEach((doc) => {
+      adminMarqueeUser.push({ id: doc.id, data: doc.data() });
+    });
+    let venues = [];
+    await Promise.all(
+      adminMarqueeUser.map(async (item) => {
+        let q = query(
+          collection(db, "Venues"),
+          where("userId", "==", item.id)
+          // where("dtaes", not) // Use item.id instead of item.userId
+        );
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+          venues.push({ id: doc.id, data: doc.data() });
+        });
+        // Now you can do something with the venues related to each admin
+      })
+    );
+    // let lunchType=["Diner","Lunch"]
+    const dateObject = new Date(selectedDateRange);
+    // const timestamp = Timestamp.fromDate(dateObject);
+    console.log(venues, "sdfsdfsdfsdfds", adminMarqueeUser);
+    const filteredVenues = venues.filter((venue) => {
+      const { dates } = venue.data;
+      if (dates && dates.Lunch && dates.Diner) {
+        // Convert date strings in "Lunch" and "Diner" arrays to Date objects
+        const lunchDates = dates.Lunch.map((d) => d.toDate());
+        const dinerDates = dates.Diner.map((d) => d.toDate());
+
+        console.log(lunchDates, "dinerDates", dinerDates);
+        // Check if the specified date is not in "Lunch" or "Diner"
+        const dateIsNotInLunch = !lunchDates.some(
+          (d) => d.toDateString() === dateObject.toDateString()
+        );
+        const dateIsNotInDiner = !dinerDates.some(
+          (d) => d.toDateString() === dateObject.toDateString()
+        );
+        console.log(dateIsNotInLunch, dateIsNotInDiner, "ll");
+        return dateIsNotInLunch || dateIsNotInDiner;
+      } else {
+        // Handle the case where dates.Lunch or dates.Diner might not exist
+        return true; // You can choose to include such venues or exclude them based on your requirements
+      }
+    });
+    const finalData = filteredVenues
+      .map((item) => {
+        const { userId } = item.data;
+        return adminMarqueeUser.find((item2) => item2.id === userId);
+      })
+      .filter((item) => item !== undefined);
+    setMarquees(finalData);
+    console.log(finalData, "sdfsfdfsdfsd");
+    // setShowMessage(false);
+    // let data = venuesPrice;
+    // data = data?.filter((item) => {
+    //   if (!item.data?.dates) return true;
+    //   const eventDates = item.data.dates;
+    //   if (eventDates) {
+    //     const dateArrays = Object.values(eventDates);
+    //     const flattenedDates = [].concat(...dateArrays);
+    //     const eventDateObjects = getFormatDates(flattenedDates);
+    //     const fromISOString = selectedDateRange[0]?.toISOString();
+    //     const toISOString = selectedDateRange[1]?.toISOString();
+    //     const dateMatches = eventDateObjects.some(
+    //       (date) =>
+    //         date.toISOString() === fromISOString ||
+    //         date.toISOString() === toISOString
+    //     );
+    //     return !dateMatches;
+    //   } else {
+    //     return false;
+    //   }
+    // });
+    // let arr = [];
+    // userData.map((item) => {
+    //   data.map((item1) => {
+    //     if (
+    //       item?.data?.userId.includes(item1?.data?.userId) &&
+    //       item?.data?.address == cityName
+    //     ) {
+    //       if (!arr.includes(item)) {
+    //         arr.push(item);
+    //       }
+    //     }
+    //   });
+    // });
+    // setMarquees(arr);
   };
   return (
-    <div>
-      <div
-        className={` ${
-          scrollPosition > 130 ? "bg-white" : "bg-transparent"
-        }  fixed top-0 left-0 right-0 z-50`}
-      >
-        <div className="flex justify-between lg:container mx-auto items-center py-7 px-6 lg:px-0">
-          <div>
-            <p className=" text-[#DEB666] font-extrabold text-xl ">
-              BOOKING NOW.
-            </p>
-          </div>
+    <>
+      <div>
+        <div
+          className={` ${
+            scrollPosition > 130 ? "bg-white" : "bg-transparent"
+          }  fixed top-0 left-0 right-0 z-50`}
+        >
+          <div className="flex justify-between lg:container mx-auto items-center py-7 px-6 lg:px-0">
+            <div>
+              <p className=" text-[#DEB666] font-extrabold text-xl ">
+                BOOKING NOW.
+              </p>
+            </div>
 
-          <div className=" flex items-center">
-            <div className="lg:hidden ">
-              {!show && (
-                <FontAwesomeIcon
-                  icon={faBarsStaggered}
-                  size="lg"
-                  className="h-7 text-[#DEB666] md:invisible"
-                  onClick={() => setShow((prev) => !prev)}
+            <div className=" flex items-center">
+              <div className="lg:hidden ">
+                {!show && (
+                  <FontAwesomeIcon
+                    icon={faBarsStaggered}
+                    size="lg"
+                    className="h-7 text-[#DEB666] md:invisible"
+                    onClick={() => setShow((prev) => !prev)}
+                  />
+                )}{" "}
+              </div>
+              <div
+                className={`hidden lg:flex items-center   ${
+                  scrollPosition > 130 ? "text-black" : "text-white"
+                }`}
+              >
+                <ul className=" flex space-x-10 font-roboto font-bold ">
+                  <li className="cursor-pointer px-3 ">
+                    <Link href="/">Home</Link>
+                  </li>
+                  <li className="cursor-pointer px-3 ">
+                    <Link href="/marquee">Marquee</Link>
+                  </li>
+                  <li className="cursor-pointer px-3 ">
+                    <Link href="/adminMarquee">Booking</Link>
+                  </li>
+                  <li className="cursor-pointer px-3 ">Services</li>
+                  <li className="cursor-pointer px-3 ">Blog</li>
+                  <li className="cursor-pointer px-3 ">Help</li>
+                </ul>
+                <button className=" ml-10  text-white bg-[#DEB666] hover:bg-[#DEB999] py-3 px-6 font-roboto rounded-md">
+                  <FontAwesomeIcon icon={faCalendarDays} className="mr-2" />
+                  Booking Now
+                </button>
+              </div>
+            </div>
+          </div>
+          {show ? <SideBar setShow={setShow} /> : null}
+        </div>
+        <div
+          className="absolute  left-0 right-0 z-20 "
+          style={{
+            top: "30%",
+          }}
+        >
+          <p className="text-white text-5xl md:text-6xl lg:text-7xl  text-center font-extrabold font-vollkorn  ">
+            YOUR PLACE YOU HAVE A FUN <br /> AND RELAX
+          </p>
+          <div className=" lg:flex  items-center justify-center mt-[8%] w-full lg:w-[70%] lg:mx-auto">
+            <div className="lg:flex  items-center bg-WhiteColor md:py-9 lg:py-7 rounded-t-xl lg:rounded-tr-none lg:rounded-l-xl  w-full lg-w[50%] xl:w-[60%]">
+              <div className="border-r-2 w-full py-2 flex justify-center cursor-pointer">
+                <CityName setCityName={setCityName} cityName={cityName} />
+              </div>
+              <div className="flex items-center justify-center w-full cursor-pointer pb-4 lg:pb-0">
+                <SelectDate
+                  setBookDate={setBookDate}
+                  setVenuesPrice={setVenuesPrice}
+                  setUserData={setUserData}
+                  setSelectedDateRange={setSelectedDateRange}
+                  selectedDateRange={selectedDateRange}
                 />
-              )}{" "}
+              </div>
             </div>
             <div
-              className={`hidden lg:flex items-center   ${
-                scrollPosition > 130 ? "text-black" : "text-white"
-              }`}
+              className="bg-secondaryColor rounded-b-xl lg:rounded-bl-none lg:rounded-r-xl w-full lg-w[20%] xl:w-[30%]"
+              onClick={() => handleMarqueeData()}
             >
-              <ul className=" flex space-x-10 font-roboto font-bold ">
-                <li className="cursor-pointer px-3 ">
-                  <Link href="/">Home</Link>
-                </li>
-                <li className="cursor-pointer px-3 ">
-                  <Link href="/marquee">Marquee</Link>
-                </li>
-                <li className="cursor-pointer px-3 ">
-                  <Link href="/adminMarquee">Booking</Link>
-                </li>
-                <li className="cursor-pointer px-3 ">Services</li>
-                <li className="cursor-pointer px-3 ">Blog</li>
-                <li className="cursor-pointer px-3 ">Help</li>
-              </ul>
-              <button className=" ml-10  text-white bg-[#DEB666] hover:bg-[#DEB999] py-3 px-6 font-roboto rounded-md">
-                <FontAwesomeIcon icon={faCalendarDays} className="mr-2" />
-                Booking Now
-              </button>
+              <p className=" px-14 lg:px-14 py-6 lg:py-10 text-white text-center">
+                Check Availability
+              </p>
             </div>
           </div>
         </div>
-        {show ? <SideBar setShow={setShow} /> : null}
-      </div>
-      <div
-        className="absolute  left-0 right-0 z-20 "
-        style={{
-          top: "30%",
-        }}
-      >
-        <p className="text-white text-5xl md:text-6xl lg:text-7xl  text-center font-extrabold font-vollkorn  ">
-          YOUR PLACE YOU HAVE A FUN <br /> AND RELAX
-        </p>
-        <div className=" lg:flex  items-center justify-center mt-[8%] mx-6 ">
-          <div className="md:flex bg-WhiteColor py-5 lg:py-7 rounded-t-xl lg:rounded-tr-none lg:rounded-l-xl  ">
-            <div className="border-r-2">
-              <input
-                type="text"
-                placeholder="City"
-                className="ml-12 lg:ml-16 placeholder:text-black w-40 outline-none py-3  "
-              />
-            </div>
-            <input
-              type="text"
-              placeholder="Services"
-              className=" ml-12 w-52 placeholder:text-black outline-none py-3  "
-            />
-          </div>
-          <div className="bg-secondaryColor rounded-b-xl lg:rounded-bl-none lg:rounded-r-xl  ">
-            <p className=" px-14 md:px-20 py-6 md:py-10 text-white ">
-              Check Availability
-            </p>
-          </div>
+        <div className="">
+          <Image
+            src={bg}
+            alt="sdf"
+            className="w-[100%] h-[100vh] z-10 relative object-cover"
+          />
         </div>
       </div>
-      <div className="">
-        <Image
-          src={bg}
-          alt="sdf"
-          className="w-[100%] h-[100vh] z-10 relative object-cover"
-        />
-      </div>
-    </div>
+    </>
   );
 }

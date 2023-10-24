@@ -8,8 +8,6 @@ import {
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 export default function GalleryCard({ item }: any) {
-  console.log(item, "sfhasfjasf");
-  
   const router = useRouter();
   const handleMarqueeDetails = (id) => {
     router.push(`/marqueedetail?id=${id}`);

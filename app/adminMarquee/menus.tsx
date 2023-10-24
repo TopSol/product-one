@@ -598,7 +598,7 @@ function Menus({
           </div>
         }
         width={600}
-        bodyStyle={{ height: 655, padding: 0 }}
+        bodyStyle={{ height: 675, padding: 0 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={[
           <div className="pb-5 mr-3" key={"index"}>

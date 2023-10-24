@@ -61,7 +61,6 @@ function Marquee() {
     orderBy("createdAt"),
     limit(pageSize)
   );
-
   const getUser = async (start: any) => {
     const querySnapshot = await getDocs(q);
     tempdata = [];
@@ -75,7 +74,7 @@ function Marquee() {
     });
     console.log(tempdata.length, "tempdata", tempdata);
     if (tempdata.length == 0) {
-      setShowNextButton(true);
+      // setShowNextButton(true);
       // setShowPreviousButton(false);
     } else {
       setUserData(tempdata);
@@ -84,6 +83,7 @@ function Marquee() {
     }
   };
   function nextPage(lastVisible) {
+    scrollToTop();
     q = query(
       collection(db, "users"),
       where("status", "==", "active"),
@@ -93,8 +93,8 @@ function Marquee() {
     );
     setShowPreviousButton(true);
   }
-  console.log(lastVisible, "lastVisibles");
   function prevPage(firstVisible) {
+    scrollToTop();
     q = query(
       collection(db, "users"),
       where("status", "==", "active"),
@@ -342,8 +342,6 @@ function Marquee() {
       document.body.scrollTop = 0;
     }
   };
-
-  console.log(userData, "userDatauserDatauserData", userData.length);
   return (
     <>
       <div>
@@ -420,7 +418,7 @@ function Marquee() {
                 value={filterData?.services}
               />
             </div>
-            <div className=" mx-auto w-full flex  justify-around items-center">
+            <div className=" mx-auto w-full flex  justify-around items-center mb-5">
               <button
                 className="bg-bgColor hover:bg-hoverBgColor  md:text-xs px-10 py-2 rounded-lg mt-6 font-semibold "
                 onClick={() => handleFilterData()}
@@ -459,7 +457,7 @@ function Marquee() {
             <div className="flex  my-3 justify-between">
               {showPreviousButton ? (
                 <button
-                  className="shadow-none"
+                  className="shadow-none bg-primary py-3 px-4 rounded-md text-white"
                   size="lg"
                   onClick={() => {
                     prevPage(prevVisible);
@@ -473,7 +471,7 @@ function Marquee() {
               )}
               {!showNextButton ? (
                 <button
-                  className="shadow-none"
+                  className="shadow-none  bg-primary py-3 px-7 rounded-md text-white "
                   size="lg"
                   onClick={() => {
                     nextPage(lastVisible);
