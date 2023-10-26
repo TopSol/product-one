@@ -53,7 +53,7 @@ function UserInformation({
       return;
     }
     const phone = value;
-    const convertedPhoneNumber = phone.replace(/^0/, "");
+    const convertedPhoneNumber = (phone as any).replace(/^0/, "");
     const users = {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -158,7 +158,7 @@ function UserInformation({
                       type="firstName"
                       name="firstName"
                       value={user.firstName}
-                      onChange={handleChange}
+                      onChange={handleChange as any}
                       className="border outline-none lg:w-72 xl:w-96 z-10 w-full py-6 mb-3 flex justify-center text-xs relative"
                       onKeyPress={preventNonNumericInput}
                     />
@@ -186,7 +186,7 @@ function UserInformation({
                       type="lastName"
                       name="lastName"
                       value={user.lastName}
-                      onChange={handleChange}
+                      onChange={handleChange as any}
                       onKeyPress={preventNonNumericInput}
                       className="border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
                     />
@@ -218,7 +218,7 @@ function UserInformation({
                       type="email"
                       name="email"
                       value={user.email}
-                      onChange={handleChange}
+                      onChange={handleChange as any}
                       className="border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
                     />
                   </Form.Item>
@@ -248,7 +248,7 @@ function UserInformation({
                       countryCallingCodeEditable={false}
                       defaultCountry="PK"
                       value={user.PhoneNumber}
-                      onChange={setValue}
+                      onChange={setValue as any}
                       className="border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-6 mb-3 flex justify-center text-xs relative px-2"
                     />
                   </Form.Item>
@@ -280,7 +280,7 @@ function UserInformation({
                         minRows: 3,
                         maxRows: 5,
                       }}
-                      onChange={handleChange}
+                      onChange={handleChange as any}
                       className="  border outline-none  lg:w-72 xl:w-96 z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
                     />
                   </Form.Item>
@@ -306,7 +306,7 @@ function UserInformation({
                       rows={4}
                       name="address"
                       value={user.address}
-                      onChange={handleChange}
+                      onChange={handleChange as any}
                       autoSize={{
                         minRows: 3,
                         maxRows: 5,
@@ -329,7 +329,7 @@ function UserInformation({
                     type="eventType"
                     name="eventType"
                     value={user.eventType}
-                    onChange={handleChange}
+                    onChange={handleChange as any}
                     className="border outline-none z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
                   />
                 </div>

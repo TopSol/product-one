@@ -10,14 +10,8 @@ import { useRouter } from "next/navigation";
 import { Modal } from "antd";
 import { useStore } from "../../../store";
 import { Input, Form } from "antd";
-import { setDoc, doc } from "firebase/firestore";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  Timestamp,
-} from "firebase/storage";
+import { setDoc, doc, Timestamp } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Loader from "@/app/_component/Loader";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import ImageCroper from "@/app/_component/ImageCropper";
@@ -50,13 +44,13 @@ function Details() {
   const [modal1Open, setModal1Open] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
   const [location, setLocation] = useState({});
-  const [value, setValue] = useState();
-  const [landLineNumber, setLandLineNumber] = useState();
+  const [value, setValue] = useState<any>();
+  const [landLineNumber, setLandLineNumber] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [cropImage, setCropImage] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [image, setImage] = useState([]);
-  const [multipleImage, setMultipleImage] = useState([]);
+  const [multipleImage, setMultipleImage] = useState<any[]>([]);
   const [prevImages, setPrevImages] = useState([]);
   const { addUser, addRegistration } = useStore();
   const [center, setCenter] = useState({ lat: 31.4187, lng: 73.0791 });
@@ -149,7 +143,7 @@ function Details() {
           console.log(image?.name, "imagrimagrsdfasdfasdfasgasda");
           const fileName = `${folderName}/${image?.name}`;
           const storageRef = ref(storage, fileName);
-          await uploadBytes(storageRef, image?.originFileObj);
+          await uploadBytes(storageRef, image?.originFileObj as any);
           const urls = await getDownloadURL(storageRef);
           console.log(urls, "urlsurls");
           return urls;
@@ -207,14 +201,14 @@ function Details() {
     setImage({
       id: 0,
       img: URL.createObjectURL(images?.[0]),
-    });
+    } as any);
     const validImages: any = [];
     try {
       await Promise.all(
         Object.values(images).map(async (image, index) => {
           console.log(image, "image");
           const img = new window.Image();
-          img.src = URL.createObjectURL(image);
+          img.src = URL.createObjectURL(image as any);
           await new Promise((resolve) => {
             img.onload = function () {
               if (img.width > 500 && img.height > 500) {
@@ -225,7 +219,7 @@ function Details() {
               } else {
                 message.warning("Image dimensions are not valid.");
               }
-              resolve();
+              // resolve();
             };
           });
         })
@@ -253,14 +247,14 @@ function Details() {
       setImage({
         id: selectedImage.id,
         img: objectURL,
-      });
+      } as any);
     } else {
       console.error("Image not found with id:", id);
     }
   };
 
   const onLoad = (map) => {
-    setAutocomplete(new window.google.maps.places.AutocompleteService());
+    setAutocomplete(new window.google.maps.places.AutocompleteService() as any);
   };
 
   const onUnmount = () => {
@@ -269,7 +263,7 @@ function Details() {
 
   const handleSearch = () => {
     const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ address: searchQuery }, (results, status) => {
+    geocoder.geocode({ address: searchQuery }, (results: any, status) => {
       if (status === "OK" && results[0]) {
         const latitude = results[0].geometry.location.lat().toFixed(7);
         const longitude = results[0].geometry.location.lng().toFixed(7);
@@ -292,7 +286,7 @@ function Details() {
     const query = event.target.value;
     setSearchQuery(query);
     if (autocomplete && query) {
-      autocomplete.getPlacePredictions(
+      (autocomplete as any).getPlacePredictions(
         {
           input: query,
         },
@@ -323,24 +317,24 @@ function Details() {
     // setFileList(newFileList);
   };
 
-  const onPreview = async (file: UploadFile) => {
-    let src = file.url as string;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj as RcFile);
-        reader.onload = () => resolve(reader.result as string);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
-  };
+  // const onPreview = async (file: UploadFile) => {
+  //   let src = file.url as string;
+  //   if (!src) {
+  //     src = await new Promise((resolve) => {
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(file.originFileObj as RcFile);
+  //       reader.onload = () => resolve(reader.result as string);
+  //     });
+  //   }
+  //   const image = new Image();
+  //   image.src = src;
+  //   const imgWindow = window.open(src);
+  //   imgWindow?.document.write(image.outerHTML);
+  // };
+  const { TextArea } = Input;
   const width = 2000;
   const height = 1300;
   const aspectRatio = width / height;
-  console.log(fileList, "fileListfileList");
   return (
     <>
       <div className=" md:container mx-auto md:px-5">
@@ -535,7 +529,7 @@ function Details() {
                       },
                     ]}
                   >
-                    <Input
+                    <TextArea
                       rows={5}
                       maxLength={200}
                       placeholder="Enter Description Here"
@@ -690,13 +684,13 @@ function Details() {
                   >
                     {predictions.map((prediction) => (
                       <li
-                        key={prediction.place_id}
+                        key={(prediction as any).place_id}
                         onClick={() => {
                           handlePredictionClick(prediction);
                         }}
                         style={{ padding: "8px", cursor: "pointer" }}
                       >
-                        {prediction.description}
+                        {(prediction as any).description}
                       </li>
                     ))}
                   </ul>
@@ -772,7 +766,7 @@ function Details() {
         {/* <div className="flex justify-center"> */}
 
         <ImageCroper
-          image={image}
+          image={image as any}
           setModal1Open={setModal1Open}
           setCropImage={setCropImage}
           multipleImage={multipleImage}

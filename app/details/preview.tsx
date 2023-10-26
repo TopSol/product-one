@@ -29,7 +29,7 @@ function Preview({
   userInformation,
   marqueeId,
   selectedMenu,
-  setSlider
+  setSlider,
 }) {
   const { hallInformation, bookedDates, marqueeData, marqueeImage } =
     useStore();
@@ -38,17 +38,17 @@ function Preview({
   const [blogs, setBlogs] = useState([]);
   const [dates, setDates] = useState();
   const router = useRouter();
-console.log(selectedMenu,"marqueeImagessssssss")
+  console.log(selectedMenu, "marqueeImagessssssss");
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
-      const tempArray :any = response.docs.map((doc) => doc.data());
+      const tempArray: any = response.docs.map((doc) => doc.data());
       setBlogs(tempArray);
     } catch (error) {
       console.error("Error fetching blogs:", error);
     }
   };
-console.log(userInformation,"userInformation")
+  console.log(userInformation, "userInformation");
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -62,7 +62,7 @@ console.log(userInformation,"userInformation")
       venueName: marqueeImage?.name,
       venuePrice: marqueeImage?.price,
       dates: bookedDates,
-      marqueeHonerPhoneNumber:marqueeData?.data?.phoneNumber,
+      marqueeHonerPhoneNumber: marqueeData?.data?.phoneNumber,
       marqueeLocation: marqueeData?.data?.address,
       mealType: marqueeData?.lunchType,
       services: userInformation?.services,
@@ -73,15 +73,13 @@ console.log(userInformation,"userInformation")
       notes: userInformation?.notes,
       dishes: selectedMenu,
       menu: selectedMenu?.name,
-      marqueeId: marqueeId,
-      id: fieldId,
-      tableShape:userInformation?.tableShape,
+      userId: marqueeId,
+      marqueeId: fieldId,
+      tableShape: userInformation?.tableShape,
       address: userInformation?.address,
       NumberOfPeople: marqueeImage?.numberOfPeople,
       eventType: userInformation?.eventType,
-     
     };
-    console.log(users,"lllllll")
     try {
       await setDoc(doc(db, "contactUs", fieldId), users);
       setSuccessPage(true);
@@ -94,7 +92,11 @@ console.log(userInformation,"userInformation")
   let a = parseInt(userInformation?.Heating);
 
   const formatDate = (dateString) => {
-    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
     const formattedDate = new Date(dateString).toLocaleDateString(
       undefined,
       options
@@ -111,7 +113,11 @@ console.log(userInformation,"userInformation")
 
   const fromDate = formatDate(bookedDates.from);
   const toDate = formatDate(bookedDates.to);
-  console.log("MarqueeImage ", typeof selectedMenu?.totalDiscount ,typeof marqueeImage?.numberOfPeople);
+  console.log(
+    "MarqueeImage ",
+    typeof selectedMenu?.totalDiscount,
+    typeof marqueeImage?.numberOfPeople
+  );
 
   return (
     <div>
@@ -122,6 +128,8 @@ console.log(userInformation,"userInformation")
             <div className="flex justify-center object-cover" key={index}>
               <img
                 src={item}
+                // width={920}
+                // height={56}
                 alt="Images"
                 className=" md:w-[920px] md:h-56 rounded-xl cursor-pointer object-cover "
               />
@@ -131,8 +139,7 @@ console.log(userInformation,"userInformation")
         {/* USERINFORMATION'S DIV */}
 
         <div className="bg-bgColor px-4 md:px-6 py-3 md:py-5 flex flex-col justify-between mt-3 md:mt-6 rounded-lg">
-        
-            <p className="text-center mb-3 text-2xl">User Information</p>
+          <p className="text-center mb-3 text-2xl">User Information</p>
           {/* FIRST */}
 
           <div className="flex flex-col md:flex md:flex-row justify-between  md:mb-4 md:space-x-3 lg:space-x-0">
@@ -200,7 +207,7 @@ console.log(userInformation,"userInformation")
                   <Image src={saIcon} alt="Image" />
                 </div>
                 <div className="ml-3">
-                  <p className="font-semibold">Table's Type</p>
+                  <p className="font-semibold">Table Type</p>
                   <p className="text-xs md:text-sm">
                     {userInformation?.tableShape}
                   </p>
@@ -214,7 +221,7 @@ console.log(userInformation,"userInformation")
                   <Image src={foodIcon} alt="Image" />
                 </div>
                 <div className="ml-3">
-                  <p className="font-semibold">Meal's Time</p>
+                  <p className="font-semibold">Meal Time</p>
                   <p>{marqueeData?.lunchType}</p>
                 </div>
               </div>
@@ -317,84 +324,84 @@ console.log(userInformation,"userInformation")
 
         {/* CHOOSE MENU */}
         <div className="bg-bgColor flex flex-col  p-3 md:p-6 rounded-lg w-full mt-3 md:mt-6">
-        <p className="text-center mb-3 text-2xl">Menu Information</p>
-        <div className={` p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
+          <p className="text-center mb-3 text-2xl">Menu Information</p>
           <div
-            className={`flex items-center justify-between mb-3`}
+            className={` p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}
           >
-            <p className="text-center text-xl">{selectedMenu?.name}</p>
-            <p className="text-xl flex flex-col justify-end my-auto">
-              {" "}
-              {/* Rs {selectedMenu?.perHead} / PerHead */}
-            </p>
-          </div>
-          <div>
-            <p className=" font-sc my-4">
-              This menu contains the following items :
-            </p>
-          </div>
-          <div className="w-full">
-            <ul>
-              { selectedMenu?.nameAndPriceArrays?.map((dish, i) => {
+            <div className={`flex items-center justify-between mb-3`}>
+              <p className="text-center text-xl">{selectedMenu?.name}</p>
+              <p className="text-xl flex flex-col justify-end my-auto">
+                {" "}
+                {/* Rs {selectedMenu?.perHead} / PerHead */}
+              </p>
+            </div>
+            <div>
+              <p className=" font-sc my-4">
+                This menu contains the following items :
+              </p>
+            </div>
+            <div className="w-full">
+              <ul>
+                {selectedMenu?.nameAndPriceArrays?.map((dish, i) => {
                   return (
                     <div className="flex items-center py-1" key={i}>
-                      <div className={`bg-textColor h-3 w-3 rounded-full mr-3 `}></div>
+                      <div
+                        className={`bg-textColor h-3 w-3 rounded-full mr-3 `}
+                      ></div>
                       <div className="flex justify-between w-full">
-
-                      <li className="">{dish.name}</li>
-                      <li className=" font-poppins ">RS {dish.price}</li>
+                        <li className="">{dish.name}</li>
+                        <li className=" font-poppins ">RS {dish.price}</li>
                       </div>
                     </div>
                   );
-               
-              })}
-            </ul>
-          </div>
-           
+                })}
+              </ul>
+            </div>
 
-           {/* Add one */}
+            {/* Add one */}
 
-          <div
-            className={`flex items-center justify-between mt-3 mb-6`}
-          >
-            <p className="text-center text-xl">Add on</p>
-            <p className="text-xl flex flex-col justify-end my-auto">
-              {" "}
-              {/* Rs {selectedMenu?.totalDiscount} / PerHead */}
-            </p>
-          </div>
-          <div>
-            <p className=" font-sc">
-              This menu contains the following items :
-            </p>
-          </div>
-          <div className="w-full">
-            <ul>
-              {selectedMenu?.nameAndPriceArray?.map((dish, i) => {
+            <div className={`flex items-center justify-between mt-3 mb-6`}>
+              <p className="text-center text-xl">Add on</p>
+              <p className="text-xl flex flex-col justify-end my-auto">
+                {" "}
+                {/* Rs {selectedMenu?.totalDiscount} / PerHead */}
+              </p>
+            </div>
+            <div>
+              <p className=" font-sc">
+                This menu contains the following items :
+              </p>
+            </div>
+            <div className="w-full">
+              <ul>
+                {selectedMenu?.nameAndPriceArray?.map((dish, i) => {
                   return (
                     <div className="flex items-center py-1" key={i}>
-                    <div className={`bg-textColor h-3 w-3 rounded-full mr-3 `}></div>
-                    <div className="flex justify-between w-full">
-
-                    <li className="">{dish.name}</li>
-                    <li className=" font-poppins ">RS {dish.price}</li>
+                      <div
+                        className={`bg-textColor h-3 w-3 rounded-full mr-3 `}
+                      ></div>
+                      <div className="flex justify-between w-full">
+                        <li className="">{dish.name}</li>
+                        <li className=" font-poppins ">RS {dish.price}</li>
+                      </div>
                     </div>
-                  </div>
                   );
-                }
-               
-                )}
-            </ul>
+                })}
+              </ul>
+            </div>
+
+            {/* Total Price */}
+
+            <div className="flex justify-end w-full my-4">
+              <p className="text-xl  justify-end">
+                {" "}
+                Total{" "}
+                {parseInt(selectedMenu?.totalDiscount) *
+                  parseInt(marqueeImage?.numberOfPeople)}
+              </p>
+            </div>
           </div>
-
-          {/* Total Price */}
-
-          <div className="flex justify-end w-full my-4">
-            <p className="text-xl  justify-end"> Total {parseInt(selectedMenu?.totalDiscount) * parseInt(marqueeImage?.numberOfPeople)}</p>
-          </div>
-
-        </div>
-        {/* <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
+          {/* <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
           <div
             className={`flex items-center justify-between mb-3`}
           >
@@ -468,7 +475,9 @@ console.log(userInformation,"userInformation")
                   <Image src={call} alt="Image" />
                 </div>
                 <div className="ml-3">
-                  <p className="font-bold md:font-semibold text-xs md:text-base">Marquee's Contact Number</p>
+                  <p className="font-bold md:font-semibold text-xs md:text-base">
+                    Marquee Contact Number
+                  </p>
                   <p className="text-sm">{marqueeData?.data?.phoneNumber}</p>
                 </div>
               </div>
@@ -480,7 +489,7 @@ console.log(userInformation,"userInformation")
                   <Image src={address} alt="Image" />
                 </div>
                 <div className="ml-3">
-                  <p className="font-semibold">Marquee's Location</p>
+                  <p className="font-semibold">Marquee Location</p>
                   <p>{marqueeData?.data?.address}</p>
                 </div>
               </div>
@@ -488,22 +497,20 @@ console.log(userInformation,"userInformation")
           </div>
         </div>
         <div className="flex justify-between ">
-        <button
-          className="border px-6 py-3 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
-          onClick={() => setSlider(1)}
-        >
-          Previous
-        </button>
-        <button
-          className="border px-5 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
-          onClick={() => nextPage()}
-        >
-          Book Now
-        </button>
+          <button
+            className="border px-6 py-3 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+            onClick={() => setSlider(1)}
+          >
+            Previous
+          </button>
+          <button
+            className="border px-5 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+            onClick={() => nextPage()}
+          >
+            Book Now
+          </button>
+        </div>
       </div>
-      </div>
-
-      
     </div>
   );
 }

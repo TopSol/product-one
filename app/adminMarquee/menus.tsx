@@ -108,7 +108,7 @@ function Menus({
       .then((res) => {
         res.items.forEach((itemRef) => {
           getDownloadURL(itemRef).then((url) => {
-            setAddVenuesImage((prevState) => [...prevState, url]);
+            setAddVenuesImage((prevState) => [...prevState, url] as any);
           });
         });
       })
@@ -147,7 +147,7 @@ function Menus({
     const folderName = `images`;
     const urls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const utls = await getDownloadURL(storageRef);
@@ -171,7 +171,7 @@ function Menus({
     } catch (error) {
       console.log(error, "error");
     }
-    setAddVenues([...addVenues, user]);
+    setAddVenues([...addVenues, user] as any);
     setModalOpen(false);
     setUser(initialFormState);
     // handleSubmit();
@@ -243,7 +243,7 @@ function Menus({
     const docRef = doc(db, "Menus", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      setUser(docSnap.data());
+      setUser(docSnap.data() as any);
       setFileList(docSnap.data().cropImage);
     } else {
       console.log("No such document!");
@@ -254,7 +254,7 @@ function Menus({
     const folderName = `images`;
     const urls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const utls = await getDownloadURL(storageRef);
@@ -372,9 +372,9 @@ function Menus({
     reader.readAsDataURL(file);
     console.log(reader, "readerre");
     reader.onload = () => {
-      setFileList((prev) => [...prev, { url: reader.result }]);
+      setFileList((prev) => [...prev, { url: reader.result }] as any);
     };
-    setImageObject((prevImageObject) => [...prevImageObject, file]);
+    setImageObject((prevImageObject) => [...prevImageObject, file] as any);
     return false;
   };
   return (
@@ -507,7 +507,7 @@ function Menus({
           dataIndex="status"
           key="status"
           className="text-base"
-          render={(status, record) => (
+          render={(status, record: any) => (
             <Select
               // showSearch
               className={"status"}
@@ -520,7 +520,7 @@ function Menus({
                 backgroundColor: status === "Available" ? "#D4EAD8" : "#F9E1D7",
                 borderRadius: 15,
               }}
-              filterOption={(input, option) =>
+              filterOption={(input, option: any) =>
                 (option?.label ?? "")
                   .toLowerCase()
                   .includes(input.toLowerCase())
@@ -539,7 +539,7 @@ function Menus({
           )}
         />
         <Column
-          title="Action"
+          title="Edit"
           dataIndex="menuId"
           key="menuId"
           className="text-base"
@@ -613,7 +613,9 @@ function Menus({
               key="ok"
               type="primary"
               onClick={() =>
-                openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+                openEditVenue
+                  ? updateVenue((user as any).menuId)
+                  : HandleAddVenues()
               }
               className="AddVenue  bg-primary text-white"
             >
@@ -728,7 +730,7 @@ function Menus({
                   }}
                   placeholder="Search to Select"
                   optionFilterProp="children"
-                  filterOption={(input, option) =>
+                  filterOption={(input, option: any) =>
                     option.label.toLowerCase().includes(input.toLowerCase())
                   }
                   filterSort={(optionA, optionB) =>

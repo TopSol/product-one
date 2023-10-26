@@ -25,14 +25,15 @@ const firebaseConfig = {
   storageBucket: "verbundenheit-40632.appspot.com",
   messagingSenderId: "670605792815",
   appId: "1:670605792815:web:14367c3d8e393f80b118da",
-  measurementId: "G-2DZD3DHN0X"
+  measurementId: "G-2DZD3DHN0X",
 };
-
 
 // Initialize Firebase
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);
+// const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
+
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export const storage= getStorage(app);
+export const storage = getStorage(app);

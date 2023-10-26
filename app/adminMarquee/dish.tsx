@@ -25,7 +25,13 @@ const initialFormState = {
   discount: 0,
   totalDiscount: 0,
 };
-
+interface type {
+  name: string;
+  price: number;
+  dishes: never[];
+  discount: number;
+  totalDiscount: number;
+}
 function Dish({
   modalOpen,
   setModalOpen,
@@ -37,9 +43,9 @@ function Dish({
   deleteDishes,
   fetchData,
 }) {
-  const [user, setUser] = useState(initialFormState);
+  const [user, setUser] = useState<type>(initialFormState);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [addVenues, setAddVenues] = useState([]);
+  const [addVenues, setAddVenues] = useState<any[]>([]);
   const [updateDish, setUpdateDish] = useState(false);
   const { userInformation, addUser, Dishes, addDishes, Menus } = useStore();
   const [totalPrice, setTotalPrice] = useState(0);
@@ -68,7 +74,7 @@ function Dish({
     }));
   };
   useEffect(() => {
-    const dishes = [];
+    const dishes: any[] = [];
     const DishPrice = Menus.map((item, index) => {
       const data = {
         Price: item.price,
@@ -82,7 +88,7 @@ function Dish({
         status: item.status,
         type: item.type,
       });
-      if (index === Menus.length - 1) setDishName(dishes);
+      if (index === Menus.length - 1) setDishName(dishes as any);
       return data;
     });
     const totalPrice = DishPrice.reduce((acc, item) => {
@@ -108,7 +114,7 @@ function Dish({
           finalPrices[index].price = 0;
           DishPrice.map((item1) => {
             if (
-              item.dishes.includes(item1.Dish) &&
+              (item as any).dishes.includes(item1.Dish) &&
               item1.status == "Available"
             ) {
               finalPrices[index].price = finalPrices[index].price + item1.Price;
@@ -187,7 +193,7 @@ function Dish({
     const docRef = doc(db, "Dish", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      setUser(docSnap.data());
+      setUser(docSnap.data() as any);
       setSelectedItems(docSnap.data().dishes);
     } else {
       console.log("No such document!");
@@ -217,8 +223,8 @@ function Dish({
   const handleSelectionChange = (selectedOptions) => {
     let price = 0;
     selectedOptions.map((item) => {
-      const data = dishPrice.filter((item1) => item1.Dish === item);
-      price = price + data[0]?.Price;
+      const data = dishPrice.filter((item1) => (item1 as any).Dish === item);
+      price = price + (data[0] as any)?.Price;
     });
 
     setUser((prevState) => ({
@@ -234,7 +240,7 @@ function Dish({
   const openModal = (dishes) => {
     if (dishes && dishes.length > 0) {
       const prices = dishes?.map((dish) => {
-        const dishData = dishPrice.find((item) => item.Dish === dish);
+        const dishData = dishPrice.find((item) => (item as any).Dish === dish);
         return dishData ? dishData : {};
       });
 
@@ -344,7 +350,7 @@ function Dish({
               </div>
             }
             dataSource={selectDish}
-            renderItem={(dish, index) => (
+            renderItem={(dish: any, index) => (
               <List.Item key={index}>
                 <p
                   className={
@@ -405,7 +411,7 @@ function Dish({
               key="cancel"
               onClick={() => {
                 setModalOpen(false);
-                setUser(" ");
+                setUser(" " as any);
               }}
               className="AddVenue border-primary text-primary "
             >
@@ -414,7 +420,9 @@ function Dish({
             <Button
               key="ok"
               type="primary"
-              onClick={() => (updateDish ? update(user?.dishId) : AddDish())}
+              onClick={() =>
+                updateDish ? update((user as any)?.dishId) : AddDish()
+              }
               className="AddVenue  bg-primary text-white"
             >
               {loading ? <Loader /> : "Add"}
@@ -476,7 +484,7 @@ function Dish({
                     placeholder="Please select"
                     onChange={handleSelectionChange}
                     options={dishName.filter(
-                      (item) => item?.status == "Available"
+                      (item) => (item as any)?.status == "Available"
                     )}
                   />
                 </Space>

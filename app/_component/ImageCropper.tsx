@@ -4,6 +4,7 @@ import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import "./cropStyle.css";
 import { message } from "antd";
+import Image from "next/image";
 
 interface ImageCroperType {
   image?: string | number;
@@ -49,7 +50,7 @@ function ImageCroper({
           // Update the multipleImage state with the cropped image
           setMultipleImage((prevMultipleImage) =>
             prevMultipleImage.map((item) =>
-              item.id === image.id
+              item.id === (image as any)?.id
                 ? {
                     ...item,
                     file: cropFile,
@@ -57,10 +58,10 @@ function ImageCroper({
                 : item
             )
           );
-          setImageId([...imageId, image.id]);
+          setImageId([...imageId, (image as any)?.id]);
 
           console.log(imageId, "sdafas");
-          let secondArraySet = new Set([...imageId, image.id]);
+          let secondArraySet = new Set([...imageId, (image as any)?.id]);
           let filteredArray = multipleImage.filter(
             (item) => !secondArraySet.has(item.id)
           );
@@ -104,7 +105,7 @@ function ImageCroper({
           // zoomTo={0.5}
           zoom={(e) => console.log(e, "sddssd")}
           style={{ height: 400, width: "100%" }}
-          src={image.img}
+          src={(image as any)?.img}
           viewMode={1}
           minCropBoxHeight={height}
           minCropBoxWidth={width}
@@ -132,15 +133,17 @@ function ImageCroper({
 
         <div className="flex flex-wrap px-3">
           {Object.values(multipleImage).map((item, index) => {
-            if (item && item.file instanceof Blob) {
-              const objectURL = URL.createObjectURL(item.file);
+            if (item && (item as any)?.file instanceof Blob) {
+              const objectURL = URL.createObjectURL((item as any).file);
 
               return (
-                <img
+                <Image
                   src={objectURL}
                   alt=""
+                  width={20}
+                  height={20}
                   key={index}
-                  onClick={() => handleDiemension(item.id)}
+                  onClick={() => handleDiemension((item as any).id)}
                   className="w-[15%] rounded-lg m-2"
                 />
               );

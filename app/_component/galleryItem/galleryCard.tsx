@@ -7,6 +7,7 @@ import {
   faLocationDot,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 export default function GalleryCard({ item }: any) {
   const router = useRouter();
   const handleMarqueeDetails = (id) => {
@@ -16,10 +17,12 @@ export default function GalleryCard({ item }: any) {
     <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
       <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
         <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
-          <img
+          <Image
             src={item?.data?.images?.[0]}
             className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
             alt=""
+            width={250}
+            height={250}
             onClick={() => {
               handleMarqueeDetails(item?.id);
             }}

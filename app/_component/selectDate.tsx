@@ -2,11 +2,20 @@ import React, { useEffect, useState } from "react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { RangePickerProps } from "antd/es/date-picker";
-import { getDocs, collection, query, where } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  query,
+  where,
+  DocumentData,
+} from "firebase/firestore";
 import { db } from "../firebase";
-
+interface UserData {
+  id: string;
+  data: DocumentData; // You might need to replace DocumentData with the actual type of your data
+}
 type SelectDateProps = {
-  setBookDate: (newBookDate: any[]) => void;
+  setBookDate: (UserData: any[]) => void;
   setVenuesPrice: (newVenuesPrice: any[]) => void;
   setUserData: (newUserData: any[]) => void;
   setSelectedDateRange: any;
@@ -39,15 +48,14 @@ const SelectDate: React.FC<SelectDateProps> = ({
     });
     const venueSnapshot = await getDocs(collection(db, "Venues"));
     const bookDateSnapshot = await getDocs(collection(db, "bookDate"));
-    const VenueArr = [];
+    const VenueArr: UserData[] = [];
     venueSnapshot.forEach((doc) => {
       VenueArr.push({ id: doc.id, data: doc.data() });
     });
-    const bookDateArr = [];
+    const bookDateArr: UserData[] = [];
     bookDateSnapshot.forEach((doc) => {
       bookDateArr.push({ id: doc.id, data: doc.data() });
     });
-    console.log(VenueArr, "sdfdsfsdfsdfsfdsfsdfds");
     setVenuesPrice(VenueArr);
     setBookDate(bookDateArr);
     setUserData(adminMarqueeUser);

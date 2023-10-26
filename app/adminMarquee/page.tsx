@@ -147,7 +147,7 @@ function AdminMarqueeDetails() {
       });
 
       console.log("Document successfully active!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating document:", error.message);
     }
   };
@@ -163,7 +163,7 @@ function AdminMarqueeDetails() {
       });
 
       console.log("Document successfully inactive!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating document:", error.message);
     }
   };
@@ -181,7 +181,9 @@ function AdminMarqueeDetails() {
           await deleteDoc(doc(db, "Venues", VenueId));
         })
       );
-      const newBlogs = Venues.filter((blog) => !deleteVenues.includes(blog.id));
+      const newBlogs = Venues.filter(
+        (blog) => !(deleteVenues as any).includes(blog.id)
+      );
       addVenues(newBlogs);
       setDeleteVenues([]);
     } catch (error) {
@@ -196,7 +198,9 @@ function AdminMarqueeDetails() {
           await deleteDoc(doc(db, "Menus", VenueId));
         })
       );
-      const newBlogs = Menus.filter((blog) => !deleteMenus.includes(blog.id));
+      const newBlogs = Menus.filter(
+        (blog) => !(deleteMenus as any).includes(blog.id)
+      );
       addMenus(newBlogs);
       setDeleteMenus([]);
     } catch (error) {
@@ -211,7 +215,9 @@ function AdminMarqueeDetails() {
           await deleteDoc(doc(db, "Dish", VenueId));
         })
       );
-      const newBlogs = Dishes.filter((blog) => !deleteDishes.includes(blog.id));
+      const newBlogs = Dishes.filter(
+        (blog) => !(deleteDishes as any).includes(blog.id)
+      );
       addDishes(newBlogs);
       setDeleteDishes([]);
     } catch (error) {
@@ -322,6 +328,7 @@ function AdminMarqueeDetails() {
                             src={addVenue}
                             alt="Picture of the author"
                             width={20}
+                            height={20}
                             className="pr-1"
                           />
                           <p className=" text-xs md:text-base">Add venues</p>

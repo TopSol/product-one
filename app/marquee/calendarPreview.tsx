@@ -43,7 +43,7 @@ function CalendarPreview({
             size="large"
             placement="bottomLeft"
             optionFilterProp="children"
-            filterOption={(input, option) =>
+            filterOption={(input, option: any) =>
               (option?.label ?? "").includes(input)
             }
             filterSort={(optionA, optionB) =>

@@ -94,19 +94,14 @@ function Venues({
   }, [addVenue]);
 
   const HandleaddVenue = async () => {
-    if (
-      !user.name ||
-      !user.minCapacity ||
-      !user.maxCapacity ||
-      !user.price
-    ) {
+    if (!user.name || !user.minCapacity || !user.maxCapacity || !user.price) {
       return;
     }
     setLoading(true);
     const folderName = `images`;
     const imageUrls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage2, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
@@ -132,7 +127,7 @@ function Venues({
     } catch (error) {
       console.log(error, "error");
     }
-    setAddVenue([...addVenue, user]);
+    setAddVenue([...addVenue, user] as any);
     setModalOpen(false);
     setLoading(false);
     setUser(initialFormState);
@@ -148,7 +143,7 @@ function Venues({
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       console.log(docSnap.data(), "docSnap.data()");
-      setUser(docSnap.data());
+      setUser(docSnap.data() as any);
       setFileList(docSnap.data().cropImage);
     } else {
       console.log("No such document!");
@@ -161,7 +156,7 @@ function Venues({
 
     const imageUrls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage2, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
@@ -197,7 +192,7 @@ function Venues({
   };
 
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    setUser({ ...user, services: checkedValues });
+    setUser({ ...user, services: checkedValues } as any);
   };
   const onChange = (id) => {
     if (deleteVenues.includes(id)) {
@@ -261,27 +256,30 @@ function Venues({
   const beforeUpload = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-  
+
     reader.onload = () => {
-      const img = new window.Image(); // Use window.Image to avoid potential conflicts
+      const img: any = new window.Image(); // Use window.Image to avoid potential conflicts
       img.src = reader.result;
-  
+
       img.onload = () => {
         const width = img.width;
         const height = img.height;
-  
+
         if (width < 20000 || height < 10000) {
-          message.warning("Please upload an image with a width of at least 1500px and a height of at least 1000px.");
+          message.warning(
+            "Please upload an image with a width of at least 1500px and a height of at least 1000px."
+          );
         } else {
-          setFileList((prev) => [...prev, { url: reader.result }]);
-          setImageObject((prevImageObject) => [...prevImageObject, file]);
+          setFileList((prev) => [...prev, { url: reader.result }] as any);
+          setImageObject(
+            (prevImageObject) => [...prevImageObject, file] as any
+          );
         }
       };
     };
-  
+
     return false;
   };
-  
 
   return (
     <>
@@ -315,8 +313,10 @@ function Venues({
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                <img
+                <Image
                   alt="sdf"
+                  width={200}
+                  height={200}
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
                   className="ml-3 w-[80px]"
                 />
@@ -337,7 +337,7 @@ function Venues({
             )}
           />
           <Column
-            title="Action"
+            title="Edit"
             dataIndex="venueId"
             key="venueId"
             render={(venueId) => (
@@ -395,7 +395,9 @@ function Venues({
               key="ok"
               type="primary"
               onClick={() =>
-                openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
+                openEditVenue
+                  ? updateVenue((user as any).venueId)
+                  : HandleaddVenue()
               }
               className="AddVenue bg-primary text-white hover:bg-none"
             >
@@ -604,372 +606,4 @@ function Venues({
     </>
   );
 }
-
 export default Venues;
-
-// import React, { useState, useEffect, useRef } from "react";
-// import Loader from "../../component/Loader";
-// import Lightbox from "react-image-lightbox";
-// import Image from "next/image";
-// import { Checkbox, Button, Form } from "antd";
-// import Link from "next/link";
-// // import dots from "../../assets/images/dots.svg"; 11
-// import type { CheckboxValueType } from "antd/es/checkbox/Group";
-// import {
-//   collection,
-//   getDocs,
-//   setDoc,
-//   doc,
-//   getDoc,
-//   deleteDoc,
-// } from "firebase/firestore";
-// import { db } from "@/app/firebase";
-// import "./style.css";
-// import VenuesModal from "@/app/component/adminModals/venuesModal";
-// import { Table } from "antd";
-// import { useStore } from "../../../store";
-// import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-// import { Modal } from "antd";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-// import { Input } from "antd";
-// const initialFormState = {
-//   name: "",
-//   image: null,
-//   minCapacity: "",
-//   maxCapacity: "",
-//   price: "",
-//   services: [],
-// };
-// function Venues({
-//   modalOpen,
-//   setModalOpen,
-//   setDeleteVenues,
-//   deleteVenues,
-//   loading,
-//   setLoading,
-//   fetchData
-// }) {
-//   const [user, setUser] = useState(initialFormState);
-//   const [addVenue, setAddVenue] = useState([]);
-//   const [previewImage, setPreviewImage] = useState([]);
-//   const [openEditVenue, setOpenEditVenue] = useState(false);
-//   const [photoIndex, setPhotoIndex] = useState(0);
-//   const [isOpen, setIsOpen] = useState(false);
-//   const { Column } = Table;
-//   const { userInformation, addUser, Venues, addVenues, dates } = useStore();
-//   const storage = getStorage();
-//   const storage2 = getStorage();
-//   const ImageRef = ref(storage, "images/");
-//   const imgRef = useRef(null)
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setUser((prevState) => ({
-//       ...prevState,
-//       [name]:
-//         name === "price"
-//           ? Number(value)
-//           : name === "maxCapacity"
-//             ? Number(value)
-//             : name === "minCapacity"
-//               ? Number(value)
-//               : value,
-//     }));
-//   };
-//   const [form] = Form.useForm();
-
-//   useEffect(() => {
-//     const fetchBlogs = async () => {
-//       try {
-//         const response = await getDocs(collection(db, "Venues"));
-//         const tempArray = response.docs
-//           .filter((doc) => userInformation.userId === doc.data().userId)
-//           .map((doc) => ({
-//             ...doc.data(),
-//             id: doc.id,
-//           }));
-
-//         addVenues(tempArray);
-//       } catch (error) {
-//         console.error("Error fetching blogs:", error);
-//       }
-//     };
-
-//     fetchBlogs();
-//   }, [addVenue]);
-
-//   const HandleaddVenue = async () => {
-//     if (
-//       !user.name ||
-//       !user.image ||
-//       !user.minCapacity ||
-//       !user.maxCapacity ||
-//       !user.price
-//     ) {
-//       return;
-//     }
-//     setLoading(true);
-//     const images = Object.values(user.image);
-//     const folderName = `images`;
-//     const imageUrls = await Promise.all(
-//       images.map(async (image) => {
-//         const fileName = `${folderName}/${image.name}`;
-//         const storageRef = ref(storage2, fileName);
-//         await uploadBytes(storageRef, image);
-//         const urls = await getDownloadURL(storageRef);
-//         return urls;
-//       })
-//     );
-
-//     const VenueId = Math.random().toString(36).substring(2);
-//     const venue = {
-//       name: user.name,
-//       image: imageUrls,
-//       minCapacity: user.minCapacity,
-//       maxCapacity: user.maxCapacity,
-//       userId: userInformation.userId,
-//       venueId: VenueId,
-//       price: user.price,
-//       services: user.services,
-//     };
-//     try {
-//       await setDoc(doc(db, "Venues", VenueId), venue);
-//     } catch (error) {
-//       console.log(error, "error");
-//     }
-//     setAddVenue([...addVenue, user]);
-//     setUser(initialFormState);
-//     // setModalOpen(false);
-//     setLoading(false);
-//     // fetchData()
-//     // setUser({ ...user, image: null })
-//     handleSubmit()
-//   };
-
-//   const EditVenue = async (dishId) => {
-//     setOpenEditVenue(true);
-//     setModalOpen((prevState) => !prevState);
-//     const docRef = doc(db, "Venues", dishId);
-//     const docSnap = await getDoc(docRef);
-//     if (docSnap.exists()) {
-//       setUser(docSnap.data());
-//     } else {
-//       console.log("No such document!");
-//     }
-//   };
-//   console.log(user, "useruser")
-//   const updateVenue = async (venueId) => {
-//     setLoading((pre) => !pre);
-
-//     if (typeof user?.image[0] === "string") {
-//       try {
-//         await setDoc(doc(db, "Venues", venueId), user);
-//         const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
-//         if (updatedIndex !== -1) {
-//           const updatedVenues = [...Venues];
-//           updatedVenues[updatedIndex] = { ...user, id: venueId };
-//           addVenues(updatedVenues);
-//         } else {
-//           addVenues([...Venues, { ...user, id: venueId }]);
-//         }
-//       } catch (error) {
-//         console.log(error, "error");
-//       }
-//     } else {
-//       const images = Object.values(user.image);
-//       console.log(images, "sdfdsfdsfdsf");
-//       const folderName = `images`;
-//       const imageUrls = await Promise.all(
-//         images.map(async (image) => {
-//           const fileName = `${folderName}/${image.name}`;
-//           const storageRef = ref(storage2, fileName);
-//           // const storageRef = ref(storage, fileName);
-//           await uploadBytes(storageRef, image);
-//           const urls = await getDownloadURL(storageRef);
-//           return urls;
-//         })
-//       );
-//       try {
-//         const updatedUser = JSON.parse(JSON.stringify(user));
-//         updatedUser.image = imageUrls;
-
-//         await setDoc(doc(db, "Venues", venueId), updatedUser);
-
-//         const updatedIndex = Venues.findIndex((venue) => venue.id === venueId);
-//         if (updatedIndex !== -1) {
-//           const updatedVenues = [...Venues];
-//           updatedVenues[updatedIndex] = { ...updatedUser, id: venueId };
-//           addVenues(updatedVenues);
-//         } else {
-//           addVenues([...Venues, { ...updatedUser, id: venueId }]);
-//         }
-//       } catch (error) {
-//         console.log(error, "error");
-//       }
-//     }
-//     setModalOpen(false);
-//     setUser(initialFormState);
-//     setOpenEditVenue(false);
-//     setLoading((pre) => !pre);
-//   };
-//   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
-//   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-//     setUser({ ...user, services: checkedValues });
-//   };
-//   const onChange = (id)=> {
-//     if (deleteVenues.includes(id)) {
-//       const data = deleteVenues.filter((item) => item !== id);
-//       setDeleteVenues(data);
-//     } else {
-//       setDeleteVenues([...deleteVenues, id]);
-//     }
-//   };
-//   const renderHeader = () => (
-//     <div className="header-container flex justify-between text-center">
-//       <div className="bg-primary py-4 text-white rounded-tl-lg w-[15%]">
-//         Check box
-//       </div>
-//       <div className=" flex justify-center bg-primary">
-//         <span className="h-6 border-l-2 border-white my-auto"></span>
-//       </div>
-//       <div className="bg-primary py-4 text-white  w-[15%] ">Name</div>
-//       <div className=" flex justify-center bg-primary">
-//         <span className="h-6 border-l-2 border-white my-auto"></span>
-//       </div>
-//       <div className="bg-primary py-4 text-white  w-[15%]">
-//         Minimum Capacity
-//       </div>
-//       <div className=" flex justify-center bg-primary">
-//         <span className="h-6 border-l-2 border-white my-auto"></span>
-//       </div>
-//       <div className="bg-primary py-4 text-white  w-[15%]">
-//         Maximum Capacity
-//       </div>
-//       <div className=" flex justify-center bg-primary">
-//         <span className="h-6 border-l-2 border-white my-auto"></span>
-//       </div>
-//       <div className="bg-primary py-4 text-white  w-[15%]">Price</div>
-//       <div className=" flex justify-center bg-primary">
-//         <span className="h-6 border-l-2 border-white my-auto"></span>
-//       </div>
-//       <div className="bg-primary py-4 text-white  w-[15%]">Images</div>
-//       <div className=" flex justify-center bg-primary">
-//         <span className="h-6 border-l-2 border-white my-auto"></span>
-//       </div>
-//       <div className="bg-primary py-4 text-white w-[15%] rounded-tr-lg  flex justify-end pr-2">
-//         Action
-//       </div>
-//     </div>
-//   );
-//   const handleSubmit = () => {
-//     form.resetFields();
-//   }
-//   return (
-//     <>
-//       <div className="md:px-10">
-//         <Table dataSource={Venues} className="myTable">
-//           <Column
-//             title="Check box"
-//             dataIndex="venueId"
-//             key="venueId"
-//             render={(venueId) => (
-//               <div>
-//                 <Checkbox onClick={() => onChange(venueId)} />
-//               </div>
-//             )}
-//           />
-//           <Column title="Name" dataIndex="name" key="name" />
-//           <Column
-//             title="Minimum Capacity"
-//             dataIndex="minCapacity"
-//             key="minCapacity"
-//           />
-//           <Column
-//             title="Maximum Capacity"
-//             dataIndex="maxCapacity"
-//             key="maxCapacity"
-//           />
-//           <Column title="Price" dataIndex="price" key="price" />
-//           <Column
-//             title="Images"
-//             dataIndex="image"
-//             key="image"
-//             render={(image) => (
-//               <div className="flex items-center">
-//                 <img
-//                   alt="sdf"
-//                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
-//                   className="ml-3 w-[80px]"
-//                 />
-//                 {
-//                   <Link
-//                     onClick={() => {
-//                       setIsOpen(true);
-//                       setPreviewImage(image);
-//                       setPhotoIndex(0);
-//                     }}
-//                     className="text-blue-600 underline ml-2"
-//                     href=""
-//                   >
-//                     {image.length > 1 && `${image.length - 1} more`}
-//                   </Link>
-//                 }
-//               </div>
-//             )}
-//           />
-//           <Column
-//             title="Action"
-//             dataIndex="venueId"
-//             key="venueId"
-//             render={(venueId) => (
-//               <div>
-//                 <FontAwesomeIcon
-//                   icon={faPenToSquare}
-//                   width={15}
-//                   className="ml-3 text-green-500 text-xl"
-//                   onClick={() => EditVenue(venueId)}
-//                 />
-//               </div>
-//             )}
-//           />
-//         </Table>
-//       </div>
-//       <VenuesModal
-//         modalOpen={modalOpen}
-//         setModalOpen={setModalOpen}
-//         updateVenue={updateVenue}
-//         HandleaddVenue={HandleaddVenue}
-//         loading={loading}
-//         setUser={setUser}
-//         plainOptions={plainOptions}
-//         handleCheckboxChange={handleCheckboxChange}
-//         openEditVenue={openEditVenue}
-//         user={user}
-//         handleChange={handleChange}
-//         handleSubmit={handleSubmit}
-//       />
-//       {isOpen && (
-//         <Lightbox
-//           mainSrc={previewImage[photoIndex]}
-//           nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
-//           prevSrc={
-//             previewImage[
-//             (photoIndex + previewImage.length - 1) % previewImage.length
-//             ]
-//           }
-//           onCloseRequest={() => setIsOpen(false)}
-//           onMovePrevRequest={() =>
-//             setPhotoIndex(
-//               (photoIndex + previewImage.length - 1) % previewImage.length
-//             )
-//           }
-//           onMoveNextRequest={() =>
-//             setPhotoIndex((photoIndex + 1) % previewImage.length)
-//           }
-//         />
-//       )}
-//     </>
-//   );
-// }
-
-// export default Venues;

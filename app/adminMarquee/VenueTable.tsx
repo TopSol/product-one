@@ -3,6 +3,7 @@ import { List, Checkbox, Popconfirm } from "antd";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 function VenueData({
   venue,
   onChange,
@@ -17,18 +18,24 @@ function VenueData({
         <div className="flex items-center pl-3 w-[10%]">
           <Checkbox onClick={() => onChange(venue.venueId)} />
         </div>
-        <div className="flex justify-center items-center break-all w-[10%]">{venue.name}</div>
-        <div className="flex justify-center items-center break-all w-[10%]">{venue.minCapacity}</div>
-        <div className="flex justify-center items-center break-all w-[10%]">{venue.maxCapacity}</div>
-        <div className="flex justify-center items-center break-all w-[10%]">{venue.price}</div>
+        <div className="flex justify-center items-center break-all w-[10%]">
+          {venue.name}
+        </div>
+        <div className="flex justify-center items-center break-all w-[10%]">
+          {venue.minCapacity}
+        </div>
+        <div className="flex justify-center items-center break-all w-[10%]">
+          {venue.maxCapacity}
+        </div>
+        <div className="flex justify-center items-center break-all w-[10%]">
+          {venue.price}
+        </div>
         <div className="flex  justify-center break-all w-[10%]">
-          <img
+          <Image
             width={80}
             height={80}
             src={
-              venue.image.length > 0
-                ? venue.image[0]
-                : "fallback-image-url.jpg"
+              venue.image.length > 0 ? venue.image[0] : "fallback-image-url.jpg"
             }
             alt="Description of the image"
           />
