@@ -3,6 +3,7 @@ import { List, Checkbox, Popconfirm, Select } from "antd";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 function DishTable({
   menus,
   onChange,
@@ -10,21 +11,28 @@ function DishTable({
   setIsOpen,
   setPreviewImage,
   setPhotoIndex,
-  onChangeStatus
+  onChangeStatus,
 }) {
   return (
     <>
-      <List.Item className="last-child-style bg-gray-100 my-2 "
-      >
+      <List.Item className="last-child-style bg-gray-100 my-2 ">
         <div className="flex items-center pl-3 w-[10%]">
           <Checkbox onClick={() => onChange(menus.menuId)} />
         </div>
-        <div className="flex justify-center items-center break-all w-[10%]">{menus.name}</div>
-        <div className="flex justify-center items-center break-all w-[10%]">{menus.type}</div>
-        <div className="flex justify-center items-center break-all w-[10%]">{menus.description}</div>
-        <div className="flex justify-center break-all w-[10%]">{menus.price}</div>
+        <div className="flex justify-center items-center break-all w-[10%]">
+          {menus.name}
+        </div>
+        <div className="flex justify-center items-center break-all w-[10%]">
+          {menus.type}
+        </div>
+        <div className="flex justify-center items-center break-all w-[10%]">
+          {menus.description}
+        </div>
+        <div className="flex justify-center break-all w-[10%]">
+          {menus.price}
+        </div>
         <div className="flex  justify-center items-center w-[10%] ">
-          <img
+          <Image
             width={80}
             height={80}
             src={
@@ -52,22 +60,21 @@ function DishTable({
             onChange={(value) => onChangeStatus(value, menus.menuId)}
             style={{
               width: 200,
-              backgroundColor: menus.status === "Available" ? "#D4EAD8" : "#F9E1D7",
+              backgroundColor:
+                menus.status === "Available" ? "#D4EAD8" : "#F9E1D7",
               borderRadius: 15,
             }}
-            filterOption={(input, option) =>
+            filterOption={(input, option: any) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
             }
             defaultValue={menus.status}
             value={menus.status}
           >
-            {
-              menus.status === "Available" ? (
-                <Select.Option value="not-available">Not Available</Select.Option>
-              ) : (
-                <Select.Option value="available">Available</Select.Option>
-              )
-            }
+            {menus.status === "Available" ? (
+              <Select.Option value="not-available">Not Available</Select.Option>
+            ) : (
+              <Select.Option value="available">Available</Select.Option>
+            )}
           </Select>
         </div>
         <div className=" w-[10%] flex justify-end">
@@ -79,7 +86,6 @@ function DishTable({
           />
         </div>
       </List.Item>
-
     </>
   );
 }

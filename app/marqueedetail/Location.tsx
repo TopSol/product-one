@@ -1,26 +1,48 @@
-import { GoogleMap, LoadScript, Marker,useJsApiLoader } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 import React, { memo } from "react";
 
-const Location = memo(({ center }:any) => {
+const Location = memo(({ center }: any) => {
   const containerStyle = {
     width: "100%",
     height: "400px",
   };
   const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: "AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4"
-  })
-  const [map, setMap] = React.useState(null)
-  const onLoad = React.useCallback(function callback(map) {
-    const bounds = new window.google.maps.LatLngBounds(center);
-    // map.fitBounds(bounds);
-    map.setZoom(16)
-    setMap(map)
-  }, [])
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4",
+  });
+  const [map, setMap] = React.useState(null);
+  const onLoad = React.useCallback(
+    function callback(map) {
+      const bounds = new window.google.maps.LatLngBounds(center);
+      // map.fitBounds(bounds);
+      map.setZoom(16);
+      setMap(map);
+    },
+    [center, setMap]
+  );
 
-  const onUnmount = React.useCallback(function callback(map) {
-    setMap(null)
-  }, [])
+  const onUnmount = React.useCallback(
+    function callback(map) {
+      setMap(null);
+    },
+    [setMap]
+  );
+
+  // const onLoad = React.useCallback(function callback(map) {
+  //   const bounds = new window.google.maps.LatLngBounds(center);
+  //   // map.fitBounds(bounds);
+  //   map.setZoom(16);
+  //   setMap(map);
+  // }, []);
+
+  // const onUnmount = React.useCallback(function callback(map) {
+  //   setMap(null);
+  // }, []);
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
@@ -31,7 +53,9 @@ const Location = memo(({ center }:any) => {
     >
       <Marker position={center} />
     </GoogleMap>
-) : <></>
+  ) : (
+    <></>
+  );
 });
-
+Location.displayName = "Location";
 export default Location;

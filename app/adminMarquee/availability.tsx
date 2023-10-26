@@ -13,16 +13,27 @@ import {
   collection,
   updateDoc,
 } from "firebase/firestore";
+
+interface type {
+  value: string;
+  label: string;
+  data: any[]; // You might want to replace `any[]` with a more specific type if the data has a specific structure.
+}
+interface LunchDinner {
+  [key: string]: {
+    [key: string]: any[]; // Specify the appropriate type for the array items
+  };
+}
 function Availability() {
   const { Venues, dates, addDateKey, lunchDinner, userInformation, addDates } =
     useStore();
-  const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedDates, setSelectedDates] = useState<type[]>([]);
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [selectVenue, setSelectVenue] = useState("");
   const [venueDate, setVenueDate] = useState({});
   const [lunchType, setLunchType] = useState("Diner");
   const [venueDates, setVenueDates] = useState({});
-  const [allDate, SetAllDate] = useState([]);
+  const [allDate, SetAllDate] = useState<any[]>([]);
   const [showButton, setShowButton] = useState(false);
   const [selectedDate, setSelectedDate] = useState([]);
   const [deleteDates, setDeleteDates] = useState([]);
@@ -43,6 +54,7 @@ function Availability() {
       value: 3,
     },
   ]);
+  console.log(selectedDates, "selectedDatesselectedDates");
   function convertTimestampsToDate(data) {
     Object.keys(data.dates).forEach((venueId) => {
       Object.keys(data.dates[venueId]).forEach((mealType) => {
@@ -135,8 +147,7 @@ function Availability() {
     const data = selectedDates.filter((item) => {
       if (item?.value === value) {
         setSelectVenue(item?.label);
-
-        setSelectedVenue(item?.value);
+        setSelectedVenue((item as any)?.value);
         return item;
       }
     });
@@ -195,23 +206,27 @@ function Availability() {
         dates: data,
       };
 
-      const result = lunchDinner[selectedVenue]?.[lunchType]?.filter(
+      const result = lunchDinner[selectedVenue as any]?.[lunchType]?.filter(
         (value) => {
-          return !deleteDates.some((item) => value === item.date);
+          return !deleteDates.some((item) => value === (item as any).date);
         }
       );
       addDateKey(selectedVenue, lunchType, result);
       setIsDateDelete(true);
 
       const NotAvailableDate = {
-        id: user.userId,
+        id: (user as any).userId,
         dates: venueDates,
       };
     }
   };
 
   const handleMenuSelect = (e) => {
-    let data = [];
+    // Build
+
+    const data: { title: string; start: any; end: any }[] = [];
+    //  Build
+    // let data = [];
     switch (e) {
       case 1:
         setLunchType("Lunch");
@@ -222,10 +237,10 @@ function Availability() {
         break;
       case 3:
         {
-          const lunchDinnerValue = lunchDinner[selectedVenue];
+          const lunchDinnerValue = lunchDinner[selectedVenue as any];
           Object.keys(lunchDinnerValue).map((item) => {
             lunchDinnerValue[item].map((value) => {
-              data.push({ title: item, start: value, end: value });
+              data.push({ title: item, start: value, end: value } as any);
             });
           });
           SetAllDate(data);
@@ -255,7 +270,7 @@ function Availability() {
               }}
               placeholder="Search to Select"
               optionFilterProp="children"
-              filterOption={(input, option) =>
+              filterOption={(input, option: any) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
               filterSort={(optionA, optionB) =>
@@ -278,7 +293,7 @@ function Availability() {
               }}
               placeholder="Search to Select"
               optionFilterProp="children"
-              filterOption={(input, option) =>
+              filterOption={(input, option: any) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
               filterSort={(optionA, optionB) =>

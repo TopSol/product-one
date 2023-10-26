@@ -14,6 +14,7 @@ import { getFormatDates } from "@/app/utils";
 import "../landingPage/style.css";
 import calenderIcon from "../assets/images/calender.svg";
 import SelectDate from "./selectDate";
+// import UseRedirectUser from "./redirectUser";
 import {
   Timestamp,
   collection,
@@ -22,6 +23,12 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { DocumentData } from "firebase/firestore";
+interface UserData {
+  id: string;
+  data: DocumentData; // You might need to replace DocumentData with the actual type of your data
+}
+// import UserRedirect from "./redirectUser";
 export default function Hero({
   setMarquees,
   setShowMessage,
@@ -33,15 +40,9 @@ export default function Hero({
 }: any) {
   const [show, setShow] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
-  // const [cityName, setCityName] = useState<String>("");
   const [bookDate, setBookDate] = useState<any[]>([]);
   const [venuesPrice, setVenuesPrice] = useState<any[]>([]);
   const [userData, setUserData] = useState<any[]>([]);
-  // const [selectedDateRange, setSelectedDateRange] = useState<any[]>([
-  //   null,
-  //   null,
-  // ]);
-
   useEffect(() => {
     const handleScroll = () => {
       const position = window.pageYOffset;
@@ -57,18 +58,14 @@ export default function Hero({
 
     let q = query(collection(db, "users"), where("address", "==", cityName));
     const querySnapshot = await getDocs(q);
-    let adminMarqueeUser = [];
+    let adminMarqueeUser: UserData[] = [];
     querySnapshot.forEach((doc) => {
       adminMarqueeUser.push({ id: doc.id, data: doc.data() });
     });
-    let venues = [];
+    let venues: UserData[] = [];
     await Promise.all(
       adminMarqueeUser.map(async (item) => {
-        let q = query(
-          collection(db, "Venues"),
-          where("userId", "==", item.id)
-          // where("dtaes", not) // Use item.id instead of item.userId
-        );
+        let q = query(collection(db, "Venues"), where("userId", "==", item.id));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
@@ -104,7 +101,10 @@ export default function Hero({
       })
       .filter((item) => item !== undefined);
     setMarquees(finalData);
-   
+  };
+  const nextPage = () => {
+    const marquee = "/marquee";
+    // UserRedirect(marquee);
   };
   return (
     <>
@@ -141,7 +141,10 @@ export default function Hero({
                   <li className="cursor-pointer px-3 ">
                     <Link href="/">Home</Link>
                   </li>
-                  <li className="cursor-pointer px-3 ">
+                  <li
+                    className="cursor-pointer px-3 "
+                    // onClick={() => nextPage()}
+                  >
                     <Link href="/marquee">Marquee</Link>
                   </li>
                   <li className="cursor-pointer px-3 ">

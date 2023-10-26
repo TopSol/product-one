@@ -94,7 +94,12 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
         </div>
         <div className="block md:flex md:items-center ">
           <div className="hidden md:block">
-            <Image src={logo} width={40} alt="Picture of the author" />
+            <Image
+              src={logo}
+              width={40}
+              height={40}
+              alt="Picture of the author"
+            />
           </div>
           <div className="mr-0 md:ml-8">
             <p className=" text-primary font-poppins ">

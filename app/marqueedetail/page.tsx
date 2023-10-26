@@ -22,6 +22,10 @@ import click from "../assets/images/click.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { DocumentData } from "firebase/firestore";
+interface DateRange {
+  from: Date | undefined;
+  to: Date | undefined;
+}
 interface VenueData {
   image: string[];
   name: string;
@@ -35,6 +39,10 @@ interface VenueData {
     Diner: { seconds: number; nanoseconds: number }[];
     Lunch: { seconds: number; nanoseconds: number }[];
   };
+}
+interface MarqueeDates {
+  from: Date | null;
+  to: Date | null;
 }
 function Marqueedetail() {
   const {
@@ -62,10 +70,7 @@ function Marqueedetail() {
   );
   const [dates, setDates] = useState<string[]>([]);
   const [days, setDays] = useState<any>([]);
-  const [marqueeDates, setMarqueeDates] = useState<{
-    from: Date | null;
-    to: Date | null;
-  }>({
+  const [marqueeDates, setMarqueeDates] = useState<MarqueeDates>({
     from: null,
     to: null,
   });
@@ -196,12 +201,46 @@ function Marqueedetail() {
       setDates(formattedDates);
     }
   }, [datess.length]);
+  // const handleDateRangeSelect = (newRange) => {
+  //   let dateString1 = newRange;
+  //   let date1 = new Date(dateString1);
+  //   let currentDate = new Date();
+  //   if (currentDate <= date1) {
+  //     if (
+  //       (marqueeDates.from && newRange && marqueeDates.from) ||
+  //       0 > newRange
+  //     ) {
+  //       return setMarqueeDates({ from: newRange, to: null });
+  //     }
+  //     if (!marqueeDates.from) {
+  //       setMarqueeDates({ ...marqueeDates, from: newRange });
+  //     } else if (marqueeDates.from !== null && !marqueeDates.to) {
+  //       const date = days?.filter((element) => {
+  //         // Ensure marqueeDates.from is not null before using it
+  //         if (marqueeDates.from !== null) {
+  //           return element >= marqueeDates.from && element <= newRange;
+  //         }
+  //         return false; // Handle the case when marqueeDates.from is null
+  //       });
+  //       if (date?.length > 0) {
+  //         // message.error("you can not select this date");
+  //         setMarqueeDates({ from: newRange, to: null });
+  //       } else {
+  //         setMarqueeDates({ ...marqueeDates, to: newRange });
+  //       }
+  //     } else if (marqueeDates.from && marqueeDates.to) {
+  //       setMarqueeDates({ from: newRange, to: null });
+  //     }
+  //   }
+  // };
+
   const handleDateRangeSelect = (newRange) => {
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
     let currentDate = new Date();
     if (currentDate <= date1) {
-      if (marqueeDates.from > newRange) {
+      if (marqueeDates.from && newRange && marqueeDates.from > newRange) {
+        // if (marqueeDates.from > newRange) {         build
         return setMarqueeDates({ from: newRange, to: null });
       }
       if (!marqueeDates.from) {
@@ -269,15 +308,24 @@ function Marqueedetail() {
     currentDate.getMonth()
   );
 
+  // const beforeMatcher: DateBefore = { before: currentDate };
+  // if (Array.isArray(days)) {
+  //   var disabledDays = [beforeMatcher, ...days];
+  // } else {
+  //   console.error("Error: days is not an array.");
+  // }
+
+  let disabledDays: DateBefore[] | null = null;
   const beforeMatcher: DateBefore = { before: currentDate };
   if (Array.isArray(days)) {
-    var disabledDays = [beforeMatcher, ...days];
+    disabledDays = [beforeMatcher, ...days];
   } else {
     console.error("Error: days is not an array.");
   }
-  if ((router as any).isFetchingAfterDefer) {
-    return <div>Loading...</div>;
-  }
+  const resolvedDisabledDays = disabledDays || undefined;
+  // if ((router as any).isFetchingAfterDefer) {
+  //   return <div>Loading...</div>;
+  // }
   return (
     <>
       <div>
@@ -287,7 +335,7 @@ function Marqueedetail() {
             <div>
               <h1 className="font-vollkorn text-4xl text-gray-600">
                 {/* {marqueeName} */}
-                {marqueeData?.data?.name}
+                {/* {marqueeData?.data?.name} */}
               </h1>
               <Breadcrumb
                 items={[
@@ -526,10 +574,10 @@ function Marqueedetail() {
                               ? `combinedClasses`
                               : `combinedClasses2`
                           } w-[100%]`}
-                          disabled={disabledDays}
+                          disabled={resolvedDisabledDays}
                           modifiers={{ booked: days }}
                           modifiersStyles={{ booked: bookedStyle }}
-                          selected={marqueeDates}
+                          selected={marqueeDates as DateRange}
                           onDayClick={handleDateRangeSelect}
                           defaultMonth={currentMonth}
                           fromMonth={currentMonth}

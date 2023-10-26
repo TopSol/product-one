@@ -10,7 +10,7 @@ function MarqueeAvailability({
   setClickedIndex,
   clickedIndex,
   venus,
-}) {  
+}) {
   const handleClick = (item, index) => {
     setClickedIndex(index);
     setSelectedHall(item);
@@ -80,17 +80,19 @@ function MarqueeAvailability({
                       : "bg-primaryColor"
                   }`}
                   onClick={() => {
-                    handleClick(item, index)
-                    nextPage() 
+                    handleClick(item, index);
+                    nextPage();
                   }}
                 >
                   <p className="">Select</p>
                 </div>
               </div>
               <div className="w-full md:w-[45%]">
-                <img
+                <Image
                   src={item.image}
                   alt=""
+                  width={500}
+                  height={500}
                   className="w-[100%] h-[100%] object-cover rounded-tr-xl rounded-tl-xl md:rounded-tl-none md:rounded-br-lg cursor-pointer  "
                 />
               </div>

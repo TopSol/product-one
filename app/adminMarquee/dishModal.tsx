@@ -6,7 +6,7 @@ import Image from "next/image";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
 import Loader from "@/app/_component/Loader";
-
+import type { UploadFile } from "antd/es/upload/interface";
 import { useStore } from "../../store";
 import { Modal } from "antd";
 import ImgCrop from "antd-img-crop";
@@ -55,6 +55,7 @@ function DishModal({
       value: "4",
     },
   ]);
+  const { TextArea } = Input;
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Menus"));
@@ -105,7 +106,7 @@ function DishModal({
     const folderName = `images`;
     const urls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const utls = await getDownloadURL(storageRef);
@@ -130,7 +131,7 @@ function DishModal({
     } catch (error) {
       console.log(error, "error");
     }
-    setAddVenues([...addVenues, user]);
+    setAddVenues([...addVenues, user] as any);
     setDishModalOpen(false);
     setModalOpen((prev) => !prev);
     setUser(initialFormState);
@@ -161,9 +162,9 @@ function DishModal({
 
     const urls = await Promise.all(
       images.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage, fileName);
-        await uploadBytes(storageRef, image);
+        await uploadBytes(storageRef, image as any);
         const url = await getDownloadURL(storageRef);
         return url;
       })
@@ -275,7 +276,9 @@ function DishModal({
               key="ok"
               type="primary"
               onClick={() =>
-                openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+                openEditVenue
+                  ? updateVenue((user as any).menuId)
+                  : HandleAddVenues()
               }
               className="AddVenue  bg-primary text-white"
             >
@@ -391,7 +394,7 @@ function DishModal({
                     className="type"
                     placeholder="Search to Select"
                     optionFilterProp="children"
-                    filterOption={(input, option) =>
+                    filterOption={(input, option: any) =>
                       option.label.toLowerCase().includes(input.toLowerCase())
                     }
                     filterSort={(optionA, optionB) =>
@@ -415,7 +418,7 @@ function DishModal({
                   </p>
                 </div>
                 <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
-                  <Input
+                  <TextArea
                     rows={4}
                     maxLength={200}
                     placeholder="Enter Description Here"

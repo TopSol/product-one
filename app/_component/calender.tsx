@@ -80,13 +80,25 @@ const MultipleDaySelectCalendar = ({
     setVenueDates(lunchDinnerDate);
   }, [lunchDinnerDate]);
 
-  const getDatesInRange = (start, end) => {
-    const dates = [];
+  // build
+  // const getDatesInRange = (start, end) => {
+  //   const dates = [];
+  //   let current = new Date(start);
+  //   while (current < end) {
+  //     dates.push(new Date(current));
+  //     current.setDate(current.getDate() + 1);
+  //   }
+  //   return dates;
+  // };
+  const getDatesInRange = (start: Date, end: Date) => {
+    const dates: Date[] = [];
     let current = new Date(start);
+
     while (current < end) {
       dates.push(new Date(current));
       current.setDate(current.getDate() + 1);
     }
+
     return dates;
   };
 

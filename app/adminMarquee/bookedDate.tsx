@@ -66,6 +66,7 @@ function BookedDate() {
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
   const [detailsData, setDetailsData] = useState<marqueeBookingRecord>();
   const router = useRouter();
+  console.log(userInformation, "sdfsdfsdf");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -77,8 +78,10 @@ function BookedDate() {
 
         let venueDataArr: marqueeBookingRecord[] = [];
         venuesSnapshot.forEach((doc) => {
+          console.log(doc.data(), "doc.data()");
           venueDataArr.push(doc.data() as marqueeBookingRecord);
         });
+        console.log(venueDataArr, "asdfasdfasdf");
         setCustomerInformation(venueDataArr);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -86,7 +89,7 @@ function BookedDate() {
     };
     fetchData();
   }, []);
-console.log(customerInformation);
+  console.log(customerInformation, "SDfdsfsdffd");
 
   return (
     <>
@@ -120,9 +123,11 @@ console.log(customerInformation);
                       </a>
                     </div>
                   </div>
-                  <img
+                  <Image
                     className=" h-[167px] w-[167px]  rounded-full -mt-[75px] mb-2 object-cover "
                     src={item?.image?.[0]}
+                    width={167}
+                    height={167}
                     alt=""
                   />
                   <div className="flex flex-col items-start relative md:mt-3 mt-4 w-full px-4">
@@ -224,7 +229,7 @@ console.log(customerInformation);
                               onClick={() => {
                                 setEmail(item?.email);
                                 setModalOpen(true);
-                                setSendData(item);
+                                setSendData(item as any);
                               }}
                               className=" xl:px-4 lg:px-2 px-3 py-2 bg-green-500 text-white rounded-md"
                             >
@@ -235,7 +240,7 @@ console.log(customerInformation);
                               onClick={() => {
                                 setEmail(item?.email);
                                 setIsNestedModalOpen(true);
-                                setSendData(item);
+                                setSendData(item as any);
                               }}
                             >
                               Reject

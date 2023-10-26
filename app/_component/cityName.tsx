@@ -3,7 +3,7 @@ import { AutoComplete } from "antd";
 import { CloseSquareFilled } from "@ant-design/icons";
 
 type CityState = {
-  setCityName: string;
+  setCityName: (Value: string) => void;
   cityName: string;
 };
 
@@ -332,16 +332,20 @@ const CityName: React.FC<CityState> = ({ setCityName, cityName }) => {
   const handleSelect = (value: string) => {
     setCityName(value);
   };
+  const onChange = (data: string) => {
+    setCityName(data);
+  };
   return (
     <AutoComplete
+      value={cityName}
       style={{ width: 150 }}
       onSearch={handleSearch}
       onSelect={handleSelect}
       placeholder="City"
+      onChange={onChange}
       options={options}
       className=" placeholder:text-black placeholder:text-base  cursor-pointer"
       bordered={false}
-      value={cityName}
       allowClear={true}
     />
   );

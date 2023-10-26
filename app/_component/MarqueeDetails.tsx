@@ -11,10 +11,33 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { DateBefore, DayPicker } from "react-day-picker";
 import { getFormatDates } from "@/app/utils";
-import { collection, getDocs } from "firebase/firestore";
+import { DocumentData, collection, getDocs } from "firebase/firestore";
 import { useStore } from "@/store";
 import { useRouter } from "next/navigation";
 import "react-day-picker/dist/style.css";
+import Image from "next/image";
+interface UserData {
+  id: string;
+  data: DocumentData; // You might need to replace DocumentData with the actual type of your data
+}
+
+interface DateRange {
+  from: Date | undefined;
+  to: Date | undefined;
+}
+
+interface YourObjectType {
+  value: string;
+  label: string;
+  disabled: boolean;
+  minCapacity: number;
+  maxCapacity: number;
+}
+interface MarqueeDates {
+  from: Date | null;
+  to: Date | null;
+}
+
 function MarqueeDetails({ item, showMessage }) {
   const router = useRouter();
 
@@ -28,19 +51,22 @@ function MarqueeDetails({ item, showMessage }) {
   const [days, setDays] = useState<any>([]);
   const [isLunch, setIsLunch] = useState<any>();
   const [selectedOption, setSelectedOption] = useState("Lunch");
-  const [venuesData, setVenuesData] = useState([]);
-  const [userData, setUserData] = useState([]);
-  const [name, setName] = useState([]);
+  const [venuesData, setVenuesData] = useState<UserData[]>([]);
+  const [userData, setUserData] = useState<UserData[]>([]);
+  const [name, setName] = useState<YourObjectType[]>([]);
   const [selectedDate, setSelectedDate] = useState([]);
   const [bookDates, setBookDates] = useState([]);
   const [meal, setMeal] = useState("Lunch");
   const [value, setValue] = useState("1");
   const [venueId, setVenueId] = useState();
-  const [marqueeDates, setMarqueeDates] = useState({ from: null, to: null });
+  const [marqueeDates, setMarqueeDates] = useState<MarqueeDates>({
+    from: null,
+    to: null,
+  });
   useEffect(() => {
     const getdata = async () => {
       const querySnapshot = await getDocs(collection(db, "Venues"));
-      const dataArr = [];
+      const dataArr: UserData[] = [];
       querySnapshot.forEach((doc) => {
         dataArr.push({ id: doc.id, data: doc.data() });
       });
@@ -83,7 +109,7 @@ function MarqueeDetails({ item, showMessage }) {
   useEffect(() => {
     const getUser = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
-      const dataArr = [];
+      const dataArr: UserData[] = [];
       querySnapshot.forEach((doc) => {
         dataArr.push({ id: doc.id, data: doc.data() });
       });
@@ -94,15 +120,15 @@ function MarqueeDetails({ item, showMessage }) {
 
   const getDates = async (id) => {
     const querySnapshot = await getDocs(collection(db, "bookDate"));
-    const datesArr = [];
+    const datesArr: any[] = [];
     querySnapshot.forEach((doc) => {
       datesArr.push(doc.data());
     });
     const asdf = datesArr?.filter((item) => {
-      return item?.id === id;
+      return (item as any)?.id === id;
     });
-    setSelectedDate(asdf);
-    addMarqueeVenueDates(asdf);
+    setSelectedDate(asdf as any);
+    addMarqueeVenueDates(asdf); 
   };
   const handleClick = (id) => {
     setOpen((prevState) => ({
@@ -131,12 +157,12 @@ function MarqueeDetails({ item, showMessage }) {
       return {
         id,
         dates: {
-          Diner: getFormatDates(item?.dates[id]?.Diner),
-          Lunch: getFormatDates(item?.dates[id]?.Lunch),
+          Diner: getFormatDates((item as any)?.dates[id]?.Diner),
+          Lunch: getFormatDates((item as any)?.dates[id]?.Lunch),
         },
       };
     });
-    setBookDates(reserveDate);
+    setBookDates(reserveDate as any);
 
     propMeal == "Diner"
       ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
@@ -145,9 +171,10 @@ function MarqueeDetails({ item, showMessage }) {
   const handleDateRangeSelect = (newRange) => {
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
-    let currentDate = new Date();
+    let currentDate = new Date(); 
     if (currentDate <= date1) {
-      if (marqueeDates.from > newRange) {
+      if (marqueeDates.from && newRange && marqueeDates.from > newRange) {
+        // if (marqueeDates.from > newRange) {         build
         return setMarqueeDates({ from: newRange, to: null });
       }
       if (!marqueeDates.from) {
@@ -170,29 +197,6 @@ function MarqueeDetails({ item, showMessage }) {
         setMarqueeDates({ from: newRange, to: null });
       }
     }
-    // let dateString1 = newRange;
-    // let date1 = new Date(dateString1);
-    // let currentDate = new Date();
-    // if (currentDate <= date1) {
-    //   if (marqueeDates.from > newRange) {
-    //     return setMarqueeDates({ from: newRange, to: null });
-    //   }
-    //   if (!marqueeDates.from) {
-    //     setMarqueeDates({ ...marqueeDates, from: newRange });
-    //   } else if (marqueeDates.from && !marqueeDates.to) {
-    //     const date = days?.filter(
-    //       (element) => element >= marqueeDates?.from && element <= newRange
-    //     );
-    //     if (date.length > 0) {
-    //       alert("you can not selet this date");
-    //       setMarqueeDates([]);
-    //     } else {
-    //       setMarqueeDates({ ...marqueeDates, to: newRange });
-    //     }
-    //   } else if (marqueeDates.from && marqueeDates.to) {
-    //     setMarqueeDates({ from: newRange, to: null });
-    //   }
-    // }
   };
 
   const handleMarqueeDetails = (id) => {
@@ -205,25 +209,37 @@ function MarqueeDetails({ item, showMessage }) {
     currentDate.getMonth()
   );
 
+  let disabledDays: DateBefore[] | null = null;
   const beforeMatcher: DateBefore = { before: currentDate };
   if (Array.isArray(days)) {
-    var disabledDays = [beforeMatcher, ...days];
+    disabledDays = [beforeMatcher, ...days];
   } else {
     console.error("Error: days is not an array.");
   }
+  const resolvedDisabledDays = disabledDays || undefined;
+  // build
+  // const beforeMatcher: DateBefore = { before: currentDate };
+  // if (Array.isArray(days)) {
+  //   var disabledDays = [beforeMatcher, ...days];
+  // } else {
+  //   console.error("Error: days is not an array.");
+  // }
+  const bookedStyle = { border: "2px solid currentColor" };
   return (
     <>
       <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
         <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
           <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
-            <img
+            <Image
               src={item?.data?.images?.[0]}
-              className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
+              // className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
               alt=""
+              width={500}
+              height={500}
               onClick={() => {
                 venuesName(item?.id);
                 getDates(item?.id);
-                handleVenueName(name[0]?.value);
+                handleVenueName((name[0] as any)?.value);
                 addMarqueeData(item);
                 handleMarqueeDetails(item?.id);
                 addBookedDates(marqueeDates);
@@ -301,10 +317,10 @@ function MarqueeDetails({ item, showMessage }) {
               className={`${
                 isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
               } w-[100%]`}
-              disabled={disabledDays}
+              disabled={resolvedDisabledDays}
               modifiers={{ booked: days }}
               modifiersStyles={{ booked: bookedStyle }}
-              selected={marqueeDates}
+              selected={marqueeDates as DateRange}
               onDayClick={handleDateRangeSelect}
               defaultMonth={currentMonth}
               fromMonth={currentMonth}

@@ -20,7 +20,9 @@ function Review(props: { name: string; review: string }) {
         <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
         <FontAwesomeIcon icon={faStar} style={{ color: "#ffd505" }} />
       </div>
-      <p className="text-center px-9 pb-9 text-textColor font-roboto">{props?.review}</p>
+      <p className="text-center px-9 pb-9 text-textColor font-roboto">
+        {props?.review}
+      </p>
     </div>
   );
 }

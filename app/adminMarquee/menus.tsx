@@ -109,7 +109,7 @@ function Menus({
       .then((res) => {
         res.items.forEach((itemRef) => {
           getDownloadURL(itemRef).then((url) => {
-            setAddVenuesImage((prevState) => [...prevState, url]);
+            setAddVenuesImage((prevState) => [...prevState, url] as any);
           });
         });
       })
@@ -172,7 +172,7 @@ function Menus({
     } catch (error) {
       console.log(error, "error");
     }
-    setAddVenues([...addVenues, user]);
+    setAddVenues([...addVenues, user] as any);
     setModalOpen(false);
     setUser(initialFormState);
     // handleSubmit();
@@ -244,7 +244,7 @@ function Menus({
     const docRef = doc(db, "Menus", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      setUser((docSnap as any).data());
+      setUser(docSnap.data() as any);
       setFileList(docSnap.data().cropImage);
     } else {
       console.log("No such document!");
@@ -535,7 +535,7 @@ function Menus({
           dataIndex="status"
           key="status"
           className="text-base"
-          render={(status, record) => (
+          render={(status, record: any) => (
             <Select
               // showSearch
               className={"status"}
@@ -548,7 +548,7 @@ function Menus({
                 backgroundColor: status === "Available" ? "#D4EAD8" : "#F9E1D7",
                 borderRadius: 15,
               }}
-              filterOption={(input, option : any) =>
+              filterOption={(input, option: any) =>
                 (option?.label ?? "")
                   .toLowerCase()
                   .includes(input.toLowerCase())
@@ -567,7 +567,7 @@ function Menus({
           )}
         />
         <Column
-          title="Action"
+          title="Edit"
           dataIndex="menuId"
           key="menuId"
           className="text-base"
@@ -641,7 +641,9 @@ function Menus({
               key="ok"
               type="primary"
               onClick={() =>
-                openEditVenue ? updateVenue((user as any).menuId) : HandleAddVenues()
+                openEditVenue
+                  ? updateVenue((user as any).menuId)
+                  : HandleAddVenues()
               }
               className="AddVenue  bg-primary text-white"
             >
@@ -756,7 +758,7 @@ function Menus({
                   }}
                   placeholder="Search to Select"
                   optionFilterProp="children"
-                  filterOption={(input, option : any) =>
+                  filterOption={(input, option: any) =>
                     option.label.toLowerCase().includes(input.toLowerCase())
                   }
                   filterSort={(optionA, optionB) =>

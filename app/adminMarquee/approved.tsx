@@ -23,11 +23,11 @@ function ApprovedMarquee() {
       where("marqueeId", "==", userInformation.userId)
     );
     const querySnapshot = await getDocs(q);
-    const dataArr = [];
+    const dataArr: any[] = [];
     querySnapshot.forEach((doc) => {
       dataArr.push(doc.data());
     });
-    setIsShowApproved(dataArr);
+    setIsShowApproved(dataArr as any);
   };
   console.log("isShowApproved", isShowApproved);
 

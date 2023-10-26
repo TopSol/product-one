@@ -25,12 +25,11 @@ export default function LandingPage() {
     };
   }, []);
   useEffect(() => {
-    console.log("eeeeee");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         function (position) {
           const { latitude, longitude } = position.coords;
-          setLocation({ lat: latitude, lng: longitude });
+          setLocation({ lat: latitude, lng: longitude } as any);
           fetchMarqueeLocations({ lat: latitude, lng: longitude });
         },
 
@@ -44,26 +43,22 @@ export default function LandingPage() {
   }, []);
   const fetchMarqueeLocations = async (currentLocation) => {
     const querySnapshot = await getDocs(collection(db, "users"));
-    const dataArr = [];
+    const dataArr: any[] = [];
     querySnapshot.forEach((doc) => {
       if (isWithinRange(currentLocation, doc.data()?.locations, 50)) {
         dataArr.push({ id: doc.id, data: doc.data() });
       }
     });
-    setData(dataArr);
+    setData(dataArr as any);
   };
   const isWithinRange = (coord1, coord2, range) => {
-    console.log(coord1, coord2, range, "sdfasdhkf");
-
     const earthRadius = 6371;
     const lat1 = toRadians(coord1.lat);
     const lng1 = toRadians(coord1.lng);
     const lat2 = toRadians(coord2.lat);
     const lng2 = toRadians(coord2.lng);
-
     const dLat = lat2 - lat1;
     const dLng = lng2 - lng1;
-
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
@@ -100,7 +95,7 @@ export default function LandingPage() {
           </div>
           <div className=" ">
             {showMessage &&
-              data?.map((item) => (
+              (data as any)?.map((item) => (
                 <div key={item.id}>
                   <GalleryCard item={item} />
                 </div>
@@ -112,7 +107,7 @@ export default function LandingPage() {
                   onClick={() => {
                     setRemoveCityName(false);
                     setCityName("");
-                    setSelectedDateRange([null, null]);
+                    setSelectedDateRange(null);
                     setShowMessage(true);
                   }}
                   className="text-red-400 cursor-pointer"

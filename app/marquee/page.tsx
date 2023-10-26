@@ -17,6 +17,7 @@ import Footer from "@/app/_component/footer";
 import Image from "next/image";
 import "react-day-picker/dist/style.css";
 import "./style.css";
+import { Spin } from "antd";
 import {
   collection,
   getDocs,
@@ -39,8 +40,11 @@ function Marquee() {
   const [showMessage, setShowMessage] = useState(true);
   const [range, setRange] = useState<DateRange | undefined>();
   const [checkedServices, setCheckedServices] = useState([]);
-  const [coordinates, setCoordinates] = useState({});
-  const [marqueeDates, setMarqueeDates] = useState({ from: null, to: null });
+  const [coordinates, setCoordinates] = useState<any>({});
+  const [marqueeDates, setMarqueeDates] = useState<any>({
+    from: null,
+    to: null,
+  });
   const [userData, setUserData] = useState([]);
   const [lastVisible, setLastVisible] = useState();
   const [prevVisible, setPrevVisible] = useState();
@@ -52,7 +56,7 @@ function Marquee() {
     price: "",
     services: [],
   });
-
+  const [handleSpin, setHandleSpin] = useState(true);
   let tempdata;
   let pageSize = 3;
   let q = query(
@@ -61,23 +65,22 @@ function Marquee() {
     orderBy("createdAt"),
     limit(pageSize)
   );
-  const getUser = async (start: any) => {
+  const getUser = async () => {
     const querySnapshot = await getDocs(q);
     tempdata = [];
-    console.log(querySnapshot.docs[querySnapshot.docs.length - 1], "kkkkkk");
     if (querySnapshot.docs[querySnapshot.docs.length - 1]) {
-      setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      setPrevVisible(querySnapshot.docs[0]);
+      setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1] as any);
+      setPrevVisible(querySnapshot.docs[0] as any);
     }
     querySnapshot.forEach((doc) => {
       tempdata.push({ id: doc.id, data: doc.data() });
     });
-    console.log(tempdata.length, "tempdata", tempdata);
     if (tempdata.length == 0) {
       // setShowNextButton(true);
       // setShowPreviousButton(false);
     } else {
       setUserData(tempdata);
+      setHandleSpin(false);
       setShowNextButton(false);
       // setShowPreviousButton(true);
     }
@@ -110,16 +113,16 @@ function Marquee() {
   const getDate = async () => {
     const venueSnapshot = await getDocs(collection(db, "Venues"));
     const bookDateSnapshot = await getDocs(collection(db, "bookDate"));
-    const VenueArr = [];
+    const VenueArr: any[] = [];
     venueSnapshot.forEach((doc) => {
       VenueArr.push({ id: doc.id, data: doc.data() });
     });
-    const bookDateArr = [];
+    const bookDateArr: any[] = [];
     bookDateSnapshot.forEach((doc) => {
       bookDateArr.push({ id: doc.id, data: doc.data() });
     });
-    setVenuesPrice(VenueArr);
-    setBookDate(bookDateArr);
+    setVenuesPrice(VenueArr as any);
+    setBookDate(bookDateArr as any);
   };
   useEffect(() => {
     getUser();
@@ -153,7 +156,7 @@ function Marquee() {
     }
   };
 
-  function filterDataByDates(data, marqueeDates = {}) {
+  function filterDataByDates(data, marqueeDates: any = {}) {
     const { from, to } = marqueeDates;
     if (from || to) {
       data = data?.filter((item) => {
@@ -161,7 +164,7 @@ function Marquee() {
         const eventDates = item.data.dates;
 
         if (eventDates) {
-          const dateArrays = Object.values(eventDates);
+          const dateArrays: any = Object.values(eventDates);
           const flattenedDates = [].concat(...dateArrays);
           const eventDateObjects = getFormatDates(flattenedDates);
           const fromISOString = from?.toISOString();
@@ -182,7 +185,7 @@ function Marquee() {
   }
 
   const handleFilterData = async () => {
-    let data = venuesPrice;
+    let data: any = venuesPrice;
     const minCapacity =
       filterData.capacity !== "" ? Number(filterData.capacity) : 0;
     const maxPrice = filterData.price !== "" ? Number(filterData.price) : 0;
@@ -204,9 +207,9 @@ function Marquee() {
         )
       );
     }
-    let arr = [];
-    userData.map((item) => {
-      data.map((item1) => {
+    let arr: any = [];
+    userData.map((item: any) => {
+      data.map((item1: any) => {
         if (item.data.userId.includes(item1.data.userId)) {
           if (!arr.includes(item)) {
             arr.push(item);
@@ -215,7 +218,7 @@ function Marquee() {
       });
     });
     const datas = arr.length ? arr : userData;
-    const branch = datas.filter((item) => {
+    const branch = datas.filter((item: any) => {
       if (
         item.data.locations &&
         item.data.locations.lat &&
@@ -263,12 +266,12 @@ function Marquee() {
   };
   const handleSittingCapacity = (e) => {
     const capacity = Number(e.target.value);
-    setFilterData({ ...filterData, capacity: capacity });
+    setFilterData({ ...filterData, capacity: capacity } as any);
   };
 
   const handleSliderChange = async (event) => {
     const price = Number(event.target.value);
-    setFilterData({ ...filterData, price: price });
+    setFilterData({ ...filterData, price: price } as any);
   };
 
   let footer = <p className="text-textColor font-poppins ">Select Date</p>;
@@ -285,7 +288,7 @@ function Marquee() {
   }
   const plainOptions = ["Heating", "Cooling", "MusicSystem"];
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    setFilterData({ ...filterData, services: checkedValues });
+    setFilterData({ ...filterData, services: checkedValues } as any);
   };
   const isWithinRange = (coord1, coord2, range) => {
     const distance = Math.sqrt(
@@ -293,7 +296,7 @@ function Marquee() {
         Math.pow(coord1.lng - coord2.lng, 2)
     );
     console.log(distance, "distance");
-    
+
     return distance <= range;
   };
   const handleSelect = async (value) => {
@@ -309,7 +312,7 @@ function Marquee() {
           lat: parseFloat(data[0].lat),
           lng: parseFloat(data[0].lon),
         };
-        setFilterData({ ...filterData, location: coors });
+        setFilterData({ ...filterData, location: coors } as any);
         setCoordinates(coors);
       } else {
         throw new Error("Place not found");
@@ -381,10 +384,10 @@ function Marquee() {
               />
             </div>
 
-            <div className="my-6 bg-bgColor">
+            <div className="border-none bg-bgColor w-full p-3 my-6 rounded-md">
               <GooglePlacesAutocomplete
                 apiKey="AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4"
-                className="border-none bg-bgColor w-[295px] p-3 my-6 rounded-md"
+                // className="border-none bg-bgColor w-[295px] p-3 my-6 rounded-md"
                 selectProps={{
                   onChange: handleSelect,
                 }}
@@ -434,6 +437,11 @@ function Marquee() {
             </div>
           </div>
           <div className="w-full  lg:w-[75%] ">
+            {handleSpin && (
+              <div className="flex justify-center items-center h-[100vh]">
+                <Spin size="large" />
+              </div>
+            )}
             <div className="">
               {showMessage ? (
                 (filterMarqueeWithPrice.length
@@ -454,39 +462,42 @@ function Marquee() {
                 </div>
               )}
             </div>
-            <div className="flex  my-3 justify-between">
-              {showPreviousButton ? (
-                <button
-                  className="shadow-none bg-primary py-3 px-4 rounded-md text-white"
-                  size="lg"
-                  onClick={() => {
-                    prevPage(prevVisible);
-                    getUser();
-                  }}
-                >
-                  Previous
-                </button>
-              ) : (
-                <div></div>
-              )}
-              {!showNextButton ? (
-                <button
-                  className="shadow-none  bg-primary py-3 px-7 rounded-md text-white "
-                  size="lg"
-                  onClick={() => {
-                    nextPage(lastVisible);
-                    getUser();
-                  }}
-                >
-                  Next
-                </button>
-              ) : (
-                <div></div>
-              )}
-            </div>
+            {filterMarqueeWithPrice.length > 0 ||
+              (userData.length > 0 && (
+                <div className="flex  my-3 justify-between">
+                  {showPreviousButton ? (
+                    <button
+                      className="shadow-none bg-primary py-3 px-4 rounded-md text-white"
+                      // size="lg"
+                      onClick={() => {
+                        prevPage(prevVisible);
+                        getUser();
+                      }}
+                    >
+                      Previous
+                    </button>
+                  ) : (
+                    <div></div>
+                  )}
+                  {!showNextButton ? (
+                    <button
+                      className="shadow-none  bg-primary py-3 px-7 rounded-md text-white "
+                      // size="lg"
+                      onClick={() => {
+                        nextPage(lastVisible);
+                        getUser();
+                      }}
+                    >
+                      Next
+                    </button>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+              ))}
           </div>
         </div>
-
+        <div></div>
         <Footer />
       </div>
       <Modal

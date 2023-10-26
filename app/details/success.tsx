@@ -1,8 +1,9 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 function Success({ setSuccessPage }) {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <div className="h-[100vh] mx-auto flex flex-col justify-center items-center bg-[]">
@@ -13,13 +14,15 @@ function Success({ setSuccessPage }) {
           alt=""
         />
         <p className="w-96 justify-center text-center mx-auto">
-          Your request has been  <samp className="text-green-700 font-extrabold">{" "}successfully {" "}</samp>sent to the owner of the marquee.
-          They will review your request and get back to you soon
+          Your request has been{" "}
+          <samp className="text-green-700 font-extrabold"> successfully </samp>
+          sent to the owner of the marquee. They will review your request and
+          get back to you soon
         </p>
         <button
           className="flex justify-end items-end mx-auto border-green-600 px-10 rounded-md py-2 bg-green-500 my-4 text-white font-extrabold hover:bg-green-900 hover:text-white"
           onClick={() => {
-            router.push("/")
+            router.push("/");
           }}
         >
           ok

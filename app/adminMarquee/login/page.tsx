@@ -26,7 +26,7 @@ const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
-function Login() {
+const Login = () => {
   const [user, setUser] = useState(initialFormState);
   const [loader, setLoader] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ function Login() {
         console.log(user, "signin", user.uid);
         if (user) {
           registrationInformation(user.uid);
-          router.push("/adminMarquee");
+          router.push("http://localhost:3000/adminMarquee");
           setLoader(true);
         }
       })
@@ -172,6 +172,6 @@ function Login() {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

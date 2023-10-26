@@ -41,7 +41,7 @@ function Venues({
   setLoading,
   fetchData,
 }) {
-  const [user, setUser] = useState (initialFormState);
+  const [user, setUser] = useState(initialFormState);
   const [addVenue, setAddVenue] = useState([]);
   const [previewImage, setPreviewImage] = useState([]);
   const [openEditVenue, setOpenEditVenue] = useState(false);
@@ -101,7 +101,7 @@ function Venues({
     const folderName = `images`;
     const imageUrls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage2, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
@@ -127,7 +127,7 @@ function Venues({
     } catch (error) {
       console.log(error, "error");
     }
-    setAddVenue([...addVenue, user]);
+    setAddVenue([...addVenue, user] as any);
     setModalOpen(false);
     setLoading(false);
     setUser(initialFormState);
@@ -143,7 +143,7 @@ function Venues({
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       console.log(docSnap.data(), "docSnap.data()");
-      setUser(docSnap.data());
+      setUser(docSnap.data() as any);
       setFileList(docSnap.data().cropImage);
     } else {
       console.log("No such document!");
@@ -156,7 +156,7 @@ function Venues({
 
     const imageUrls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage2, fileName);
         await uploadBytes(storageRef, image);
         const urls = await getDownloadURL(storageRef);
@@ -192,7 +192,7 @@ function Venues({
   };
 
   const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    setUser({ ...user, services: checkedValues });
+    setUser({ ...user, services: checkedValues } as any);
   };
   const onChange = (id) => {
     if (deleteVenues.includes(id)) {
@@ -258,7 +258,7 @@ function Venues({
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      const img = new window.Image(); 
+      const img: any = new window.Image(); // Use window.Image to avoid potential conflicts
       img.src = reader.result;
 
       img.onload = () => {
@@ -268,10 +268,12 @@ function Venues({
         if (width < 20000 || height < 10000) {
           message.warning(
             "Please upload an image with a width of at least 1500px and a height of at least 1000px."
-          )
+          );
         } else {
-          setFileList((prev) => [...prev, { url: reader.result }]);
-          setImageObject((prevImageObject) => [...prevImageObject, file]);
+          setFileList((prev) => [...prev, { url: reader.result }] as any);
+          setImageObject(
+            (prevImageObject) => [...prevImageObject, file] as any
+          );
         }
       };
     };
@@ -311,8 +313,10 @@ function Venues({
             key="image"
             render={(image) => (
               <div className="flex items-center">
-                <img
+                <Image
                   alt="sdf"
+                  width={200}
+                  height={200}
                   src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
                   className="ml-3 w-[80px]"
                 />
@@ -333,7 +337,7 @@ function Venues({
             )}
           />
           <Column
-            title="Action"
+            title="Edit"
             dataIndex="venueId"
             key="venueId"
             render={(venueId) => (
@@ -391,7 +395,9 @@ function Venues({
               key="ok"
               type="primary"
               onClick={() =>
-                openEditVenue ? updateVenue(user.venueId) : HandleaddVenue()
+                openEditVenue
+                  ? updateVenue((user as any).venueId)
+                  : HandleaddVenue()
               }
               className="AddVenue bg-primary text-white hover:bg-none"
             >
@@ -475,7 +481,29 @@ function Venues({
                 </Upload>
               </ImgCrop>
             </div>
-           
+            {/* <Form form={form} onFinish={handleSubmit}>
+              <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                    Images
+                  </p>
+                </div>
+                <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
+                  <Form.Item name="image">
+                    <Input
+                      placeholder="Basic usage"
+                      type="file"
+                      name="image"
+                      multiple
+                      onChange={(e) => {
+                        setUser({ ...user, image: e.target.files });
+                      }}
+                      className="border outline-none md:w-[440px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+            </Form> */}
             <div className="flex flex-col items-start relative">
               <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">
@@ -540,6 +568,19 @@ function Venues({
               </div>
             </div>
           </div>
+          {/* <div className="flex flex-wrap">
+              {user.image &&
+                Object.values(user.image).map((img, index) => {         
+                  return (
+                    <img
+                      // src={URL.createObjectURL(img)}
+                      alt=""
+                      key={index}
+                      className="w-[25%]"
+                    />
+                  );
+                })}
+            </div> */}
         </div>
       </Modal>
       {isOpen && (
@@ -565,5 +606,4 @@ function Venues({
     </>
   );
 }
-
 export default Venues;

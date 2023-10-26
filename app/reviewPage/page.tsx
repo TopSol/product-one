@@ -1,8 +1,8 @@
 import React from "react";
-import Navbar from "@/app/component/Navbar";
-import Review from "@/app/component/review";
-import Footer from "@/app/component/footer";
 import { ReviewData } from "./Data";
+import Navbar from "../_component/Navbar";
+import Review from "../_component/review";
+import Footer from "../_component/footer";
 
 function Reviews() {
   return (
