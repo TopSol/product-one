@@ -275,7 +275,7 @@ function Marqueedetail() {
   } else {
     console.error("Error: days is not an array.");
   }
-  if (router.isFetchingAfterDefer) {
+  if ((router as any).isFetchingAfterDefer) {
     return <div>Loading...</div>;
   }
   return (

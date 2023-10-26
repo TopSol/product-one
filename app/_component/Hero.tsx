@@ -77,19 +77,14 @@ export default function Hero({
         // Now you can do something with the venues related to each admin
       })
     );
-    // let lunchType=["Diner","Lunch"]
     const dateObject = new Date(selectedDateRange);
-    // const timestamp = Timestamp.fromDate(dateObject);
     console.log(venues, "sdfsdfsdfsdfds", adminMarqueeUser);
     const filteredVenues = venues.filter((venue) => {
       const { dates } = venue.data;
       if (dates && dates.Lunch && dates.Diner) {
-        // Convert date strings in "Lunch" and "Diner" arrays to Date objects
         const lunchDates = dates.Lunch.map((d) => d.toDate());
         const dinerDates = dates.Diner.map((d) => d.toDate());
 
-        console.log(lunchDates, "dinerDates", dinerDates);
-        // Check if the specified date is not in "Lunch" or "Diner"
         const dateIsNotInLunch = !lunchDates.some(
           (d) => d.toDateString() === dateObject.toDateString()
         );
@@ -99,8 +94,7 @@ export default function Hero({
         console.log(dateIsNotInLunch, dateIsNotInDiner, "ll");
         return dateIsNotInLunch || dateIsNotInDiner;
       } else {
-        // Handle the case where dates.Lunch or dates.Diner might not exist
-        return true; // You can choose to include such venues or exclude them based on your requirements
+        return true; 
       }
     });
     const finalData = filteredVenues
@@ -110,42 +104,7 @@ export default function Hero({
       })
       .filter((item) => item !== undefined);
     setMarquees(finalData);
-    console.log(finalData, "sdfsfdfsdfsd");
-    // setShowMessage(false);
-    // let data = venuesPrice;
-    // data = data?.filter((item) => {
-    //   if (!item.data?.dates) return true;
-    //   const eventDates = item.data.dates;
-    //   if (eventDates) {
-    //     const dateArrays = Object.values(eventDates);
-    //     const flattenedDates = [].concat(...dateArrays);
-    //     const eventDateObjects = getFormatDates(flattenedDates);
-    //     const fromISOString = selectedDateRange[0]?.toISOString();
-    //     const toISOString = selectedDateRange[1]?.toISOString();
-    //     const dateMatches = eventDateObjects.some(
-    //       (date) =>
-    //         date.toISOString() === fromISOString ||
-    //         date.toISOString() === toISOString
-    //     );
-    //     return !dateMatches;
-    //   } else {
-    //     return false;
-    //   }
-    // });
-    // let arr = [];
-    // userData.map((item) => {
-    //   data.map((item1) => {
-    //     if (
-    //       item?.data?.userId.includes(item1?.data?.userId) &&
-    //       item?.data?.address == cityName
-    //     ) {
-    //       if (!arr.includes(item)) {
-    //         arr.push(item);
-    //       }
-    //     }
-    //   });
-    // });
-    // setMarquees(arr);
+   
   };
   return (
     <>
@@ -226,7 +185,7 @@ export default function Hero({
               </div>
             </div>
             <div
-              className="bg-secondaryColor rounded-b-xl lg:rounded-bl-none lg:rounded-r-xl w-full lg-w[20%] xl:w-[30%]"
+              className="bg-secondaryColor rounded-b-xl lg:rounded-bl-none lg:rounded-r-xl w-full lg-w[20%] xl:w-[30%] cursor-pointer"
               onClick={() => handleMarqueeData()}
             >
               <p className=" px-14 lg:px-14 py-6 lg:py-10 text-white text-center">

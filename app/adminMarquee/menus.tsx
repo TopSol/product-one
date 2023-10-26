@@ -11,6 +11,7 @@ import {
   Select,
   Table,
   Upload,
+  message,
 } from "antd";
 import Loader from "@/app/_component/Loader";
 import DishTable from "./dishTable";
@@ -147,7 +148,7 @@ function Menus({
     const folderName = `images`;
     const urls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const utls = await getDownloadURL(storageRef);
@@ -243,7 +244,7 @@ function Menus({
     const docRef = doc(db, "Menus", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      setUser(docSnap.data());
+      setUser((docSnap as any).data());
       setFileList(docSnap.data().cropImage);
     } else {
       console.log("No such document!");
@@ -254,7 +255,7 @@ function Menus({
     const folderName = `images`;
     const urls = await Promise.all(
       imageObject.map(async (image) => {
-        const fileName = `${folderName}/${image.name}`;
+        const fileName = `${folderName}/${(image as any).name}`;
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, image);
         const utls = await getDownloadURL(storageRef);
@@ -367,16 +368,43 @@ function Menus({
   const height = 1300;
   const aspectRatio = width / height;
   console.log(user, "useruser");
+  // const beforeUpload = (file) => {
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   console.log(reader, "readerre");
+  //   reader.onload = () => {
+  //     setFileList((prev) => [...prev, { url: reader.result }]);
+  //   };
+  //   setImageObject((prevImageObject) => [...prevImageObject, file]);
+  //   return false;
+  // };
+
   const beforeUpload = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    console.log(reader, "readerre");
+
     reader.onload = () => {
-      setFileList((prev) => [...prev, { url: reader.result }]);
+      const img = new window.Image(); 
+      (img as any).src = reader.result;
+
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+
+        if (width < 20000 || height < 10000 )   {
+          message.warning(
+            "Please upload an image with a width of at least 1500px and a height of at least 1000px."
+          )
+        } else {
+          setFileList((prev) => [...prev, { url: reader.result }]);
+          setImageObject((prevImageObject) => [...prevImageObject, file]);
+        }
+      };
     };
-    setImageObject((prevImageObject) => [...prevImageObject, file]);
+
     return false;
   };
+
   return (
     <div className="md:px-10">
       {/* {renderHeader()}
@@ -514,13 +542,13 @@ function Menus({
               // className={`status .ant-select-arrow ${status === "Available" ? "text-red" : "text-#F9E1D7"}`}
               placeholder="Select a status"
               optionFilterProp="children"
-              onChange={(value) => onChangeStatus(value, record.menuId)}
+              onChange={(value) => onChangeStatus(value, (record as any).menuId)}
               style={{
                 width: 200,
                 backgroundColor: status === "Available" ? "#D4EAD8" : "#F9E1D7",
                 borderRadius: 15,
               }}
-              filterOption={(input, option) =>
+              filterOption={(input, option : any) =>
                 (option?.label ?? "")
                   .toLowerCase()
                   .includes(input.toLowerCase())
@@ -613,7 +641,7 @@ function Menus({
               key="ok"
               type="primary"
               onClick={() =>
-                openEditVenue ? updateVenue(user.menuId) : HandleAddVenues()
+                openEditVenue ? updateVenue((user as any).menuId) : HandleAddVenues()
               }
               className="AddVenue  bg-primary text-white"
             >
@@ -728,7 +756,7 @@ function Menus({
                   }}
                   placeholder="Search to Select"
                   optionFilterProp="children"
-                  filterOption={(input, option) =>
+                  filterOption={(input, option : any) =>
                     option.label.toLowerCase().includes(input.toLowerCase())
                   }
                   filterSort={(optionA, optionB) =>

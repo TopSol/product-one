@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { db } from "@/app/firebase";
-import { Button, Input, Select, Table, Upload } from "antd";
+import { Button, Input, Select, Table, Upload, message } from "antd";
 import dots from "@/app/assets/images/dots.svg";
 import Image from "next/image";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -192,16 +192,43 @@ function DishModal({
   const width = 2000;
   const height = 1300;
   const aspectRatio = width / height;
+  // const beforeUpload = (file) => {
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   console.log(reader, "readerre");
+  //   reader.onload = () => {
+  //     setFileList((prev) => [...prev, { url: reader.result }]);
+  //   };
+  //   setImageObject((prevImageObject) => [...prevImageObject, file]);
+  //   return false;
+  // };
+
   const beforeUpload = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    console.log(reader, "readerre");
+
     reader.onload = () => {
-      setFileList((prev) => [...prev, { url: reader.result }]);
+      const img = new window.Image(); 
+      img.src = reader.result;
+
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+
+        if (width < 20000 || height < 10000) {
+          message.warning(
+            "Please upload an image with a width of at least 1500px and a height of at least 1000px."
+          )
+        } else {
+          setFileList((prev) => [...prev, { url: reader.result }]);
+          setImageObject((prevImageObject) => [...prevImageObject, file]);
+        }
+      };
     };
-    setImageObject((prevImageObject) => [...prevImageObject, file]);
+
     return false;
   };
+
   return (
     <div>
       <Modal

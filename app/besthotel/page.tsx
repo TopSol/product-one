@@ -1,8 +1,8 @@
 import React from "react";
-import Navbar from "@/app/component/Navbar";
-import GalleryCard from "@/app/component/galleryItem/galleryCard";
+import Navbar from "../_component/Navbar";
+import GalleryCard from "../_component/galleryItem/galleryCard";
 import { Data } from "../landingPage/Data";
-import Footer from "@/app/component/footer";
+import Footer from "../_component/footer";
 function BestHotel() {
   return (
     <div>

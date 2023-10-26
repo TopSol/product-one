@@ -115,7 +115,7 @@ export default function LandingPage() {
                     setSelectedDateRange([null, null]);
                     setShowMessage(true);
                   }}
-                  className="text-red-400"
+                  className="text-red-400 cursor-pointer"
                 >
                   Clear Filter
                 </span>
