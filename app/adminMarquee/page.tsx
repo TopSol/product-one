@@ -7,6 +7,7 @@ import MarqueeMenus from "./menus";
 import Availability from "./availability";
 import Dish from "./dish";
 import ApprovedMarquee from "./approved";
+import "./style.css";
 import {
   collection,
   query,
@@ -334,20 +335,43 @@ function AdminMarqueeDetails() {
                           <p className=" text-xs md:text-base">Add venues</p>
                         </span>
                       </button>
-                      <Popconfirm
-                        title="Delete the task"
-                        description="Are you sure to delete this task?"
-                        onConfirm={() => handleDeleteVenues()}
-                        onCancel={cancel}
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        {Venues.length != 0 && (
-                          <button className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2">
-                            Delete
-                          </button>
-                        )}
-                      </Popconfirm>
+                      {deleteVenues.length > 0 && (
+                        <Popconfirm
+                          title="Delete the venue"
+                          description="Are you sure to delete this venue?"
+                          onConfirm={() => handleDeleteVenues()}
+                          okText={
+                            <span
+                              style={{
+                                backgroundColor: "#F59832",
+                                color: "white",
+                                border: "none",
+                              }}
+                            >
+                              Yes
+                            </span>
+                          }
+                          cancelText="No"
+                          okButtonProps={{
+                            style: {
+                              backgroundColor: "#F59832",
+                              border: "none",
+                            },
+                          }}
+                          cancelButtonProps={{
+                            style: {
+                              backgroundColor: "transparent",
+                              border: "none",
+                            },
+                          }}
+                        >
+                          {Venues.length != 0 && (
+                            <button className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2">
+                              Delete
+                            </button>
+                          )}
+                        </Popconfirm>
+                      )}
                     </div>
                   </div>
                 ) : component === "Menus" ? (
@@ -374,23 +398,46 @@ function AdminMarqueeDetails() {
                           <p className=" text-xs md:text-base">Add Menu</p>
                         </span>
                       </button>
-                      <Popconfirm
-                        title="Delete the task"
-                        description="Are you sure to delete this task?"
-                        onConfirm={() => {
-                          handleDeleteDish();
-                          setActiveMarquee((pre) => !pre);
-                        }}
-                        onCancel={cancel}
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        {Dishes.length != 0 && (
-                          <button className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2">
-                            Delete
-                          </button>
-                        )}
-                      </Popconfirm>
+                      {deleteDishes.length > 0 && (
+                        <Popconfirm
+                          title="Delete the dish"
+                          description="Are you sure to delete this dish?"
+                          onConfirm={() => {
+                            handleDeleteDish();
+                            setActiveMarquee((pre) => !pre);
+                          }}
+                          okText={
+                            <span
+                              style={{
+                                backgroundColor: "#F59832",
+                                color: "white",
+                                border: "none",
+                              }}
+                            >
+                              Yes
+                            </span>
+                          }
+                          cancelText="No"
+                          okButtonProps={{
+                            style: {
+                              backgroundColor: "#F59832",
+                              border: "none",
+                            },
+                          }}
+                          cancelButtonProps={{
+                            style: {
+                              backgroundColor: "transparent",
+                              border: "none",
+                            },
+                          }}
+                        >
+                          {Dishes.length != 0 && (
+                            <button className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2">
+                              Delete
+                            </button>
+                          )}
+                        </Popconfirm>
+                      )}
                     </div>
                   </div>
                 ) : component === "Dishes" ? (
@@ -415,9 +462,48 @@ function AdminMarqueeDetails() {
                           <p className=" text-xs md:text-base">Add Dish</p>
                         </span>
                       </button>
-                      <Popconfirm
-                        title="Delete the task"
-                        description="Are you sure to delete this task?"
+                      {deleteMenus.length > 0 && (
+                        <Popconfirm
+                          title="Delete the menu"
+                          description="Are you sure to delete this menu?"
+                          onConfirm={() => handleDeleteMenus()}
+                          okText={
+                            <span
+                              style={{
+                                backgroundColor: "#F59832",
+                                color: "white",
+                                border: "none",
+                              }}
+                            >
+                              Yes
+                            </span>
+                          }
+                          cancelText="No"
+                          okButtonProps={{
+                            style: {
+                              backgroundColor: "#F59832",
+                              border: "none",
+                            },
+                          }}
+                          cancelButtonProps={{
+                            style: {
+                              backgroundColor: "transparent",
+                              border: "none",
+                            },
+                          }}
+                        >
+                          {Menus.length != 0 && (
+                            <button className="border rounded-md px-2 md:px-8 pont-poppins text-white bg-primary py-1 md:py-2">
+                              Delete
+                            </button>
+                          )}
+                        </Popconfirm>
+                      )}
+                      {/* {
+                        deleteMenus?.length > 0 && 
+                        <Popconfirm
+                        title="Delete the dish"
+                        description="Are you sure to delete this dish?"
                         onConfirm={() => handleDeleteMenus()}
                         onCancel={cancel}
                         okText="Yes"
@@ -429,6 +515,7 @@ function AdminMarqueeDetails() {
                           </button>
                         )}
                       </Popconfirm>
+                      } */}
                     </div>
                   </div>
                 ) : null}

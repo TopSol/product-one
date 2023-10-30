@@ -219,7 +219,7 @@ function Slider() {
       messageApi.open({
         key,
         type: "success",
-        content: "Successfully Done",
+        content: "Your Request Have Been  Successfully Done For Marquee Reservation",
         duration: 2,
       });
     }, 100);

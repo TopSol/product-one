@@ -232,7 +232,7 @@ function MarqueeDetails({ item, showMessage }) {
           <div className="lg:w-[40%] cursor-pointer rounded-[10px]">
             <Image
               src={item?.data?.images?.[0]}
-              // className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-2xl object-cover"
+              className=" lg:w-72 lg:h-52 bg-bgColor p-3 rounded-xl object-cover"
               alt=""
               width={500}
               height={500}

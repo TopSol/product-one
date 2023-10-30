@@ -74,7 +74,7 @@ function Preview({
       dishes: selectedMenu,
       menu: selectedMenu?.name,
       userId: marqueeId,
-      marqueeId: fieldId,
+      id: fieldId,
       tableShape: userInformation?.tableShape,
       address: userInformation?.address,
       NumberOfPeople: marqueeImage?.numberOfPeople,
@@ -328,16 +328,15 @@ function Preview({
           <div
             className={` p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}
           >
+            {/* First Part */}
             <div className={`flex items-center justify-between mb-3`}>
-              <p className="text-center text-xl">{selectedMenu?.name}</p>
-              <p className="text-xl flex flex-col justify-end my-auto">
-                {" "}
-                {/* Rs {selectedMenu?.perHead} / PerHead */}
+              <p className="text-center text-xl font-semibold">
+                {selectedMenu?.name}
               </p>
             </div>
             <div>
               <p className=" font-sc my-4">
-                This menu contains the following items :
+                This menu contains the following items:
               </p>
             </div>
             <div className="w-full">
@@ -358,83 +357,58 @@ function Preview({
               </ul>
             </div>
 
-            {/* Add one */}
+            {selectedMenu?.perhead === selectedMenu?.totalDiscount ? (
+              <div className="flex justify-end w-full my-4">
+                <p className="text-xl justify-end">
+                  {" "}
+                  Total{" "}
+                  {parseInt(selectedMenu?.perHead) *
+                    parseInt(marqueeImage?.numberOfPeople)}
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className={`flex items-center justify-between mt-3`}>
+                  <p className="text-center text-xl font-semibold">Add On</p>
+                </div>
+                <p className=" font-sc  my-4">
+                  This Add On menu contains the following items:
+                </p>
+                <div className="w-full">
+                  <ul>
+                    {selectedMenu?.nameAndPriceArray?.map((dish, i) => {
+                      return (
+                        <div className="flex items-center py-1" key={i}>
+                          <div
+                            className={`bg-textColor h-3 w-3 rounded-full mr-3 ${console.log(
+                              selectedMenu,
+                              "selection:"
+                            )}`}
+                          ></div>
+                          <div className="flex justify-between w-full">
+                            <li className="">{dish.name}</li>
+                            <li className=" font-poppins ">RS {dish.price}</li>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </ul>
+                </div>
 
-            <div className={`flex items-center justify-between mt-3 mb-6`}>
-              <p className="text-center text-xl">Add on</p>
-              <p className="text-xl flex flex-col justify-end my-auto">
-                {" "}
-                {/* Rs {selectedMenu?.totalDiscount} / PerHead */}
-              </p>
-            </div>
-            <div>
-              <p className=" font-sc">
-                This menu contains the following items :
-              </p>
-            </div>
-            <div className="w-full">
-              <ul>
-                {selectedMenu?.nameAndPriceArray?.map((dish, i) => {
-                  return (
-                    <div className="flex items-center py-1" key={i}>
-                      <div
-                        className={`bg-textColor h-3 w-3 rounded-full mr-3 `}
-                      ></div>
-                      <div className="flex justify-between w-full">
-                        <li className="">{dish.name}</li>
-                        <li className=" font-poppins ">RS {dish.price}</li>
-                      </div>
-                    </div>
-                  );
-                })}
-              </ul>
-            </div>
-
-            {/* Total Price */}
-
-            <div className="flex justify-end w-full my-4">
-              <p className="text-xl  justify-end">
-                {" "}
-                Total{" "}
-                {parseInt(selectedMenu?.totalDiscount) *
-                  parseInt(marqueeImage?.numberOfPeople)}
-              </p>
-            </div>
+                {/* first part total */}
+                <div className="flex justify-end w-full my-4">
+                  <p className="text-xl  justify-end">
+                    {" "}
+                    Total{" "}
+                    {selectedMenu?.perhead !== selectedMenu?.totalDiscount
+                      ? parseInt(selectedMenu?.totalDiscount) *
+                        parseInt(marqueeImage?.numberOfPeople)
+                      : null}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
-          {/* <div className={`md:w-[350px] p-3 bg-white rounded-xl flex md:mx-0 flex-col mb-2 cursor-pointer`}>
-          <div
-            className={`flex items-center justify-between mb-3`}
-          >
-            <p className="text-center text-xl">{selectedMenu?.name}</p>
-            <p className="text-xl flex flex-col justify-end my-auto">
-              {" "}
-              Rs {selectedMenu?.totalDiscount} / PerHead
-            </p>
-          </div>
-          <div>
-            <p className=" md:w-56 font-sc my-4">
-              This menu contains the following items :
-            </p>
-          </div>
-          <div className="w-full">
-            <ul>
-              {selectedMenu?.nameAndPriceArray?.map((dish, i) => {
-                  return (
-                    <div className="flex items-center py-1" key={i}>
-                    <div className={`bg-textColor h-3 w-3 rounded-full mr-3 `}></div>
-                    <div className="flex justify-between w-full">
-
-                    <li className="">{dish.name}</li>
-                    <li className=" font-poppins ">RS {dish.price}</li>
-                    </div>
-                  </div>
-                  );
-                }
-               
-                )}
-            </ul>
-          </div>
-        </div> */}
         </div>
 
         {/* HALL'S DIV */}

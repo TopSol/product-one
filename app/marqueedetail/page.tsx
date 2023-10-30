@@ -144,6 +144,8 @@ function Marqueedetail() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const abc = docSnap.data();
+        console.log("================================", abc);
+        
         setData(abc);
         getMarqueeImage(abc);
         setMarqueeDates({
@@ -156,6 +158,7 @@ function Marqueedetail() {
     } catch (error) {
       console.error("Error :", error);
     }
+
     const reserveDate = marqueeVenueDates.map((item) => {
       return {
         id,
@@ -334,8 +337,8 @@ function Marqueedetail() {
           <div className="md:container md:mx-auto py-5 flex justify-between items-center mx-3">
             <div>
               <h1 className="font-vollkorn text-4xl text-gray-600">
-                {/* {marqueeName} */}
-                {/* {marqueeData?.data?.name} */}
+                {marqueeName}
+                {marqueeData?.data?.name}
               </h1>
               <Breadcrumb
                 items={[
@@ -343,7 +346,7 @@ function Marqueedetail() {
                     title: "Home",
                   },
                   {
-                    title: <Link href="/pages/marquee">Marquee</Link>,
+                    title: <Link href="/marquee">Marquee</Link>,
                   },
                   {
                     title: "Marquee Details",
@@ -599,8 +602,8 @@ function Marqueedetail() {
               <div
                 onClick={handleButton}
                 className={`flex ${
-                  numberOfPeople.length ? "bg-lightPrimary" : "bg-bgColor"
-                } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor`}
+                  numberOfPeople.length ? "bg-lightPrimary" : "bg-bgColor "
+                } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor text-white hover:text-black`}
               >
                 <div>{loading ? <Loader /> : " Book Now"}</div>
               </div>

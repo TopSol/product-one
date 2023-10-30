@@ -17,10 +17,10 @@ function Success({ setSuccessPage }) {
           Your request has been{" "}
           <samp className="text-green-700 font-extrabold"> successfully </samp>
           sent to the owner of the marquee. They will review your request and
-          get back to you soon
+          get back to you soon via email or whatspp .
         </p>
         <button
-          className="flex justify-end items-end mx-auto border-green-600 px-10 rounded-md py-2 bg-green-500 my-4 text-white font-extrabold hover:bg-green-900 hover:text-white"
+          className="flex justify-end items-end mx-auto border-primary px-10 rounded-md py-2 bg-primary my-4 text-white font-extrabold hover:bg-hoverPrimary hover:text-white"
           onClick={() => {
             router.push("/");
           }}

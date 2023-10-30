@@ -67,12 +67,35 @@ function BookedDate() {
   const [detailsData, setDetailsData] = useState<marqueeBookingRecord>();
   const router = useRouter();
   console.log(userInformation, "sdfsdfsdf");
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const venuesQuery = query(
+  //         collection(db, "contactUs"),
+  //         where("marqueeId", "==", userInformation.userId)
+  //       );
+  //       const [venuesSnapshot] = await Promise.all([getDocs(venuesQuery)]);
+
+  //       let venueDataArr: marqueeBookingRecord[] = [];
+  //       venuesSnapshot.forEach((doc) => {
+  //         console.log(doc.data(), "doc.data()");
+  //         venueDataArr.push(doc.data() as marqueeBookingRecord);
+  //       });
+  //       console.log(venueDataArr, "asdfasdfasdf");
+  //       setCustomerInformation(venueDataArr);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const venuesQuery = query(
           collection(db, "contactUs"),
-          where("marqueeId", "==", userInformation.userId)
+          where("userId", "==", userInformation.userId)
         );
         const [venuesSnapshot] = await Promise.all([getDocs(venuesQuery)]);
 
@@ -202,10 +225,10 @@ function BookedDate() {
                     </div>
                     <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
                       <Input
-                        placeholder="Name"
+                        placeholder="Perhead"
                         type="text"
                         name="name"
-                        value={item.dishes.totalDiscount}
+                        value={item?.dishes?.perHead}
                         className="border outline-none  z-10 w-full  py-5 mb-3 flex justify-center text-sm  relative"
                       />
                     </div>

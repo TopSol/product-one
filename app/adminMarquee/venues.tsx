@@ -12,6 +12,8 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import "antd/es/modal/style";
+import "antd/es/slider/style";
 import {
   collection,
   getDocs,
@@ -24,6 +26,7 @@ import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import "./style.css";
 import ImgCrop from "antd-img-crop";
+import styles from "react-day-picker/dist/style.css";
 const initialFormState = {
   name: "",
   image: null,
@@ -121,7 +124,6 @@ function Venues({
       cropImage: fileList,
       services: user.services,
     };
-    console.log(venue, "venuevenuevenue");
     try {
       await setDoc(doc(db, "Venues", VenueId), venue);
     } catch (error) {
@@ -249,23 +251,24 @@ function Venues({
     setFileList([...newFileList, { ...lastFile, status: "done" }]);
   };
 
-  const width = 1500;
-  const height = 1000;
+  const width = 5000;
+  const height = 5000;
   const aspectRatio = width / height;
 
   const beforeUpload = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-
     reader.onload = () => {
-      const img: any = new window.Image(); // Use window.Image to avoid potential conflicts
+      const img: any = new window.Image();
       img.src = reader.result;
 
       img.onload = () => {
         const width = img.width;
         const height = img.height;
+        console.log(width, height, "dsgfjfsdds");
+        
 
-        if (width < 20000 || height < 10000) {
+        if (width < 1000 || height < 700) {
           message.warning(
             "Please upload an image with a width of at least 1500px and a height of at least 1000px."
           );
@@ -281,10 +284,18 @@ function Venues({
     return false;
   };
 
+ 
+
+  const handleRemove = (file) => {
+    const index = fileList.indexOf(file);
+    const newFileList = [...fileList];
+    newFileList.splice(index, 1);
+    setFileList(newFileList);
+  };
   return (
     <>
       <div className="md:px-10">
-        <Table dataSource={Venues} className="myTable">
+        <Table dataSource={Venues.slice().reverse()} className="myTable">
           <Column
             title="Check box"
             dataIndex="venueId"
@@ -317,7 +328,7 @@ function Venues({
                   alt="sdf"
                   width={200}
                   height={200}
-                  src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
+                  src={image.length > 0 ? image[0] : ""}
                   className="ml-3 w-[80px]"
                 />
                 {
@@ -345,7 +356,7 @@ function Venues({
                 <FontAwesomeIcon
                   icon={faPenToSquare}
                   width={15}
-                  className="ml-3 text-green-500 text-xl"
+                  className="ml-3 text-green-500 text-xl cursor-pointer"
                   onClick={() => EditVenue(venueId)}
                 />
               </div>
@@ -359,7 +370,13 @@ function Venues({
         open={modalOpen}
         width={600}
         bodyStyle={{ height: 720, padding: 0 }}
-        onCancel={() => setModalOpen(false)}
+        onCancel={() => {
+          setModalOpen(false);
+          setUser(initialFormState);
+
+          setFileList([]);
+          setImageObject([]);
+        }}
         okButtonProps={{ className: "custom-ok-button" }}
         closeIcon={
           <div className=" right-2 ">
@@ -386,7 +403,12 @@ function Venues({
           <div className=" pb-5 mr-3" key={"index"}>
             <Button
               key="cancel"
-              onClick={() => setModalOpen(false)}
+              onClick={() => {
+                setModalOpen(false);
+                setUser(initialFormState);
+                setFileList([]);
+                setImageObject([]);
+              }}
               className=" AddVenue  border-primary text-primary hover:bg-none "
             >
               Cancel
@@ -401,7 +423,17 @@ function Venues({
               }
               className="AddVenue bg-primary text-white hover:bg-none"
             >
-              {loading ? <Loader /> : "Add"}
+              {openEditVenue ? (
+                loading ? (
+                  <Loader />
+                ) : (
+                  "Update"
+                )
+              ) : loading ? (
+                <Loader />
+              ) : (
+                "Add"
+              )}
             </Button>
           </div>,
         ]}
@@ -424,163 +456,107 @@ function Venues({
                   Name
                 </p>
               </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+              <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Name"
                   type="text"
                   name="name"
                   value={user.name}
                   onChange={handleChange}
-                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[700px] z-10 w-full rounded-[10px]  mb-8 py-5 flex justify-center text-xs relative"
                 />
               </div>
             </div>
 
             <p className="mb-2 font-Manrope font-bold  pl-5 lg:pl-0">Image</p>
-            <div className="mb-3 flex flex-start w-full pl-5 lg:pl-0">
-              {/* <ImgCrop
-                rotationSlider
-                aspect={aspectRatio}
-                modalWidth={800}
-                modalTitle={"Edit your Image"}
-              >
-                <Upload
-                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                  listType="picture-card"
-                  fileList={fileList}
-                  beforeUpload={beforeUpload}
-                  // onChange={handleOnChange}
-                  // onPreview={onPreview
-                  showUploadList={{
-                    showPreviewIcon: false,
-                    showRemoveIcon: false,
-                  }}
-                >
-                  {fileList?.length < 5 && "+ Upload"}
-                </Upload>
-              </ImgCrop> */}
+            <div className=" flex flex-start w-full pl-5 lg:pl-0 mb-8">
               <ImgCrop
                 rotationSlider
-                aspect={aspectRatio}
+                // aspect={1 / 1}
                 modalWidth={800}
                 modalTitle={"Edit your Image"}
+                modalOk={"Crop"}
               >
                 <Upload
                   action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                   listType="picture-card"
                   fileList={fileList}
+                  onRemove={handleRemove}
                   beforeUpload={beforeUpload}
-                  // onChange={handleOnChange}
-                  // onPreview={onPreview
                   showUploadList={{
                     showPreviewIcon: false,
-                    showRemoveIcon: false,
+                    showRemoveIcon: true,
                   }}
                 >
                   {fileList?.length < 5 && "+ Upload"}
                 </Upload>
               </ImgCrop>
             </div>
-            {/* <Form form={form} onFinish={handleSubmit}>
-              <div className="flex flex-col items-start relative md:mt-3 mt-4">
-                <div className="absolute top-[calc(50%_-_62.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                  <p className="absolute text-lg leading-[100%] z-20 pt-1">
-                    Images
-                  </p>
-                </div>
-                <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
-                  <Form.Item name="image">
-                    <Input
-                      placeholder="Basic usage"
-                      type="file"
-                      name="image"
-                      multiple
-                      onChange={(e) => {
-                        setUser({ ...user, image: e.target.files });
-                      }}
-                      className="border outline-none md:w-[440px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
-                    />
-                  </Form.Item>
-                </div>
-              </div>
-            </Form> */}
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_58.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">
                   Minimum Capacity
                 </p>
               </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+              <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Minimum Capacity"
                   type="number"
                   name="minCapacity"
                   value={user.minCapacity}
                   onChange={handleChange}
-                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[700px] z-10 w-full rounded-[10px]  mb-10  py-5 flex justify-center text-xs relative"
                 />
               </div>
             </div>
+
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[165.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">
                   Maximum Capacity
                 </p>
               </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+              <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Maximum Capacity"
                   type="number"
                   name="maxCapacity"
                   value={user.maxCapacity}
                   onChange={handleChange}
-                  className="border outline-none md:w-[700px] z-10 w-full py-5 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[700px] z-10 w-full rounded-[10px]  mb-10 py-5  flex justify-center text-xs relative"
                 />
               </div>
             </div>
+
             <div className="flex flex-col items-start relative">
-              <div className="absolute top-[calc(50%_-_59.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+              <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                 <p className="absolute text-lg leading-[100%] z-20 pt-1">
-                  price
+                  Price
                 </p>
               </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
+              <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Input
                   placeholder="Number"
                   type="number"
                   name="price"
                   value={user.price}
                   onChange={handleChange}
-                  className="border outline-none md:w-[700px] w-full z-10  py-5 mb-3 flex justify-center text-xs relative"
+                  className="border outline-none md:w-[700px] w-full z-10 rounded-[10px]  mb-8 py-5  flex justify-center text-xs relative"
                 />
               </div>
             </div>
             <div className="flex flex-col items-start relative">
-              <label className=" text-lg ">services</label>
-
+              <label className=" text-lg ">Services</label>
               <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
                 <Checkbox.Group
                   options={plainOptions}
                   value={user.services as CheckboxValueType[]}
                   onChange={handleCheckboxChange}
-                  className=" outline-none md:w-[700px] w-full  z-10   py-5  flex  text-xs "
+                  className=" outline-none md:w-[700px] w-full mt-1 z-10 flex text-xs "
                 />
               </div>
             </div>
           </div>
-          {/* <div className="flex flex-wrap">
-              {user.image &&
-                Object.values(user.image).map((img, index) => {         
-                  return (
-                    <img
-                      // src={URL.createObjectURL(img)}
-                      alt=""
-                      key={index}
-                      className="w-[25%]"
-                    />
-                  );
-                })}
-            </div> */}
         </div>
       </Modal>
       {isOpen && (

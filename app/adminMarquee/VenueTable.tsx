@@ -12,6 +12,8 @@ function VenueData({
   setPreviewImage,
   setPhotoIndex,
 }) {
+  console.log(venue);
+  
   return (
     <>
       <List.Item className="last-child-style bg-gray-100 my-2 flex justify-between">
@@ -51,11 +53,11 @@ function VenueData({
             {venue.image.length > 1 && `${venue.image.length - 1} more`}
           </Link>
         </div>
-        <div className="w-[10%] flex justify-end">
+        <div className="w-[10%] flex justify-end ">
           <FontAwesomeIcon
             icon={faPenToSquare}
             width={15}
-            className="text-green-500 text-xl pr-3"
+            className="text-green-500 text-xl pr-3 cursor-pointer"
             onClick={() => EditVenue(venue.venueId)}
           />
         </div>

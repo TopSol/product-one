@@ -216,7 +216,7 @@ function DishModal({
         const width = img.width;
         const height = img.height;
 
-        if (width < 20000 || height < 10000) {
+        if (width < 1500 || height < 1000) {
           message.warning(
             "Please upload an image with a width of at least 1500px and a height of at least 1000px."
           )

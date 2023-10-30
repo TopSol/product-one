@@ -15,12 +15,10 @@ function ApprovedMarquee() {
   const [isShowApproved, setIsShowApproved] = useState();
   const { Column } = Table;
   const { userInformation } = useStore();
-  console.log(userInformation);
   const fetchData = async () => {
-    // const querySnapshot = await getDocs(collection(db, "approvedMarquee"));
     const q = query(
       collection(db, "approvedMarquee"),
-      where("marqueeId", "==", userInformation.userId)
+      where("userId", "==", userInformation.userId)
     );
     const querySnapshot = await getDocs(q);
     const dataArr: any[] = [];
@@ -29,7 +27,6 @@ function ApprovedMarquee() {
     });
     setIsShowApproved(dataArr as any);
   };
-  console.log("isShowApproved", isShowApproved);
 
   useEffect(() => {
     fetchData();

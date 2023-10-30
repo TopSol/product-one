@@ -67,7 +67,6 @@ function Details() {
     googleMapsApiKey: "AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4",
     libraries: ["places"],
   });
-  // const storage = getStorage();
   const router = useRouter();
 
   const onFinish = (values) => {
@@ -90,12 +89,10 @@ function Details() {
     setModalOpen(true);
   };
   useEffect(() => {
-    // Get user's live location using Geolocation API
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          // Update the state with live latitude and longitude
           setCenter({ lat: latitude, lng: longitude });
         },
         (error) => {
@@ -106,14 +103,11 @@ function Details() {
       console.error("Geolocation is not supported by this browser.");
     }
   }, []);
-  const closeModal = () => {
-    setModalOpen(false);
-  };
+
   const onMarkerDragEnd = (e) => {
     setCenter({ lat: e.latLng.lat(), lng: e.latLng.lng() });
   };
   const handleRegistration = async () => {
-    console.log("aa");
     if (!fileList?.length) {
       message.warning("Please select atleast one image");
       return;
@@ -127,25 +121,12 @@ function Details() {
       );
       const user = userCredential.user;
       const folderName = `marqueeImages`;
-      console.log(multipleImage, "multipleImagemultipleImage");
-      // const imageUrls = await Promise.all(
-      //   multipleImage.map(async (image) => {
-      //     console.log(image?.file?.name, "imagrimagrsdfasdfasdfasgasda");
-      //     const fileName = `${folderName}/${image?.file?.name}`;
-      //     const storageRef = ref(storage, fileName);
-      //     await uploadBytes(storageRef, image?.file);
-      //     const urls = await getDownloadURL(storageRef);
-      //     return urls;
-      //   })
-      // );
       const imageUrls = await Promise.all(
         fileList.map(async (image) => {
-          console.log(image?.name, "imagrimagrsdfasdfasdfasgasda");
           const fileName = `${folderName}/${image?.name}`;
           const storageRef = ref(storage, fileName);
           await uploadBytes(storageRef, image?.originFileObj as any);
           const urls = await getDownloadURL(storageRef);
-          console.log(urls, "urlsurls");
           return urls;
         })
       );
@@ -165,11 +146,9 @@ function Details() {
         id: VenueId,
         createdAt: Timestamp.now(),
       };
-      console.log(userInfo, "dsafasdfa");
       await setDoc(doc(db, "users", user.uid), userInfo);
       if (userInfo) {
         addRegistration(userInfo);
-        // addUser(user.uid);
         addUser(userInfo);
         router.push("/adminMarquee");
         setLoading(true);
@@ -178,7 +157,6 @@ function Details() {
       console.log(error, "error");
     }
   };
-  console.log(multipleImage, "multipleImagemultipleImage");
 
   useEffect(() => {
     const handleResize = () => {
@@ -196,48 +174,6 @@ function Details() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  const handleImageDiemension = async (e) => {
-    let images = e.target.files;
-    setImage({
-      id: 0,
-      img: URL.createObjectURL(images?.[0]),
-    } as any);
-    const validImages: any = [];
-    try {
-      await Promise.all(
-        Object.values(images).map(async (image, index) => {
-          console.log(image, "image");
-          const img = new window.Image();
-          img.src = URL.createObjectURL(image as any);
-          await new Promise((resolve) => {
-            img.onload = function () {
-              if (img.width > 500 && img.height > 500) {
-                validImages.push({
-                  id: index,
-                  file: image,
-                });
-              } else {
-                message.warning("Image dimensions are not valid.");
-              }
-              // resolve();
-            };
-          });
-        })
-      );
-      if (validImages.length > 0) {
-        setModal1Open(true);
-        const updatedImages = [...prevImages, ...validImages];
-
-        setMultipleImage(updatedImages);
-        message.success("Image dimensions are valid.");
-      } else {
-        message.warning("No valid images selected.");
-      }
-    } catch (error) {
-      console.error("Error loading image:", error);
-      message.error("Error loading image.");
-    }
-  };
 
   const handleDiemension = async (id) => {
     const selectedImage = multipleImage.find((image) => image.id === id);
@@ -310,27 +246,11 @@ function Details() {
   };
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    console.log(newFileList, "newFileList");
     const lastFile = newFileList[newFileList?.length - 1];
     newFileList.pop();
     setFileList([...newFileList, { ...lastFile, status: "done" }]);
-    // setFileList(newFileList);
   };
 
-  // const onPreview = async (file: UploadFile) => {
-  //   let src = file.url as string;
-  //   if (!src) {
-  //     src = await new Promise((resolve) => {
-  //       const reader = new FileReader();
-  //       reader.readAsDataURL(file.originFileObj as RcFile);
-  //       reader.onload = () => resolve(reader.result as string);
-  //     });
-  //   }
-  //   const image = new Image();
-  //   image.src = src;
-  //   const imgWindow = window.open(src);
-  //   imgWindow?.document.write(image.outerHTML);
-  // };
   const { TextArea } = Input;
   const width = 2000;
   const height = 1300;
@@ -406,6 +326,32 @@ function Details() {
                     />
                   </Form.Item>
                 </div>
+                <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
+                  <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[85.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                    <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
+                      Password
+                    </b>
+                  </div>{" "}
+                  <Form.Item
+                    className="w-[100%]"
+                    name="password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Fillout The Password's Input!",
+                      },
+                    ]}
+                  >
+                    <Input
+                      className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative PhoneInput"
+                      placeholder="Enter password Here"
+                      type="password"
+                      name="password"
+                      value={details.password}
+                      onChange={handleChange}
+                    />
+                  </Form.Item>
+                </div>
                 <div className="w-[100%] flex flex-col md:items-start relative px-5 md:px-0 mb-4">
                   <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[170.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                     <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
@@ -432,33 +378,8 @@ function Details() {
                     />
                   </Form.Item>
                 </div>
-                <div className="w-[100%] flex flex-col md:items-start relative px-5 md:px-0 mb-4">
-                  <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[170.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                    <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
-                      Land Line Number
-                    </b>
-                  </div>
-
-                  <Form.Item
-                    name="phoneNumbe"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please Fillout The Phone's Input!",
-                      },
-                    ]}
-                  >
-                    <PhoneInput
-                      international
-                      countryCallingCodeEditable={false}
-                      defaultCountry="PK"
-                      value={landLineNumber}
-                      onChange={setLandLineNumber}
-                      className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative"
-                    />
-                  </Form.Item>
-                </div>
               </div>
+              {/* SECOND SIDE */}
               <div>
                 <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
                   <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[110.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
@@ -512,9 +433,34 @@ function Details() {
                     />
                   </Form.Item>
                 </div>
+                <div className="w-[100%] flex flex-col md:items-start relative px-5 md:px-0 mb-4">
+                  <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[140.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                    <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
+                      Land Line Number
+                    </b>
+                  </div>
 
+                  <Form.Item
+                    name="phoneNumbe"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Fillout The Phone's Input!",
+                      },
+                    ]}
+                  >
+                    <PhoneInput
+                      international
+                      countryCallingCodeEditable={false}
+                      defaultCountry="PK"
+                      value={landLineNumber}
+                      onChange={setLandLineNumber}
+                      className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative"
+                    />
+                  </Form.Item>
+                </div>
                 <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
-                  <div className="absolute top-[calc(50%_-_48.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[90.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="absolute top-[calc(50%_-_87.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[90.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                     <b className="absolute leading-[100%] z-20 pt-1">
                       Description
                     </b>
@@ -537,32 +483,6 @@ function Details() {
                       value={details.marqueeDetails}
                       onChange={handleChange}
                       className="border outline-none md:w-[30vw] z-10  py-4  flex justify-center text-xs relative"
-                    />
-                  </Form.Item>
-                </div>
-                <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
-                  <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[85.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                    <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
-                      Password
-                    </b>
-                  </div>{" "}
-                  <Form.Item
-                    className="w-[100%]"
-                    name="password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please Fillout The Password's Input!",
-                      },
-                    ]}
-                  >
-                    <Input
-                      className="border outline-none md:w-[30vw] z-10  py-4 flex justify-center text-xs relative PhoneInput"
-                      placeholder="Enter password Here"
-                      type="password"
-                      name="password"
-                      value={details.password}
-                      onChange={handleChange}
                     />
                   </Form.Item>
                 </div>
@@ -595,34 +515,6 @@ function Details() {
                 </ImgCrop>
               </div>
 
-              {/* <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0  ">
-                <div className="absolute top-[calc(50%_-_51.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                  <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
-                    Image
-                  </b>
-                </div>{" "}
-                <Form.Item
-                  className="w-[100%]"
-                  name="image"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please Select Atleast Single Image!",
-                    },
-                  ]}
-                >
-                  <Input
-                    className="border outline-none w-full z-10 py-4 flex justify-center text-xs relative"
-                    placeholder="Please Select Image"
-                    type="file"
-                    name="image"
-                    multiple
-                    onChange={(e) => {
-                      handleImageDiemension(e);
-                    }}
-                  />
-                </Form.Item>
-              </div> */}
               <div className="w-full pl-5 lg:pl-0">
                 {isImageShow && (
                   <div className="flex justify-start flex-wrap w-full px-3 mb-8">
@@ -716,7 +608,7 @@ function Details() {
             </GoogleMap>
           )}
         </div>
-        <div className="flex justify-end  w-[90%] my-3">
+        <div className="flex justify-end my-3">
           <button
             className="flex justify-center border border-primary py-2 w-36 lg:px-3 font-extrabold rounded-md text-primary hover:bg-primary hover:text-white"
             onClick={handleRegistration}
@@ -763,8 +655,6 @@ function Details() {
         ]}
       >
         <div className="bg-primary py-6 rounded-t-lg"></div>
-        {/* <div className="flex justify-center"> */}
-
         <ImageCroper
           image={image as any}
           setModal1Open={setModal1Open}
@@ -775,29 +665,6 @@ function Details() {
           setImageId={setImageId}
           imageId={imageId}
         />
-        {/* <div className="flex flex-wrap px-3">
-          {Object.values(multipleImage).map((item, index) => {
-            if (item && item.file instanceof Blob) {
-              const objectURL = URL.createObjectURL(item.file);
-
-              return (
-                <img
-                  src={objectURL}
-                  alt=""
-                  key={index}
-                  onClick={() => handleDiemension(item.id)}
-                  className="w-[15%] rounded-lg m-2"
-                />
-              );
-            } else {
-              return (
-                <span key={index} className="text-red-500">
-                  Invalid image data
-                </span>
-              );
-            }
-          })}
-        </div> */}
       </Modal>
     </>
   );

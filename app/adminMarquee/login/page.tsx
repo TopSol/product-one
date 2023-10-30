@@ -153,7 +153,7 @@ const Login = () => {
             Don’t have an account?{" "}
             <Link
               className=" text-[#006CE1] ml-2 font-semibold"
-              href="/admainMarquee/registration"
+              href="/adminMarquee/registration"
             >
               <div className="text-primary sm:text-xl sm:text-primary">
                 Register Now

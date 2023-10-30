@@ -14,7 +14,7 @@ export const marqueeReservationTemplete = (
     dishes,
   } = sendData;
 
-  console.log(mailData?.reason);
+  console.log(mailData);
 
   return `
   ${
@@ -182,7 +182,7 @@ export const marqueeReservationTemplete = (
             .join("")}
         </table>
           <p style="color: #f59832; font-weight: bold; display: flex; justify-content: end;">
-              Per/Head = "perHead"
+              Per/Head = ${dishes?.perHead}
           </p>
         </div>
       </body>
