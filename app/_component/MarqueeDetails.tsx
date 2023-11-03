@@ -3,7 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { db } from "@/app/firebase";
-import { Radio, Select, Space } from "antd";
+import { Radio, Select, Space, Spin } from "antd";
 import {
   faAngleDown,
   faLocationDot,
@@ -16,6 +16,7 @@ import { useStore } from "@/store";
 import { useRouter } from "next/navigation";
 import "react-day-picker/dist/style.css";
 import Image from "next/image";
+import Loader from "./Loader";
 interface UserData {
   id: string;
   data: DocumentData; // You might need to replace DocumentData with the actual type of your data
@@ -59,6 +60,7 @@ function MarqueeDetails({ item, showMessage }) {
   const [meal, setMeal] = useState("Lunch");
   const [value, setValue] = useState("1");
   const [venueId, setVenueId] = useState();
+  const [loader , setLoader] = useState(false)
   const [marqueeDates, setMarqueeDates] = useState<MarqueeDates>({
     from: null,
     to: null,
@@ -201,6 +203,7 @@ function MarqueeDetails({ item, showMessage }) {
 
   const handleMarqueeDetails = (id) => {
     router.push(`/marqueedetail?id=${id}`);
+    // setLoader(false); 
   };
 
   const currentDate = new Date(); // Get the current date
@@ -284,14 +287,18 @@ function MarqueeDetails({ item, showMessage }) {
                 </p>
                 <button
                   onClick={() => {
+                    setLoader(true)
                     venuesName(item?.id);
                     addMarqueeData(item);
                     addBookedDates(marqueeDates);
                     handleMarqueeDetails(item?.id);
                   }}
-                  className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
+                  className="bg-primaryColor hover:bg-hoverPrimary w-32 py-2 rounded-lg font-roboto text-white font-bold"
                 >
-                  Details
+                  {
+                    loader ? <Spin /> : "Details"
+                  }
+                  
                 </button>
               </div>
 

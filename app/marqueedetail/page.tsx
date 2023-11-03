@@ -6,7 +6,7 @@ import { doc, getDoc, query } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Breadcrumb, Input, Select, Space, Typography, message } from "antd";
+import { Breadcrumb, Input, Select, Space, Spin, Typography, message } from "antd";
 import { getFormatDates } from "@/app/utils";
 import { isBefore, startOfToday } from "date-fns";
 import Location from "./Location";
@@ -55,16 +55,16 @@ function Marqueedetail() {
     getMarqueeImage,
     marqueeImage,
   } = useStore();
+  console.log(marqueeData);
+  
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isLunch, setIsLunch] = useState<any>();
   const [selectedOption, setSelectedOption] = useState("");
-  // const [data, setData] = useState();
   const [data, setData] = useState<DocumentData | VenueData | null>(null);
   const [isShow, setIsShow] = useState(false);
-  // const [bookDates, setBookDates] = useState();
   const [bookDates, setBookDates] = useState<DocumentData | undefined>(
     undefined
   );
@@ -74,7 +74,6 @@ function Marqueedetail() {
     from: null,
     to: null,
   });
-  const [otherDates, setOtherDates] = useState([]);
   const [venueId, setVenueId] = useState();
   const [loading, setLoading] = useState(false);
   const [meal, setMeal] = useState("Lunch");
@@ -97,10 +96,17 @@ function Marqueedetail() {
   const id = searchParams.get("id");
   const marqueeName = searchParams.get("name");
   const location = searchParams.get("location");
+
   const handleButton = () => {
-    addBookedDates(marqueeDates);
-    getMarqueeImage({ ...marqueeImage, numberOfPeople: numberOfPeople });
-    router.push(`/details?id=${data?.userId}`);
+    if (!numberOfPeople || !marqueeDates?.from ){
+      message.error("Please fillout all the fields ");
+    } else {
+      setLoading(true)
+      addBookedDates(marqueeDates);
+      getMarqueeImage({ ...marqueeImage, numberOfPeople: numberOfPeople });
+      router.push(`/details?id=${data?.userId}`);
+      // setLoading(false);
+    }
   };
   const getCollection = async (id) => {
     try {
@@ -144,7 +150,6 @@ function Marqueedetail() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const abc = docSnap.data();
-        console.log("================================", abc);
         
         setData(abc);
         getMarqueeImage(abc);
@@ -238,10 +243,13 @@ function Marqueedetail() {
   // };
 
   const handleDateRangeSelect = (newRange) => {
+     setIsShow(true)
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
     let currentDate = new Date();
     if (currentDate <= date1) {
+      console.log(marqueeDates, "marqueeDates");
+      
       if (marqueeDates.from && newRange && marqueeDates.from > newRange) {
         // if (marqueeDates.from > newRange) {         build
         return setMarqueeDates({ from: newRange, to: null });
@@ -254,10 +262,10 @@ function Marqueedetail() {
           if (marqueeDates.from !== null) {
             return element >= marqueeDates.from && element <= newRange;
           }
-          return false; // Handle the case when marqueeDates.from is null
+          return false; 
         });
         if (date?.length > 0) {
-          // message.error("you can not select this date");
+          message.error("you can not select this date");
           setMarqueeDates({ from: newRange, to: null });
         } else {
           setMarqueeDates({ ...marqueeDates, to: newRange });
@@ -304,7 +312,6 @@ function Marqueedetail() {
   };
   const bookedStyle = { border: "2px solid currentColor" };
   const shouldShowDiv = marqueeVenueNames.some((item) => !item.disabled);
-  console.log(shouldShowDiv, "shouldShowDiv");
   const currentDate = new Date(); // Get the current date
   const currentMonth = new Date(
     currentDate.getFullYear(),
@@ -337,8 +344,8 @@ function Marqueedetail() {
           <div className="md:container md:mx-auto py-5 flex justify-between items-center mx-3">
             <div>
               <h1 className="font-vollkorn text-4xl text-gray-600">
-                {marqueeName}
-                {marqueeData?.data?.name}
+                {/* {marqueeData?.marqueeName} */}
+                {marqueeData?.data?.marqueeName}
               </h1>
               <Breadcrumb
                 items={[
@@ -362,7 +369,7 @@ function Marqueedetail() {
               <img
                 onClick={() => setIsOpen(true)}
                 src={selectImage ? `${selectImage}` : `${data?.image?.[0]}`}
-                className="rounded-lg  h-[508px] w-full object-cover"
+                className="rounded-lg  h-[508px] w-full object-cover cursor-pointer"
               />
             </div>
             <div className="  flex space-x-3 my-3 ">
@@ -567,11 +574,11 @@ function Marqueedetail() {
                 {shouldShowDiv && (
                   <>
                     <div className="">
-                      <div onClick={() => setIsShow(true)}>
+                      <div >
                         <Typography.Text className="text-primaryColor text-lg  font-poppins">
                           Select Date
                         </Typography.Text>
-                        <DayPicker
+                        <DayPicker 
                           className={`${
                             isLunch === `Lunch`
                               ? `combinedClasses`
@@ -602,10 +609,10 @@ function Marqueedetail() {
               <div
                 onClick={handleButton}
                 className={`flex ${
-                  numberOfPeople.length ? "bg-lightPrimary" : "bg-bgColor "
+                  numberOfPeople.length && marqueeDates?.from ? "bg-lightPrimary" : "bg-bgColor "
                 } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor text-white hover:text-black`}
               >
-                <div>{loading ? <Loader /> : " Book Now"}</div>
+                <div>{loading ? <Spin /> : " Book Now"}</div>
               </div>
             )}
             <img

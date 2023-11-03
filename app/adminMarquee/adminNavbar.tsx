@@ -35,7 +35,7 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
       router.push("/adminMarquee/login");
     }
   };
-  console.log(userInformation, "userInformationss");
+
   const items = [
     {
       label: <p>{userInformation.name}</p>,

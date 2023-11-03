@@ -5,13 +5,14 @@ import {
   Checkbox,
   Form,
   Input,
-  List,
+  Switch,
   Popconfirm,
-  Row,
+  Badge,
   Select,
   Table,
   Upload,
   message,
+  Spin,
 } from "antd";
 import Loader from "@/app/_component/Loader";
 import DishTable from "./dishTable";
@@ -45,7 +46,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ImgCrop from "antd-img-crop";
 const plainOptions = [
   { label: "Available", value: "Available" },
-  { label: "Not Available", value: "NotAvailable" },
+  { label: "Unavailable", value: "Unavailable" },
 ];
 const initialFormState = {
   name: "",
@@ -53,7 +54,8 @@ const initialFormState = {
   price: 0,
   type: "",
   description: "",
-  status: plainOptions[0].value,
+  // status: plainOptions[0].value,
+  status: "",
 };
 function Menus({
   modalOpen,
@@ -78,6 +80,8 @@ function Menus({
   const [previewImage, setPreviewImage] = useState([]);
   const [imageObject, setImageObject] = useState([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [isloading, setIsLoading] = useState(true);
+
   const [menu, setMenu] = useState([
     {
       label: "Venue Dish",
@@ -125,6 +129,7 @@ function Menus({
           }));
 
         addMenus(tempArray);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       }
@@ -136,7 +141,7 @@ function Menus({
   const HandleAddVenues = async () => {
     if (
       !user.name ||
-      // !user.image ||
+      !user.status ||
       !user.price ||
       !user.type ||
       !user.description
@@ -144,7 +149,6 @@ function Menus({
       return;
     }
     setLoading(true);
-    // const images = Object.values(user.image);
     const folderName = `images`;
     const urls = await Promise.all(
       imageObject.map(async (image) => {
@@ -155,6 +159,7 @@ function Menus({
         return utls;
       })
     );
+
     const MenuId = Math.random().toString(36).substring(2);
     const users = {
       name: user.name,
@@ -165,7 +170,8 @@ function Menus({
       userId: userInformation.userId,
       cropImage: fileList,
       price: user.price,
-      status: "Available",
+      // status: "Available",
+      status: user.status,
     };
     try {
       await setDoc(doc(db, "Menus", MenuId), users);
@@ -175,58 +181,10 @@ function Menus({
     setAddVenues([...addVenues, user] as any);
     setModalOpen(false);
     setUser(initialFormState);
-    // handleSubmit();
     setFileList([]);
     setImageObject([]);
     setLoading(false);
     fetchData();
-    // if (
-    //   !user.name ||
-    //   // !user.image ||
-    //   !user.price ||
-    //   !user.type ||
-    //   !user.description
-    // ) {
-    //   return;
-    // }
-    // setLoading(true);
-    // const images = Object.values(user.image);
-    // const folderName = `images`;
-
-    // const urls = await Promise.all(
-    //   images.map(async (image) => {
-    //     const fileName = `${folderName}/${image.name}`;
-    //     const storageRef = ref(storage, fileName);
-    //     await uploadBytes(storageRef, image);
-    //     const utls = await getDownloadURL(storageRef);
-    //     return utls;
-    //   })
-    // );
-
-    // const MenuId = Math.random().toString(36).substring(2);
-    // const users = {
-    //   name: user.name,
-    //   image: urls,
-    //   type: user.type,
-    //   description: user.description,
-    //   menuId: MenuId,
-    //   userId: userInformation.userId,
-    //   price: user.price,
-    //   status: "Available",
-    // };
-
-    // try {
-    //   await setDoc(doc(db, "Menus", MenuId), users);
-    // } catch (error) {
-    //   console.log(error, "error");
-    // }
-    // setAddVenues([...addVenues, user]);
-
-    // setModalOpen(false);
-    // setUser(initialFormState);
-    // handleSubmit();
-    // setLoading(false);
-    // fetchData();
   };
   const { TextArea } = Input;
   const deleteMenu = async (menuId) => {
@@ -286,6 +244,7 @@ function Menus({
     setOpenEditVenue(false);
     setLoading((prevState) => !prevState);
   };
+
   const handleMenuSelect = (e) => {
     switch (e) {
       case "1":
@@ -304,6 +263,10 @@ function Menus({
         break;
     }
   };
+  const handlestatusChange = (e) => {
+    setUser({ ...user, status: e });
+  };
+
   const onChange = (id) => {
     if (deleteMenus.includes(id)) {
       const data = deleteMenus.filter((item) => item !== id);
@@ -367,24 +330,12 @@ function Menus({
   const width = 2000;
   const height = 1300;
   const aspectRatio = width / height;
-  console.log(user, "useruser");
-  // const beforeUpload = (file) => {
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(file);
-  //   console.log(reader, "readerre");
-  //   reader.onload = () => {
-  //     setFileList((prev) => [...prev, { url: reader.result }]);
-  //   };
-  //   setImageObject((prevImageObject) => [...prevImageObject, file]);
-  //   return false;
-  // };
-
   const beforeUpload = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      const img = new window.Image(); 
+      const img = new window.Image();
       (img as any).src = reader.result;
 
       img.onload = () => {
@@ -394,7 +345,7 @@ function Menus({
         if (width < 1500 || height < 1000) {
           message.warning(
             "Please upload an image with a width of at least 1500px and a height of at least 1000px."
-          )
+          );
         } else {
           setFileList((prev) => [...prev, { url: reader.result }]);
           setImageObject((prevImageObject) => [...prevImageObject, file]);
@@ -404,420 +355,402 @@ function Menus({
 
     return false;
   };
-
+  const handleRemove = (file) => {
+    const index = fileList.indexOf(file);
+    const newFileList = [...fileList];
+    newFileList.splice(index, 1);
+    setFileList(newFileList);
+  };
   return (
-    <div className="md:px-10">
-      {/* {renderHeader()}
-      <List
-        dataSource={Menus}
-        renderItem={(Menus, index) => (
-          <DishTable
-            menus={Menus}
-            onChange={onChange}
-            EditVenue={EditVenue}
-            setIsOpen={setIsOpen}
-            setPreviewImage={setPreviewImage}
-            setPhotoIndex={setPhotoIndex}
-            onChangeStatus={onChangeStatus}
-          />
-        )}
-      /> */}
-      <Table dataSource={Menus} className="myTable" bordered={false}>
-        <Column
-          title="Check box"
-          dataIndex="menuId"
-          key="menuId"
-          className="text-base"
-          render={(menuId) => (
-            <div>
-              <Checkbox onClick={() => onChange(menuId)} />
-            </div>
-          )}
-        />
-        <Column
-          title="Name"
-          dataIndex="name"
-          key="name"
-          className="text-base"
-        />
-        <Column
-          title="Type"
-          dataIndex="type"
-          key="type"
-          className="text-base"
-        />
-        <Column
-          title="Description"
-          dataIndex="description"
-          key="description"
-          className="text-base "
-        />
-        <Column
-          title="Price"
-          dataIndex="price"
-          key="price"
-          className="text-base"
-        />
-        <Column
-          title="Images"
-          dataIndex="image"
-          key="image"
-          render={(image) => (
-            <>
-              <div className="flex items-center">
-                <img
-                  width={80}
-                  height={60}
-                  src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
-                  alt="Description of the image"
-                />
-                {
-                  <Link
-                    onClick={() => {
-                      setIsOpen(true);
-                      setPreviewImage(image);
-                      setPhotoIndex(0);
-                    }}
-                    className="text-blue-600 underline ml-2"
-                    href=""
-                  >
-                    {image.length > 1 && `${image.length - 1} more`}
-                  </Link>
-                }
-              </div>
-              {/* <div className="flex items-center">
-              <img
-                width={80}
-                height={80}
-                src={image.length > 0 ? image[0] : "fallback-image-url.jpg"}
-                alt="Description of the image"
+    <>
+      {isloading ? (
+        <div className="flex justify-center items-center h-[80vh]">
+        <Spin size="default" />
+        </div>
+      ) : (
+        <>
+          <div className="md:px-10">
+            <Table dataSource={Menus} pagination={false} className="myTable" bordered={false}>
+              <Column
+                title="Check box"
+                dataIndex="menuId"
+                key="menuId"
+                className="text-base"
+                render={(menuId) => (
+                  <div>
+                    <Checkbox onClick={() => onChange(menuId)} />
+                  </div>
+                )}
               />
-              {
-                <Link
-                  onClick={() => {
-                    setPreviewImage(image);
-                    setIsOpen(true);
-                    setPhotoIndex(0);
-                  }}
-                  className="text-blue-600 underline ml-2"
-                  href=""
-                >
-                  {image?.length - 1} more
-                </Link>
-              }
-            </div>
-            <div className="flex">
-              <Image.PreviewGroup>
-                {image?.map((dish, index) => {
+              <Column
+                title="Name"
+                dataIndex="name"
+                key="name"
+                className="text-base"
+              />
+              <Column
+                title="Type"
+                dataIndex="type"
+                key="type"
+                className="text-base"
+              />
+              <Column
+                title="Description"
+                dataIndex="description"
+                key="description"
+                className="text-base "
+              />
+              <Column
+                title="Price"
+                dataIndex="price"
+                key="price"
+                className="text-base"
+              />
+              <Column
+                title="Images"
+                dataIndex="image"
+                key="image"
+                render={(image) => (
+                  <>
+                    <div className="flex items-center cursor-pointer">
+                      <img
+                        width={80}
+                        height={60}
+                        src={
+                          image.length > 0 ? image[0] : "fallback-image-url.jpg"
+                        }
+                        alt="Image"
+                        onClick={()=>{
+                          setIsOpen(true);
+                          setPreviewImage(image);
+                          setPhotoIndex(0);
+                        }}
+                      />
+                      {
+                        <Link
+                          onClick={() => {
+                            setIsOpen(true);
+                            setPreviewImage(image);
+                            setPhotoIndex(0);
+                          }}
+                          className="text-blue-600 underline ml-2"
+                          href=""
+                        >
+                          {image.length > 1 && `${image.length - 1} more`}
+                        </Link>
+                      }
+                    </div>
+                  </>
+                )}
+              />
+              <Column
+                title="Status"
+                dataIndex="status"
+                key="status"
+                className="text-base"
+                render={(v) => {
                   return (
-                    <Image
-                      key={index}
-                      width={80}
-                      height={35}
-                      // visible={false}
-                      style={{ objectFit: "cover", paddingRight: 10 }}
-                      src={dish}
-                      onClick={() => {
-                        Image.previewGroup?.show({
-                          current: index,
-                        });
-                      }}
+                    <Badge
+                      status={v === "Available" ? "success" : "error"}
+                      text={v}
                     />
                   );
-                })}
-              </Image.PreviewGroup> */}
-              {/* </div> */}
-            </>
-          )}
-        />
-        <Column
-          title="Status"
-          dataIndex="status"
-          key="status"
-          className="text-base"
-          render={(status, record: any) => (
-            <Select
-              // showSearch
-              className={"status"}
-              // className={`status .ant-select-arrow ${status === "Available" ? "text-red" : "text-#F9E1D7"}`}
-              placeholder="Select a status"
-              optionFilterProp="children"
-              onChange={(value) => onChangeStatus(value, (record as any).menuId)}
-              style={{
-                width: 200,
-                backgroundColor: status === "Available" ? "#D4EAD8" : "#F9E1D7",
-                borderRadius: 15,
-              }}
-              filterOption={(input, option: any) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              defaultValue={status}
-              value={status}
-            >
-              {status === "Available" ? (
-                <Select.Option value="not-available">
-                  Not Available
-                </Select.Option>
-              ) : (
-                <Select.Option value="available">Available</Select.Option>
-              )}
-            </Select>
-          )}
-        />
-        <Column
-          title="Edit"
-          dataIndex="menuId"
-          key="menuId"
-          className="text-base"
-          render={(menuId) => (
-            <div>
-              <Popconfirm
-                title="Delete Dish?"
-                description="Are you sure to delete Dish?"
-                okText="Yes"
-                cancelText="No"
-                onConfirm={() => deleteMenu(menuId)}
-              >
-                {/* <FontAwesomeIcon
-                  icon={faTrashCan}
-                  width={15}
-                  // height={15}
-                  className="text-red-500 cursor-pointer text-xl"
-                  // onClick={() => deleteVenue(venueId)}
-                />  */}
-              </Popconfirm>
-              <FontAwesomeIcon
-                icon={faPenToSquare}
-                className="ml-3 text-green-500 text-xl cursor-pointer"
-                width={25}
-                onClick={() => EditVenue(menuId)}
+                }}
               />
-            </div>
-          )}
-        />
-      </Table>
 
-      <Modal
-        className=" modal  w-full text-center"
-        centered
-        open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        closeIcon={
-          <div className=" right-2 ">
-            <svg
-              onClick={() => setModalOpen(false)}
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              width={20}
-              height={20}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>{" "}
-          </div>
-        }
-        width={600}
-        bodyStyle={{ height: 675, padding: 0 }}
-        okButtonProps={{ className: "custom-ok-button" }}
-        footer={[
-          <div className="pb-5 mr-3" key={"index"}>
-            <Button
-              key="cancel"
-              onClick={() => setModalOpen(false)}
-              className=" AddVenue border-primary text-primary "
-            >
-              Cancel
-            </Button>
-            <Button
-              key="ok"
-              type="primary"
-              onClick={() =>
-                openEditVenue
-                  ? updateVenue((user as any).menuId)
-                  : HandleAddVenues()
-              }
-              className="AddVenue  bg-primary text-white"
-            >
-              {loading ? <Loader /> : "Add"}
-            </Button>
-          </div>,
-        ]}
-      >
-        <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
-          <div className="mr-auto bg-primary w-full flex rounded-t-lg">
-            <Image
-              alt="sdf"
-              src={dots}
-              width={40}
-              height={40}
-              className="ml-3"
-            />
-            <p className="text-xl pl-3 text-white py-4"> Add Dish</p>
-          </div>
-          <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
-            <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
-                  Name
-                </p>
-              </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <Input
-                  placeholder="Name"
-                  type="text"
-                  name="name"
-                  value={user.name}
-                  onChange={handleChange}
-                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
-                />
-              </div>
-            </div>
-            <p className="mb-2 font-Manrope font-bold  pl-5 lg:pl-0">Image</p>
-            <div className="mb-3 flex flex-start w-full pl-5 lg:pl-0">
-              <ImgCrop
-                rotationSlider
-                aspect={aspectRatio}
-                modalWidth={800}
-                modalTitle={"Edit your Image"}
-              >
-                <Upload
-                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                  listType="picture-card"
-                  fileList={fileList}
-                  beforeUpload={beforeUpload}
-                  showUploadList={{
-                    showPreviewIcon: false,
-                    showRemoveIcon: false,
-                  }}
-                >
-                  {fileList?.length < 5 && "+ Upload"}
-                </Upload>
-              </ImgCrop>
-            </div>
-            {/* <Form form={form} onFinish={handleSubmit}>
-              <div className="flex flex-col items-start relative md:mt-3 mt-4">
-                <div className="absolute top-[calc(50%_-_75.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[70.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                  <p className="absolute text-lg leading-[100%] z-20 pt-1">
-                    Images
-                  </p>
-                </div>
-                <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-                  <Form.Item name="image">
-                    <Input
-                      placeholder="Basic usage"
-                      type="file"
-                      name="image"
-                      multiple
-                      onChange={(e) => {
-                        setUser({ ...user, image: e.target.files });
-                      }}
-                      className="border outline-none md:w-[500px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
+              <Column
+                title="Edit"
+                dataIndex="menuId"
+                key="menuId"
+                className="text-base"
+                render={(menuId) => (
+                  <div>
+                    <Popconfirm
+                      title="Delete Dish?"
+                      description="Are you sure to delete Dish?"
+                      okText="Yes"
+                      cancelText="No"
+                      onConfirm={() => deleteMenu(menuId)}
+                    ></Popconfirm>
+                    <FontAwesomeIcon
+                      icon={faPenToSquare}
+                      className="ml-3 text-green-500 text-lg cursor-pointer"
+                      width={25}
+                      onClick={() => EditVenue(menuId)}
                     />
-                  </Form.Item>
+                  </div>
+                )}
+              />
+            </Table>
+
+            <Modal
+              className=" modal  w-full text-center"
+              centered
+              open={modalOpen}
+              onCancel={() => {
+                setModalOpen(false);
+                setUser(initialFormState);
+                setFileList([]);
+                setImageObject([]);
+                setOpenEditVenue(false);
+              }}
+              closeIcon={
+                <div className=" right-2 ">
+                  <svg
+                    onClick={() => {
+                      setModalOpen(false);
+                      setOpenEditVenue(false);
+                    }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-white cursor-pointer md:-mt-[10px]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    width={20}
+                    height={20}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>{" "}
+                </div>
+              }
+              width={600}
+              bodyStyle={{ height: 840, padding: 0 }}
+              okButtonProps={{ className: "custom-ok-button" }}
+              footer={[
+                <div className="pb-5 mr-3" key={"index"}>
+                  <Button
+                    key="cancel"
+                    onClick={() => {
+                      setModalOpen(false);
+                      setUser(initialFormState);
+                      setFileList([]);
+                      setImageObject([]);
+                      setOpenEditVenue(false);
+                    }}
+                    className=" AddVenue border-primary text-primary "
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    key="ok"
+                    type="primary"
+                    onClick={() =>
+                      openEditVenue
+                        ? updateVenue((user as any).menuId)
+                        : HandleAddVenues()
+                    }
+                    className="AddVenue  bg-primary text-white"
+                  >
+                    {openEditVenue ? (
+                      loading ? (
+                        <Loader />
+                      ) : (
+                        "Update"
+                      )
+                    ) : loading ? (
+                      <Loader />
+                    ) : (
+                      "Add"
+                    )}
+                  </Button>
+                </div>,
+              ]}
+            >
+              <div className=" w-full h-full mt-4 flex justify-center items-center flex-col">
+                <div className="mr-auto bg-primary w-full flex rounded-t-lg">
+                  <Image
+                    alt="sdf"
+                    src={dots}
+                    width={40}
+                    height={40}
+                    className="ml-3"
+                  />
+                  <p className="text-xl pl-3 text-white py-4"> Add Dish</p>
+                </div>
+                <div className=" md:p-5 rounded-md mb-2 flex flex-col  w-[90%]  justify-center ">
+                  <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                    <div className="absolute top-[calc(50%_-_56.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[60.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                      <p className="absolute text-lg leading-[100%] z-20 pt-1 ">
+                        Name
+                      </p>
+                    </div>
+                    <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
+                      <Input
+                        placeholder="Name"
+                        type="text"
+                        name="name"
+                        value={user.name}
+                        onChange={handleChange}
+                        className="border outline-none md:w-[700px] z-10 w-full rounded-[10px]  mb-8 py-5 flex justify-center text-xs relative"
+                      />
+                    </div>
+                  </div>
+                  <p className="mb-2 font-Manrope font-bold  pl-5 lg:pl-0">
+                    Image
+                  </p>
+                  <div className=" flex flex-start w-full pl-5 lg:pl-0 mb-8">
+                    <ImgCrop
+                      modalClassName="btns"
+                      rotationSlider
+                      modalWidth={800}
+                      modalTitle={"Edit your Image"}
+                      modalOk={"Crop"}
+                      aspect={aspectRatio}
+                      maxZoom={1.2}
+                    >
+                      <Upload
+                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                        listType="picture-card"
+                        fileList={fileList}
+                        onRemove={handleRemove}
+                        beforeUpload={beforeUpload}
+                        showUploadList={{
+                          showPreviewIcon: false,
+
+                          showRemoveIcon: true,
+                        }}
+                      >
+                        {fileList?.length < 5 && "+ Upload"}
+                      </Upload>
+                    </ImgCrop>
+                  </div>
+
+                  <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                    <div className="absolute top-[calc(50%_-_57.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                      <p className="absolute  text-lg leading-[100%] z-20 pt-1">
+                        Price
+                      </p>
+                    </div>
+                    <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
+                      <Input
+                        placeholder="Minimum Capacity"
+                        type="number"
+                        name="price"
+                        value={user.price}
+                        onChange={handleChange}
+                        className="border outline-none md:w-[700px] z-10 w-full rounded-[10px]  mb-8 py-5 flex justify-center text-xs relative"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                    <div className="absolute top-[calc(50%_-_57.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                      <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                        Type
+                      </p>
+                    </div>
+                    <div className=" flex flex-col md:flex-row  md:justify-between w-[100%]">
+                      <Select
+                        className="type mb-8"
+                        showSearch
+                        style={{
+                          width: "100%",
+                        }}
+                        placeholder="Search to Select"
+                        optionFilterProp="children"
+                        filterOption={(input, option: any) =>
+                          option.label
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
+                        filterSort={(optionA, optionB) =>
+                          optionA.label
+                            .toLowerCase()
+                            .localeCompare(optionB.label.toLowerCase())
+                        }
+                        options={menu}
+                        onChange={handleMenuSelect}
+                        value={user.type}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                    <div className="absolute top-[calc(50%_-_57.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[65.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                      <p className="absolute text-lg leading-[100%] z-20 pt-1">
+                        Status
+                      </p>
+                    </div>
+                    <div className="   flex flex-col md:flex-row  md:justify-between w-[100%]">
+                      <Select
+                        className="type mb-8"
+                        showSearch
+                        style={{
+                          width: "100%",
+                        }}
+                        placeholder="Search to Select"
+                        optionFilterProp="children"
+                        filterOption={(input, option: any) =>
+                          option.label
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
+                        filterSort={(optionA, optionB) =>
+                          optionA.label
+                            .toLowerCase()
+                            .localeCompare(optionB.label.toLowerCase())
+                        }
+                        options={plainOptions}
+                        onChange={handlestatusChange}
+                        value={user.status}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-start relative md:mt-3 mt-4">
+                    <div className="absolute z-20 left-[19.89px] -mt-3 rounded-3xs bg-white w-[104.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                      <p className="absolute text-lg leading-[100%] z-20 ">
+                        Description
+                      </p>
+                    </div>
+                    <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
+                      <TextArea
+                        rows={4}
+                        maxLength={200}
+                        placeholder="Enter Description Here"
+                        name="description"
+                        typeof="text"
+                        value={user.description}
+                        onChange={handleChange}
+                        style={{
+                          resize: "none",
+                        }}
+                        className="border outline-none md:w-[700px] z-10 w-full rounded-[10px]  mb-8 py-5 flex justify-center text-xs relative"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </Form> */}
-            <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_60.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute  text-lg leading-[100%] z-20 pt-1">
-                  Price
-                </p>
-              </div>
-              <div className="mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <Input
-                  placeholder="Minimum Capacity"
-                  type="number"
-                  name="price"
-                  value={user.price}
-                  onChange={handleChange}
-                  className="border outline-none md:w-[700px] z-10 w-full  py-5 mb-3 flex justify-center text-xs relative"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute top-[calc(50%_-_49.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 pt-1">
-                  Type
-                </p>
-              </div>
-              <div className="  mb-6 flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <Select
-                  className="type "
-                  showSearch
-                  style={{
-                    width: "100%",
-                  }}
-                  placeholder="Search to Select"
-                  optionFilterProp="children"
-                  filterOption={(input, option: any) =>
-                    option.label.toLowerCase().includes(input.toLowerCase())
-                  }
-                  filterSort={(optionA, optionB) =>
-                    optionA.label
-                      .toLowerCase()
-                      .localeCompare(optionB.label.toLowerCase())
-                  }
-                  options={menu}
-                  onChange={handleMenuSelect}
-                  value={user.type}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col items-start relative md:mt-3 mt-4">
-              <div className="absolute z-20 left-[19.89px] -mt-3 rounded-3xs bg-white w-[104.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
-                <p className="absolute text-lg leading-[100%] z-20 ">
-                  Description
-                </p>
-              </div>
-              <div className="flex flex-col md:flex-row  md:justify-between w-[100%]">
-                <TextArea
-                  rows={4}
-                  maxLength={200}
-                  placeholder="Enter Description Here"
-                  name="description"
-                  typeof="text"
-                  value={user.description}
-                  onChange={handleChange}
-                  style={{
-                    resize: "none",
-                  }}
-                  className="border h-[90px] outline-none md:w-[700px] z-10 w-full  py-3 mb-3 flex justify-center text-xs relative"
-                />
-              </div>
-            </div>
+            </Modal>
+            {isOpen && (
+              <Lightbox
+                mainSrc={previewImage[photoIndex]}
+                nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
+                prevSrc={
+                  previewImage[
+                    (photoIndex + previewImage.length - 1) % previewImage.length
+                  ]
+                }
+                onCloseRequest={() => setIsOpen(false)}
+                onMovePrevRequest={() =>
+                  setPhotoIndex(
+                    (photoIndex + previewImage.length - 1) % previewImage.length
+                  )
+                }
+                onMoveNextRequest={() =>
+                  setPhotoIndex((photoIndex + 1) % previewImage.length)
+                }
+              />
+            )}
           </div>
-        </div>
-      </Modal>
-      {isOpen && (
-        <Lightbox
-          mainSrc={previewImage[photoIndex]}
-          nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
-          prevSrc={
-            previewImage[
-              (photoIndex + previewImage.length - 1) % previewImage.length
-            ]
-          }
-          onCloseRequest={() => setIsOpen(false)}
-          onMovePrevRequest={() =>
-            setPhotoIndex(
-              (photoIndex + previewImage.length - 1) % previewImage.length
-            )
-          }
-          onMoveNextRequest={() =>
-            setPhotoIndex((photoIndex + 1) % previewImage.length)
-          }
-        />
+        </>
       )}
-    </div>
+    </>
   );
 }
 export default Menus;

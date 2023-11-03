@@ -3,7 +3,7 @@ import React, { use } from "react";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/app/firebase";
-import { Modal, Carousel } from "antd";
+import { Modal, Carousel, Spin, message } from "antd";
 import { useStore } from "@/store";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -13,7 +13,7 @@ import email from "../assets/images/email-1-svgrepo-com.svg";
 import call from "../assets/images/call.svg";
 import address from "../assets/images/address-location-map-svgrepo-com 1.svg";
 import notes from "../assets/images/notes.svg";
-import hall from "../assets/images/hall.svg";
+import hall from "../assets/images/hallbg.svg";
 import foodIcon from "../assets/images/menuIcon.svg";
 import eventIcom from "../assets/images/eventType.svg";
 import saIcon from "../assets/images/sittingArg.svg";
@@ -23,9 +23,10 @@ import peoples from "../assets/images/peoples.svg";
 import facilites from "../assets/images/facilites.svg";
 import "./style.css";
 import { doc, setDoc } from "firebase/firestore";
+import { marqueeReservationTemplete } from "@/templetes";
+
 function Preview({
   setSuccessPage,
-  openMessage,
   userInformation,
   marqueeId,
   selectedMenu,
@@ -37,23 +38,26 @@ function Preview({
   const [open, setOpen] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [dates, setDates] = useState();
+  const [sendData, setSendData] = useState<string>();
+  const [loader, setLoader] = useState(false);
   const router = useRouter();
-  console.log(selectedMenu, "marqueeImagessssssss");
+
   const fetchBlogs = async () => {
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
       const tempArray: any = response.docs.map((doc) => doc.data());
+      console.log(tempArray);
       setBlogs(tempArray);
     } catch (error) {
       console.error("Error fetching blogs:", error);
     }
   };
-  console.log(userInformation, "userInformation");
   useEffect(() => {
     fetchBlogs();
   }, []);
-
+  useEffect(() => {}, []);
   const nextPage = async () => {
+    setLoader((pre) => !pre);
     const fieldId = Math.random().toString(36).slice(2);
     const users = {
       image: marqueeImage?.image,
@@ -81,11 +85,30 @@ function Preview({
       eventType: userInformation?.eventType,
     };
     try {
+      const response = await fetch("http://localhost:3000/api/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userInformation?.email,
+          subject: "RESERVATION",
+          html: marqueeReservationTemplete("", "", "", "", "", "booking"),
+        }),
+      });
+      if (response.status === 200) {
+        message.success("Your email has been successfully sent");
+      } else {
+        console.error("API call failed:", response.statusText);
+        message.error("Oops, something went wrong");
+      }
+
       await setDoc(doc(db, "contactUs", fieldId), users);
       setSuccessPage(true);
-      openMessage();
+      // openMessage();
     } catch (error) {
       console.log(" Error", error);
+      console.error("Error calling API:", error);
     }
   };
 
@@ -101,23 +124,17 @@ function Preview({
       undefined,
       options
     );
-    const dateParts = formattedDate.split(" ");
 
+    const dateParts = formattedDate.split(" ");
     let day = dateParts[1];
     if (day?.length === 1) {
       day = `0${day}`;
     }
-
     return `${dateParts[0]} ${day}${dateParts[2]}`;
   };
 
   const fromDate = formatDate(bookedDates.from);
   const toDate = formatDate(bookedDates.to);
-  console.log(
-    "MarqueeImage ",
-    typeof selectedMenu?.totalDiscount,
-    typeof marqueeImage?.numberOfPeople
-  );
 
   return (
     <div>
@@ -128,8 +145,6 @@ function Preview({
             <div className="flex justify-center object-cover" key={index}>
               <img
                 src={item}
-                // width={920}
-                // height={56}
                 alt="Images"
                 className=" md:w-[920px] md:h-56 rounded-xl cursor-pointer object-cover "
               />
@@ -307,19 +322,35 @@ function Preview({
             </div>
           </div>
           {/* Sixth */}
-          <div className="">
-            <div className="bg-white rounded-lg py-1 mb-3 md:mb-0">
-              <div className="flex items-center my-4 px-3">
-                <div>
-                  <Image src={calander} alt="Image" />
-                </div>
-                <div className="ml-3">
-                  <p className="font-semibold">Dates</p>
-                  <p className="text-xs md:text-base">{`${fromDate} - ${toDate}`}</p>
+          {bookedDates?.to === null ? (
+            <>
+              <div className="bg-white rounded-lg py-1 mb-3 md:mb-0">
+                <div className="flex items-center my-4 px-3">
+                  <div>
+                    <Image src={calander} alt="Image" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="font-semibold">Dates</p>
+                    <p className="text-xs md:text-base">{`${fromDate}`}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </>
+          ) : (
+            <>
+              <div className="bg-white rounded-lg py-1 mb-3 md:mb-0">
+                <div className="flex items-center my-4 px-3">
+                  <div>
+                    <Image src={calander} alt="Image" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="font-semibold">Dates</p>
+                    <p className="text-xs md:text-base">{`${fromDate} - ${toDate}`}</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* CHOOSE MENU */}
@@ -357,11 +388,15 @@ function Preview({
               </ul>
             </div>
 
-            {selectedMenu?.perhead === selectedMenu?.totalDiscount ? (
-              <div className="flex justify-end w-full my-4">
-                <p className="text-xl justify-end">
+            {selectedMenu?.totalDiscount === undefined ? (
+              <div className="flex justify-between w-full my-4">
+                <p className="text-xl">
+                  PerPerson Rs=
+                  {parseInt(selectedMenu?.perHead)}
+                </p>
+                <p className="text-xl ">
                   {" "}
-                  Total{" "}
+                  Total Rs=
                   {parseInt(selectedMenu?.perHead) *
                     parseInt(marqueeImage?.numberOfPeople)}
                 </p>
@@ -380,10 +415,7 @@ function Preview({
                       return (
                         <div className="flex items-center py-1" key={i}>
                           <div
-                            className={`bg-textColor h-3 w-3 rounded-full mr-3 ${console.log(
-                              selectedMenu,
-                              "selection:"
-                            )}`}
+                            className={`bg-textColor h-3 w-3 rounded-full mr-3`}
                           ></div>
                           <div className="flex justify-between w-full">
                             <li className="">{dish.name}</li>
@@ -394,12 +426,14 @@ function Preview({
                     })}
                   </ul>
                 </div>
-
-                {/* first part total */}
-                <div className="flex justify-end w-full my-4">
-                  <p className="text-xl  justify-end">
+                <div className="flex justify-between w-full my-4">
+                  <p className="text-xl">
+                    PerPerson Rs=
+                    {parseInt(selectedMenu?.totalDiscount)}
+                  </p>
+                  <p className="text-xl">
                     {" "}
-                    Total{" "}
+                    Total Rs=
                     {selectedMenu?.perhead !== selectedMenu?.totalDiscount
                       ? parseInt(selectedMenu?.totalDiscount) *
                         parseInt(marqueeImage?.numberOfPeople)
@@ -478,10 +512,10 @@ function Preview({
             Previous
           </button>
           <button
-            className="border px-5 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+            className="border w-40 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
             onClick={() => nextPage()}
           >
-            Book Now
+            {loader ? <Spin /> : " Book Now"}
           </button>
         </div>
       </div>

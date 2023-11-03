@@ -14,7 +14,6 @@ import { getFormatDates } from "@/app/utils";
 import "../landingPage/style.css";
 import calenderIcon from "../assets/images/calender.svg";
 import SelectDate from "./selectDate";
-// import UseRedirectUser from "./redirectUser";
 import {
   Timestamp,
   collection,
@@ -26,9 +25,8 @@ import { db } from "../firebase";
 import { DocumentData } from "firebase/firestore";
 interface UserData {
   id: string;
-  data: DocumentData; // You might need to replace DocumentData with the actual type of your data
+  data: DocumentData;
 }
-// import UserRedirect from "./redirectUser";
 export default function Hero({
   setMarquees,
   setShowMessage,
@@ -56,26 +54,26 @@ export default function Hero({
   const handleMarqueeData = async () => {
     setShowMessage(false);
 
-    let q = query(collection(db, "users"), where("address", "==", cityName));
+    let q = query(collection(db, "users"), where("city", "==", cityName));
     const querySnapshot = await getDocs(q);
     let adminMarqueeUser: UserData[] = [];
     querySnapshot.forEach((doc) => {
       adminMarqueeUser.push({ id: doc.id, data: doc.data() });
     });
+    console.log(adminMarqueeUser);
+
     let venues: UserData[] = [];
     await Promise.all(
       adminMarqueeUser.map(async (item) => {
         let q = query(collection(db, "Venues"), where("userId", "==", item.id));
         const querySnapshot = await getDocs(q);
-
         querySnapshot.forEach((doc) => {
           venues.push({ id: doc.id, data: doc.data() });
         });
-        // Now you can do something with the venues related to each admin
       })
     );
+
     const dateObject = new Date(selectedDateRange);
-    console.log(venues, "sdfsdfsdfsdfds", adminMarqueeUser);
     const filteredVenues = venues.filter((venue) => {
       const { dates } = venue.data;
       if (dates && dates.Lunch && dates.Diner) {
@@ -91,7 +89,7 @@ export default function Hero({
         console.log(dateIsNotInLunch, dateIsNotInDiner, "ll");
         return dateIsNotInLunch || dateIsNotInDiner;
       } else {
-        return true; 
+        return true;
       }
     });
     const finalData = filteredVenues
@@ -102,9 +100,9 @@ export default function Hero({
       .filter((item) => item !== undefined);
     setMarquees(finalData);
   };
+
   const nextPage = () => {
     const marquee = "/marquee";
-    // UserRedirect(marquee);
   };
   return (
     <>
@@ -141,15 +139,10 @@ export default function Hero({
                   <li className="cursor-pointer px-3 ">
                     <Link href="/">Home</Link>
                   </li>
-                  <li
-                    className="cursor-pointer px-3 "
-                    // onClick={() => nextPage()}
-                  >
+                  <li className="cursor-pointer px-3 ">
                     <Link href="/marquee">Marquee</Link>
                   </li>
-                  <li className="cursor-pointer px-3 ">
-                    <Link href="/adminMarquee">Booking</Link>
-                  </li>
+                  <li className="cursor-pointer px-3 ">Booking</li>
                   <li className="cursor-pointer px-3 ">Services</li>
                   <li className="cursor-pointer px-3 ">Blog</li>
                   <li className="cursor-pointer px-3 ">Help</li>
@@ -175,7 +168,11 @@ export default function Hero({
           <div className=" lg:flex  items-center justify-center mt-[8%] w-full lg:w-[70%] lg:mx-auto">
             <div className="lg:flex  items-center bg-WhiteColor md:py-9 lg:py-7 rounded-t-xl lg:rounded-tr-none lg:rounded-l-xl  w-full lg-w[50%] xl:w-[60%]">
               <div className="border-r-2 w-full py-2 flex justify-center cursor-pointer">
-                <CityName setCityName={setCityName} cityName={cityName} />
+                <CityName
+                  setCityName={setCityName}
+                  cityName={cityName}
+                  registration={""}
+                />
               </div>
               <div className="flex items-center justify-center w-full cursor-pointer pb-4 lg:pb-0">
                 <SelectDate

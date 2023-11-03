@@ -41,9 +41,9 @@ import bookingWIcon from "@/app/assets/images/bookingWIcon.svg";
 import dishWIcon from "@/app/assets/images/dishWIcon.svg";
 import venueIcon from "@/app/assets/images/venue.svg";
 import venueWIcon from "@/app/assets/images/venueIcon.svg";
-import hall from "@/app/assets/images/hall.svg";
+import hall2 from "../assets/images/hallbg.svg";
 import hallWhite from "@/app/assets/images/hallWhite.svg";
-import { Button, message, Popconfirm } from "antd";
+import { Button, message, Popconfirm, Spin } from "antd";
 function AdminMarqueeDetails() {
   const [component, setComponent] = React.useState("Halls");
   const [modalOpen, setModalOpen] = useState(false);
@@ -75,7 +75,7 @@ function AdminMarqueeDetails() {
   const sideBar = [
     {
       name: "Halls",
-      icon: hall,
+      icon: hall2,
       wIcon: hallWhite,
       color: "gray",
     },
@@ -111,6 +111,7 @@ function AdminMarqueeDetails() {
     },
   ];
   const router = useRouter();
+
   useEffect(() => {
     if (!userInformation) {
       router.push("/adminMarquee/login");
@@ -118,6 +119,7 @@ function AdminMarqueeDetails() {
       setIsLoader(false);
     }
   }, [userInformation]);
+
   useEffect(() => {
     const handleResize = () => {
       const windowWidth = window.innerWidth;
@@ -136,38 +138,37 @@ function AdminMarqueeDetails() {
   const openModal = () => {
     setModalOpen(true);
   };
+
   const fetchData = async () => {
     try {
       if (!userInformation?.userId) {
         throw new Error("Invalid user ID.");
       }
-
       const washingtonRef = doc(db, "users", userInformation.userId);
       await updateDoc(washingtonRef, {
         status: "active",
       });
-
       console.log("Document successfully active!");
     } catch (error: any) {
       console.error("Error updating document:", error.message);
     }
   };
+
   const inactiveMarquee = async () => {
     try {
       if (!userInformation?.userId) {
         throw new Error("Invalid user ID.");
       }
-
       const washingtonRef = doc(db, "users", userInformation.userId);
       await updateDoc(washingtonRef, {
         status: "inactive",
       });
-
       console.log("Document successfully inactive!");
     } catch (error: any) {
       console.error("Error updating document:", error.message);
     }
   };
+
   useEffect(() => {
     if (Venues.length > 0 && Dishes.length > 0 && Menus.length > 0) {
       fetchData();
@@ -175,6 +176,7 @@ function AdminMarqueeDetails() {
       inactiveMarquee();
     }
   }, []);
+
   const handleDeleteVenues = async () => {
     try {
       await Promise.all(
@@ -192,6 +194,7 @@ function AdminMarqueeDetails() {
     }
     inactiveMarquee();
   };
+
   const handleDeleteMenus = async () => {
     try {
       await Promise.all(
@@ -209,6 +212,7 @@ function AdminMarqueeDetails() {
     }
     inactiveMarquee();
   };
+
   const handleDeleteDish = async () => {
     try {
       await Promise.all(
@@ -226,17 +230,20 @@ function AdminMarqueeDetails() {
     }
     inactiveMarquee();
   };
+
   const confirm = (e) => {
     message.success("Click on Yes");
   };
+
   const cancel = (e) => {
     message.error("Click on No");
   };
+
   return (
     <>
       {isLoader ? (
         <div className="absolute, flex justify-center items-center mx-auto h-[100vh]">
-          <Loader />
+          <Spin />
         </div>
       ) : (
         <div className=" h-[100vh]">

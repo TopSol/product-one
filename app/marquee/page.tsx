@@ -351,8 +351,8 @@ function Marquee() {
         <Navbar />
         <div className="bg-bgColor mt-24 font-poppins text-textColor">
           <div className="md:container md:mx-auto py-5 mx-5">
-            <h1 className="font-poppins text-4xl text-gray-600">Hotel</h1>
-            <p className="mt-2 text-xs font-roboto">Home / Hotel</p>
+            <h1 className="font-poppins text-4xl text-gray-600">Marquee</h1>
+            <p className="mt-2 text-xs font-roboto">Home / Marquee</p>
           </div>
         </div>
         <div className="md:container mx-auto mt-20 flex flex-col lg:flex-row  lg:space-x-5 font-poppins">
@@ -361,13 +361,15 @@ function Marquee() {
               <h1 className="font-poppins text-xl my-5 flex justify-center mx-auto font-semibold text-textColor">
                 Booking Details
               </h1>
-              <div className="flex items-center bg-bgColor rounded-md">
+              <div 
+               onClick={() => setIsModalOpen((pre) => !pre)}
+              className="flex items-center bg-bgColor rounded-md cursor-pointer">
                 <div className="text-xs flex flex-col w-[100%]  flex-end border-none py-4 pl-2 justify-between ">
                   {footer}
                 </div>
-                <div className="bg-bgColor  rounded-tr-lg rounded-br-lg cursor-pointer">
+                <div className="bg-bgColor  rounded-tr-lg rounded-br-lg ">
                   <Image
-                    onClick={() => setIsModalOpen((pre) => !pre)}
+                   
                     src={calenderIcon}
                     width={55}
                     height={55}
@@ -394,7 +396,7 @@ function Marquee() {
               />
             </div>
             <div>
-              <h1 className="font-poppins text-xl text-textColor font-semibold  my-6">
+              <h1 className="font-poppins text-xl text-textColor font-semibold  my-3">
                 Price
               </h1>
               <Input
@@ -406,12 +408,12 @@ function Marquee() {
                 onChange={handleSliderChange}
                 className="w-full"
               />
-              <p className="mt-4 text-textColor font-semibold">
+              <p className=" text-textColor font-semibold">
                 Slider Value: {filterData?.price}
               </p>
             </div>
             <div>
-              <h1 className="font-poppins font-semibold text-xl my-9 text-textColor">
+              <h1 className="font-poppins font-semibold text-xl mt-6 mb-2 text-textColor">
                 Additional Services
               </h1>
               <Checkbox.Group
@@ -421,21 +423,22 @@ function Marquee() {
                 value={filterData?.services}
               />
             </div>
-            <div className=" mx-auto w-full flex  justify-around items-center mb-5">
+            <div className=" mx-auto w-full flex space-x-3 justify-around items-center mb-5">
               <button
-                className="bg-bgColor hover:bg-hoverBgColor  md:text-xs px-10 py-2 rounded-lg mt-6 font-semibold "
+                className="bg-primaryColor hover:bg-hoverPrimary  text-white w-1/2  py-3 rounded-lg mt-6 font-semibold "
                 onClick={() => handleFilterData()}
               >
                 Filter
               </button>
               <button
-                className="border-hoverBgColor hover:border-bgColor md:text-xs hover:bg-bgColor border px-5 py-2 rounded-lg mt-6  font-semibold"
+                className="bg-primaryColor hover:bg-hoverPrimary border w-1/2 py-3 text-white rounded-lg mt-6  font-semibold"
                 onClick={() => clearFilter()}
               >
                 Clear Filter
               </button>
             </div>
           </div>
+          
           <div className="w-full  lg:w-[75%] ">
             {handleSpin && (
               <div className="flex justify-center items-center h-[100vh]">
@@ -467,7 +470,7 @@ function Marquee() {
                 <div className="flex  my-3 justify-between">
                   {showPreviousButton ? (
                     <button
-                      className="shadow-none bg-primary py-3 px-4 rounded-md text-white"
+                      className="shadow-none bg-primary py-2 px-6 rounded-md font-semibold text-white hover:bg-hoverPrimary"
                       // size="lg"
                       onClick={() => {
                         prevPage(prevVisible);
@@ -481,7 +484,7 @@ function Marquee() {
                   )}
                   {!showNextButton ? (
                     <button
-                      className="shadow-none  bg-primary py-3 px-7 rounded-md text-white "
+                      className="shadow-none hover:bg-hoverPrimary font-semibold bg-primary py-2 px-9 rounded-md text-white "
                       // size="lg"
                       onClick={() => {
                         nextPage(lastVisible);

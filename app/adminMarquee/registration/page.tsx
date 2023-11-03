@@ -25,6 +25,7 @@ import "react-phone-number-input/style.css";
 import { type } from "os";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import ImgCrop from "antd-img-crop";
+import CityName from "@/app/_component/cityName";
 import { Upload } from "antd";
 const initialValue = {
   fullName: "",
@@ -37,6 +38,7 @@ const initialValue = {
   image: [],
   marqueeName: "",
   landLineNumber: "",
+  city: "",
 };
 function Details() {
   const [details, setDetails] = useState(initialValue);
@@ -58,7 +60,7 @@ function Details() {
   const [autocomplete, setAutocomplete] = useState(null);
   const [predictions, setPredictions] = useState([]);
   const [isImageShow, setIsImageShow] = useState(false);
-
+  const [cityName, setCityName] = useState<string>("");
   const [imageId, setImageId] = useState([]);
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -137,6 +139,7 @@ function Details() {
         marqueeName: details.marqueeName,
         email: details.email,
         address: searchQuery,
+        city: cityName,
         phoneNumber: value,
         landLineNumber: landLineNumber,
         capacity: details.capacity,
@@ -146,6 +149,8 @@ function Details() {
         id: VenueId,
         createdAt: Timestamp.now(),
       };
+      console.log(userInfo, "created");
+
       await setDoc(doc(db, "users", user.uid), userInfo);
       if (userInfo) {
         addRegistration(userInfo);
@@ -378,6 +383,29 @@ function Details() {
                     />
                   </Form.Item>
                 </div>
+                <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
+                  <div className="absolute top-[calc(50%_-_50.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[40.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                    <b className="absolute leading-[100%] z-20 pt-1 font-Manrope font-bold my-2">
+                      City
+                    </b>
+                  </div>{" "}
+                  <Form.Item
+                    className="w-[100%]"
+                    name=""
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Fillout The Name's Input!",
+                      },
+                    ]}
+                  >
+                    <div 
+                    onChange={handleChange}
+                    className="border outline-none md:w-[30vw] z-10  py-2 flex justify-start text-xs relative PhoneInput">
+                      <CityName setCityName={setCityName} cityName={cityName} registration="Registration"/>
+                    </div>
+                  </Form.Item>
+                </div>
               </div>
               {/* SECOND SIDE */}
               <div>
@@ -460,7 +488,7 @@ function Details() {
                   </Form.Item>
                 </div>
                 <div className="w-[100%] flex flex-col items-start relative px-5 md:px-0 mb-4">
-                  <div className="absolute top-[calc(50%_-_87.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[90.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="absolute top-[calc(50%_-_97.5px)] z-20 left-[35.89px] md:left-[21.89px] rounded-3xs bg-white w-[90.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                     <b className="absolute leading-[100%] z-20 pt-1">
                       Description
                     </b>
@@ -476,8 +504,8 @@ function Details() {
                     ]}
                   >
                     <TextArea
-                      rows={5}
-                      maxLength={200}
+                      rows={6}
+                      maxLength={300}
                       placeholder="Enter Description Here"
                       name="marqueeDetails"
                       value={details.marqueeDetails}

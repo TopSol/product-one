@@ -5,9 +5,12 @@ import { CloseSquareFilled } from "@ant-design/icons";
 type CityState = {
   setCityName: (Value: string) => void;
   cityName: string;
+  registration:string
 };
 
-const CityName: React.FC<CityState> = ({ setCityName, cityName }) => {
+const CityName: React.FC<CityState> = ({ setCityName, cityName,registration }) => {
+  console.log();
+  
   const [options, setOptions] = useState<{ value: string; label: string }[]>(
     []
   );
@@ -329,6 +332,7 @@ const CityName: React.FC<CityState> = ({ setCityName, cityName }) => {
     console.log(res, "Sdfsdfds");
     setOptions(res);
   };
+  
   const handleSelect = (value: string) => {
     setCityName(value);
   };
@@ -338,13 +342,13 @@ const CityName: React.FC<CityState> = ({ setCityName, cityName }) => {
   return (
     <AutoComplete
       value={cityName}
-      style={{ width: 150 }}
+      style={{ width: registration === "Registration" ? 400 : 150 }}
       onSearch={handleSearch}
       onSelect={handleSelect}
-      placeholder="City"
+      placeholder={registration === "Registration" ? "Enter City Name Here" : "City"}
       onChange={onChange}
       options={options}
-      className=" placeholder:text-black placeholder:text-base  cursor-pointer"
+      className=" placeholder:text-black placeholder:text-base  cursor-pointer -mt-1"
       bordered={false}
       allowClear={true}
     />

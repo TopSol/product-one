@@ -209,21 +209,21 @@ function Slider() {
   const [messageApi, contextHolder] = message.useMessage();
   const key = "updatable";
 
-  const openMessage = () => {
-    messageApi.open({
-      key,
-      type: "loading",
-      content: "Loading...",
-    });
-    setTimeout(() => {
-      messageApi.open({
-        key,
-        type: "success",
-        content: "Your Request Have Been  Successfully Done For Marquee Reservation",
-        duration: 2,
-      });
-    }, 100);
-  };
+  // const openMessage = () => {
+  //   messageApi.open({
+  //     key,
+  //     type: "loading",
+  //     content: "Loading...",
+  //   });
+  //   setTimeout(() => {
+  //     messageApi.open({
+  //       key,
+  //       type: "success",
+  //       content: "Your Request Have Been  Successfully Done For Marquee Reservation",
+  //       duration: 2,
+  //     });
+  //   }, 100);
+  // };
 
   const handleSlider = (index) => {
     if (
@@ -300,7 +300,7 @@ function Slider() {
                 userInformation={userInformation}
                 marqueeId={id}
                 setSuccessPage={setSuccessPage}
-                openMessage={openMessage}
+                // openMessage={openMessage}
                 setSlider={setSlider}
               />
             ) : null}

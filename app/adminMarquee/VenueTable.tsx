@@ -12,8 +12,6 @@ function VenueData({
   setPreviewImage,
   setPhotoIndex,
 }) {
-  console.log(venue);
-  
   return (
     <>
       <List.Item className="last-child-style bg-gray-100 my-2 flex justify-between">

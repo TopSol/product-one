@@ -12,7 +12,7 @@ import { Modal } from "antd";
 import ImgCrop from "antd-img-crop";
 const plainOptions = [
   { label: "Available", value: "Available" },
-  { label: "Not Available", value: "NotAvailable" },
+  { label: "Unavailable", value: "Unavailable" },
 ];
 const initialFormState = {
   name: "",
@@ -196,7 +196,6 @@ function DishModal({
   // const beforeUpload = (file) => {
   //   const reader = new FileReader();
   //   reader.readAsDataURL(file);
-  //   console.log(reader, "readerre");
   //   reader.onload = () => {
   //     setFileList((prev) => [...prev, { url: reader.result }]);
   //   };
@@ -209,7 +208,7 @@ function DishModal({
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      const img = new window.Image(); 
+      const img = new window.Image();
       img.src = reader.result;
 
       img.onload = () => {
@@ -219,7 +218,7 @@ function DishModal({
         if (width < 1500 || height < 1000) {
           message.warning(
             "Please upload an image with a width of at least 1500px and a height of at least 1000px."
-          )
+          );
         } else {
           setFileList((prev) => [...prev, { url: reader.result }]);
           setImageObject((prevImageObject) => [...prevImageObject, file]);
