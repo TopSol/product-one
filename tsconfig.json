@@ -24,6 +24,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/index.js", "app/pages/landingPage/index.jsx", "app/pages/api/hello.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/index.js", "app/pages/landingPage/index.jsx", "app/pages/api/hello.js", "app/adminMarquee/venue"],
   "exclude": ["node_modules"]
 }

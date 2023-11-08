@@ -364,7 +364,7 @@ function Menus({
   return (
     <>
       {isloading ? (
-        <div className="flex justify-center items-center h-[80vh]">
+        <div className="flex justify-center items-center h-[80vh] spinner">
         <Spin size="default" />
         </div>
       ) : (

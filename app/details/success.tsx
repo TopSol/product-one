@@ -6,7 +6,6 @@ function Success({ setSuccessPage }) {
   const [loader, setLoader] = useState(false);
   const router = useRouter();
   const handleButton = () => {
-    setLoader(true);
     router.push("/")
       setLoader(false);
   };
@@ -25,8 +24,11 @@ function Success({ setSuccessPage }) {
           WhatsApp. Thank you for your patience and understanding.
         </p>
         <button
-          className="flex justify-center items-end mx-auto border-primary w-36 rounded-md py-2 bg-primary my-4 text-white font-extrabold hover:bg-hoverPrimary hover:text-white"
-          onClick={handleButton}
+          className="flex justify-center items-end mx-auto border-primary w-36 rounded-md py-3 bg-primary my-4 text-white font-extrabold hover:bg-hoverPrimary hover:text-white spinnerWhite"
+          onClick={()=>{
+            handleButton()
+            setLoader(true);
+          }}
         >
           {loader ? <Spin /> : "Home"}
         </button>

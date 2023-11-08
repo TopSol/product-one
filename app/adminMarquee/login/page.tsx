@@ -52,26 +52,56 @@ const Login = () => {
     }
   };
 
+  // const handleLogin = () => {
+  //   signInWithEmailAndPassword(auth, user.email, user.password)
+  //     .then((userCredential) => {
+  //       const user = userCredential.user;
+  //       if (user) {
+  //         setLoader(true);
+  //         registrationInformation(user.uid);
+  //         router.push("http://localhost:3000/adminMarquee");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log("useruser", user);
+  //       if (!user.email || !user.password) {
+  //       } else {
+  //         message.error("Please Enter a valid Email or Password");
+  //         const errorCode = error.code;
+  //       }
+  //     });
+  // };
   const handleLogin = () => {
+    if (!user.email || !user.password) {
+      message.error("Please Enter a valid Email and Password");
+      return;
+    }
+  
     signInWithEmailAndPassword(auth, user.email, user.password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user, "signin", user.uid);
         if (user) {
+          setLoader(true);
           registrationInformation(user.uid);
           router.push("http://localhost:3000/adminMarquee");
-          setLoader(true);
         }
       })
       .catch((error) => {
-        console.log("useruser", user);
-        if (!user.email || !user.password) {
-        } else {
-          message.error("Please Enter a valid Email or Password");
-          const errorCode = error.code;
+        console.error("Error during sign-in:", error);
+        // Handle the error more specifically, and show appropriate messages to the user.
+        switch (error.code) {
+          case "auth/invalid-email":
+          case "auth/user-not-found":
+          case "auth/wrong-password":
+            message.error("Invalid email or password. Please try again.");
+            break;
+          default:
+            message.error("An error occurred during sign-in. Please try again later.");
+            break;
         }
       });
   };
+  
 
   return (
     <div className=" h-[100vh] flex  justify-center items-center lg:flex lg:flex-row">
@@ -98,8 +128,7 @@ const Login = () => {
                 name="username"
                 rules={[
                   {
-                    type: "email",
-                    required: true,
+                    required: false,
                     message: "Please Fillout Your Email's Input!",
                   },
                 ]}
@@ -107,7 +136,7 @@ const Login = () => {
                 <Input
                   className="border outline-none md:max-lg:w-[400px] lg:w-[500px] z-10 w-72  py-5 mb-3 flex justify-center text-xs relative"
                   placeholder="Type Your Email Here"
-                  type="email"
+                  type=""
                   name="email"
                   value={user.email}
                   onChange={handleChange}
@@ -150,7 +179,7 @@ const Login = () => {
             <>{loader ? <Loader /> : "Log in"}</>
           </button>
           <p className="flex justify-center sm:text-base  lg:text-sm  items-center mx-auto font-Poppins mt-8">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link
               className=" text-[#006CE1] ml-2 font-semibold"
               href="/adminMarquee/registration"

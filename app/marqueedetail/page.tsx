@@ -55,7 +55,7 @@ function Marqueedetail() {
     getMarqueeImage,
     marqueeImage,
   } = useStore();
-  console.log(marqueeData);
+  console.log(marqueeVenueNames);
   
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -94,6 +94,9 @@ function Marqueedetail() {
     setIsOpen(false);
   };
   const id = searchParams.get("id");
+  console.log(id);
+  
+
   const marqueeName = searchParams.get("name");
   const location = searchParams.get("location");
 
@@ -108,7 +111,9 @@ function Marqueedetail() {
       // setLoading(false);
     }
   };
+
   const getCollection = async (id) => {
+    console.log(id);
     try {
       const docRef = doc(db, "BookDate", id);
       const docSnap = await getDoc(docRef);
@@ -123,6 +128,7 @@ function Marqueedetail() {
   };
   useEffect(() => {
     if (id) {
+      console.log(id);
       getCollection(id);
       handleVenueName(marqueeVenueNames[marqueeVenueNames.length - 1]?.value);
     }
@@ -132,6 +138,7 @@ function Marqueedetail() {
     };
     addMarqueeData({ ...marqueeData, lunchType: meal });
   }, [id]);
+
   const handleCheck = (event, item) => {
     const selectedValue = event?.target?.value || event;
     setSelectedOption(selectedValue);
@@ -143,14 +150,15 @@ function Marqueedetail() {
       setIsLunch("Diner");
     }
   };
+
   const handleVenueName = async (id, lunchProps = "Lunch") => {
+    console.log(id);
     setVenueId(id);
     try {
       const docRef = doc(db, "Venues", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const abc = docSnap.data();
-        
         setData(abc);
         getMarqueeImage(abc);
         setMarqueeDates({
@@ -200,6 +208,7 @@ function Marqueedetail() {
       ? handleVenueName(venueId, "Lunch")
       : handleVenueName(venueId, "Diner");
   };
+
   const datess = bookDates?.dates || [];
   useEffect(() => {
     if (!Array.isArray(datess)) {
@@ -209,6 +218,7 @@ function Marqueedetail() {
       setDates(formattedDates);
     }
   }, [datess.length]);
+
   // const handleDateRangeSelect = (newRange) => {
   //   let dateString1 = newRange;
   //   let date1 = new Date(dateString1);
@@ -243,12 +253,11 @@ function Marqueedetail() {
   // };
 
   const handleDateRangeSelect = (newRange) => {
-     setIsShow(true)
+    setIsShow(true)
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
     let currentDate = new Date();
     if (currentDate <= date1) {
-      console.log(marqueeDates, "marqueeDates");
       
       if (marqueeDates.from && newRange && marqueeDates.from > newRange) {
         // if (marqueeDates.from > newRange) {         build
@@ -275,6 +284,7 @@ function Marqueedetail() {
       }
     }
   };
+
   const handleNumberOfPeople = (e) => {
     const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
     setNumberOfPeople(sanitizedValue);
@@ -285,6 +295,7 @@ function Marqueedetail() {
       e.preventDefault();
     }
   };
+
   const handleVenue = () => {
     const updatedData = marqueeVenueNames.map((capacity) => {
       const isDisabled = numberOfPeople.length
@@ -303,13 +314,16 @@ function Marqueedetail() {
       to: null,
     });
   };
+
   const center = {
     lat: marqueeData?.data?.locations?.lat,
     lng: marqueeData?.data?.locations?.lng,
   };
+
   const isDateDisabled = (date) => {
     return isBefore(date, startOfToday());
   };
+
   const bookedStyle = { border: "2px solid currentColor" };
   const shouldShowDiv = marqueeVenueNames.some((item) => !item.disabled);
   const currentDate = new Date(); // Get the current date
@@ -332,6 +346,7 @@ function Marqueedetail() {
   } else {
     console.error("Error: days is not an array.");
   }
+
   const resolvedDisabledDays = disabledDays || undefined;
   // if ((router as any).isFetchingAfterDefer) {
   //   return <div>Loading...</div>;
@@ -610,7 +625,7 @@ function Marqueedetail() {
                 onClick={handleButton}
                 className={`flex ${
                   numberOfPeople.length && marqueeDates?.from ? "bg-lightPrimary" : "bg-bgColor "
-                } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor text-white hover:text-black`}
+                } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor text-white hover:text-black spinner`}
               >
                 <div>{loading ? <Spin /> : " Book Now"}</div>
               </div>

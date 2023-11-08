@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Spin, Table, Tag } from "antd";
+import { getFormatDates } from "../utils";
+import {useRouter} from "next/navigation";
 import {
   collection,
   doc,
@@ -15,15 +17,18 @@ import { useStore } from "@/store";
 function ApprovedMarquee() {
   const [isShowApproved, setIsShowApproved] = useState();
   const [isloading, setIsLoading] = useState(true);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([])
   const { Column } = Table;
   const { userInformation } = useStore();
-
+  const router = useRouter();
   const fetchData = async () => {
-    const q = query(
-      collection(db, "approvedMarquee"),
-      where("userId", "==", userInformation.userId)
-    );
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(collection(db, "approvedMarquee"));
+
+    // const q = query(
+    //   collection(db, "approvedMarquee"),
+    //   where("userId", "==", userInformation.userId)
+    // );
+    // const querySnapshot = await getDocs(q);
     const dataArr: any[] = [];
     querySnapshot.forEach((doc) => {
       dataArr.push(doc.data());
@@ -35,11 +40,15 @@ function ApprovedMarquee() {
   useEffect(() => {
     fetchData();
   }, []);
-
+const handleRowClick = (id) =>{
+  console.log(id);
+  router.push(`/adminMarquee/previewDetails?id=${id}`
+  )
+}
   return (
     <>
       {isloading ? (
-        <div className="flex justify-center items-center h-[80vh]">
+        <div className="flex justify-center items-center h-[80vh] spinner ">
           <Spin size="default" />
         </div>
       ) : (
@@ -54,6 +63,15 @@ function ApprovedMarquee() {
             <Table
               dataSource={isShowApproved}
               pagination={false}
+              rowClassName={(row, index) => "clickable-row cursor-pointer customCursor"}
+              onRow={(row) => {
+                return {
+                  onClick: () =>{ handleRowClick(row.id)
+                  localStorage.setItem('component', 'Approved')
+                  setIsLoading(true)
+                  }
+                };
+              }}
               className="myTable md:container"
               scroll={{
                 x: 1000,
@@ -64,36 +82,51 @@ function ApprovedMarquee() {
                 dataIndex="dates"
                 key="dates"
                 render={(isShowApproved) => {
-                  const formatDate = (timestamp) => {
-                    const months = [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ];
-                    const date = new Date(timestamp * 1000);
-                    const month = months[date.getMonth()];
-                    const day = date.getDate();
-                    return `${month} ${day}, ${date.getFullYear()}`;
-                  };
+                  console.log("isShowApproved",isShowApproved)
+                  const bookingDates = getFormatDates(isShowApproved)
+                  
+                  // if (isShowApproved && isShowApproved.from && isShowApproved.to) {
+                  //   const fromDate = new Date(isShowApproved.from.seconds * 1000);
+                  //   const toDate = new Date(isShowApproved.to.seconds * 1000);
 
-                  const fromTimestamp = 1697482800;
-                  const toTimestamp = 1697655600;
-                  const fromDate = formatDate(fromTimestamp);
-                  const toDate = formatDate(toTimestamp);
-                  const formattedDateRange = `${fromDate} – ${toDate}`;
-                  return <div>{formattedDateRange}</div>;
+                  //   const fromDateString = fromDate.toLocaleDateString("en-US", {
+                  //     year: "numeric",
+                  //     month: "short",
+                  //     day: "numeric",
+                  //   });
+
+                  //   const toDateString = toDate.toLocaleDateString("en-US", {
+                  //     year: "numeric",
+                  //     month: "short",
+                  //     day: "numeric",
+                  //   });
+
+                  //   return `${fromDateString} – ${toDateString}`;
+                  // } else if (!isShowApproved.to && isShowApproved.from) {
+                  //   const fromDate = new Date(isShowApproved.from.seconds * 1000);
+
+                  //   const fromDateString = fromDate.toLocaleDateString("en-US", {
+                  //     year: "numeric",
+                  //     month: "short",
+                  //     day: "numeric",
+                  //   });
+                  //   return `${fromDateString} – ${fromDateString}`;
+                  // } else if (isShowApproved.to && !isShowApproved.from) {
+                  //   const fromDate = new Date(isShowApproved.to.seconds * 1000);
+
+                  //   const fromDateString = fromDate.toLocaleDateString("en-US", {
+                  //     year: "numeric",
+                  //     month: "short",
+                  //     day: "numeric",
+                  //   });
+                  //   return `${fromDateString} – ${fromDateString}`;
+                  // }
+                  return "Invalid Date Range"; // Handle invalid or missing dates
+
+
                 }}
               />
-              <Column title="Name" dataIndex="firstName" key="firstName" />
+              <Column title="Name" dataIndex="firstName" key="firstName" className="text-sm" />
               <Column title="Mealtype" dataIndex="mealType" key="mealType" />
               <Column
                 title="Guests"
@@ -108,7 +141,7 @@ function ApprovedMarquee() {
                 render={(isShowApproved) => {
                   let dishElements = null;
                   if (Array.isArray(isShowApproved?.nameAndPriceArray)) {
-                    const chunkSize = 4;
+                    const chunkSize = 3;
                     const dishGroups = isShowApproved.nameAndPriceArray.reduce(
                       (acc, item, index) => {
                         const chunkIndex = Math.floor(index / chunkSize);
@@ -143,14 +176,20 @@ function ApprovedMarquee() {
                   );
                 }}
               />
-              <Column title="Address" dataIndex="address" key="address" />
+              <Column title="Address" dataIndex="address" key="address" className="text-sm" />
               <Column
                 rowScope="row"
                 title="Per/Head"
                 dataIndex="dishes"
                 key="dishes"
                 render={(item) => {
-                  return <p>{item?.perHead}</p>;
+                  console.log(item);
+                  if (item.totalDiscount == undefined) {
+                    return <p>{item?.perHead}</p>;
+                  } else {
+                    return <p>{item?.totalDiscount}</p>;
+
+                  }
                 }}
               />
             </Table>

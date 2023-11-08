@@ -69,7 +69,7 @@ function mailSender({
             "",
             "",
             "accept",
-            "",
+            ""
           ),
         }),
       });
@@ -77,10 +77,11 @@ function mailSender({
       if (response.status === 200) {
         message.success("Your email has been successfully sent");
         setModalOpen(false);
-        // const data = customerInformation?.filter?.(
-        //   (v) => v.id !== sendData?.id
-        // );
-        // setCustomerInformation(data);
+        const data = customerInformation?.filter?.(
+          (v) => v.id !== sendData?.id
+        );
+        setCustomerInformation(data);
+        await deleteDoc(doc(db, "contactUs", sendData?.id));
         setIsLoader(false);
         const approvedId = Math.random().toString(36).substring(2);
         const approvedMarqueeData = { ...sendData, approvedId: approvedId };
@@ -88,7 +89,6 @@ function mailSender({
           doc(db, "approvedMarquee", approvedId),
           approvedMarqueeData
         );
-        // await deleteDoc(doc(db, "contactUs", sendData?.id));
       } else {
         console.error("API call failed:", response.statusText);
         message.error("Oops, something went wrong");
@@ -129,8 +129,12 @@ function mailSender({
       if (response.status === 200) {
         message.success("Your email has been successfully sent");
         setIsLoader(false);
-        setIsNestedModalOpen(false);
+        const data = customerInformation?.filter?.(
+          (v) => v.id !== sendData?.id
+        );
         await deleteDoc(doc(db, "contactUs", sendData?.id));
+        setCustomerInformation(data);
+        setIsNestedModalOpen(false);
       } else {
         console.error("API call failed:", response.statusText);
         message.error("Oops, something went wrong");
@@ -224,7 +228,7 @@ function mailSender({
           <div className="w-full flex justify-center">
             <button
               onClick={handleMail}
-              className="bg-successColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold"
+              className="bg-successColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold spinnerWhite"
             >
               {isloader ? <Spin /> : "Approve"}
             </button>
@@ -271,7 +275,7 @@ function mailSender({
           <div className="w-full flex justify-center">
             <button
               onClick={handleRejectMail}
-              className="bg-rejectColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold"
+              className="bg-rejectColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold spinnerWhite"
             >
               {isloader ? <Spin /> : "Reject"}
             </button>

@@ -58,9 +58,7 @@ interface marqueeBookingRecord {
 function BookedDate() {
   const { userInformation } = useStore();
   const [sendData, setSendData] = useState();
-  const [customerInformation, setCustomerInformation] = useState<
-    marqueeBookingRecord[]
-  >([]);
+  const [customerInformation, setCustomerInformation] = useState<marqueeBookingRecord[]>([]);
   const [email, setEmail] = useState("");
   const [isloading, setIsLoading] = useState(true);
   const [loader, setLoader] = useState(false);
@@ -115,11 +113,15 @@ function BookedDate() {
   const handleDetails = (id) => {
     setLoader(id);
   };
-
+  // useEffect(() => {
+  //   return () => {
+  //     localStorage.removeItem('component');
+  //   };
+  // }, []);
   return (
     <>
       {isloading ? (
-        <div className="flex justify-center items-center h-[80vh]">
+        <div className="flex justify-center items-center h-[80vh] spinner">
           <Spin size="default" />
         </div>
       ) : (
@@ -127,8 +129,7 @@ function BookedDate() {
           <div className="md:container mx-auto ">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-[100%] my-6">
               {customerInformation
-                ?.slice()
-                .reverse()
+                ?.sort((a, b) => (a.isNew === true ? -1 : b.isNew === true ? 1 : 0))
                 ?.map((item, index) => {
                   return (
                     <div
@@ -233,14 +234,13 @@ function BookedDate() {
                                   <button
                                     onClick={() => {
                                       handleDetails(item.id);
-                                      router.push(
-                                        `/adminMarquee/previewDetails?id=${item.id}`
-                                      );
+                                      localStorage.setItem('component', 'Bookings');
+                                      router.push(`/adminMarquee/previewDetails?id=${item.id}`);
                                     }}
-                                    className=" xl:px-4 lg:px-2 px-3 w-[85px]  py-2 bg-primary text-white rounded-md"
+                                    className=" xl:px-4 lg:px-2 px-3 w-[85px]  py-2 bg-primary text-white rounded-md spinnerWhite"
                                   >
                                     {loader === (item.id as any) ? (
-                                      <Spin style={{ color: "white" }} />
+                                      <Spin />
                                     ) : (
                                       " Details"
                                     )}

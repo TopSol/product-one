@@ -94,3 +94,10 @@
     padding-bottom: 5px;
     border-radius: 5px !important;
 }
+.spinner .ant-spin-dot-item {
+    background-color: #f99832 !important;
+  }
+  .spinnerWhite .ant-spin-dot-item{
+    background-color: #fff !important;
+  
+  }

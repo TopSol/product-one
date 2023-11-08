@@ -78,10 +78,12 @@ function MarqueeDetails({ item, showMessage }) {
     getdata();
     getDates(item.id);
   }, [item]);
+
   const venuesName = (id) => {
     const asd = venuesData?.filter((item) => {
       return item?.data?.userId === id;
     });
+
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
@@ -118,7 +120,7 @@ function MarqueeDetails({ item, showMessage }) {
       setUserData(dataArr);
     };
     getUser();
-  }, [item]);
+  }, []);
 
   const getDates = async (id) => {
     const querySnapshot = await getDocs(collection(db, "bookDate"));
@@ -132,6 +134,7 @@ function MarqueeDetails({ item, showMessage }) {
     setSelectedDate(asdf as any);
     addMarqueeVenueDates(asdf); 
   };
+
   const handleClick = (id) => {
     setOpen((prevState) => ({
       ...prevState,
@@ -150,6 +153,7 @@ function MarqueeDetails({ item, showMessage }) {
       setIsLunch("Diner");
     }
   };
+
   const handleVenueName = (id, propMeal = "Lunch") => {
     setVenueId(id);
     const data = name.filter((item) => {
@@ -165,11 +169,11 @@ function MarqueeDetails({ item, showMessage }) {
       };
     });
     setBookDates(reserveDate as any);
-
     propMeal == "Diner"
       ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
       : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch);
   };
+  
   const handleDateRangeSelect = (newRange) => {
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
@@ -187,7 +191,7 @@ function MarqueeDetails({ item, showMessage }) {
           if (marqueeDates.from !== null) {
             return element >= marqueeDates.from && element <= newRange;
           }
-          return false; // Handle the case when marqueeDates.from is null
+          return false; 
         });
         if (date?.length > 0) {
           // message.error("you can not select this date");
@@ -293,7 +297,7 @@ function MarqueeDetails({ item, showMessage }) {
                     addBookedDates(marqueeDates);
                     handleMarqueeDetails(item?.id);
                   }}
-                  className="bg-primaryColor hover:bg-hoverPrimary w-32 py-2 rounded-lg font-roboto text-white font-bold"
+                  className="bg-primaryColor hover:bg-hoverPrimary w-32 py-2 rounded-lg font-roboto text-white font-bold spinnerWhite"
                 >
                   {
                     loader ? <Spin /> : "Details"

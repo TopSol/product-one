@@ -1,7 +1,7 @@
 "use client";
 import React, { use } from "react";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { Modal, Carousel, Spin, message } from "antd";
 import { useStore } from "@/store";
@@ -55,6 +55,8 @@ function Preview({
   useEffect(() => {
     fetchBlogs();
   }, []);
+
+    
   useEffect(() => {}, []);
   const nextPage = async () => {
     setLoader((pre) => !pre);
@@ -83,6 +85,7 @@ function Preview({
       address: userInformation?.address,
       NumberOfPeople: marqueeImage?.numberOfPeople,
       eventType: userInformation?.eventType,
+      createAt:Timestamp.now(),
     };
     try {
       const response = await fetch("http://localhost:3000/api/", {
@@ -512,7 +515,7 @@ function Preview({
             Previous
           </button>
           <button
-            className="border w-40 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold"
+            className="border w-40 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold spinner"
             onClick={() => nextPage()}
           >
             {loader ? <Spin /> : " Book Now"}

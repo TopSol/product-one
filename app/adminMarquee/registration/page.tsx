@@ -1,32 +1,26 @@
 "use client";
-import React, { use } from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { db } from "@/app/firebase";
 import { storage } from "@/app/firebase";
-import { Button, Image, message } from "antd";
+import { Button, Image, message ,Input, Form , Upload, Modal} from "antd";
 import { useRouter } from "next/navigation";
-import { Modal } from "antd";
 import { useStore } from "../../../store";
-import { Input, Form } from "antd";
 import { setDoc, doc, Timestamp } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import Loader from "@/app/_component/Loader";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
-import ImageCroper from "@/app/_component/ImageCropper";
-// import Image from "next/image";
+import type {UploadFile } from "antd/es/upload/interface";
+import Loader from "@/app/_component/Loader";
 import PhoneInput from "react-phone-number-input";
-import RegistrationImg from "../../assets/images/RegistrationImg.png";
+import ImgCrop from "antd-img-crop";
+import CityName from "@/app/_component/cityName";
 import "./style.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 import "react-phone-number-input/style.css";
-import { type } from "os";
-import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import ImgCrop from "antd-img-crop";
-import CityName from "@/app/_component/cityName";
-import { Upload } from "antd";
+
 const initialValue = {
   fullName: "",
   email: "",
@@ -40,37 +34,37 @@ const initialValue = {
   landLineNumber: "",
   city: "",
 };
+
 function Details() {
   const [details, setDetails] = useState(initialValue);
   const [modalOpen, setModalOpen] = useState(false);
   const [modal1Open, setModal1Open] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
-  const [location, setLocation] = useState({});
   const [value, setValue] = useState<any>();
   const [landLineNumber, setLandLineNumber] = useState<any>();
   const [loading, setLoading] = useState(false);
-  const [cropImage, setCropImage] = useState({});
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [image, setImage] = useState([]);
-  const [multipleImage, setMultipleImage] = useState<any[]>([]);
-  const [prevImages, setPrevImages] = useState([]);
-  const { addUser, addRegistration } = useStore();
+  // const [cropImage, setCropImage] = useState({});
+  // const [selectedImage, setSelectedImage] = useState(null);
+  // const [image, setImage] = useState([]);
+  // const [multipleImage, setMultipleImage] = useState<any[]>([]);
+  // const [prevImages, setPrevImages] = useState([]);
   const [center, setCenter] = useState({ lat: 31.4187, lng: 73.0791 });
   const [searchQuery, setSearchQuery] = useState("");
   const [autocomplete, setAutocomplete] = useState(null);
   const [predictions, setPredictions] = useState([]);
-  const [isImageShow, setIsImageShow] = useState(false);
+  // const [isImageShow, setIsImageShow] = useState(false);
   const [cityName, setCityName] = useState<string>("");
-  const [imageId, setImageId] = useState([]);
-
+  // const [imageId, setImageId] = useState([]);
+  const [imageObject, setImageObject] = useState([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const { addUser, addRegistration } = useStore();
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: "AIzaSyD0Fd3UOK6hm07omIUFRvQfH5_bXW8SJB4",
     libraries: ["places"],
   });
-  const router = useRouter();
 
+  const router = useRouter();
   const onFinish = (values) => {
     console.log("Success:", values);
   };
@@ -86,10 +80,12 @@ function Details() {
       [name]: value,
     }));
   };
-  const openModal = (e) => {
-    e.preventDefault();
-    setModalOpen(true);
-  };
+
+  // const openModal = (e) => {
+  //   e.preventDefault();
+  //   setModalOpen(true);
+  // };
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -109,6 +105,7 @@ function Details() {
   const onMarkerDragEnd = (e) => {
     setCenter({ lat: e.latLng.lat(), lng: e.latLng.lng() });
   };
+
   const handleRegistration = async () => {
     if (!fileList?.length) {
       message.warning("Please select atleast one image");
@@ -132,6 +129,7 @@ function Details() {
           return urls;
         })
       );
+
       const VenueId = Math.random().toString(36).substring(2);
       const userInfo = {
         userId: user.uid,
@@ -149,8 +147,6 @@ function Details() {
         id: VenueId,
         createdAt: Timestamp.now(),
       };
-      console.log(userInfo, "created");
-
       await setDoc(doc(db, "users", user.uid), userInfo);
       if (userInfo) {
         addRegistration(userInfo);
@@ -180,19 +176,19 @@ function Details() {
     };
   }, []);
 
-  const handleDiemension = async (id) => {
-    const selectedImage = multipleImage.find((image) => image.id === id);
-    if (selectedImage) {
-      setSelectedImage(selectedImage);
-      const objectURL = URL.createObjectURL(selectedImage.file);
-      setImage({
-        id: selectedImage.id,
-        img: objectURL,
-      } as any);
-    } else {
-      console.error("Image not found with id:", id);
-    }
-  };
+  // const handleDiemension = async (id) => {
+  //   const selectedImage = multipleImage.find((image) => image.id === id);
+  //   if (selectedImage) {
+  //     setSelectedImage(selectedImage);
+  //     const objectURL = URL.createObjectURL(selectedImage.file);
+  //     setImage({
+  //       id: selectedImage.id,
+  //       img: objectURL,
+  //     } as any);
+  //   } else {
+  //     console.error("Image not found with id:", id);
+  //   }
+  // };
 
   const onLoad = (map) => {
     setAutocomplete(new window.google.maps.places.AutocompleteService() as any);
@@ -208,12 +204,10 @@ function Details() {
       if (status === "OK" && results[0]) {
         const latitude = results[0].geometry.location.lat().toFixed(7);
         const longitude = results[0].geometry.location.lng().toFixed(7);
-
         setCenter({
           lat: parseFloat(latitude),
           lng: parseFloat(longitude),
         });
-
         setPredictions([]);
       } else {
         console.error(
@@ -223,6 +217,7 @@ function Details() {
       }
     });
   };
+
   const handleInputChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
@@ -241,25 +236,59 @@ function Details() {
       setPredictions([]);
     }
   };
+
   const handlePredictionClick = (prediction) => {
     setSearchQuery(prediction.description);
     handleSearch();
   };
+
   const containerStyle = {
     width: "100%",
     height: "200px",
   };
 
-  const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    const lastFile = newFileList[newFileList?.length - 1];
-    newFileList.pop();
-    setFileList([...newFileList, { ...lastFile, status: "done" }]);
+  // const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+  //   const lastFile = newFileList[newFileList?.length - 1];
+  //   newFileList.pop();
+  //   setFileList([...newFileList, { ...lastFile, status: "done" }]);
+  // };
+
+  const beforeUpload = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const img: any = new window.Image();
+      img.src = reader.result;
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+        if (width < 1000 || height < 700) {
+          message.warning(
+            "Please upload an image with a width of at least 1500px and a height of at least 1000px."
+          );
+        } else {
+          setFileList((prev) => [...prev, { url: reader.result }] as any);
+          setImageObject(
+            (prevImageObject) => [...prevImageObject, file] as any
+          );
+        }
+      };
+    };
+    return false;
   };
 
   const { TextArea } = Input;
-  const width = 2000;
-  const height = 1300;
+  const width = 1500;
+  const height = 1000;
   const aspectRatio = width / height;
+
+  const handleRemove = (file) => {
+    const index = fileList.indexOf(file);
+    const newFileList = [...fileList];
+    newFileList.splice(index, 1);
+    setFileList(newFileList);
+  };
+
   return (
     <>
       <div className=" md:container mx-auto md:px-5">
@@ -315,7 +344,6 @@ function Details() {
                     name="email"
                     rules={[
                       {
-                        // type: "email",
                         required: true,
                         message: "Please Fillout The Email's Input!",
                       },
@@ -521,7 +549,7 @@ function Details() {
               {/* Image */}
               <p className="mb-2 font-Manrope font-bold  pl-5 lg:pl-0">Image</p>
               <div className="mb-3 flex flex-start w-full pl-5 lg:pl-0">
-                <ImgCrop
+                {/* <ImgCrop
                   rotationSlider
                   aspect={aspectRatio}
                   modalWidth={800}
@@ -532,18 +560,41 @@ function Details() {
                     listType="picture-card"
                     fileList={fileList}
                     onChange={onChange}
-                    // onPreview={onPreview
+                    onRemove={handleRemove}
                     showUploadList={{
                       showPreviewIcon: false,
-                      showRemoveIcon: false,
+                      showRemoveIcon: true,
                     }}
                   >
                     {fileList.length < 5 && "+ Upload"}
                   </Upload>
-                </ImgCrop>
+                </ImgCrop> */}
+                  <ImgCrop
+                    modalClassName="btns"
+                    rotationSlider
+                    modalWidth={800}
+                    modalTitle={"Edit your Image"}
+                    modalOk={"Crop Image"}
+                    aspect={aspectRatio}
+                    maxZoom={1.2}
+                  >
+                    <Upload
+                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onRemove={handleRemove}
+                      beforeUpload={beforeUpload}
+                      showUploadList={{
+                        showPreviewIcon: false,
+                        showRemoveIcon: true,
+                      }}
+                    >
+                      {fileList?.length < 5 && "+ Upload"}
+                    </Upload>
+                  </ImgCrop>
               </div>
 
-              <div className="w-full pl-5 lg:pl-0">
+              {/* <div className="w-full pl-5 lg:pl-0">
                 {isImageShow && (
                   <div className="flex justify-start flex-wrap w-full px-3 mb-8">
                     {Object.values(multipleImage).map((item, index) => {
@@ -567,7 +618,7 @@ function Details() {
                     })}
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Address */}
               <div className="w-[100%] flex flex-col items-start justify-center  relative px-5 md:px-0 ">
@@ -646,7 +697,7 @@ function Details() {
         </div>
       </div>
 
-      <Modal
+      {/* <Modal
         className="modal "
         open={modal1Open}
         width={1000}
@@ -693,8 +744,8 @@ function Details() {
           setImageId={setImageId}
           imageId={imageId}
         />
-      </Modal>
+      </Modal> */}
     </>
   );
 }
-export default Details;
+export default Details;  

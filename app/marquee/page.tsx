@@ -441,8 +441,8 @@ function Marquee() {
           
           <div className="w-full  lg:w-[75%] ">
             {handleSpin && (
-              <div className="flex justify-center items-center h-[100vh]">
-                <Spin size="large" />
+              <div className="flex justify-center items-center h-[100vh] spinner">
+                <Spin />
               </div>
             )}
             <div className="">

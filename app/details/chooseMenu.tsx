@@ -20,14 +20,15 @@ function ChooseMenu({
   const [suggestionDish, setSuggestionDish] = useState({});
   const [clickedItems, setClickedItems] = useState({});
   const [searchIndex, setSearchIndex] = useState("");
-  const { hallInformation, bookedDates, marqueeImage, getMarqueeImage } =
-    useStore();
+
   useEffect(() => {
     setNewData(marqueeData);
   }, []);
+
   const combinedData = marqueeData?.venues?.concat(
     marqueeData?.withoutVenueDish
   );
+
   const handleClick = (item, index) => {
     setClickedItems({});
     const array = marqueeData?.dish?.map((val, idx) => {
@@ -88,6 +89,7 @@ function ChooseMenu({
     });
     setSuggestionDish(categorizedData);
   };
+  
   const venueDishes = marqueeData?.venues;
   const AddDish = (item, price) => {
     let updatedMarqueeData = { ...newData };

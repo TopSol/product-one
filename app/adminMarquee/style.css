@@ -113,3 +113,13 @@
   color: #fff !important;
   border-color: #f99832 !important;
 }
+.spinner .ant-spin-dot-item {
+  background-color: #f99832 !important;
+}
+.spinnerWhite .ant-spin-dot-item{
+  background-color: #fff !important;
+
+}
+.customCursor:hover {
+background: #f5f5f5 !important;
+}

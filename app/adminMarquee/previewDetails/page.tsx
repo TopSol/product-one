@@ -1,8 +1,11 @@
 "use client";
-import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/app/firebase";
+import { BrowserRouter as Router, Route, useLocation, } from 'react-router-dom';
+import { Modal, Carousel } from "antd";
+import { getFormatDates } from "@/app/utils";
 import Image from "next/image";
 import nameImg from "../../assets/images/user.svg";
 import email from "../../assets/images/email-1-svgrepo-com.svg";
@@ -17,9 +20,9 @@ import capacity from "../../assets/images/chair.svg";
 import calander from "../../assets/images/calender.svg";
 import peoples from "../../assets/images/peoples.svg";
 import facilites from "../../assets/images/facilites.svg";
-import { Modal, Carousel } from "antd";
 import Link from "next/link";
-import { getFormatDates } from "@/app/utils";
+import BookedDate from "../bookedDate";
+
 interface MarqueeData {
   marqueeId: string;
   firstName?: string;
@@ -71,6 +74,9 @@ function PreviewDetails() {
   const [open, setOpen] = useState(false);
   const params = useSearchParams();
   const id = params.get("id");
+  console.log(id);
+  // const location = useLocation()
+
   const fetchData = async () => {
     const q = query(collection(db, "contactUs"), where("id", "==", id));
     const querySnapshot = await getDocs(q);
@@ -81,21 +87,24 @@ function PreviewDetails() {
   useEffect(() => {
     fetchData();
   }, [id]);
-  console.log();
-  
+  useEffect(() => {
+    const handlePopstate = () => {
+      const currentPath = window.location.pathname;
+      console.log(currentPath, "currentPath");
+      if (currentPath === 'http://localhost:3000/adminMarquee/previewDetails') {
+        window.location.href = 'http://localhost:3000'; // Replace 'your-domain' with your actual domain
+      }
+    };
+    window.addEventListener('popstate', handlePopstate);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopstate);
+    };
+  }, []);
+
+
   return (
     <div className="md:container bg-bgColor  md:mx-auto my-5 flex flex-col justify-center items-center mx-auto border px-3 md:px-7 py-4 rounded-lg">
-      {/* <Carousel autoplay className="rounded-xl">
-          {previewDetails?.image?.map((item, index) => (
-            <div className="flex justify-center object-cover" key={index}>
-              <img
-                src={item}
-                alt="Images"
-                className=" md:w-[920px] md:h-56 rounded-xl cursor-pointer object-cover "
-              />
-            </div>
-          ))}
-        </Carousel> */}
       <div className="bg-bgColor w-[70%] px-4 md:px-6 py-3 md:py-5 flex flex-col justify-between mt-3 md:mt-6 rounded-lg">
         {/* FIRST */}
         <div className="flex items-center justify-center mt-6 mb-8">
@@ -230,7 +239,6 @@ function PreviewDetails() {
               </div>
               <div className="ml-3">
                 <p className="font-semibold">Notes</p>
-
                 <p>{previewDetails?.notes}</p>
               </div>
             </div>
@@ -280,92 +288,27 @@ function PreviewDetails() {
               <div className="ml-3 w-full">
                 <p className="font-semibold">Dates</p>
                 <p className="text-xs md:text-base flex">
-                  {/* {
-                    previewDetails?.dates.to !== null ? 
-                    (
-                      <>
-                       {previewDetails?.dates &&
+                  {previewDetails?.dates &&
                     typeof previewDetails?.dates === "object" &&
-                    Object.values(previewDetails.dates).map((item, index) => { 
+                    Object.values(previewDetails.dates).map((item, index) => {
                       const dates: any = getFormatDates([item]);
                       const date = new Date(dates);
+                      if (isNaN(date as any)) {
+                        return null;
+                      }
                       const formattedDate = `${(date.getMonth() + 1)
                         .toString()
                         .padStart(2, "0")}-${date
-                        .getDate()
-                        .toString()
-                        .padStart(2, "0")}-${date.getFullYear()}`;
+                          .getDate()
+                          .toString()
+                          .padStart(2, "0")}-${date.getFullYear()}`;
+
                       return (
-                        <>
-                       {
-                        <span className=" pl-2" key={index}>
-                        {" "}
-                        {formattedDate}{" "}
-                      </span>
-                      }
-                       </>
-                       
+                        <span className="pl-2" key={index}>
+                          {formattedDate}
+                        </span>
                       );
                     })}
-                      </>
-                    ):(
-                      <>
-                       {previewDetails?.dates?.from &&
-  typeof previewDetails?.dates === "object" && (
-    <>
-      {Object.values(previewDetails.dates).map((item, index) => {
-        if (index === 0) { // Check if it's the first date
-          const dates: any = getFormatDates([item]);
-          const date = new Date(dates);
-          const formattedDate = `${(date.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}-${date
-            .getDate()
-            .toString()
-            .padStart(2, "0")}-${date.getFullYear()}`;
-          return (
-            <span className="pl-2" key={index}>
-              {
-                console.log(formattedDate)
-              }
-              {formattedDate}
-            </span>
-          );
-        }
-        return null; // Return null for other dates
-      })}
-    </>
-  )
-}
-
-                      </>
-                    )
-                  } */}
-                  {previewDetails?.dates &&
-  typeof previewDetails?.dates === "object" &&
-  Object.values(previewDetails.dates).map((item, index) => {
-    const dates: any = getFormatDates([item]);
-    const date = new Date(dates);
-
-    if (isNaN(date)) {
-      return null; // Skip invalid dates
-    }
-
-    const formattedDate = `${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${date
-      .getDate()
-      .toString()
-      .padStart(2, "0")}-${date.getFullYear()}`;
-
-    return (
-      <span className="pl-2" key={index}>
-        {formattedDate}
-      </span>
-    );
-  })}
-
-                 
                 </p>
               </div>
             </div>
@@ -374,7 +317,6 @@ function PreviewDetails() {
       </div>
 
       {/* Menu Information */}
-
       <div className="flex items-center justify-center mt-6 mb-8">
         <hr className="hidden md:block px-8 py-[1px] rounded-lg bg-matteBlack" />
         <p className="md:mx-16 font-bold text-xl font-vollkorn">
@@ -387,13 +329,11 @@ function PreviewDetails() {
       >
         <div className={`flex items-center justify-between mb-3`}>
           <p className="text-center text-xl">{previewDetails?.menu}</p>
-          <p className="text-xl flex flex-col justify-end my-auto">
-            {" "}
-          </p>
+          <p className="text-xl flex flex-col justify-end my-auto"> </p>
         </div>
         <div>
           <p className=" font-sc my-4">
-            This menu contains the following items :
+            This menu contains these following items :
           </p>
         </div>
         <div className="w-full">
@@ -413,65 +353,69 @@ function PreviewDetails() {
             })}
           </ul>
         </div>
-       {previewDetails?.dishes?.perHead === previewDetails?.dishes?.perHead ? (
+        {previewDetails?.dishes?.totalDiscount === undefined ? (
+          <div className="flex justify-between w-full my-4">
+            <p className="text-xl">
+              {" "}
+              Per/Person= Rs {parseInt(previewDetails?.dishes?.perHead as any)}
+            </p>
+            <p className="text-xl">
+              {" "}
+              Total= Rs{" "}
+              {parseInt(previewDetails?.dishes?.perHead as any) *
+                parseInt(previewDetails?.NumberOfPeople as any)}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className={`flex items-center justify-between mt-3 mb-6`}>
+              <p className="text-center text-xl">
+                {previewDetails?.menu}'s Add On Details
+              </p>
+              <p className="text-xl flex flex-col justify-end my-auto"> </p>
+            </div>
+            <div>
+              <p className=" font-sc">
+                This add on menu contains these following items :
+              </p>
+            </div>
+            <div className="w-full">
+              <ul>
+                {previewDetails?.dishes?.nameAndPriceArray?.map((dish, i) => {
+                  return (
+                    <div className="flex items-center py-1" key={i}>
+                      <div
+                        className={`bg-textColor h-3 w-3 rounded-full mr-3 `}
+                      ></div>
+                      <div className="flex justify-between w-full">
+                        <li className="">{dish.name}</li>
+                        <li className=" font-poppins ">RS {dish.price}</li>
+                      </div>
+                    </div>
+                  );
+                })}
+              </ul>
+            </div>
 
-        <div className="flex justify-end w-full my-4">
-        <p className="text-xl  justify-end">
-            {" "}
-            Total{" "}
-            {parseInt(previewDetails?.dishes?.perHead as any) *
-            parseInt(previewDetails?.NumberOfPeople as any)}
-          </p>
-        </div>
-       ) : (
-        <>
-        
-        <div className={`flex items-center justify-between mt-3 mb-6`}>
-          <p className="text-center text-xl">Add on</p>
-          <p className="text-xl flex flex-col justify-end my-auto">
-            {" "}
-            {/* Rs {selectedMenu?.totalDiscount} / PerHead */}
-          </p>
-        </div>
-        <div>
-          <p className=" font-sc">This menu contains the following items :</p>
-        </div>
-        <div className="w-full">
-          <ul>
-            {previewDetails?.dishes?.nameAndPriceArray?.map((dish, i) => {
-              return (
-                <div className="flex items-center py-1" key={i}>
-                  <div
-                    className={`bg-textColor h-3 w-3 rounded-full mr-3 `}
-                  ></div>
-                  <div className="flex justify-between w-full">
-                    <li className="">{dish.name}</li>
-                    <li className=" font-poppins ">RS {dish.price}</li>
-                  </div>
-                </div>
-              );
-            })}
-          </ul>
-        </div>
-
-        {/* Total Price */}
-
-        <div className="flex justify-end w-full my-4">
-          <p className="text-xl  justify-end">
-            {" "}
-            Total{" "}
-            {parseInt(previewDetails?.dishes?.perHead as any) *
-            parseInt(previewDetails?.NumberOfPeople as any)}
-          </p>
-        </div>
-        </>
-       )}
-        {/* Add one */}
-
+            {/*Add On Total Price */}
+            <div className="flex justify-between w-full my-4">
+              <p className="text-xl">
+                {" "}
+                Per/Person= Rs{" "}
+                {parseInt(previewDetails?.dishes?.totalDiscount as any)}
+              </p>
+              <p className="text-xl">
+                {" "}
+                Total= Rs{" "}
+                {parseInt(previewDetails?.dishes?.totalDiscount as any) *
+                  parseInt(previewDetails?.NumberOfPeople as any)}
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Hall information */}
-
       <div className="flex items-center justify-center mt-6 mb-8">
         <hr className="hidden md:block px-8 py-[1px] rounded-lg bg-matteBlack" />
         <p className="md:mx-16 font-bold text-xl font-vollkorn">
@@ -522,7 +466,6 @@ function PreviewDetails() {
               </div>
             </div>
           </div>
-
           <div className="bg-white rounded-lg md:w-[350px]">
             <div className="flex items-center my-5 px-3">
               <div>
@@ -530,7 +473,7 @@ function PreviewDetails() {
               </div>
               <div className="ml-3">
                 <p className="font-semibold">Marquee Location</p>
-                <p>{previewDetails?.marqueeLocation }</p>
+                <p>{previewDetails?.marqueeLocation}</p>
               </div>
             </div>
           </div>
@@ -539,60 +482,4 @@ function PreviewDetails() {
     </div>
   );
 }
-
 export default PreviewDetails;
-
-
-// {previewDetails?.dishes?.perHead === previewDetails?.dishes?.totalDiscount ? (
-
-//   <p className="text-xl  justify-end">
-//       {" "}
-//       Total{" "}
-//       {parseInt(previewDetails?.dishes?.perHead as any) *
-//         parseInt(previewDetails?.NumberOfPeople as any)}
-//     </p>
-//   ) : (
-//     <>
-
-//   {/* Add one */}
-
-//   <div className={`flex items-center justify-between mt-3 mb-6`}>
-//     <p className="text-center text-xl">Add on</p>
-//     <p className="text-xl flex flex-col justify-end my-auto">
-//       {" "}
-//       {/* Rs {selectedMenu?.totalDiscount} / PerHead */}
-//     </p>
-//   </div>
-//   <div>
-//     <p className=" font-sc">This menu contains the following items :</p>
-//   </div>
-//   <div className="w-full">
-//     <ul>
-//       {previewDetails?.dishes?.nameAndPriceArray?.map((dish, i) => {
-//         return (
-//           <div className="flex items-center py-1" key={i}>
-//             <div
-//               className={`bg-textColor h-3 w-3 rounded-full mr-3 `}
-//             ></div>
-//             <div className="flex justify-between w-full">
-//               <li className="">{dish.name}</li>
-//               <li className=" font-poppins ">RS {dish.price}</li>
-//             </div>
-//           </div>
-//         );
-//       })}
-//     </ul>
-//   </div>
-
-//   {/* Total Price */}
-
-//   <div className="flex justify-end w-full my-4">
-//     <p className="text-xl  justify-end">
-//       {" "}
-//       Total{" "}
-//       {parseInt(previewDetails?.dishes?.totalDiscount as any) *
-//         parseInt(previewDetails?.NumberOfPeople as any)}
-//     </p>
-//   </div>
-//     </>
-//   )}
