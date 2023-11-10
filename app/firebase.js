@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getMessaging } from "firebase/messaging";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -27,13 +28,14 @@ const firebaseConfig = {
   appId: "1:670605792815:web:14367c3d8e393f80b118da",
   measurementId: "G-2DZD3DHN0X",
 };
-
 // Initialize Firebase
 
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 // const analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
+const messaging = getMessaging(app);
 
-export const db = getFirestore(app);
+export const db = getFirestore(app);  
+export const collection = db.collection
 export const auth = getAuth(app);
 export const storage = getStorage(app);

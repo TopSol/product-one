@@ -18,8 +18,12 @@ export const useStore = create(
       hallIndex: null,
       userInformation: {},
       marqueeImage: "",
+      count: 0,
       addUserInformation: (data) => {
         set({ userInformation: data });
+      },
+      handleCounting: (data) => {
+        set({ count: data });
       },
       addHallInformation: (data) => {
         set({ hallInformation: data });

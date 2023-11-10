@@ -16,15 +16,16 @@ import {
     setDoc,
     updateDoc,
     getDoc,
+    getCountFromServer,
 } from "firebase/firestore";
 import Lightbox from "react-image-lightbox";
 import { getAuth, signOut } from "firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useStore } from "@/store";
-import { redirect, useRouter } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import Loader from "@/app/_component/Loader";
 import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
-import { db } from "@/app/firebase";
+import { db } from "../firebase";
 import BookedDate from "./bookedDate";
 import { doc, deleteDoc } from "firebase/firestore";
 import Image from "next/image";
@@ -44,6 +45,8 @@ import venueWIcon from "@/app/assets/images/venueIcon.svg";
 import hall2 from "../assets/images/hallbg.svg";
 import hallWhite from "@/app/assets/images/hallWhite.svg";
 import { Button, message, Popconfirm, Spin } from "antd";
+import { async } from "@firebase/util";
+
 function AdminMarqueeDetails() {
     const [component, setComponent] = React.useState(() => {
         let prev = localStorage.getItem('component');
@@ -53,9 +56,9 @@ function AdminMarqueeDetails() {
         return "Halls"
     });
     useEffect(() => {
-  
+
         localStorage.removeItem('component');
-  
+
     }, []);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalOpen1, setModalOpen1] = useState(false);
@@ -68,6 +71,7 @@ function AdminMarqueeDetails() {
     const [image, setImage] = useState([]);
     const [dishModalOpen, setDishModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isBookingAvailable, setIsBookingAvailable] = useState(false)
     const [isLoader, setIsLoader] = useState(true);
     const {
         userInformation,
@@ -78,6 +82,8 @@ function AdminMarqueeDetails() {
         Menus,
         Dishes,
         addDishes,
+        handleCounting,
+        count
     } = useStore();
     const [deleteVenues, setDeleteVenues] = useState([]);
     const [deleteMenus, setDeleteMenus] = useState([]);
@@ -122,6 +128,65 @@ function AdminMarqueeDetails() {
         },
     ];
     const router = useRouter();
+
+
+    const fetchContactData = async () => {
+        const querySnapshot = await getDocs(collection(db, 'contactUs'));
+        querySnapshot.forEach((doc) => {
+            const docData = doc.data();
+        });
+        const coll = collection(db, "contactUs");
+        const q = query(coll, where('userId', '==', userInformation?.userId));
+        const snapshot = await getCountFromServer(q);
+        const numbers = snapshot.data().count
+        if (count < numbers) {
+            setIsBookingAvailable(true)
+            sendNotification();
+            handleCounting(snapshot.data().count)
+        } else {
+            null
+        }
+    }
+
+    useEffect(() => {
+        fetchContactData()
+    }, [count])
+
+    const sendNotification = () => {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const options = {
+                body: 'Click Check Your Orders',
+                icon: `${bookingIcon}`,
+            };
+
+            const notification = new Notification('Reserve Orders', options);
+            notification.onclick = () => {
+                handleNofiNotificationClick()
+            };
+        } else {
+            alert('Notification permission not granted');
+        }
+    };
+
+    const params = useSearchParams();
+    const isBooking = params.get("isBooking");
+
+    // useEffect(() => {
+    //     if (!isBooking) {
+    //         sendNotification();
+    //     }
+    // }, []);
+
+    // useEffect(() => {
+    //     if (isBooking) {
+    //         setIsBookingAvailable(true)
+    //     }
+    // }, [isBooking])
+
+    const handleNofiNotificationClick = () => {
+        setComponent("Bookings")
+        // router.push('http://localhost:3000/adminMarquee?isBooking=true')
+    }
 
     useEffect(() => {
         if (!userInformation) {
@@ -293,6 +358,7 @@ function AdminMarqueeDetails() {
                                                 className={`side w-full text-left flex py-2 ${component === item.name ? "bg-primary" : ""
                                                     }`}
                                                 onClick={() => {
+                                                    setIsBookingAvailable(false)
                                                     setComponent(item.name);
                                                     setModalOpen1(!modalOpen1);
                                                     if (item.name === "Availability") {
@@ -566,13 +632,14 @@ function AdminMarqueeDetails() {
                                             deleteDishes={deleteDishes}
                                             fetchData={fetchData}
                                         />
-                                    ) : component === "Availability" ? (
-                                        <Availability />
-                                    ) : component === "Bookings" ? (
+                                    ) : component === "Bookings" || isBookingAvailable ? (
                                         <BookedDate />
-                                    ) : component === "Approved" ? (
-                                        <ApprovedMarquee />
-                                    ) : null}
+                                    )
+                                        : component === "Availability" ? (
+                                            <Availability />
+                                        ) : component === "Approved" ? (
+                                            <ApprovedMarquee />
+                                        ) : null}
                                 </div>
                             </div>
                         </div>

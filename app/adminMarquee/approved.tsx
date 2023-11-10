@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Spin, Table, Tag } from "antd";
 import { getFormatDates } from "../utils";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   collection,
   doc,
@@ -13,6 +13,7 @@ import {
 import { db } from "../firebase";
 import "./style.css";
 import { useStore } from "@/store";
+import moment from "moment";
 
 function ApprovedMarquee() {
   const [isShowApproved, setIsShowApproved] = useState();
@@ -40,11 +41,11 @@ function ApprovedMarquee() {
   useEffect(() => {
     fetchData();
   }, []);
-const handleRowClick = (id) =>{
-  console.log(id);
-  router.push(`/adminMarquee/previewDetails?id=${id}`
-  )
-}
+  const handleRowClick = (id) => {
+    console.log(id);
+    router.push(`/adminMarquee/previewDetails?id=${id}`
+    )
+  }
   return (
     <>
       {isloading ? (
@@ -66,9 +67,10 @@ const handleRowClick = (id) =>{
               rowClassName={(row, index) => "clickable-row cursor-pointer customCursor"}
               onRow={(row) => {
                 return {
-                  onClick: () =>{ handleRowClick(row.id)
-                  localStorage.setItem('component', 'Approved')
-                  setIsLoading(true)
+                  onClick: () => {
+                    handleRowClick(row.id)
+                    localStorage.setItem('component', 'Approved')
+                    setIsLoading(true)
                   }
                 };
               }}
@@ -82,50 +84,52 @@ const handleRowClick = (id) =>{
                 dataIndex="dates"
                 key="dates"
                 render={(isShowApproved) => {
-                  console.log("isShowApproved",isShowApproved)
-                  const bookingDates = getFormatDates(isShowApproved)
-                  
-                  // if (isShowApproved && isShowApproved.from && isShowApproved.to) {
-                  //   const fromDate = new Date(isShowApproved.from.seconds * 1000);
-                  //   const toDate = new Date(isShowApproved.to.seconds * 1000);
+                  // console.log("isShowApproved",isShowApproved)
+                  // const bookingDates = getFormatDates([isShowApproved])
 
-                  //   const fromDateString = fromDate.toLocaleDateString("en-US", {
-                  //     year: "numeric",
-                  //     month: "short",
-                  //     day: "numeric",
-                  //   });
 
-                  //   const toDateString = toDate.toLocaleDateString("en-US", {
-                  //     year: "numeric",
-                  //     month: "short",
-                  //     day: "numeric",
-                  //   });
+                  const fromDate = isShowApproved.from?.seconds ? new Date(isShowApproved.from.seconds * 1000) : isShowApproved.from
+                  const toDate = isShowApproved.to?.seconds ? new Date(isShowApproved.to.seconds * 1000) : isShowApproved.to
 
-                  //   return `${fromDateString} – ${toDateString}`;
-                  // } else if (!isShowApproved.to && isShowApproved.from) {
-                  //   const fromDate = new Date(isShowApproved.from.seconds * 1000);
+                  const fromFormat = moment(fromDate)?.format("MMM DD,YYYY")
+                  const toFormat = moment(toDate)?.format("MMM DD,YYYY")
 
-                  //   const fromDateString = fromDate.toLocaleDateString("en-US", {
-                  //     year: "numeric",
-                  //     month: "short",
-                  //     day: "numeric",
-                  //   });
-                  //   return `${fromDateString} – ${fromDateString}`;
-                  // } else if (isShowApproved.to && !isShowApproved.from) {
-                  //   const fromDate = new Date(isShowApproved.to.seconds * 1000);
+                  if (isShowApproved && isShowApproved.from && isShowApproved.to) {
+                    return `${fromFormat} – ${toFormat}`;
+                  } else if (!toDate && fromDate) {
+                    return `${fromFormat} – ${fromFormat}`;
+                  } else if (isShowApproved.to && !isShowApproved.from) {
 
-                  //   const fromDateString = fromDate.toLocaleDateString("en-US", {
-                  //     year: "numeric",
-                  //     month: "short",
-                  //     day: "numeric",
-                  //   });
-                  //   return `${fromDateString} – ${fromDateString}`;
-                  // }
+                    return `${toFormat} – ${toFormat}`;
+                  }
                   return "Invalid Date Range"; // Handle invalid or missing dates
 
 
                 }}
               />
+              {/* <Column
+  title="Date"
+  dataIndex="dates"
+  key="dates"
+  render={(isShowApproved) => {
+    
+    if (isShowApproved && isShowApproved.from && isShowApproved.to) {
+      const fromDate = new Date(isShowApproved.from);
+      const toDate = new Date(isShowApproved.to);
+      
+      console.log("isShowApproved", isShowApproved); // Add this line for debugging
+
+      const fromDateString = moment(fromDate).format()
+      const toDateString = moment(toDate).format()
+
+      return `${fromDateString} - ${toDateString}`;
+    } else {
+      return "Invalid Date Range"; // Handle invalid or missing dates
+    }
+  }}
+/> */}
+
+
               <Column title="Name" dataIndex="firstName" key="firstName" className="text-sm" />
               <Column title="Mealtype" dataIndex="mealType" key="mealType" />
               <Column
