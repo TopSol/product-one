@@ -203,7 +203,7 @@ function Preview({
 
 
   const nextPage = async () => {
-    setLoader((pre) => !pre);
+    // setLoader((pre) => !pre);
     const fieldId = Math.random().toString(36).slice(2);
     const users = {
       image: marqueeImage?.image,
