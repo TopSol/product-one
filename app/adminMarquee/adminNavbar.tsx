@@ -13,6 +13,7 @@ import { useStore } from "@/store";
 import { getAuth } from "firebase/auth";
 import Image from "next/image";
 import logo from "@/app/assets/images/image1.svg";
+import marqueeLogo from "../assets/images/Marq logo 3.svg"
 export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
   const router = useRouter();
   const {
@@ -95,9 +96,9 @@ export default function AdminNavbar({ setModalOpen2, setRemoveMenuIcon }) {
         <div className="block md:flex md:items-center ">
           <div className="hidden md:block">
             <Image
-              src={logo}
-              width={40}
-              height={40}
+              src={marqueeLogo}
+              width={30}
+              height={30}
               alt="Picture of the author"
             />
           </div>

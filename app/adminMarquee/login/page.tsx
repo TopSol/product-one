@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
@@ -40,9 +40,15 @@ const Login = () => {
       [name]: value,
     }));
   };
-
-  const registrationInformation = async (item) => {
-    const docRef = doc(db, "users", item);
+  
+  useEffect(()=>{
+  console.log(userInformation, "userInfoemation");
+if(Object.keys(userInformation).length){
+  alert("YEs there is lenght")
+}
+},[])
+  const registrationInformation = async (id) => {
+    const docRef = doc(db, "users", id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       addUser(docSnap.data());
@@ -71,28 +77,27 @@ const Login = () => {
   //       }
   //     });
   // };
-  const handleLogin = () => {
+  const handleLogin = (e) => {
+    e.preventDefault()
     if (!user.email || !user.password) {
       message.error("Please Enter a valid Email and Password");
       return;
     }
-  
     signInWithEmailAndPassword(auth, user.email, user.password)
       .then((userCredential) => {
         const user = userCredential.user;
         if (user) {
           setLoader(true);
           registrationInformation(user.uid);
-          router.push("http://localhost:3000/adminMarquee");
+          router.push("/adminMarquee");
         }
       })
       .catch((error) => {
         console.error("Error during sign-in:", error);
-        // Handle the error more specifically, and show appropriate messages to the user.
         switch (error.code) {
-          case "auth/invalid-email":
-          case "auth/user-not-found":
-          case "auth/wrong-password":
+          case message.error("auth/invalid-email"):
+          case message.error("auth/user-not-found"):
+          case message.error("auth/wrong-password"):
             message.error("Invalid email or password. Please try again.");
             break;
           default:
@@ -101,7 +106,7 @@ const Login = () => {
         }
       });
   };
-  
+
 
   return (
     <div className=" h-[100vh] flex  justify-center items-center lg:flex lg:flex-row">
@@ -129,7 +134,7 @@ const Login = () => {
                 rules={[
                   {
                     required: false,
-                    message: "Please Fillout Your Email's Input!",
+                    message: "Please Fillout Your Email Input!",
                   },
                 ]}
               >
@@ -152,7 +157,7 @@ const Login = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please Fillout Your Password's Input !",
+                    message: "Please Fillout Your Password Input !",
                   },
                 ]}
               >
@@ -179,7 +184,7 @@ const Login = () => {
             <>{loader ? <Loader /> : "Log in"}</>
           </button>
           <p className="flex justify-center sm:text-base  lg:text-sm  items-center mx-auto font-Poppins mt-8">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <Link
               className=" text-[#006CE1] ml-2 font-semibold"
               href="/adminMarquee/registration"

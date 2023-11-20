@@ -1,11 +1,16 @@
 "use client";
-import React, { use } from "react";
+import React from "react";
 import { useEffect, useState } from "react";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { Modal, Carousel, Spin, message } from "antd";
 import { useStore } from "@/store";
 import { useRouter } from "next/navigation";
+import { doc, setDoc } from "firebase/firestore";
+import { marqueeReservationTemplete } from "@/templetes";
+import { getMessaging, getToken } from "firebase/messaging";
+import firebase from "firebase/app"
+import 'firebase/messaging';
 import Link from "next/link";
 import Image from "next/image";
 import nameImg from "../assets/images/user.svg";
@@ -22,8 +27,6 @@ import calander from "../assets/images/calender.svg";
 import peoples from "../assets/images/peoples.svg";
 import facilites from "../assets/images/facilites.svg";
 import "./style.css";
-import { doc, setDoc } from "firebase/firestore";
-import { marqueeReservationTemplete } from "@/templetes";
 
 function Preview({
   setSuccessPage,
@@ -32,13 +35,12 @@ function Preview({
   selectedMenu,
   setSlider,
 }) {
-  const { hallInformation, bookedDates, marqueeData, marqueeImage } =
-    useStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { bookedDates, marqueeData, marqueeImage } = useStore();
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [blogs, setBlogs] = useState([]);
-  const [dates, setDates] = useState();
-  const [sendData, setSendData] = useState<string>();
+  // const [dates, setDates] = useState();
+  // const [sendData, setSendData] = useState<string>();
   const [loader, setLoader] = useState(false);
   const router = useRouter();
 
@@ -46,7 +48,6 @@ function Preview({
     try {
       const response = await getDocs(collection(db, "Book Marquee"));
       const tempArray: any = response.docs.map((doc) => doc.data());
-      console.log(tempArray);
       setBlogs(tempArray);
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -56,8 +57,151 @@ function Preview({
     fetchBlogs();
   }, []);
 
-    
-  useEffect(() => {}, []);
+
+
+  let a = parseInt(userInformation?.Heating);
+  const formatDate = (dateString) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const formattedDate = new Date(dateString).toLocaleDateString(
+      undefined,
+      options
+    );
+
+    const dateParts = formattedDate.split(" ");
+    let day = dateParts[1];
+    if (day?.length === 1) {
+      day = `0${day}`;
+    }
+    return `${dateParts[0]} ${day}${dateParts[2]}`;
+  };
+
+  const fromDate = formatDate(bookedDates.from);
+  const toDate = formatDate(bookedDates.to);
+
+  // {"publicKey":"BIwu3Wswv4jCxNSPBQ-O0aHnAawhpoLrAEWeQYf-x485VEkR1rsGKoUd7iPHKYbY-DBY2i-Fq6nfQxfV4XDeuwo","privateKey":"QoMUaY0pkT1dpY1kTy0Hvet5UYlwsXJbeco0U8-fSXA"}
+
+  // useEffect(() => {
+  //   const messaging = getMessaging();
+  //   getToken(messaging, { vapidKey: "BIwu3Wswv4jCxNSPBQ-O0aHnAawhpoLrAEWeQYf-x485VEkR1rsGKoUd7iPHKYbY-DBY2i-Fq6nfQxfV4XDeuwo" }).then((currentToken) => {
+  //     if (currentToken) {
+  //       localStorage.setItem('fcm_token', currentToken)
+  //       console.log(currentToken);
+
+  //     } else {
+  //       console.log('No registration token available. Request permission to generate one.');
+  //     }
+  //   }).catch((err) => {
+  //     console.log('An error occurred while retrieving token. ', err);
+  //   });
+  // }, [])
+
+  // const registrationToken = localStorage.getItem('fcm_token');
+  // if (registrationToken) {
+  //   console.log(registrationToken);
+
+  //   const message = {
+  //     data: {
+  //       title: "Notification Title",
+  //       body: "Notification Body",
+  //     },
+  //     token: registrationToken,
+  //   };
+  // }
+
+//   const requestNotificationPermission = async () => {
+//     if ('Notification' in window) {
+//       try {
+//         const permission = await Notification.requestPermission();
+//         if (permission === 'granted') {
+//           console.log('Notification permission granted');
+//         }
+//       } catch (error) {
+//         console.error('Error requesting notification permission', error);
+//       }
+//     }
+//   };
+
+//   useEffect(() => {
+//     requestNotificationPermission()
+//   }, [])
+
+//   const sendNotification = () => {
+//     if ('Notification' in window && Notification.permission === 'granted') {
+//       const options = {
+//         body: 'Click Check Your Orders ',
+//         URL:'http://localhost:3000/adminMarquee'
+//       };
+
+//       new Notification('Reserve Orders', options);
+//     } else {
+//       alert("sdfsdfasdfasdfas")
+//     }
+//   };
+
+//   // service-worker.js
+// self.addEventListener('push', (event) => {
+//   const options = {
+//     body: event.data.text(),
+//     icon: '/path-to-icon.png',
+//     badge: '/path-to-badge.png',
+//   };
+
+//   event.waitUntil(
+//     self.registration.showNotification('Notification Title', options)
+//   );
+// });
+
+// self.addEventListener('notificationclick', (event) => {
+//   event.notification.close(); // Close the notification
+
+//   // Open the desired URL when the notification is clicked
+//   const openURL = 'http://localhost:3000/adminMarquee';
+//   event.waitUntil(
+//     clients.openWindow(openURL)
+//   );
+// });
+
+
+// const requestNotificationPermission = async () => {
+//   if ('Notification' in window) {
+//     try {
+//       const permission = await Notification.requestPermission();
+//       if (permission === 'granted') {
+//         console.log('Notification permission granted');
+//       }
+//     } catch (error) {
+//       console.error('Error requesting notification permission', error);
+//     }
+//   }
+// };
+
+// useEffect(() => {
+//   requestNotificationPermission();
+// }, []);
+
+// const sendNotification = () => {
+//   if ('Notification' in window && Notification.permission === 'granted') {
+//     const options = {
+//       body: 'Click Check Your Orders',
+//       data: {
+//         url: 'http://localhost:3000/adminMarquee',
+//       },
+//       icon: '/path-to-icon.png',
+//       badge: '/path-to-badge.png',
+//     };
+
+//     new Notification('Reserve Orders', options);
+//   } else {
+//     alert('Notification permission not granted');
+//   }
+// };
+
+
+
   const nextPage = async () => {
     setLoader((pre) => !pre);
     const fieldId = Math.random().toString(36).slice(2);
@@ -85,7 +229,7 @@ function Preview({
       address: userInformation?.address,
       NumberOfPeople: marqueeImage?.numberOfPeople,
       eventType: userInformation?.eventType,
-      createAt:Timestamp.now(),
+      createAt: Timestamp.now(),
     };
     try {
       const response = await fetch("http://localhost:3000/api/", {
@@ -100,44 +244,23 @@ function Preview({
         }),
       });
       if (response.status === 200) {
-        message.success("Your email has been successfully sent");
+        console.log();
+        ("Your email has been successfully sent");
+
       } else {
         console.error("API call failed:", response.statusText);
-        message.error("Oops, something went wrong");
+        console.error("Oops, something went wrong");
       }
 
       await setDoc(doc(db, "contactUs", fieldId), users);
       setSuccessPage(true);
-      // openMessage();
     } catch (error) {
       console.log(" Error", error);
       console.error("Error calling API:", error);
     }
   };
 
-  let a = parseInt(userInformation?.Heating);
 
-  const formatDate = (dateString) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    const formattedDate = new Date(dateString).toLocaleDateString(
-      undefined,
-      options
-    );
-
-    const dateParts = formattedDate.split(" ");
-    let day = dateParts[1];
-    if (day?.length === 1) {
-      day = `0${day}`;
-    }
-    return `${dateParts[0]} ${day}${dateParts[2]}`;
-  };
-
-  const fromDate = formatDate(bookedDates.from);
-  const toDate = formatDate(bookedDates.to);
 
   return (
     <div>
@@ -439,7 +562,7 @@ function Preview({
                     Total Rs=
                     {selectedMenu?.perhead !== selectedMenu?.totalDiscount
                       ? parseInt(selectedMenu?.totalDiscount) *
-                        parseInt(marqueeImage?.numberOfPeople)
+                      parseInt(marqueeImage?.numberOfPeople)
                       : null}
                   </p>
                 </div>
@@ -515,8 +638,11 @@ function Preview({
             Previous
           </button>
           <button
-            className="border w-40 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold spinner"
-            onClick={() => nextPage()}
+            className="border w-40 md:px-9 md:py-2 mt-3 bg-primaryColor rounded-md text-white font-bold spinnerWhite"
+            onClick={() => {
+              nextPage()
+            }
+            }
           >
             {loader ? <Spin /> : " Book Now"}
           </button>

@@ -112,12 +112,7 @@ function BookedDate() {
 
   const handleDetails = (id) => {
     setLoader(id);
-  };
-  // useEffect(() => {
-  //   return () => {
-  //     localStorage.removeItem('component');
-  //   };
-  // }, []);
+  }; 
   return (
     <>
       {isloading ? (
@@ -129,7 +124,6 @@ function BookedDate() {
           <div className="md:container mx-auto ">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-[100%] my-6">
               {customerInformation
-                ?.sort((a, b) => (a.isNew === true ? -1 : b.isNew === true ? 1 : 0))
                 ?.map((item, index) => {
                   return (
                     <div
@@ -293,7 +287,6 @@ function BookedDate() {
             setModalOpen={setModalOpen}
             email={email}
             sendData={sendData}
-            setSendData={setSendData}
             setIsNestedModalOpen={setIsNestedModalOpen}
             isNestedModalOpen={isNestedModalOpen}
             customerInformation={customerInformation}

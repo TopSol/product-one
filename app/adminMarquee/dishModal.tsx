@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { db } from "@/app/firebase";
 import { Button, Input, Select, Table, Upload, message } from "antd";
-import dots from "@/app/assets/images/dots.svg";
-import Image from "next/image";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, getDocs, getDoc, setDoc, doc } from "firebase/firestore";
 import Loader from "@/app/_component/Loader";
 import type { UploadFile } from "antd/es/upload/interface";
 import { useStore } from "../../store";
 import { Modal } from "antd";
+import dots from "@/app/assets/images/dots.svg";
+import Image from "next/image";
 import ImgCrop from "antd-img-crop";
 const plainOptions = [
   { label: "Available", value: "Available" },
@@ -29,11 +29,11 @@ function DishModal({
   loading,
   setLoading,
 }) {
+  const storage = getStorage();
+  const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [user, setUser] = useState(initialFormState);
   const [addVenues, setAddVenues] = useState([]);
-  const storage = getStorage();
   const [openEditVenue, setOpenEditVenue] = useState(false);
-  const { userInformation, addUser, addMenus, Menus, Dishes } = useStore();
   const [status, setStatus] = useState();
   const [imageObject, setImageObject] = useState([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -203,32 +203,61 @@ function DishModal({
   //   return false;
   // };
 
-  const beforeUpload = (file) => {
+  // const beforeUpload = (file) => {
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+
+  //   reader.onload = () => {
+  //     const img = new window.Image();
+  //     img.src = reader.result;
+
+  //     img.onload = () => {
+  //       const width = img.width;
+  //       const height = img.height;
+
+  //       if (width < 1500 || height < 1000) {
+  //         message.warning(
+  //           "Please upload an image with a width of at least 1500px and a height of at least 1000px."
+  //         );
+  //       } else {
+  //         setFileList((prev) => [...prev, { url: reader.result }]);
+  //         setImageObject((prevImageObject) => [...prevImageObject, file]);
+  //       }
+  //     };
+  //   };
+
+  //   return false;
+  // };
+  const beforeUpload = (file: File) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-
-    reader.onload = () => {
-      const img = new window.Image();
-      img.src = reader.result;
-
-      img.onload = () => {
-        const width = img.width;
-        const height = img.height;
-
-        if (width < 1500 || height < 1000) {
-          message.warning(
-            "Please upload an image with a width of at least 1500px and a height of at least 1000px."
-          );
-        } else {
-          setFileList((prev) => [...prev, { url: reader.result }]);
-          setImageObject((prevImageObject) => [...prevImageObject, file]);
-        }
-      };
+  
+    reader.onload = (event: ProgressEvent<FileReader>) => {
+      const result = event.target?.result;
+  
+      if (typeof result === 'string') {
+        const img = new window.Image();
+        img.src = result;
+  
+        img.onload = () => {
+          const width = img.width;
+          const height = img.height;
+  
+          if (width < 1500 || height < 1000) {
+            message.warning(
+              "Please upload an image with a width of at least 1500px and a height of at least 1000px."
+            );
+          } else {
+            setFileList((prev) => [...prev, { url: result } as any]);
+            setImageObject((prevImageObject) => [...prevImageObject, file] as any);
+          }
+        };
+      }
     };
-
+  
     return false;
   };
-
+  
   return (
     <div>
       <Modal
@@ -236,7 +265,7 @@ function DishModal({
         centered
         open={dishModalOpen}
         width={600}
-        bodyStyle={{ height: 700 }}
+        style={{ height: 700 }}
         okButtonProps={{ className: "custom-ok-button" }}
         closeIcon={
           <div className=" right-2 ">

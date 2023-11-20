@@ -9,17 +9,27 @@ import successIcon from "../../assets/images/success.svg";
 import rejectIcon from "../../assets/images/reject.svg";
 import TextArea from "antd/es/input/TextArea";
 
-function mailSender({
+// interface MailSenderProps {
+//   modalOpen: any;
+//   setModalOpen:any;
+//   email: any;
+//   sendData: any;
+//   setIsNestedModalOpen: any;
+//   isNestedModalOpen: any;
+//   customerInformation: any;
+//   setCustomerInformation:any;
+// }
+
+export default  function MailSender({
   modalOpen,
-  setModalOpen,
+  setModalOpen ,
   email,
   sendData,
-  setSendData,
   setIsNestedModalOpen,
   isNestedModalOpen,
   customerInformation,
-  setCustomerInformation,
-}) {
+  setCustomerInformation
+}: any) {
   const [isloader, setIsLoader] = useState(false);
   const [isReject, setIsReject] = useState("Reject");
   const [defaultDescription, setDefaultDescription] = useState("");
@@ -199,7 +209,7 @@ function mailSender({
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         width={635}
-        bodyStyle={{ height: 500, padding: 0, margin: 0 }}
+        style={{ height: 500, padding: 0, margin: 0 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={null}
       >
@@ -228,7 +238,7 @@ function mailSender({
           <div className="w-full flex justify-center">
             <button
               onClick={handleMail}
-              className="bg-successColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold spinnerWhite"
+              className="bg-successColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold spinnerWhite mb-4"
             >
               {isloader ? <Spin /> : "Approve"}
             </button>
@@ -241,7 +251,7 @@ function mailSender({
         open={isNestedModalOpen}
         onCancel={() => setIsNestedModalOpen(false)}
         width={635}
-        bodyStyle={{ height: 500, padding: 0, margin: 0 }}
+        style={{ height: 500, padding: 0, margin: 0 }}
         okButtonProps={{ className: "custom-ok-button" }}
         footer={null}
       >
@@ -275,7 +285,7 @@ function mailSender({
           <div className="w-full flex justify-center">
             <button
               onClick={handleRejectMail}
-              className="bg-rejectColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold spinnerWhite"
+              className="bg-rejectColor py-2 font-poppins rounded-lg text-white text-xl w-full font-semibold spinnerWhite mb-4"
             >
               {isloader ? <Spin /> : "Reject"}
             </button>
@@ -286,4 +296,3 @@ function mailSender({
   );
 }
 
-export default mailSender;

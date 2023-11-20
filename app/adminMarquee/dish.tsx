@@ -402,7 +402,7 @@
 //                 setUpdateDish(false);
 //               }}
 //               width={600}
-//               bodyStyle={{ height: 680 }}
+//               style={{ height: 680 }}
 //               okButtonProps={{ className: "custom-ok-button" }}
 //               closeIcon={
 //                 <div className=" right-2 ">
@@ -618,7 +618,7 @@ import DishModal from "./dishModal";
 import Loader from "@/app/_component/Loader";
 import { Button, Checkbox, Popconfirm, Spin, Table, Tag } from "antd";
 import { Select, Space, List } from "antd";
-import { db } from "@/app/firebase";
+import { db } from "../firebase";
 import MenuTable from "./menuTable";
 import {
   collection,
@@ -814,12 +814,15 @@ function Dish({
     const docRef = doc(db, "Dish", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      console.log(docSnap.data());
       setUser(docSnap.data() as any);
+      console.log(user)
       setSelectedItems(docSnap.data().dishes);
     } else {
       console.log("No such document!");
     }
   };
+
   const update = async (venueId) => {
     setLoading(true);
     try {
@@ -1095,7 +1098,7 @@ function Dish({
                 setUpdateDish(false);
               }}
               width={600}
-              bodyStyle={{ height: 680 }}
+              style={{ height: 680 }}
               okButtonProps={{ className: "custom-ok-button" }}
               closeIcon={
                 <div className=" right-2 ">

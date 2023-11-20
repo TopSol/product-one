@@ -117,7 +117,7 @@ function Menus({
           });
         });
       })
-      .catch((error) => {});
+      .catch((error) => { });
     const fetchBlogs = async () => {
       try {
         const response = await getDocs(collection(db, "Menus"));
@@ -202,7 +202,9 @@ function Menus({
     const docRef = doc(db, "Menus", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      console.log(docSnap.data());
       setUser(docSnap.data() as any);
+      console.log(user);
       setFileList(docSnap.data().cropImage);
     } else {
       console.log("No such document!");
@@ -347,8 +349,8 @@ function Menus({
             "Please upload an image with a width of at least 1500px and a height of at least 1000px."
           );
         } else {
-          setFileList((prev) => [...prev, { url: reader.result }]);
-          setImageObject((prevImageObject) => [...prevImageObject, file]);
+          setFileList((prev) => [...prev, { url: reader.result } as any]);
+          setImageObject((prevImageObject) => [...prevImageObject, file] as any);
         }
       };
     };
@@ -365,7 +367,7 @@ function Menus({
     <>
       {isloading ? (
         <div className="flex justify-center items-center h-[80vh] spinner">
-        <Spin size="default" />
+          <Spin size="default" />
         </div>
       ) : (
         <>
@@ -420,7 +422,7 @@ function Menus({
                           image.length > 0 ? image[0] : "fallback-image-url.jpg"
                         }
                         alt="Image"
-                        onClick={()=>{
+                        onClick={() => {
                           setIsOpen(true);
                           setPreviewImage(image);
                           setPhotoIndex(0);
@@ -519,7 +521,7 @@ function Menus({
                 </div>
               }
               width={600}
-              bodyStyle={{ height: 840, padding: 0 }}
+              style={{ height: 840, padding: 0 }}
               okButtonProps={{ className: "custom-ok-button" }}
               footer={[
                 <div className="pb-5 mr-3" key={"index"}>
@@ -638,8 +640,8 @@ function Menus({
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-start relative md:mt-3 mt-4">
-                    <div className="absolute top-[calc(50%_-_57.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="flex flex-col items-start relative md:mb-8 mt-4">
+                    <div className="absolute top-[calc(50%_-_42.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[53.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                       <p className="absolute text-lg leading-[100%] z-20 pt-1">
                         Type
                       </p>
@@ -670,8 +672,8 @@ function Menus({
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-start relative md:mt-3 mt-4">
-                    <div className="absolute top-[calc(50%_-_57.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[65.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
+                  <div className="flex flex-col items-start relative md:mb-8 mt-4">
+                    <div className="absolute top-[calc(50%_-_42.5px)] z-20 left-[19.89px] rounded-3xs bg-white w-[65.67px] h-[22.56px] flex flex-row py-px px-1 box-border items-center justify-center">
                       <p className="absolute text-lg leading-[100%] z-20 pt-1">
                         Status
                       </p>
@@ -733,7 +735,7 @@ function Menus({
                 nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
                 prevSrc={
                   previewImage[
-                    (photoIndex + previewImage.length - 1) % previewImage.length
+                  (photoIndex + previewImage.length - 1) % previewImage.length
                   ]
                 }
                 onCloseRequest={() => setIsOpen(false)}

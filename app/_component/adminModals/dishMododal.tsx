@@ -47,7 +47,7 @@
 //           </div>
 //         }
 //         width={600}
-//         bodyStyle={{ height: 620, padding: 0 }}
+//         style={{ height: 620, padding: 0 }}
 //         okButtonProps={{ className: "custom-ok-button" }}
 //         footer={[
 //           <div className="pb-5 mr-3" key={"index"}>

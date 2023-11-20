@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Route, useLocation, } from 'react-router-dom';
 import { Modal, Carousel } from "antd";
 import { getFormatDates } from "@/app/utils";
 import Image from "next/image";
-import nameImg from "../../assets/images/user.svg";
+import nameImg from "../../assets/images/user.svg"
 import email from "../../assets/images/email-1-svgrepo-com.svg";
 import call from "../../assets/images/call.svg";
 import address from "../../assets/images/address-location-map-svgrepo-com 1.svg";
@@ -370,7 +370,7 @@ function PreviewDetails() {
           <>
             <div className={`flex items-center justify-between mt-3 mb-6`}>
               <p className="text-center text-xl">
-                {previewDetails?.menu}'s Add On Details
+                {previewDetails?.menu} Add On Details
               </p>
               <p className="text-xl flex flex-col justify-end my-auto"> </p>
             </div>

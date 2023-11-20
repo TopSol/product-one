@@ -26,7 +26,7 @@
 //         centered
 //         open={modalOpen}
 //         width={600}
-//         bodyStyle={{ height: 670, padding: 0 }}
+//         style={{ height: 670, padding: 0 }}
 //         onCancel={() => setModalOpen(false)}
 //         okButtonProps={{ className: "custom-ok-button" }}
 //         closeIcon={

@@ -705,7 +705,7 @@ function Details() {
           setIsImageShow(true);
           setModal1Open(false);
         }}
-        bodyStyle={{ height: "700px" }}
+        style={{ height: "700px" }}
         closable={true}
         centered
         onCancel={() => setModal1Open(false)}
