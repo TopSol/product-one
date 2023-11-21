@@ -18,7 +18,6 @@ function SuggestionDish({
 }) {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  console.log(suggestionDish, "suggestionDish");
   return (
     <div className="flex flex-col w-[full] pl-2" key={item}>
       <div className="bg-primaryColor flex items-center justify-between p-3 rounded-t-md">

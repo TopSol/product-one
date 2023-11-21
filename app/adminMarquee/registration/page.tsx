@@ -5,13 +5,13 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/firebase";
 import { db } from "@/app/firebase";
 import { storage } from "@/app/firebase";
-import { Button, Image, message ,Input, Form , Upload, Modal} from "antd";
+import { Button, Image, message, Input, Form, Upload, Modal } from "antd";
 import { useRouter } from "next/navigation";
 import { useStore } from "../../../store";
 import { setDoc, doc, Timestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
-import type {UploadFile } from "antd/es/upload/interface";
+import type { UploadFile } from "antd/es/upload/interface";
 import Loader from "@/app/_component/Loader";
 import PhoneInput from "react-phone-number-input";
 import ImgCrop from "antd-img-crop";
@@ -20,6 +20,7 @@ import "./style.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 import "react-phone-number-input/style.css";
+import { log } from "util";
 
 const initialValue = {
   fullName: "",
@@ -66,11 +67,9 @@ function Details() {
 
   const router = useRouter();
   const onFinish = (values) => {
-    console.log("Success:", values);
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
   };
 
   const handleChange = (e) => {
@@ -80,11 +79,6 @@ function Details() {
       [name]: value,
     }));
   };
-
-  // const openModal = (e) => {
-  //   e.preventDefault();
-  //   setModalOpen(true);
-  // };
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -121,15 +115,14 @@ function Details() {
       const user = userCredential.user;
       const folderName = `marqueeImages`;
       const imageUrls = await Promise.all(
-        fileList.map(async (image) => {
-          const fileName = `${folderName}/${image?.name}`;
+        imageObject.map(async (image) => {
+          const fileName = `${folderName}/${(image as any).name}`;
           const storageRef = ref(storage, fileName);
-          await uploadBytes(storageRef, image?.originFileObj as any);
+          await uploadBytes(storageRef, image);
           const urls = await getDownloadURL(storageRef);
           return urls;
         })
       );
-
       const VenueId = Math.random().toString(36).substring(2);
       const userInfo = {
         userId: user.uid,
@@ -155,7 +148,6 @@ function Details() {
         setLoading(true);
       }
     } catch (error) {
-      console.log(error, "error");
     }
   };
 
@@ -175,20 +167,6 @@ function Details() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  // const handleDiemension = async (id) => {
-  //   const selectedImage = multipleImage.find((image) => image.id === id);
-  //   if (selectedImage) {
-  //     setSelectedImage(selectedImage);
-  //     const objectURL = URL.createObjectURL(selectedImage.file);
-  //     setImage({
-  //       id: selectedImage.id,
-  //       img: objectURL,
-  //     } as any);
-  //   } else {
-  //     console.error("Image not found with id:", id);
-  //   }
-  // };
 
   const onLoad = (map) => {
     setAutocomplete(new window.google.maps.places.AutocompleteService() as any);
@@ -427,10 +405,10 @@ function Details() {
                       },
                     ]}
                   >
-                    <div 
-                    onChange={handleChange}
-                    className="border outline-none md:w-[30vw] z-10  py-2 flex justify-start text-xs relative PhoneInput">
-                      <CityName setCityName={setCityName} cityName={cityName} registration="Registration"/>
+                    <div
+                      onChange={handleChange}
+                      className="border outline-none md:w-[30vw] z-10  py-2 flex justify-start text-xs relative PhoneInput">
+                      <CityName setCityName={setCityName} cityName={cityName} registration="Registration" />
                     </div>
                   </Form.Item>
                 </div>
@@ -569,29 +547,29 @@ function Details() {
                     {fileList.length < 5 && "+ Upload"}
                   </Upload>
                 </ImgCrop> */}
-                  <ImgCrop
-                    modalClassName="btns"
-                    rotationSlider
-                    modalWidth={800}
-                    modalTitle={"Edit your Image"}
-                    modalOk={"Crop Image"}
-                    aspect={aspectRatio}
-                    maxZoom={1.2}
+                <ImgCrop
+                  modalClassName="btns"
+                  rotationSlider
+                  modalWidth={800}
+                  modalTitle={"Edit your Image"}
+                  modalOk={"Crop Image"}
+                  aspect={aspectRatio}
+                  maxZoom={1.2}
+                >
+                  <Upload
+                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    listType="picture-card"
+                    fileList={fileList}
+                    onRemove={handleRemove}
+                    beforeUpload={beforeUpload}
+                    showUploadList={{
+                      showPreviewIcon: false,
+                      showRemoveIcon: true,
+                    }}
                   >
-                    <Upload
-                      action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                      listType="picture-card"
-                      fileList={fileList}
-                      onRemove={handleRemove}
-                      beforeUpload={beforeUpload}
-                      showUploadList={{
-                        showPreviewIcon: false,
-                        showRemoveIcon: true,
-                      }}
-                    >
-                      {fileList?.length < 5 && "+ Upload"}
-                    </Upload>
-                  </ImgCrop>
+                    {fileList?.length < 5 && "+ Upload"}
+                  </Upload>
+                </ImgCrop>
               </div>
 
               {/* <div className="w-full pl-5 lg:pl-0">

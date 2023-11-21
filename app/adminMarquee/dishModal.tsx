@@ -129,7 +129,6 @@ function DishModal({
     try {
       await setDoc(doc(db, "Menus", MenuId), users);
     } catch (error) {
-      console.log(error, "error");
     }
     setAddVenues([...addVenues, user] as any);
     setDishModalOpen(false);
@@ -185,7 +184,6 @@ function DishModal({
         addMenus([...Menus, { ...updatedUser, id: venueId }]);
       }
     } catch (error) {
-      console.log(error, "error");
     }
     setUser(initialFormState);
     setOpenEditVenue(false);
@@ -193,41 +191,7 @@ function DishModal({
   const width = 2000;
   const height = 1300;
   const aspectRatio = width / height;
-  // const beforeUpload = (file) => {
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(file);
-  //   reader.onload = () => {
-  //     setFileList((prev) => [...prev, { url: reader.result }]);
-  //   };
-  //   setImageObject((prevImageObject) => [...prevImageObject, file]);
-  //   return false;
-  // };
-
-  // const beforeUpload = (file) => {
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(file);
-
-  //   reader.onload = () => {
-  //     const img = new window.Image();
-  //     img.src = reader.result;
-
-  //     img.onload = () => {
-  //       const width = img.width;
-  //       const height = img.height;
-
-  //       if (width < 1500 || height < 1000) {
-  //         message.warning(
-  //           "Please upload an image with a width of at least 1500px and a height of at least 1000px."
-  //         );
-  //       } else {
-  //         setFileList((prev) => [...prev, { url: reader.result }]);
-  //         setImageObject((prevImageObject) => [...prevImageObject, file]);
-  //       }
-  //     };
-  //   };
-
-  //   return false;
-  // };
+ 
   const beforeUpload = (file: File) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);

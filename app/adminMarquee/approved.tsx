@@ -42,7 +42,6 @@ function ApprovedMarquee() {
     fetchData();
   }, []);
   const handleRowClick = (id) => {
-    console.log(id);
     router.push(`/adminMarquee/previewDetails?id=${id}`
     )
   }
@@ -84,9 +83,6 @@ function ApprovedMarquee() {
                 dataIndex="dates"
                 key="dates"
                 render={(isShowApproved) => {
-                  // console.log("isShowApproved",isShowApproved)
-                  // const bookingDates = getFormatDates([isShowApproved])
-
 
                   const fromDate = isShowApproved.from?.seconds ? new Date(isShowApproved.from.seconds * 1000) : isShowApproved.from
                   const toDate = isShowApproved.to?.seconds ? new Date(isShowApproved.to.seconds * 1000) : isShowApproved.to
@@ -117,7 +113,6 @@ function ApprovedMarquee() {
       const fromDate = new Date(isShowApproved.from);
       const toDate = new Date(isShowApproved.to);
       
-      console.log("isShowApproved", isShowApproved); // Add this line for debugging
 
       const fromDateString = moment(fromDate).format()
       const toDateString = moment(toDate).format()
@@ -187,7 +182,6 @@ function ApprovedMarquee() {
                 dataIndex="dishes"
                 key="dishes"
                 render={(item) => {
-                  console.log(item);
                   if (item.totalDiscount == undefined) {
                     return <p>{item?.perHead}</p>;
                   } else {

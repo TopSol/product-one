@@ -16,8 +16,6 @@ export const marqueeReservationTemplete = (
     dishes,
   } = sendData;
 
-  console.log(dishes?.totalDiscount);
-
   return `
   ${
     isReject == "Reject"

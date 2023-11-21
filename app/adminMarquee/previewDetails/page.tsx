@@ -74,8 +74,6 @@ function PreviewDetails() {
   const [open, setOpen] = useState(false);
   const params = useSearchParams();
   const id = params.get("id");
-  console.log(id);
-  // const location = useLocation()
 
   const fetchData = async () => {
     const q = query(collection(db, "contactUs"), where("id", "==", id));
@@ -90,7 +88,6 @@ function PreviewDetails() {
   useEffect(() => {
     const handlePopstate = () => {
       const currentPath = window.location.pathname;
-      console.log(currentPath, "currentPath");
       if (currentPath === 'http://localhost:3000/adminMarquee/previewDetails') {
         window.location.href = 'http://localhost:3000'; // Replace 'your-domain' with your actual domain
       }

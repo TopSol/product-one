@@ -60,7 +60,6 @@ export default function Hero({
     querySnapshot.forEach((doc) => {
       adminMarqueeUser.push({ id: doc.id, data: doc.data() });
     });
-    console.log(adminMarqueeUser);
 
     let venues: UserData[] = [];
     await Promise.all(
@@ -86,7 +85,6 @@ export default function Hero({
         const dateIsNotInDiner = !dinerDates.some(
           (d) => d.toDateString() === dateObject.toDateString()
         );
-        console.log(dateIsNotInLunch, dateIsNotInDiner, "ll");
         return dateIsNotInLunch || dateIsNotInDiner;
       } else {
         return true;

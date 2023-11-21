@@ -176,7 +176,6 @@ function Marquee() {
           );
           return !dateMatches;
         } else {
-          console.log("item.data.dates is undefined or null");
           return false;
         }
       });
@@ -192,7 +191,6 @@ function Marquee() {
     const requiredServices = filterData.services;
     if (marqueeDates.from || marqueeDates.to) {
       data = filterDataByDates(data, marqueeDates);
-      console.log(data, "after");
     }
     if (filterData.capacity != "") {
       data = data.filter((item) => minCapacity >= item?.data?.maxCapacity);
@@ -229,11 +227,8 @@ function Marquee() {
           lng: item.data.locations.lng,
         };
         if (isWithinRange(coordinates, itemCoordinates, 1)) {
-          console.log("true");
           return true;
         } else {
-          console.log("false");
-
           return false;
         }
       } else {
@@ -255,7 +250,6 @@ function Marquee() {
       }
     } else {
       setFilterMarqueeWithPrice([]);
-      // marquee(venuesPrice, userData);
     }
     if (branch.length) {
       setShowMessage(true);
@@ -295,8 +289,6 @@ function Marquee() {
       Math.pow(coord1.lat - coord2.lat, 2) +
         Math.pow(coord1.lng - coord2.lng, 2)
     );
-    console.log(distance, "distance");
-
     return distance <= range;
   };
   const handleSelect = async (value) => {

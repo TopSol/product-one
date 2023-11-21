@@ -15,11 +15,11 @@ import { DocumentData, collection, getDocs } from "firebase/firestore";
 import { useStore } from "@/store";
 import { useRouter } from "next/navigation";
 import "react-day-picker/dist/style.css";
+import logo from "../assets/images/Marq logo 3.svg"
 import Image from "next/image";
-import Loader from "./Loader";
 interface UserData {
   id: string;
-  data: DocumentData; // You might need to replace DocumentData with the actual type of your data
+  data: DocumentData;
 }
 
 interface DateRange {
@@ -41,7 +41,6 @@ interface MarqueeDates {
 
 function MarqueeDetails({ item, showMessage }) {
   const router = useRouter();
-
   const {
     addMarqueeVenueNames,
     addMarqueeVenueDates,
@@ -60,7 +59,7 @@ function MarqueeDetails({ item, showMessage }) {
   const [meal, setMeal] = useState("Lunch");
   const [value, setValue] = useState("1");
   const [venueId, setVenueId] = useState();
-  const [loader , setLoader] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [marqueeDates, setMarqueeDates] = useState<MarqueeDates>({
     from: null,
     to: null,
@@ -83,7 +82,6 @@ function MarqueeDetails({ item, showMessage }) {
     const asd = venuesData?.filter((item) => {
       return item?.data?.userId === id;
     });
-
     const marqueeVenueName = asd?.map((item) => ({
       value: item?.data?.venueId,
       label: item?.data?.name,
@@ -132,7 +130,7 @@ function MarqueeDetails({ item, showMessage }) {
       return (item as any)?.id === id;
     });
     setSelectedDate(asdf as any);
-    addMarqueeVenueDates(asdf); 
+    addMarqueeVenueDates(asdf);
   };
 
   const handleClick = (id) => {
@@ -173,11 +171,11 @@ function MarqueeDetails({ item, showMessage }) {
       ? handleCheck(propMeal, reserveDate[0]?.dates?.Diner)
       : handleCheck(propMeal, reserveDate[0]?.dates?.Lunch);
   };
-  
+
   const handleDateRangeSelect = (newRange) => {
     let dateString1 = newRange;
     let date1 = new Date(dateString1);
-    let currentDate = new Date(); 
+    let currentDate = new Date();
     if (currentDate <= date1) {
       if (marqueeDates.from && newRange && marqueeDates.from > newRange) {
         // if (marqueeDates.from > newRange) {         build
@@ -191,7 +189,7 @@ function MarqueeDetails({ item, showMessage }) {
           if (marqueeDates.from !== null) {
             return element >= marqueeDates.from && element <= newRange;
           }
-          return false; 
+          return false;
         });
         if (date?.length > 0) {
           // message.error("you can not select this date");
@@ -302,7 +300,7 @@ function MarqueeDetails({ item, showMessage }) {
                   {
                     loader ? <Spin /> : "Details"
                   }
-                  
+
                 </button>
               </div>
 
@@ -325,9 +323,8 @@ function MarqueeDetails({ item, showMessage }) {
         <div className="sm:flex sm:flex-col  rounded-md mt-3  lg:flex lg:flex-row bg-[#f5f5f5]">
           {open[item?.data?.id] && (
             <DayPicker
-              className={`${
-                isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
-              } w-[100%]`}
+              className={`${isLunch === `Lunch` ? `combinedClasses` : `combinedClasses2`
+                } w-[100%]`}
               disabled={resolvedDisabledDays}
               modifiers={{ booked: days }}
               modifiersStyles={{ booked: bookedStyle }}

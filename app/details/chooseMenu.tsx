@@ -113,7 +113,6 @@ function ChooseMenu({
           break;
         }
       }
-      console.log(Dishes, "asdfasDish");
       updatedMarqueeData.dish = updatedMarqueeData.dish.map((val1) => {
         if (val1.selected && val1.dishes.length > 0) {
           setSelectedMenu({

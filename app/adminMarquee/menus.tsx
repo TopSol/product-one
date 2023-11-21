@@ -176,7 +176,6 @@ function Menus({
     try {
       await setDoc(doc(db, "Menus", MenuId), users);
     } catch (error) {
-      console.log(error, "error");
     }
     setAddVenues([...addVenues, user] as any);
     setModalOpen(false);
@@ -193,7 +192,6 @@ function Menus({
       const newBlogs = Menus.filter((blog) => blog.id !== menuId);
       addMenus(newBlogs);
     } catch (error) {
-      console.log(error, "error");
     }
   };
   const EditVenue = async (dishId) => {
@@ -202,16 +200,14 @@ function Menus({
     const docRef = doc(db, "Menus", dishId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      console.log(docSnap.data());
       setUser(docSnap.data() as any);
-      console.log(user);
       setFileList(docSnap.data().cropImage);
     } else {
-      console.log("No such document!");
     }
   };
+
   const updateVenue = async (venueId) => {
-    setLoading((prevState) => !prevState);
+    setLoading(true);
     const folderName = `images`;
     const urls = await Promise.all(
       imageObject.map(async (image) => {
@@ -237,14 +233,13 @@ function Menus({
         addMenus([...Menus, { ...updatedUser, id: venueId }]);
       }
     } catch (error) {
-      console.log(error, "error");
     }
     setModalOpen(false);
     setUser(initialFormState);
     setFileList([]);
     setImageObject([]);
     setOpenEditVenue(false);
-    setLoading((prevState) => !prevState);
+    setLoading(false);
   };
 
   const handleMenuSelect = (e) => {
@@ -495,6 +490,8 @@ function Menus({
                 setFileList([]);
                 setImageObject([]);
                 setOpenEditVenue(false);
+                setLoading(false);
+
               }}
               closeIcon={
                 <div className=" right-2 ">
@@ -533,6 +530,8 @@ function Menus({
                       setFileList([]);
                       setImageObject([]);
                       setOpenEditVenue(false);
+                      setLoading(false);
+
                     }}
                     className=" AddVenue border-primary text-primary "
                   >

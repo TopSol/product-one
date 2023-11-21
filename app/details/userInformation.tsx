@@ -65,16 +65,13 @@ function UserInformation({
       tableShape: user.tableShape,
       eventType: user.eventType,
     };
-    console.log("userInformation", users);
     setUserInformation(users);
     setSlider(2);
   };
 
   const onFinish = (values) => {
-    console.log("Success:", values);
   };
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
   };
   const preventNonNumericInput = (e) => {
     const input = e.key;

@@ -19,11 +19,9 @@ const initialFormState = {
 };
 
 const onFinish = (values) => {
-  console.log("Success:", values);
 };
 
 const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
 };
 
 const Login = () => {
@@ -42,7 +40,6 @@ const Login = () => {
   };
   
   useEffect(()=>{
-  console.log(userInformation, "userInfoemation");
 if(Object.keys(userInformation).length){
   alert("YEs there is lenght")
 }
@@ -52,31 +49,11 @@ if(Object.keys(userInformation).length){
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       addUser(docSnap.data());
-      console.log("Document data:", docSnap.data());
     } else {
-      console.log("No document!");
     }
   };
 
-  // const handleLogin = () => {
-  //   signInWithEmailAndPassword(auth, user.email, user.password)
-  //     .then((userCredential) => {
-  //       const user = userCredential.user;
-  //       if (user) {
-  //         setLoader(true);
-  //         registrationInformation(user.uid);
-  //         router.push("http://localhost:3000/adminMarquee");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log("useruser", user);
-  //       if (!user.email || !user.password) {
-  //       } else {
-  //         message.error("Please Enter a valid Email or Password");
-  //         const errorCode = error.code;
-  //       }
-  //     });
-  // };
+
   const handleLogin = (e) => {
     e.preventDefault()
     if (!user.email || !user.password) {

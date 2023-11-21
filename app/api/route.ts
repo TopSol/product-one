@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
     const { email, subject, description, html } = data;
-    console.log("Data :", data);
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
@@ -22,7 +21,6 @@ export async function POST(req: NextRequest) {
         pass: "bvcwkxoktifxoqij",
       },
     });
-    console.log("testing1");
 
     const info = await transporter.sendMail({
       from: '"TOPSOL" <muhammadwaqar7782@gmail.com>',
@@ -31,7 +29,6 @@ export async function POST(req: NextRequest) {
       html: html,
     });
 
-    console.log(info);
 
     if (info.messageId) {
       return NextResponse.json("Mail has been sent", {
@@ -43,7 +40,6 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (error) {
-    console.log(error, "error");
     return NextResponse.json(
       { error: "Failed to send email" },
       {

@@ -85,10 +85,8 @@ function Venues({
             ...doc.data(),
             id: doc.id,
           }));
-          console.log(tempArray,"temp");
           
           addVenues(tempArray);
-        console.log(userInformation, addUser, Venues, addVenues,);
         
       } catch (error) {
         console.error("Error fetching blogs:", error);
@@ -129,7 +127,6 @@ function Venues({
     try {
       await setDoc(doc(db, "Venues", VenueId), venue);
     } catch (error) {
-      console.log(error, "error");
     }
     setAddVenue([...addVenue, user] as any);
     setModalOpen(false);
@@ -152,7 +149,6 @@ function Venues({
       setUser(docSnap.data() as any);
       setFileList(docSnap.data().cropImage);
     } else {
-      console.log("No such document!");
     }
   };
 
@@ -187,7 +183,6 @@ function Venues({
         addVenues([...Venues, { ...updatedUser, id: venueId }]);
       }
     } catch (error) {
-      console.log(error, "error");
     }
     setModalOpen(false);
     setOpenEditVenue(false);

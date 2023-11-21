@@ -82,128 +82,8 @@ function Preview({
   const fromDate = formatDate(bookedDates.from);
   const toDate = formatDate(bookedDates.to);
 
-  // {"publicKey":"BIwu3Wswv4jCxNSPBQ-O0aHnAawhpoLrAEWeQYf-x485VEkR1rsGKoUd7iPHKYbY-DBY2i-Fq6nfQxfV4XDeuwo","privateKey":"QoMUaY0pkT1dpY1kTy0Hvet5UYlwsXJbeco0U8-fSXA"}
-
-  // useEffect(() => {
-  //   const messaging = getMessaging();
-  //   getToken(messaging, { vapidKey: "BIwu3Wswv4jCxNSPBQ-O0aHnAawhpoLrAEWeQYf-x485VEkR1rsGKoUd7iPHKYbY-DBY2i-Fq6nfQxfV4XDeuwo" }).then((currentToken) => {
-  //     if (currentToken) {
-  //       localStorage.setItem('fcm_token', currentToken)
-  //       console.log(currentToken);
-
-  //     } else {
-  //       console.log('No registration token available. Request permission to generate one.');
-  //     }
-  //   }).catch((err) => {
-  //     console.log('An error occurred while retrieving token. ', err);
-  //   });
-  // }, [])
-
-  // const registrationToken = localStorage.getItem('fcm_token');
-  // if (registrationToken) {
-  //   console.log(registrationToken);
-
-  //   const message = {
-  //     data: {
-  //       title: "Notification Title",
-  //       body: "Notification Body",
-  //     },
-  //     token: registrationToken,
-  //   };
-  // }
-
-//   const requestNotificationPermission = async () => {
-//     if ('Notification' in window) {
-//       try {
-//         const permission = await Notification.requestPermission();
-//         if (permission === 'granted') {
-//           console.log('Notification permission granted');
-//         }
-//       } catch (error) {
-//         console.error('Error requesting notification permission', error);
-//       }
-//     }
-//   };
-
-//   useEffect(() => {
-//     requestNotificationPermission()
-//   }, [])
-
-//   const sendNotification = () => {
-//     if ('Notification' in window && Notification.permission === 'granted') {
-//       const options = {
-//         body: 'Click Check Your Orders ',
-//         URL:'http://localhost:3000/adminMarquee'
-//       };
-
-//       new Notification('Reserve Orders', options);
-//     } else {
-//       alert("sdfsdfasdfasdfas")
-//     }
-//   };
-
-//   // service-worker.js
-// self.addEventListener('push', (event) => {
-//   const options = {
-//     body: event.data.text(),
-//     icon: '/path-to-icon.png',
-//     badge: '/path-to-badge.png',
-//   };
-
-//   event.waitUntil(
-//     self.registration.showNotification('Notification Title', options)
-//   );
-// });
-
-// self.addEventListener('notificationclick', (event) => {
-//   event.notification.close(); // Close the notification
-
-//   // Open the desired URL when the notification is clicked
-//   const openURL = 'http://localhost:3000/adminMarquee';
-//   event.waitUntil(
-//     clients.openWindow(openURL)
-//   );
-// });
-
-
-// const requestNotificationPermission = async () => {
-//   if ('Notification' in window) {
-//     try {
-//       const permission = await Notification.requestPermission();
-//       if (permission === 'granted') {
-//         console.log('Notification permission granted');
-//       }
-//     } catch (error) {
-//       console.error('Error requesting notification permission', error);
-//     }
-//   }
-// };
-
-// useEffect(() => {
-//   requestNotificationPermission();
-// }, []);
-
-// const sendNotification = () => {
-//   if ('Notification' in window && Notification.permission === 'granted') {
-//     const options = {
-//       body: 'Click Check Your Orders',
-//       data: {
-//         url: 'http://localhost:3000/adminMarquee',
-//       },
-//       icon: '/path-to-icon.png',
-//       badge: '/path-to-badge.png',
-//     };
-
-//     new Notification('Reserve Orders', options);
-//   } else {
-//     alert('Notification permission not granted');
-//   }
-// };
-
-
-
   const nextPage = async () => {
-    // setLoader((pre) => !pre);
+    setLoader((pre) => !pre);
     const fieldId = Math.random().toString(36).slice(2);
     const users = {
       image: marqueeImage?.image,
@@ -244,7 +124,6 @@ function Preview({
         }),
       });
       if (response.status === 200) {
-        console.log();
         ("Your email has been successfully sent");
 
       } else {
@@ -255,7 +134,6 @@ function Preview({
       await setDoc(doc(db, "contactUs", fieldId), users);
       setSuccessPage(true);
     } catch (error) {
-      console.log(" Error", error);
       console.error("Error calling API:", error);
     }
   };

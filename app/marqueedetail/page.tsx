@@ -55,7 +55,6 @@ function Marqueedetail() {
     getMarqueeImage,
     marqueeImage,
   } = useStore();
-  console.log(marqueeVenueNames);
   
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
@@ -94,7 +93,6 @@ function Marqueedetail() {
     setIsOpen(false);
   };
   const id = searchParams.get("id");
-  console.log(id);
   
 
   const marqueeName = searchParams.get("name");
@@ -113,14 +111,12 @@ function Marqueedetail() {
   };
 
   const getCollection = async (id) => {
-    console.log(id);
     try {
       const docRef = doc(db, "BookDate", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setBookDates(docSnap.data());
       } else {
-        console.log("No such document!");
       }
     } catch (error) {
       console.error("Error :", error);
@@ -128,7 +124,6 @@ function Marqueedetail() {
   };
   useEffect(() => {
     if (id) {
-      console.log(id);
       getCollection(id);
       handleVenueName(marqueeVenueNames[marqueeVenueNames.length - 1]?.value);
     }
@@ -152,7 +147,6 @@ function Marqueedetail() {
   };
 
   const handleVenueName = async (id, lunchProps = "Lunch") => {
-    console.log(id);
     setVenueId(id);
     try {
       const docRef = doc(db, "Venues", id);
@@ -166,7 +160,6 @@ function Marqueedetail() {
           to: null,
         });
       } else {
-        console.log("No such document!");
       }
     } catch (error) {
       console.error("Error :", error);

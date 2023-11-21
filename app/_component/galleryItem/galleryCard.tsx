@@ -1,18 +1,19 @@
-"use client";
-import React from "react";
+"use client"
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleDown,
-  faLocationDot,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
+import { Spin } from "antd";
+import { faLocationDot, faStar } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+
 export default function GalleryCard({ item }: any) {
+  const [loader, setLoader] = useState(false);
   const router = useRouter();
+
   const handleMarqueeDetails = (id) => {
     router.push(`/marqueedetail?id=${id}`);
   };
+
   return (
     <div className="mb-10 border p-3 rounded-[20px] mt-5 lg:mt-0 font-poppins text-textColor">
       <div className="md:container mx-auto flex flex-col lg:flex lg:flex-row items-center lg:space-x-8">
@@ -39,7 +40,7 @@ export default function GalleryCard({ item }: any) {
                 icon={faLocationDot}
                 className=" text-green-500 mr-3"
               />
-              {item?.data?.address}
+              {item?.data?.city}
             </p>
           </div>
           <div className="font-roboto text-textColor text-center md:text-start lg:w-96 lg:h-14 mt-2">
@@ -66,11 +67,14 @@ export default function GalleryCard({ item }: any) {
               </p>
               <button
                 onClick={() => {
+                  setLoader(true)
                   handleMarqueeDetails(item?.id);
                 }}
                 className="bg-primaryColor hover:bg-hoverPrimary px-5 py-2 rounded-lg font-roboto text-white font-bold"
               >
-                Details
+                {
+                  loader ? <Spin /> : "Details"
+                }
               </button>
             </div>
           </div>

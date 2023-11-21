@@ -87,7 +87,6 @@ export default function LandingPage() {
           </p>
           <div className=" md:flex items-center justify-between">
             <p className="font-bold text-textColor mt-2 font-roboto   ">
-              Capture the experience of your vacation at Himara Hotel.
             </p>
             <p className="font-bold text-textColor mt-2 font-roboto cursor-pointer ">
               View Full Gallery
@@ -118,7 +117,9 @@ export default function LandingPage() {
             ) : (
               marquees.map((marquee) => (
                 <div key={marquee.id}>
-                  <GalleryCard item={marquee} />
+                  <GalleryCard
+                    item={marquee}
+                  />
                 </div>
               ))
             )}

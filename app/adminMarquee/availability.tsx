@@ -54,7 +54,6 @@ function Availability() {
       value: 3,
     },
   ]);
-  console.log(selectedDates, "selectedDatesselectedDates");
   function convertTimestampsToDate(data) {
     Object.keys(data.dates).forEach((venueId) => {
       Object.keys(data.dates[venueId]).forEach((mealType) => {
@@ -107,12 +106,10 @@ function Availability() {
 
       try {
         await updateDoc(docRef, dateOfVenue);
-        console.log("Value of an Existing Document Field has been updated");
       } catch (error) {
         console.error(error);
       }
     } else {
-      console.log("No matching item found in lunchDinner for deleteVenueId");
     }
     const NotAvailableDate = {
       id: "wLA6R1rC5mNAcPItqqK7nIleYKB2",
@@ -127,7 +124,6 @@ function Availability() {
         message.success("Date is successfully deleted");
         setIsDateDelete(false);
       } catch (error) {
-        console.log(error, "errorssss");
       }
     }
   };
@@ -171,7 +167,6 @@ function Availability() {
       await setDoc(doc(db, "Venues", id), dateOfVenue, { merge: true });
       message.success("Date is successfully added");
     } catch (error) {
-      console.log(error, "error");
     }
   };
   const SendDateInFirebase = async (item) => {
@@ -188,7 +183,6 @@ function Availability() {
         setVenueDate(user);
         update(item, user, venueDates);
       } else {
-        console.log("No such document!");
       }
     } catch (error) {
       console.error("Error fetching document:", error);

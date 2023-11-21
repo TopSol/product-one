@@ -57,14 +57,14 @@ function AdminMarqueeDetails() {
     // });
     const [component, setComponent] = React.useState(() => {
         if (typeof localStorage !== 'undefined') {
-          let prev = localStorage.getItem('component');
-          if (prev) {
-            return prev;
-          }
+            let prev = localStorage.getItem('component');
+            if (prev) {
+                return prev;
+            }
         }
         return "Halls";
-      });
-      
+    });
+
     useEffect(() => {
 
         localStorage.removeItem('component');
@@ -93,7 +93,7 @@ function AdminMarqueeDetails() {
         Dishes,
         addDishes,
         handleCounting,
-        count
+        counting
     } = useStore();
     const [deleteVenues, setDeleteVenues] = useState([]);
     const [deleteMenus, setDeleteMenus] = useState([]);
@@ -144,12 +144,17 @@ function AdminMarqueeDetails() {
         const querySnapshot = await getDocs(collection(db, 'contactUs'));
         querySnapshot.forEach((doc) => {
             const docData = doc.data();
+            console.log(docData);
         });
         const coll = collection(db, "contactUs");
         const q = query(coll, where('userId', '==', userInformation?.userId));
         const snapshot = await getCountFromServer(q);
         const numbers = snapshot.data().count
-        if (count < numbers) {
+        console.log(numbers);
+        console.log(counting);
+
+
+        if (counting < numbers) {
             setIsBookingAvailable(true)
             sendNotification();
             handleCounting(snapshot.data().count)
@@ -160,7 +165,7 @@ function AdminMarqueeDetails() {
 
     useEffect(() => {
         fetchContactData()
-    }, [count])
+    }, [counting])
 
     const sendNotification = () => {
         if ('Notification' in window && Notification.permission === 'granted') {
@@ -181,21 +186,10 @@ function AdminMarqueeDetails() {
     const params = useSearchParams();
     const isBooking = params.get("isBooking");
 
-    // useEffect(() => {
-    //     if (!isBooking) {
-    //         sendNotification();
-    //     }
-    // }, []);
 
-    // useEffect(() => {
-    //     if (isBooking) {
-    //         setIsBookingAvailable(true)
-    //     }
-    // }, [isBooking])
 
     const handleNofiNotificationClick = () => {
         setComponent("Bookings")
-        // router.push('http://localhost:3000/adminMarquee?isBooking=true')
     }
 
     useEffect(() => {
@@ -234,7 +228,6 @@ function AdminMarqueeDetails() {
             await updateDoc(washingtonRef, {
                 status: "active",
             });
-            console.log("Document successfully active!");
         } catch (error: any) {
             console.error("Error updating document:", error.message);
         }
@@ -249,7 +242,6 @@ function AdminMarqueeDetails() {
             await updateDoc(washingtonRef, {
                 status: "inactive",
             });
-            console.log("Document successfully inactive!");
         } catch (error: any) {
             console.error("Error updating document:", error.message);
         }

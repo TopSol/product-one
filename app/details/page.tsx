@@ -112,7 +112,6 @@ function Slider() {
     withoutVenueDish: [],
     dish: [],
   });
-  console.log(selectedMenu, "selectedMenuksksks");
   const [inputs, setInputs] = useState({
     Heating: false,
     Cooling: false,

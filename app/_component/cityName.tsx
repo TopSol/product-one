@@ -9,8 +9,6 @@ type CityState = {
 };
 
 const CityName: React.FC<CityState> = ({ setCityName, cityName,registration }) => {
-  console.log();
-  
   const [options, setOptions] = useState<{ value: string; label: string }[]>(
     []
   );
@@ -329,7 +327,6 @@ const CityName: React.FC<CityState> = ({ setCityName, cityName,registration }) =
           label: name,
         }));
     }
-    console.log(res, "Sdfsdfds");
     setOptions(res);
   };
   
