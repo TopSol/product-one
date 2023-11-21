@@ -45,7 +45,6 @@
     "react-dom": "^18.2.0",
     "react-google-places-autocomplete": "^4.0.1",
     "react-image-file-resizer": "^0.4.8",
-    "react-image-lightbox": "^5.1.4",
     "react-leaflet": "^4.2.1",
     "react-phone-number-input": "^3.3.0",
     "react-router-dom": "^6.18.0",

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import AdminNavbar from "./adminNavbar";
-import "react-image-lightbox/style.css";
+// import "react-image-lightbox/style.css";
 import MarqueeVenues from "./venues";
 import MarqueeMenus from "./menus";
 import Availability from "./availability";
@@ -18,7 +18,7 @@ import {
     getDoc,
     getCountFromServer,
 } from "firebase/firestore";
-import Lightbox from "react-image-lightbox";
+// import Lightbox from "react-image-lightbox";
 import { getAuth, signOut } from "firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useStore } from "@/store";
@@ -639,7 +639,7 @@ function AdminMarqueeDetails() {
                             </div>
                         </div>
                     </div>
-                    {isOpen && (
+                    {/* {isOpen && (
                         <Lightbox
                             mainSrc={selectImage}
                             nextSrc={image[(photoIndex + 1) % image.length]}
@@ -652,7 +652,7 @@ function AdminMarqueeDetails() {
                                 setPhotoIndex((photoIndex + 1) % image.length)
                             }
                         />
-                    )}
+                    )} */}
                 </div>
             )}
         </>

@@ -12,10 +12,10 @@ import { isBefore, startOfToday } from "date-fns";
 import Location from "./Location";
 import Navbar from "@/app/_component/Navbar";
 import Footer from "@/app/_component/footer";
-import ImageLightbox from "react-image-lightbox";
+// import ImageLightbox from "react-image-lightbox";
 import Loader from "@/app/_component/Loader";
 import "react-day-picker/dist/style.css";
-import "react-image-lightbox/style.css";
+// import "react-image-lightbox/style.css";
 import "./style.css";
 import chair from "../assets/images/chair.svg";
 import click from "../assets/images/click.svg";
@@ -89,9 +89,9 @@ function Marqueedetail() {
       setPhotoIndex(index);
     }
   };
-  const closeLightbox = () => {
-    setIsOpen(false);
-  };
+  // const closeLightbox = () => {
+  //   setIsOpen(false);
+  // };
   const id = searchParams.get("id");
   
 
@@ -634,7 +634,7 @@ function Marqueedetail() {
           <Footer />
         </div>
       </div>
-      {isOpen && (
+      {/* {isOpen && (
         <ImageLightbox
           mainSrc={data?.image[photoIndex]}
           nextSrc={data?.image[(photoIndex + 1) % data?.image.length]}
@@ -653,7 +653,7 @@ function Marqueedetail() {
             setPhotoIndex((photoIndex + 1) % data?.image.length)
           }
         />
-      )}
+      )} */}
     </>
   );
 }

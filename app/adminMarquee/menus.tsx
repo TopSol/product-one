@@ -18,7 +18,7 @@ import Loader from "@/app/_component/Loader";
 import DishTable from "./dishTable";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 
-import Lightbox from "react-image-lightbox";
+// import Lightbox from "react-image-lightbox";
 import Image from "next/image";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 // import { Image } from "antd";
@@ -728,7 +728,7 @@ function Menus({
                 </div>
               </div>
             </Modal>
-            {isOpen && (
+            {/* {isOpen && (
               <Lightbox
                 mainSrc={previewImage[photoIndex]}
                 nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
@@ -747,7 +747,7 @@ function Menus({
                   setPhotoIndex((photoIndex + 1) % previewImage.length)
                 }
               />
-            )}
+            )} */}
           </div>
         </>
       )}

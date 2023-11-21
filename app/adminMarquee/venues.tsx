@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Loader from "@/app/_component/Loader";
-import Lightbox from "react-image-lightbox";
+// import Lightbox from "react-image-lightbox";
 import Image from "next/image";
 import Link from "next/link";
 import dots from "../assets/images/dots.svg";
@@ -567,7 +567,7 @@ function Venues({
               </div>
             </div>
           </Modal>
-          {isOpen && (
+          {/* {isOpen && (
             <Lightbox
               mainSrc={previewImage[photoIndex]}
               nextSrc={previewImage[(photoIndex + 1) % previewImage.length]}
@@ -586,7 +586,7 @@ function Venues({
                 setPhotoIndex((photoIndex + 1) % previewImage.length)
               }
             />
-          )}
+          )} */}
 
     </>
   );
