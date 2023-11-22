@@ -11,9 +11,14 @@ module.exports = {
   images: {
     domains: ["firebasestorage.googleapis.com"],
   },
+  reactStrictMode: true,
+  env: {
+    BASE_URL: process.env.BASE_URL,
+  }
 };
 // module.exports = {
-//   images: {
-//     domains: ["encrypted-tbn0.gstatic.com"], // Add the domain(s) you want to allow
-//   },
-// };
+//   reactStrictMode: true,
+//   env: {
+//     BASE_URL: process.env.BASE_URL,
+//   }
+// }

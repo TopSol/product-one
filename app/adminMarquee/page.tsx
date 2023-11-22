@@ -144,13 +144,12 @@ function AdminMarqueeDetails() {
         const querySnapshot = await getDocs(collection(db, 'contactUs'));
         querySnapshot.forEach((doc) => {
             const docData = doc.data();
-            console.log(docData);
         });
         const coll = collection(db, "contactUs");
         const q = query(coll, where('userId', '==', userInformation?.userId));
         const snapshot = await getCountFromServer(q);
         const numbers = snapshot.data().count
-        console.log(numbers);
+        console.log(numbers);   
         console.log(counting);
 
 

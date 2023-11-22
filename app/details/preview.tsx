@@ -112,7 +112,8 @@ function Preview({
       createAt: Timestamp.now(),
     };
     try {
-      const response = await fetch("http://localhost:3000/api/", {
+      // const response = await fetch("http://localhost:3000/api/", {
+        const response = await fetch(`${process.env.BASE_URL}api/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -124,7 +125,7 @@ function Preview({
         }),
       });
       if (response.status === 200) {
-        ("Your email has been successfully sent");
+        message.success("Your email has been successfully sent");
 
       } else {
         console.error("API call failed:", response.statusText);
@@ -137,6 +138,8 @@ function Preview({
       console.error("Error calling API:", error);
     }
   };
+  const adadf=process.env.BASE_URL 
+console.log(adadf,"sssssssff");
 
 
 

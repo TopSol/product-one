@@ -65,7 +65,7 @@ export default  function MailSender({
       } else {
         setIsLoader(true);
       }
-      const response = await fetch("http://localhost:3000/api/", {
+      const response = await fetch(`${process.env.BASE_URL}api/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +117,7 @@ export default  function MailSender({
       } else {
         setIsLoader(true);
       }
-      const response = await fetch("http://localhost:3000/api/", {
+      const response = await fetch(`${process.env.BASE_URL}api/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
