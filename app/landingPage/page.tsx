@@ -9,6 +9,7 @@ import Hero from "@/app/_component/Hero";
 import GalleryCard from "../_component/galleryItem/galleryCard";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import MarqueeDetails from "../_component/MarqueeDetails";
 export default function LandingPage() {
   const [marquees, setMarquees] = useState<any[]>([]);
   const [data, setData] = useState();
@@ -96,7 +97,9 @@ export default function LandingPage() {
             {showMessage &&
               (data as any)?.map((item) => (
                 <div key={item.id}>
-                  <GalleryCard item={item} />
+                  {/* <GalleryCard item={item} /> */}
+                  <MarqueeDetails item={item} showMessage={showMessage} />
+
                 </div>
               ))}
             {!showMessage && marquees.length == 0 ? (
@@ -117,9 +120,10 @@ export default function LandingPage() {
             ) : (
               marquees.map((marquee) => (
                 <div key={marquee.id}>
-                  <GalleryCard
+                  {/* <GalleryCard
                     item={marquee}
-                  />
+                  /> */}
+                  <MarqueeDetails item={marquee} showMessage={showMessage} />
                 </div>
               ))
             )}

@@ -327,6 +327,7 @@ function UserInformation({
                     name="eventType"
                     value={user.eventType}
                     onChange={handleChange as any}
+                    required={true}
                     className="border outline-none z-10 w-full  py-6 mb-3 flex justify-center text-xs relative"
                   />
                 </div>
@@ -388,6 +389,7 @@ function UserInformation({
                   checked={selectedOption === "straitTable" ? true : false}
                   onChange={(e) => handleChange(e, "straitTable")}
                   className="my-2"
+                  required={true}
                 >
                   Straight Table
                 </Radio>

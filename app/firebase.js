@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey:`${process.env.API_KEY}`,
+  apiKey:'AIzaSyCg8fxPw0hp3lDg7EAZsrp0Y5zl-CMrQZs',
   authDomain: "verbundenheit-40632.firebaseapp.com",
   projectId: "verbundenheit-40632",
   storageBucket: "verbundenheit-40632.appspot.com",

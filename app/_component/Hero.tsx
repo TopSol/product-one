@@ -76,15 +76,24 @@ export default function Hero({
     const filteredVenues = venues.filter((venue) => {
       const { dates } = venue.data;
       if (dates && dates.Lunch && dates.Diner) {
-        const lunchDates = dates.Lunch.map((d) => d.toDate());
-        const dinerDates = dates.Diner.map((d) => d.toDate());
+        const lunchDates = dates.Lunch.map((d) => (d instanceof Timestamp ? d.toDate() : d));
+        const dinerDates = dates.Diner.map((d) => (d instanceof Timestamp ? d.toDate() : d));
 
-        const dateIsNotInLunch = !lunchDates.some(
-          (d) => d.toDateString() === dateObject.toDateString()
-        );
-        const dateIsNotInDiner = !dinerDates.some(
-          (d) => d.toDateString() === dateObject.toDateString()
-        );
+
+        const dateIsNotInLunch = !lunchDates.some((d) => {
+          if (d instanceof Timestamp) {
+            return d.toDate().toDateString() === dateObject.toDateString();
+          } else {
+            return true; // If it's not a timestamp, consider it as not in lunch
+          }
+        });
+        const dateIsNotInDiner = !dinerDates.some((d) => {
+          if (d instanceof Timestamp) {
+            return d.toDate().toDateString() === dateObject.toDateString();
+          } else {
+            return true; // If it's not a timestamp, consider it as not in diner
+          }
+        });
         return dateIsNotInLunch || dateIsNotInDiner;
       } else {
         return true;
@@ -106,9 +115,8 @@ export default function Hero({
     <>
       <div>
         <div
-          className={` ${
-            scrollPosition > 130 ? "bg-white" : "bg-transparent"
-          }  fixed top-0 left-0 right-0 z-50`}
+          className={` ${scrollPosition > 130 ? "bg-white" : "bg-transparent"
+            }  fixed top-0 left-0 right-0 z-50`}
         >
           <div className="flex justify-between lg:container mx-auto items-center py-7 px-6 lg:px-0">
             <div>
@@ -129,9 +137,8 @@ export default function Hero({
                 )}{" "}
               </div>
               <div
-                className={`hidden lg:flex items-center   ${
-                  scrollPosition > 130 ? "text-black" : "text-white"
-                }`}
+                className={`hidden lg:flex items-center   ${scrollPosition > 130 ? "text-black" : "text-white"
+                  }`}
               >
                 <ul className=" flex space-x-10 font-roboto font-bold ">
                   <li className="cursor-pointer px-3 ">

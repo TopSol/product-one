@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { DayPicker, DateAfter, DateBefore } from "react-day-picker";
-import { doc, getDoc, query } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/app/firebase";
 import { useStore } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -55,7 +55,7 @@ function Marqueedetail() {
     getMarqueeImage,
     marqueeImage,
   } = useStore();
-  
+
   let searchParams = useSearchParams();
   const [selectImage, setSelectImage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -93,13 +93,16 @@ function Marqueedetail() {
   //   setIsOpen(false);
   // };
   const id = searchParams.get("id");
-  
+  console.log(marqueeData, 'ididid');
+
+  console.log(id, 'ididid');
+  console.log(data?.image, 'ididid');
 
   const marqueeName = searchParams.get("name");
   const location = searchParams.get("location");
 
   const handleButton = () => {
-    if (!numberOfPeople || !marqueeDates?.from ){
+    if (!numberOfPeople || !marqueeDates?.from) {
       message.error("Please fillout all the fields ");
     } else {
       setLoading(true)
@@ -112,11 +115,14 @@ function Marqueedetail() {
 
   const getCollection = async (id) => {
     try {
-      const docRef = doc(db, "BookDate", id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setBookDates(docSnap.data());
+      const collectionRef = collection(db, "BookDate");
+      const querySnapshot = await getDocs(query(collectionRef, where("id", "==", id)));
+
+      if (!querySnapshot.empty) {
+        const matchingDocuments = querySnapshot.docs.map((doc) => doc.data());
+        setBookDates(matchingDocuments[0]);
       } else {
+        setBookDates(['']);
       }
     } catch (error) {
       console.error("Error :", error);
@@ -203,6 +209,8 @@ function Marqueedetail() {
   };
 
   const datess = bookDates?.dates || [];
+  console.log(datess, 'ididid');
+
   useEffect(() => {
     if (!Array.isArray(datess)) {
       console.error("datess is not a valid array");
@@ -251,7 +259,7 @@ function Marqueedetail() {
     let date1 = new Date(dateString1);
     let currentDate = new Date();
     if (currentDate <= date1) {
-      
+
       if (marqueeDates.from && newRange && marqueeDates.from > newRange) {
         // if (marqueeDates.from > newRange) {         build
         return setMarqueeDates({ from: newRange, to: null });
@@ -264,7 +272,7 @@ function Marqueedetail() {
           if (marqueeDates.from !== null) {
             return element >= marqueeDates.from && element <= newRange;
           }
-          return false; 
+          return false;
         });
         if (date?.length > 0) {
           message.error("you can not select this date");
@@ -586,12 +594,11 @@ function Marqueedetail() {
                         <Typography.Text className="text-primaryColor text-lg  font-poppins">
                           Select Date
                         </Typography.Text>
-                        <DayPicker 
-                          className={`${
-                            isLunch === `Lunch`
-                              ? `combinedClasses`
-                              : `combinedClasses2`
-                          } w-[100%]`}
+                        <DayPicker
+                          className={`${isLunch === `Lunch`
+                            ? `combinedClasses`
+                            : `combinedClasses2`
+                            } w-[100%]`}
                           disabled={resolvedDisabledDays}
                           modifiers={{ booked: days }}
                           modifiersStyles={{ booked: bookedStyle }}
@@ -616,9 +623,8 @@ function Marqueedetail() {
             {isShow && (
               <div
                 onClick={handleButton}
-                className={`flex ${
-                  numberOfPeople.length && marqueeDates?.from ? "bg-lightPrimary" : "bg-bgColor "
-                } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor text-white hover:text-black spinner`}
+                className={`flex ${numberOfPeople.length && marqueeDates?.from ? "bg-lightPrimary" : "bg-bgColor "
+                  } rounded-lg justify-center p-3 cursor-pointer mt-3 hover:bg-hoverBgColor text-white hover:text-black spinner`}
               >
                 <div>{loading ? <Spin /> : " Book Now"}</div>
               </div>
