@@ -57,7 +57,7 @@ const Login = () => {
   };
 
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (forgotPasswordMode) {
@@ -67,16 +67,15 @@ const Login = () => {
         return;
       }
 
-      sendPasswordResetEmail(auth, user.email)
-        .then(() => {
-          message.success("Password reset email sent. Check your inbox.");
-        })
-        .catch((error) => {
-          console.error("Error sending password reset email:", error);
-          message.error(
-            "Error sending password reset email. Please try again later."
-          );
-        });
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        message.success("Password reset email sent. Check your inbox.");
+      } catch (error) {
+        console.error("Error sending password reset email:", error);
+        message.error(
+          "Error sending password reset email. Please try again later."
+        );
+      }
     } else {
       // Handle login logic here
       if (!user.email || !user.password) {
@@ -84,19 +83,20 @@ const Login = () => {
         return;
       }
 
-      signInWithEmailAndPassword(auth, user.email, user.password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          setLoader(true);
-          registrationInformation(user.uid);
-          router.push(`/adminMarquee?id=${user.uid}`);
-        })
-        .catch((error) => {
-          console.error("Error during sign-in:", error);
-          message.error("Invalid email or password. Please try again.");
-        });
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password)
+
+        const users = userCredential.user;
+        setLoader(true);
+        await registrationInformation(users.uid);
+        router.push('/adminMarquee');
+      } catch (error) {
+        console.error("Error during sign-in:", error);
+        message.error("Invalid email or password. Please try again.");
+      }
     }
   };
+
 
   const toggleMode = () => {
     // Toggle between "Forgot Password" and "Log in" modes

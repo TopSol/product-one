@@ -121,7 +121,9 @@ export default function Hero({
           <div className="flex justify-between lg:container mx-auto items-center py-7 px-6 lg:px-0">
             <div>
               <p className=" text-[#DEB666] font-extrabold text-xl ">
-                BOOKING NOW.
+                <Link href="/">
+                  BOOKING NOW.
+                </Link>
               </p>
             </div>
 
@@ -147,15 +149,15 @@ export default function Hero({
                   <li className="cursor-pointer px-3 ">
                     <Link href="/marquee">Marquee</Link>
                   </li>
-                  <li className="cursor-pointer px-3 ">Booking</li>
+                  {/* <li className="cursor-pointer px-3 ">Booking</li>
                   <li className="cursor-pointer px-3 ">Services</li>
                   <li className="cursor-pointer px-3 ">Blog</li>
-                  <li className="cursor-pointer px-3 ">Help</li>
+                  <li className="cursor-pointer px-3 ">Help</li> */}
                 </ul>
-                <button className=" ml-10  text-white bg-[#DEB666] hover:bg-[#DEB999] py-3 px-6 font-roboto rounded-md">
+                {/* <button className=" ml-10  text-white bg-[#DEB666] hover:bg-[#DEB999] py-3 px-6 font-roboto rounded-md">
                   <FontAwesomeIcon icon={faCalendarDays} className="mr-2" />
                   Booking Now
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

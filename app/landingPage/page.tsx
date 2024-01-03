@@ -133,7 +133,7 @@ export default function LandingPage() {
 
       {/* Testimonials section */}
       <div className="bg-bgColor  ">
-        <div className=" md:container mx-auto pt-24 pb-32 ">
+        {/* <div className=" md:container mx-auto pt-24 pb-32 ">
           <p className="text-5xl font-vollkorn text-headingColor ">
             Himara Image Gallery
           </p>
@@ -156,7 +156,7 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
       <Footer />
     </div>

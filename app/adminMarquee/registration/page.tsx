@@ -105,7 +105,7 @@ function Details() {
       message.warning("Please select atleast one image");
       return;
     }
-    setLoading((pre) => !pre);
+    // setLoading((pre) => !pre);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -142,10 +142,10 @@ function Details() {
       };
       await setDoc(doc(db, "users", user.uid), userInfo);
       if (userInfo) {
+        setLoading(true);
         addRegistration(userInfo);
         addUser(userInfo);
         router.push("/adminMarquee");
-        setLoading(true);
       }
     } catch (error) {
     }
